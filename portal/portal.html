@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Portal — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-base: #050508;
+            --bg-elevated: #0a0a0f;
+            --bg-surface: #0f0f14;
+            --bg-card: #101015;
+            --bg-hover: #16161c;
+            --bg-active: #1c1c24;
+            --border-subtle: rgba(59, 130, 246, 0.08);
+            --border-default: rgba(59, 130, 246, 0.12);
+            --border-strong: rgba(59, 130, 246, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-blue-soft: rgba(59,130,246,0.12);
+            --accent-green: #22c55e;
+            --accent-green-soft: rgba(34,197,94,0.12);
+            --accent-orange: #f59e0b;
+            --accent-orange-soft: rgba(245,158,11,0.15);
+            --accent-red: #ef4444;
+            --accent-red-soft: rgba(239,68,68,0.15);
+            --accent-purple: #a855f7;
+            --accent-purple-soft: rgba(168,85,247,0.12);
+            --plan-basic: #3b82f6;
+            --plan-silver: #94a3b8;
+            --plan-gold: #f59e0b;
+            --plan-pro: #a855f7;
+            --plan-trial: #22c55e;
+            --header-height: 56px;
+            --sidebar-width: 220px;
+            --chat-width: 320px;
+        }
+
+        html, body { height: 100%; background: var(--bg-base); font-family: 'Inter', -apple-system, sans-serif; color: var(--text-primary); overflow: hidden; }
+
+        /* ==================== APP LAYOUT ==================== */
+        .app { display: flex; flex-direction: column; height: 100vh; }
+
+        /* ==================== HEADER ==================== */
+        .header {
+            height: var(--header-height);
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { height: 28px; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-blue-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+        .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .user-role {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
+        .user-role.owner { background: var(--accent-purple-soft); color: var(--accent-purple); }
+        .user-role.admin { background: var(--accent-red-soft); color: var(--accent-red); }
+        .user-role.editor { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .user-role.pro { background: var(--accent-purple-soft); color: var(--accent-purple); }
+        .user-role.gold { background: var(--accent-orange-soft); color: var(--accent-orange); }
+        .user-role.creator { background: var(--accent-orange-soft); color: var(--accent-orange); }
+        .user-role.silver, .user-role.growth { background: rgba(148,163,184,0.15); color: var(--plan-silver); }
+        .user-role.basic, .user-role.starter { background: var(--accent-blue-soft); color: var(--plan-basic); }
+        .user-role.trial { background: var(--accent-green-soft); color: var(--accent-green); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+        .settings-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .settings-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .main { display: flex; flex: 1; overflow: hidden; }
+
+        /* ==================== LEFT SIDEBAR ==================== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-elevated);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .nav-section { padding: 16px 12px; }
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 0 8px 8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav-item.active { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--accent-red);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+        .nav-divider { height: 1px; background: var(--border-subtle); margin: 8px 12px; }
+        .sidebar-spacer { flex: 1; }
+
+        /* ==================== CONTENT AREA ==================== */
+        .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* ==================== KANBAN BOARD ==================== */
+        .kanban-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
+        }
+        .kanban-title { font-size: 18px; font-weight: 700; }
+        .kanban-filters { display: flex; gap: 8px; }
+        .filter-btn {
+            padding: 6px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .filter-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .filter-btn.active { background: var(--accent-blue-soft); color: var(--accent-blue); border-color: var(--accent-blue); }
+
+        .kanban-board {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            overflow-x: auto;
+            flex: 1;
+        }
+        .kanban-column {
+            flex: 0 0 280px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+        }
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .column-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .column-count {
+            background: var(--bg-surface);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .column-cards {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Project Cards */
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .project-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+        .project-card.tier-pro { border-left-color: var(--accent-purple); }
+        .project-card.tier-gold { border-left-color: var(--accent-orange); }
+        .project-card.tier-silver { border-left-color: var(--plan-silver); }
+        .project-card.tier-basic { border-left-color: var(--accent-blue); }
+        .project-card.tier-trial { border-left-color: var(--accent-green); }
+
+        .card-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; line-height: 1.3; }
+        .card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .card-chip {
+            padding: 3px 8px;
+            background: var(--bg-surface);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .card-chip.type { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .card-editor { display: flex; align-items: center; gap: 6px; }
+        .card-editor-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-blue-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state-text { font-size: 13px; }
+
+        /* ==================== CHAT DOCK ==================== */
+        .chat-dock {
+            width: var(--chat-width);
+            background: var(--bg-elevated);
+            border-left: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: width 0.2s;
+        }
+        .chat-dock.collapsed { width: 56px; }
+        .chat-dock.collapsed .chat-content { display: none; }
+        .chat-dock.collapsed .chat-header-title { display: none; }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .chat-header-title { font-size: 14px; font-weight: 600; }
+        .chat-toggle {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-surface);
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .chat-toggle:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        .chat-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        .chat-channels {
+            padding: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .chat-channel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+        }
+        .chat-channel:hover { background: var(--bg-hover); }
+        .chat-channel.active { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .chat-channel .unread {
+            margin-left: auto;
+            background: var(--accent-red);
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 8px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            display: flex;
+            gap: 10px;
+        }
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-blue-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            flex-shrink: 0;
+        }
+        .message-content { flex: 1; }
+        .message-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+        .message-sender { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .message-time { font-size: 10px; color: var(--text-muted); }
+        .message-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+        .message-text a { color: var(--accent-blue); }
+
+        .chat-input-container {
+            padding: 12px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .chat-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            resize: none;
+        }
+        .chat-input:focus { outline: none; border-color: var(--accent-blue); }
+        .chat-input::placeholder { color: var(--text-muted); }
+
+        /* ==================== LOADING ==================== */
+        .loading { display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .spinner { width: 32px; height: 32px; border: 3px solid var(--border-subtle); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ==================== HIDDEN BY ROLE ==================== */
+        [data-role-hide] { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="Content Bug" class="logo">
+            </div>
+            <div class="header-right">
+                <div class="status-dot"></div>
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role" id="userRole">...</span>
+                    </div>
+                </div>
+                <button class="settings-btn" onclick="location.href='/settings'">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="main">
+            <!-- LEFT SIDEBAR -->
+            <aside class="sidebar">
+                <nav class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a class="nav-item active" data-page="projects">
+                        <span class="icon">📋</span> Projects
+                    </a>
+                    <a class="nav-item" data-page="review">
+                        <span class="icon">👁</span> Review
+                    </a>
+                    <a class="nav-item" data-page="storage">
+                        <span class="icon">📁</span> Storage
+                    </a>
+                </nav>
+
+                <div class="nav-divider"></div>
+
+                <nav class="nav-section" id="teamNav" style="display:none;">
+                    <div class="nav-section-title">Team</div>
+                    <a class="nav-item" data-page="team">
+                        <span class="icon">👥</span> Team
+                        <span class="badge" id="unassignedBadge" style="display:none;">0</span>
+                    </a>
+                    <a class="nav-item" data-page="analytics" data-roles="admin,owner">
+                        <span class="icon">📊</span> Analytics
+                    </a>
+                </nav>
+
+                <div class="sidebar-spacer"></div>
+
+                <nav class="nav-section">
+                    <a class="nav-item" onclick="logout()">
+                        <span class="icon">🚪</span> Logout
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="content">
+                <div class="kanban-header">
+                    <h1 class="kanban-title">Projects</h1>
+                    <div class="kanban-filters" id="filters">
+                        <!-- Filters populated by JS based on role -->
+                    </div>
+                </div>
+                <div class="kanban-board" id="kanbanBoard">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </main>
+
+            <!-- CHAT DOCK -->
+            <aside class="chat-dock" id="chatDock">
+                <div class="chat-header">
+                    <span class="chat-header-title">Messages</span>
+                    <button class="chat-toggle" onclick="toggleChat()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                </div>
+                <div class="chat-content">
+                    <div class="chat-channels" id="chatChannels">
+                        <div class="chat-channel active">
+                            <span>#</span> General
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <div class="empty-state-text">No messages yet</div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" id="chatInput" placeholder="Type a message..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GLOBAL STATE
+        // ============================================
+        let currentUser = null;
+        let currentFilter = 'all';
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        async function init() {
+            try {
+                const res = await fetch('/api/me');
+                if (!res.ok) {
+                    window.location.href = '/login';
+                    return;
+                }
+                currentUser = await res.json();
+                renderUserProfile();
+                setupNavigation();
+                await loadProjects();
+            } catch (err) {
+                console.error('Init error:', err);
+                window.location.href = '/login';
+            }
+        }
+
+        function renderUserProfile() {
+            document.getElementById('userName').textContent = currentUser.name || currentUser.email.split('@')[0];
+            document.getElementById('userAvatar').textContent = (currentUser.name || currentUser.email)[0].toUpperCase();
+
+            const roleEl = document.getElementById('userRole');
+            const role = currentUser.role || 'client';
+            const plan = currentUser.plan || '';
+
+            // Show role for team, plan for clients
+            if (['owner', 'admin', 'editor'].includes(role)) {
+                roleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                roleEl.className = 'user-role ' + role;
+            } else {
+                const planClass = plan.toLowerCase().replace(/\s+/g, '-').replace('free-', '');
+                roleEl.textContent = plan || 'Client';
+                roleEl.className = 'user-role ' + (planClass || 'trial');
+            }
+        }
+
+        function setupNavigation() {
+            const role = currentUser.role || 'client';
+
+            // Show team nav for editors, admins, owners
+            if (['owner', 'admin', 'editor'].includes(role)) {
+                document.getElementById('teamNav').style.display = 'block';
+            }
+
+            // Hide elements not for this role
+            document.querySelectorAll('[data-roles]').forEach(el => {
+                const allowedRoles = el.dataset.roles.split(',');
+                if (!allowedRoles.includes(role)) {
+                    el.style.display = 'none';
+                }
+            });
+
+            // Setup filters based on role
+            const filtersEl = document.getElementById('filters');
+            if (['owner', 'admin'].includes(role)) {
+                filtersEl.innerHTML = `
+                    <button class="filter-btn active" onclick="setFilter('all')">All Projects</button>
+                    <button class="filter-btn" onclick="setFilter('my')">My Assigned</button>
+                    <select class="filter-btn" id="editorFilter" onchange="filterByEditor(this.value)">
+                        <option value="">Filter by Editor</option>
+                    </select>
+                `;
+                loadEditors();
+            } else if (role === 'editor') {
+                filtersEl.innerHTML = `
+                    <button class="filter-btn active" onclick="setFilter('my')">My Projects</button>
+                    <select class="filter-btn" id="clientFilter" onchange="filterByClient(this.value)">
+                        <option value="">Filter by Client</option>
+                    </select>
+                `;
+            }
+        }
+
+        // ============================================
+        // PROJECTS / KANBAN
+        // ============================================
+        async function loadProjects() {
+            const board = document.getElementById('kanbanBoard');
+            board.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const res = await fetch('/api/kanban/projects');
+                const data = await res.json();
+                if (data.error) throw new Error(data.message);
+                renderKanban(data.columns);
+            } catch (err) {
+                board.innerHTML = `<div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-text">${err.message}</div></div>`;
+            }
+        }
+
+        function renderKanban(columns) {
+            const board = document.getElementById('kanbanBoard');
+            const order = ['queued', 'in_edit', 'review_ready', 'revisions', 'approved'];
+            const labels = {
+                'queued': 'Queue',
+                'in_edit': 'Active',
+                'review_ready': 'Review',
+                'revisions': 'Revisions',
+                'approved': 'Approved'
+            };
+
+            let html = '';
+            for (const status of order) {
+                const col = columns[status];
+                if (!col) continue;
+                const projects = col.projects || [];
+
+                html += `
+                    <div class="kanban-column" data-status="${status}">
+                        <div class="column-header">
+                            <div class="column-title">${labels[status] || status} <span class="column-count">${projects.length}</span></div>
+                        </div>
+                        <div class="column-cards">
+                            ${projects.length ? projects.map(p => renderProjectCard(p)).join('') : '<div class="empty-state"><div class="empty-state-text">No projects</div></div>'}
+                        </div>
+                    </div>
+                `;
+            }
+            board.innerHTML = html;
+        }
+
+        function renderProjectCard(p) {
+            const tierClass = (p.tier || '').replace('tier_', 'tier-') || 'tier-basic';
+            const planClass = tierClass.includes('3') ? 'tier-pro' : tierClass.includes('2') ? 'tier-gold' : 'tier-basic';
+
+            return `
+                <div class="project-card ${planClass}" onclick="openProject('${p.id}', '${p.status}')">
+                    <div class="card-title">${escapeHtml(p.title)}</div>
+                    <div class="card-meta">
+                        ${p.blueprintName ? `<span class="card-chip">${escapeHtml(p.blueprintName)}</span>` : ''}
+                        <span class="card-chip type">${p.projectType || 'Short'}</span>
+                    </div>
+                    <div class="card-footer">
+                        <span>${p.dateSubmitted || ''} ${p.eta ? '→ ' + p.eta : ''}</span>
+                        ${p.assignedEditor ? `<div class="card-editor"><div class="card-editor-avatar">${p.assignedEditor[0]}</div>${p.assignedEditor}</div>` : '<span>Unassigned</span>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function openProject(id, status) {
+            if (['review_ready', 'revisions', 'approved'].includes(status)) {
+                window.location.href = '/review?id=' + id;
+            } else {
+                window.location.href = '/projects?id=' + id;
+            }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            loadProjects();
+        }
+
+        async function loadEditors() {
+            try {
+                const res = await fetch('/api/team/members?activeOnly=true');
+                const data = await res.json();
+                const select = document.getElementById('editorFilter');
+                if (select && data.members) {
+                    data.members.filter(m => m.role === 'editor').forEach(e => {
+                        select.innerHTML += `<option value="${e.id}">${e.name}</option>`;
+                    });
+                }
+            } catch (e) {}
+        }
+
+        // ============================================
+        // CHAT
+        // ============================================
+        function toggleChat() {
+            document.getElementById('chatDock').classList.toggle('collapsed');
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            if (!content) return;
+            input.value = '';
+            // TODO: Implement chat send
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function logout() {
+            fetch('/auth/logout', { method: 'POST' }).finally(() => {
+                window.location.href = '/login';
+            });
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

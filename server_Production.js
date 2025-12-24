@@ -1,6 +1,7 @@
 // server_Production.js
-// ContentBug Production MCP Server v2.3.2
+// ContentBug Production MCP Server v2.4.0
 // Handles: Make webhooks, Claude/OpenAI AI, Airtable storage, GHL forwarding, chat, auth, Google Drive, Apify Research, Creator Intelligence
+// v2.4.0: UNIFIED PORTAL - Single portal.html for all roles (client, editor, admin, owner)
 // v2.3.2: Added DEV_AUTH_BYPASS for founder testing (sean@contentbug.io only)
 // v2.3.1: Improved OTP delivery with GHL API direct email + webhook fallback
 // Deploy to Railway - runs 24/7
@@ -271,21 +272,23 @@ app.use('/shared', express.static(path.join(PORTAL_DIR, 'shared'), {
 }));
 
 // Portal route mappings
+// v2.4.0: UNIFIED PORTAL - One portal for all roles (client, editor, admin, owner)
 const portalRoutes = {
   '/login': 'client/login.html',
-  '/dashboard': 'client/dashboard.html',
-  '/projects': 'client/projects.html',
-  '/review': 'client/review.html',
-  '/chat': 'client/chat.html',
+  '/portal': 'portal.html',           // UNIFIED portal for ALL roles
+  '/dashboard': 'portal.html',        // Dashboard redirects to unified portal
+  '/admin': 'portal.html',            // Admin now uses unified portal
+  '/editor': 'portal.html',           // Editor now uses unified portal
+  '/team': 'portal.html',             // Team management in unified portal
+  '/projects': 'portal.html',         // Projects view in unified portal
+  '/review': 'client/review.html',    // Dedicated review player still separate
+  '/chat': 'portal.html',             // Chat dock is now in unified portal
   '/step-1-create-account': 'client/step-1.html',
   '/step-2-style-blueprint': 'client/step-2.html',
   '/blueprint-builder': 'client/step-2-builder.html',
   '/step-3-submit-project': 'client/step-3.html',
-  '/admin': 'admin/admin.html',
-  '/editor': 'admin/admin.html', // Editors use same admin page with role-based UI
   '/account': 'client/account.html',
-  '/settings': 'client/settings.html',
-  '/team': 'admin/team.html',
+  '/settings': 'client/account.html', // Settings now in account page
   '/book-call': 'client/book-call.html',
   '/onboarding-complete': 'client/onboarding-complete.html'
 };
