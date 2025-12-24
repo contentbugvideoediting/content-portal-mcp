@@ -239,7 +239,7 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.3.3',
+  version: 'production-2.4.0',
   auth: true,
   portal: true,
   drive: {
@@ -3979,12 +3979,572 @@ app.post('/api/chat/channels', requireAuth(), async (req, res) => {
 });
 
 // ============================================
+// PART A: SAMPLE DATA PURGE SYSTEM
+// ============================================
+
+// Tables that can contain sample data
+const PURGEABLE_TABLES = [
+  'Projects',
+  'Chat-Channels',
+  'Chat-Messages',
+  'Style-Blueprints',
+  'Client_Raw_Thumbnails',
+  'Project_Thumbnails',
+  'Creator_Profile_Stats',
+  'Creator_Analysis_Reports',
+  'Seed_Creators',
+  'Thumbnail_Intelligence',
+  'Thumbnail_Patterns'
+];
+
+// Helper to delete records from a table with isSample=true
+async function purgeTableSampleData(table) {
+  try {
+    const records = await airtableQuery(table, `{isSample}=TRUE()`, { maxRecords: 100 });
+    if (!records.records?.length) {
+      return { table, deleted: 0, status: 'no_samples' };
+    }
+
+    let deleted = 0;
+    for (const record of records.records) {
+      try {
+        const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(table)}/${record.id}`;
+        await axios.delete(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
+        deleted++;
+      } catch (e) {
+        console.warn(`[Purge] Failed to delete ${record.id} from ${table}:`, e.message);
+      }
+    }
+    return { table, deleted, status: 'purged' };
+  } catch (err) {
+    return { table, deleted: 0, status: 'error', error: err.message };
+  }
+}
+
+// POST /admin/purge-sample-data - Purge all sample data (owner only)
+app.post('/admin/purge-sample-data', requireAuth(['owner']), async (req, res) => {
+  try {
+    const { confirmation } = req.body;
+
+    if (confirmation !== 'PURGE SAMPLE DATA') {
+      return res.status(400).json({
+        error: 'confirmation_required',
+        message: 'Must type "PURGE SAMPLE DATA" to confirm'
+      });
+    }
+
+    // Log the purge action
+    await airtableCreate('AuthAuditLog', {
+      EventType: 'sample_data_purge',
+      Email: req.user.email,
+      IP: req.ip,
+      UserAgent: req.get('user-agent'),
+      Success: true,
+      Details: JSON.stringify({ tables: PURGEABLE_TABLES, initiatedAt: new Date().toISOString() }),
+      Timestamp: new Date().toISOString()
+    });
+
+    const results = [];
+    for (const table of PURGEABLE_TABLES) {
+      const result = await purgeTableSampleData(table);
+      results.push(result);
+    }
+
+    // Also cleanup stale sessions (older than 14 days)
+    const staleDate = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+    const staleSessions = await airtableQuery('AuthSessions',
+      `IS_BEFORE({CreatedAt}, '${staleDate}')`, { maxRecords: 100 });
+    let staleDeleted = 0;
+    for (const session of (staleSessions.records || [])) {
+      try {
+        const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/AuthSessions/${session.id}`;
+        await axios.delete(url, { headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` } });
+        staleDeleted++;
+      } catch (e) {}
+    }
+    results.push({ table: 'AuthSessions', deleted: staleDeleted, status: 'stale_cleanup' });
+
+    return res.json({
+      success: true,
+      message: 'Sample data purge complete',
+      results,
+      totalDeleted: results.reduce((sum, r) => sum + r.deleted, 0)
+    });
+
+  } catch (err) {
+    console.error('[Purge] Error:', err);
+    return res.status(500).json({ error: 'purge_failed', message: err.message });
+  }
+});
+
+// GET /admin/sample-data-count - Preview what would be purged
+app.get('/admin/sample-data-count', requireAuth(['owner']), async (req, res) => {
+  try {
+    const counts = [];
+    for (const table of PURGEABLE_TABLES) {
+      try {
+        const records = await airtableQuery(table, `{isSample}=TRUE()`, { maxRecords: 1000 });
+        counts.push({ table, count: records.records?.length || 0 });
+      } catch (e) {
+        counts.push({ table, count: 0, error: e.message });
+      }
+    }
+    return res.json({ counts, total: counts.reduce((s, c) => s + c.count, 0) });
+  } catch (err) {
+    return res.status(500).json({ error: 'count_failed', message: err.message });
+  }
+});
+
+// ============================================
+// PART B: TEAM PORTAL + UNIFIED ROUTING
+// ============================================
+
+// GET /api/team/members - Get all team members (for assignment board)
+app.get('/api/team/members', requireAuth(['editor', 'admin', 'owner']), async (req, res) => {
+  try {
+    const { activeOnly } = req.query;
+    let filter = '';
+    if (activeOnly === 'true') {
+      filter = `{Active}=TRUE()`;
+    }
+
+    const result = await airtableQuery('Team', filter, {
+      maxRecords: 100,
+      sort: [{ field: 'Name', direction: 'asc' }]
+    });
+
+    const members = result.records.map(r => ({
+      id: r.id,
+      name: r.fields.Name,
+      email: r.fields.Email,
+      role: r.fields.Role,
+      avatarURL: r.fields.AvatarURL,
+      specialization: r.fields.Specialization,
+      activeProjectCount: r.fields.ActiveProjectCount || 0,
+      avgTurnaroundScore: r.fields.AvgTurnaroundScore || 0,
+      avgQualityScore: r.fields.AvgQualityScore || 0,
+      lateProjectCount: r.fields.LateProjectCount || 0,
+      activeClients: r.fields.ActiveClients || 0,
+      currentPayout: r.fields.CurrentPayout || 0,
+      lastActiveAt: r.fields.LastActiveAt,
+      active: r.fields.Active !== false
+    }));
+
+    return res.json({ members });
+  } catch (err) {
+    console.error('[Team] Members fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// GET /api/team/unassigned-clients - Get clients without an assigned editor
+app.get('/api/team/unassigned-clients', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    // Get contacts where EditorAssigned is empty
+    const result = await airtableQuery('Contacts',
+      `AND({EditorAssigned}='', OR({Plan}!='', {Entitlement Status}='active'))`,
+      { maxRecords: 100, sort: [{ field: 'CreatedAt', direction: 'desc' }] }
+    );
+
+    const clients = result.records.map(r => ({
+      id: r.id,
+      name: r.fields['Contact Name'] || r.fields.Email?.split('@')[0],
+      email: r.fields.Email,
+      plan: r.fields.Plan || 'Free Trial',
+      avatarURL: r.fields.AvatarURL,
+      projectsSubmitted: r.fields.ProjectsSubmitted || 0,
+      lastActiveAt: r.fields.LastActiveAt,
+      createdAt: r.fields.CreatedAt
+    }));
+
+    return res.json({ clients });
+  } catch (err) {
+    console.error('[Team] Unassigned clients error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// GET /api/team/editor/:editorId/clients - Get clients assigned to an editor
+app.get('/api/team/editor/:editorId/clients', requireAuth(['editor', 'admin', 'owner']), async (req, res) => {
+  try {
+    const { editorId } = req.params;
+
+    // If editor, only allow viewing own clients
+    if (req.user.role === 'editor' && req.user.userRecordId !== editorId) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    const result = await airtableQuery('Contacts',
+      `{EditorAssignedId}='${editorId}'`,
+      { maxRecords: 100, sort: [{ field: 'Contact Name', direction: 'asc' }] }
+    );
+
+    const clients = result.records.map(r => ({
+      id: r.id,
+      name: r.fields['Contact Name'] || r.fields.Email?.split('@')[0],
+      email: r.fields.Email,
+      plan: r.fields.Plan || 'Free Trial',
+      avatarURL: r.fields.AvatarURL,
+      projectsSubmitted: r.fields.ProjectsSubmitted || 0,
+      lastActiveAt: r.fields.LastActiveAt
+    }));
+
+    return res.json({ clients });
+  } catch (err) {
+    console.error('[Team] Editor clients error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// POST /api/team/assign-client - Assign a client to an editor
+app.post('/api/team/assign-client', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { clientId, editorId } = req.body;
+
+    if (!clientId || !editorId) {
+      return res.status(400).json({ error: 'missing_fields' });
+    }
+
+    // Get editor info
+    const editor = await airtableQuery('Team', `RECORD_ID()='${editorId}'`, { maxRecords: 1 });
+    if (!editor.records?.[0]) {
+      return res.status(404).json({ error: 'editor_not_found' });
+    }
+
+    // Update client with editor assignment
+    await airtableUpdate('Contacts', clientId, {
+      'EditorAssignedId': editorId,
+      'EditorAssignedEmail': editor.records[0].fields.Email,
+      'EditorAssignedName': editor.records[0].fields.Name
+    });
+
+    // Update editor's active client count
+    const editorClients = await airtableQuery('Contacts', `{EditorAssignedId}='${editorId}'`, { maxRecords: 1000 });
+    await airtableUpdate('Team', editorId, {
+      'ActiveClients': editorClients.records?.length || 0
+    });
+
+    // Create team ops notification (in a team channel if exists)
+    const teamChannel = await airtableQuery('Chat-Channels', `{Name}='#team-ops'`, { maxRecords: 1 });
+    if (teamChannel.records?.[0]) {
+      await airtableCreate('Chat-Messages', {
+        'ChannelID': teamChannel.records[0].fields.ChannelID,
+        'SenderID': 'system',
+        'SenderName': 'Content Bug',
+        'SenderRole': 'system',
+        'Content': `${req.user.name || req.user.email} assigned client to ${editor.records[0].fields.Name}`,
+        'Type': 'system',
+        'CreatedAt': new Date().toISOString()
+      });
+    }
+
+    return res.json({ success: true, message: 'Client assigned' });
+  } catch (err) {
+    console.error('[Team] Assign client error:', err);
+    return res.status(500).json({ error: 'assign_failed', message: err.message });
+  }
+});
+
+// ============================================
+// PART C: KANBAN BOARD ENDPOINTS
+// ============================================
+
+// Project status constants for Kanban columns
+const KANBAN_COLUMNS = {
+  'queued': { label: 'Project Queue', order: 1 },
+  'in_edit': { label: 'In Progress', order: 2 },
+  'review_ready': { label: 'Needs Review', order: 3 },
+  'revisions': { label: 'In Revision', order: 4 },
+  'approved': { label: 'Approved Edits', order: 5 },
+  'delivered': { label: 'Delivered', order: 6 }
+};
+
+// Editor-allowed status transitions
+const EDITOR_TRANSITIONS = {
+  'queued': ['in_edit'],
+  'in_edit': ['review_ready'],
+  'review_ready': ['revisions'], // Only if client requests
+  'revisions': ['review_ready']
+};
+
+// GET /api/kanban/projects - Get projects organized by Kanban columns
+app.get('/api/kanban/projects', requireAuth(), async (req, res) => {
+  try {
+    const user = req.user;
+    const { editorId, clientId, status } = req.query;
+
+    let filter = '';
+
+    // Role-based filtering
+    if (user.role === 'client') {
+      // Clients only see their own projects
+      filter = `{ClientEmail}='${user.email}'`;
+    } else if (user.role === 'editor') {
+      // Editors see projects assigned to them
+      filter = `{AssignedEditorId}='${user.userRecordId}'`;
+    } else {
+      // Admin/Owner see all, but can filter
+      if (editorId) {
+        filter = `{AssignedEditorId}='${editorId}'`;
+      }
+      if (clientId) {
+        filter = filter ? `AND(${filter}, {ClientId}='${clientId}')` : `{ClientId}='${clientId}'`;
+      }
+    }
+
+    // Status filter
+    if (status) {
+      const statusFilter = `{Status}='${status}'`;
+      filter = filter ? `AND(${filter}, ${statusFilter})` : statusFilter;
+    }
+
+    // Exclude archived
+    const archiveFilter = `{Status}!='archived'`;
+    filter = filter ? `AND(${filter}, ${archiveFilter})` : archiveFilter;
+
+    const result = await airtableQuery('Projects', filter, {
+      maxRecords: 200,
+      sort: [{ field: 'CreatedAt', direction: 'desc' }]
+    });
+
+    // Organize by columns
+    const columns = {};
+    Object.keys(KANBAN_COLUMNS).forEach(status => {
+      columns[status] = {
+        ...KANBAN_COLUMNS[status],
+        projects: []
+      };
+    });
+
+    // Get blueprint data for tier calculation
+    for (const record of result.records || []) {
+      const fields = record.fields;
+      const status = fields.Status || 'queued';
+
+      // Calculate if late
+      const editorDueDate = fields['Editor Due Date'] ? new Date(fields['Editor Due Date']) : null;
+      const isLate = editorDueDate && new Date() > editorDueDate && !['approved', 'delivered', 'archived'].includes(status);
+      const daysLate = isLate ? Math.ceil((new Date() - editorDueDate) / (1000 * 60 * 60 * 24)) : 0;
+
+      // Revision risk flag
+      const revisionCount = fields['Revision Round Count'] || 0;
+      const revisionFlag = revisionCount >= 6 ? 'critical' : revisionCount >= 4 ? 'warning' : 'normal';
+
+      const project = {
+        id: record.id,
+        uuid: fields['Project UUID'],
+        title: fields['Project Name'] || 'Untitled Project',
+        status: status,
+        projectType: fields['Project Format'] === 'long' ? 'Long-Form' : 'Short',
+        tier: fields['Project Tier'] || 'tier_2',
+        blueprintName: fields['Blueprint Name'] || null,
+        assignedEditor: fields['AssignedEditorName'] || null,
+        assignedEditorId: fields['AssignedEditorId'] || null,
+        dateSubmitted: fields.CreatedAt ? new Date(fields.CreatedAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : null,
+        eta: fields.ETA ? new Date(fields.ETA).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : null,
+        editorDueDate: fields['Editor Due Date'] ? new Date(fields['Editor Due Date']).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : null,
+        thumbnailURL: fields.ThumbnailURL,
+        revisionCount,
+        revisionFlag,
+        isLate,
+        daysLate,
+        clientName: fields['ClientName'],
+        clientEmail: fields['ClientEmail']
+      };
+
+      if (columns[status]) {
+        columns[status].projects.push(project);
+      } else {
+        // Fallback to queued for unknown statuses
+        columns['queued'].projects.push(project);
+      }
+    }
+
+    return res.json({ columns, userRole: user.role });
+  } catch (err) {
+    console.error('[Kanban] Projects error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// PATCH /api/kanban/project/:id/status - Update project status (drag-drop)
+app.patch('/api/kanban/project/:id/status', requireAuth(['editor', 'admin', 'owner']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newStatus, reason } = req.body;
+    const user = req.user;
+
+    // Validate status
+    if (!KANBAN_COLUMNS[newStatus]) {
+      return res.status(400).json({ error: 'invalid_status', message: 'Status not recognized' });
+    }
+
+    // Get current project
+    const project = await airtableQuery('Projects', `RECORD_ID()='${id}'`, { maxRecords: 1 });
+    if (!project.records?.[0]) {
+      return res.status(404).json({ error: 'project_not_found' });
+    }
+
+    const currentStatus = project.records[0].fields.Status || 'queued';
+
+    // Editor permission check
+    if (user.role === 'editor') {
+      // Check if editor is assigned to this project
+      if (project.records[0].fields.AssignedEditorId !== user.userRecordId) {
+        return res.status(403).json({ error: 'not_assigned', message: 'You are not assigned to this project' });
+      }
+
+      // Check if transition is allowed for editors
+      const allowedTransitions = EDITOR_TRANSITIONS[currentStatus] || [];
+      if (!allowedTransitions.includes(newStatus)) {
+        return res.status(403).json({
+          error: 'transition_not_allowed',
+          message: `Editors cannot move from ${currentStatus} to ${newStatus}`
+        });
+      }
+
+      // Editors cannot approve - that's client action only
+      if (newStatus === 'approved') {
+        return res.status(403).json({ error: 'approval_requires_client' });
+      }
+    }
+
+    // Update status
+    const updateFields = {
+      'Status': newStatus,
+      'StatusUpdatedAt': new Date().toISOString(),
+      'StatusUpdatedBy': user.email
+    };
+
+    // Add to revision history if moving to revisions
+    if (newStatus === 'revisions') {
+      const currentHistory = project.records[0].fields['Revision History'] || '[]';
+      let history = [];
+      try { history = JSON.parse(currentHistory); } catch(e) {}
+      history.push({
+        timestamp: new Date().toISOString(),
+        by: user.email,
+        reason: reason || 'Revision requested'
+      });
+      updateFields['Revision History'] = JSON.stringify(history);
+      updateFields['Revision Round Count'] = (project.records[0].fields['Revision Round Count'] || 0) + 1;
+    }
+
+    await airtableUpdate('Projects', id, updateFields);
+
+    // Log the transition
+    await airtableCreate('Errors', {
+      ErrorID: `status_change_${Date.now()}`,
+      Timestamp: new Date().toISOString(),
+      UserRole: user.role,
+      UserID: user.email,
+      Context: 'kanban_status_change',
+      Message: `Project ${id} moved from ${currentStatus} to ${newStatus}`,
+      Page: '/team'
+    });
+
+    return res.json({
+      success: true,
+      previousStatus: currentStatus,
+      newStatus,
+      message: `Project moved to ${KANBAN_COLUMNS[newStatus].label}`
+    });
+  } catch (err) {
+    console.error('[Kanban] Status update error:', err);
+    return res.status(500).json({ error: 'update_failed', message: err.message });
+  }
+});
+
+// POST /api/kanban/project/:id/approve - Client approves project
+app.post('/api/kanban/project/:id/approve', requireAuth(), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { qualityRating } = req.body;
+    const user = req.user;
+
+    // Get project
+    const project = await airtableQuery('Projects', `RECORD_ID()='${id}'`, { maxRecords: 1 });
+    if (!project.records?.[0]) {
+      return res.status(404).json({ error: 'project_not_found' });
+    }
+
+    // Verify client owns this project
+    if (user.role === 'client' && project.records[0].fields.ClientEmail !== user.email) {
+      return res.status(403).json({ error: 'not_your_project' });
+    }
+
+    // Must be in review_ready status
+    if (project.records[0].fields.Status !== 'review_ready') {
+      return res.status(400).json({ error: 'not_in_review', message: 'Project must be in review to approve' });
+    }
+
+    await airtableUpdate('Projects', id, {
+      'Status': 'approved',
+      'QualityScore': qualityRating || null,
+      'ApprovedAt': new Date().toISOString(),
+      'ApprovedBy': user.email
+    });
+
+    return res.json({ success: true, showConfetti: true, message: 'Project approved!' });
+  } catch (err) {
+    console.error('[Kanban] Approve error:', err);
+    return res.status(500).json({ error: 'approve_failed', message: err.message });
+  }
+});
+
+// GET /api/team/stats - Get team-wide stats for dashboard
+app.get('/api/team/stats', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    // Get counts by status
+    const allProjects = await airtableQuery('Projects', `{Status}!='archived'`, { maxRecords: 1000 });
+
+    const statusCounts = {};
+    Object.keys(KANBAN_COLUMNS).forEach(s => statusCounts[s] = 0);
+
+    let lateCount = 0;
+    let atRiskCount = 0;
+
+    for (const r of allProjects.records || []) {
+      const status = r.fields.Status || 'queued';
+      if (statusCounts[status] !== undefined) statusCounts[status]++;
+
+      // Check SLA
+      const editorDue = r.fields['Editor Due Date'] ? new Date(r.fields['Editor Due Date']) : null;
+      if (editorDue && !['approved', 'delivered', 'archived'].includes(status)) {
+        if (new Date() > editorDue) lateCount++;
+        else if (new Date() > new Date(editorDue.getTime() - 24 * 60 * 60 * 1000)) atRiskCount++;
+      }
+    }
+
+    // Get unassigned clients count
+    const unassigned = await airtableQuery('Contacts',
+      `AND({EditorAssignedId}='', OR({Plan}!='', {Entitlement Status}='active'))`,
+      { maxRecords: 100 });
+
+    // Get active editors count
+    const editors = await airtableQuery('Team', `AND({Role}='editor', {Active}=TRUE())`, { maxRecords: 50 });
+
+    return res.json({
+      statusCounts,
+      lateCount,
+      atRiskCount,
+      unassignedClientsCount: unassigned.records?.length || 0,
+      activeEditorsCount: editors.records?.length || 0,
+      totalActiveProjects: allProjects.records?.length || 0
+    });
+  } catch (err) {
+    console.error('[Team] Stats error:', err);
+    return res.status(500).json({ error: 'stats_failed', message: err.message });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 
 app.listen(PORT, () => {
   console.log(`\n${'='.repeat(50)}`);
-  console.log(`ContentBug Production MCP Server v2.3.3`);
+  console.log(`ContentBug Production MCP Server v2.4.0`);
   console.log(`${'='.repeat(50)}`);
   console.log(`Port: ${PORT}`);
   console.log(`Environment: ${IS_PRODUCTION ? 'PRODUCTION' : 'development'}`);
