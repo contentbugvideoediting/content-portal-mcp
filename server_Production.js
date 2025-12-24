@@ -1,6 +1,7 @@
 // server_Production.js
-// ContentBug Production MCP Server v2.3.1
+// ContentBug Production MCP Server v2.3.2
 // Handles: Make webhooks, Claude/OpenAI AI, Airtable storage, GHL forwarding, chat, auth, Google Drive, Apify Research, Creator Intelligence
+// v2.3.2: Added DEV_AUTH_BYPASS for founder testing (sean@contentbug.io only)
 // v2.3.1: Improved OTP delivery with GHL API direct email + webhook fallback
 // Deploy to Railway - runs 24/7
 
@@ -192,6 +193,12 @@ const GHL_PRIVATE_TOKEN = process.env.GHL_PRIVATE_INTEGRATION || '';
 // Email delivery debug mode (set EMAIL_DELIVERY_DEBUG=true to log OTP)
 const EMAIL_DELIVERY_DEBUG = process.env.EMAIL_DELIVERY_DEBUG === 'true';
 
+// DEV AUTH BYPASS - FOUNDER ONLY (sean@contentbug.io)
+// Set DEV_AUTH_BYPASS=true in Railway to enable, false to disable (default)
+const DEV_AUTH_BYPASS = process.env.DEV_AUTH_BYPASS === 'true';
+const DEV_BYPASS_EMAIL = 'sean@contentbug.io';
+const DEV_BYPASS_CODE = '000000';
+
 // Admin notification emails for OTP requests
 const OTP_NOTIFY_EMAILS = ['stockton@contentbug.io', 'sean@contentbug.io'];
 
@@ -232,7 +239,7 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.3.1',
+  version: 'production-2.3.2',
   auth: true,
   portal: true,
   drive: {
@@ -246,7 +253,8 @@ app.get('/healthz', (req, res) => res.json({
   otp: {
     ghl_api: !!GHL_API_KEY && !!GHL_LOCATION_ID,
     ghl_webhook: !!GHL_WEBHOOK_URL,
-    debug_mode: EMAIL_DELIVERY_DEBUG
+    debug_mode: EMAIL_DELIVERY_DEBUG,
+    dev_bypass: DEV_AUTH_BYPASS
   }
 }));
 
@@ -551,6 +559,28 @@ app.post('/auth/request-code', authRequestLimiter, authEmailLimiter, async (req,
 
     const normalizedEmail = email.toLowerCase().trim();
 
+    // DEV BYPASS: Sean-only bypass when DEV_AUTH_BYPASS=true
+    if (DEV_AUTH_BYPASS && normalizedEmail === DEV_BYPASS_EMAIL) {
+      console.log(`[DEV BYPASS] Auth bypass triggered for ${normalizedEmail}`);
+
+      // Log bypass event
+      await logAuthEvent('auth_bypass_request', {
+        email: normalizedEmail,
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        success: true,
+        extra: { bypass_type: 'dev_founder' }
+      });
+
+      return res.json({
+        success: true,
+        bypass: true,
+        message: 'Dev bypass enabled - use code 000000',
+        code_hint: 'Use 000000',
+        expires_in: 600000
+      });
+    }
+
     // Generate OTP
     const otp = generateOTP();
     const otpHash = await hashValue(otp);
@@ -732,6 +762,79 @@ app.post('/auth/verify-code', authVerifyLimiter, async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
     const normalizedCode = String(code).replace(/\s/g, '');
+
+    // DEV BYPASS: Sean-only bypass when DEV_AUTH_BYPASS=true and code is 000000
+    if (DEV_AUTH_BYPASS && normalizedEmail === DEV_BYPASS_EMAIL && normalizedCode === DEV_BYPASS_CODE) {
+      console.log(`[DEV BYPASS] Auth bypass verify for ${normalizedEmail}`);
+
+      // Get or create Sean's user record
+      let userRecordId = null;
+      let userRole = 'owner';
+      let userName = 'Sean Conley';
+
+      const contacts = await airtableQuery('Contacts', `{Email}='${normalizedEmail}'`, { maxRecords: 1 });
+      if (contacts.records?.[0]) {
+        userRecordId = contacts.records[0].id;
+        userName = contacts.records[0].fields?.['Contact Name'] || 'Sean Conley';
+      } else {
+        // Check Team table
+        const team = await airtableQuery('Team', `{Email}='${normalizedEmail}'`, { maxRecords: 1 });
+        if (team.records?.[0]) {
+          userRecordId = team.records[0].id;
+          userRole = team.records[0].fields?.Role || 'owner';
+          userName = team.records[0].fields?.Name || 'Sean Conley';
+        }
+      }
+
+      // Create session
+      const sessionToken = generateSessionToken();
+      const sessionExpiresAt = new Date(Date.now() + SESSION_MAX_AGE_MS).toISOString();
+
+      await airtableCreate('AuthSessions', {
+        SessionToken: sessionToken,
+        UserID: normalizedEmail,
+        UserRecordID: userRecordId,
+        Email: normalizedEmail,
+        Role: userRole,
+        ExpiresAt: sessionExpiresAt,
+        LastActivity: new Date().toISOString(),
+        IP: req.ip,
+        UserAgent: req.get('User-Agent'),
+        CreatedAt: new Date().toISOString()
+      });
+
+      // Set session cookie
+      res.cookie('cb_session', sessionToken, {
+        httpOnly: true,
+        secure: IS_PRODUCTION,
+        signed: true,
+        sameSite: IS_PRODUCTION ? 'none' : 'lax',
+        maxAge: SESSION_MAX_AGE_MS,
+        domain: IS_PRODUCTION ? '.contentbug.io' : undefined
+      });
+
+      // Log bypass login
+      await logAuthEvent('auth_bypass_used', {
+        email: normalizedEmail,
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        success: true,
+        extra: { bypass_type: 'dev_founder', role: userRole }
+      });
+
+      return res.json({
+        success: true,
+        bypass: true,
+        user: {
+          email: normalizedEmail,
+          name: userName,
+          role: userRole,
+          record_id: userRecordId
+        },
+        is_new_user: false,
+        session_expires_at: sessionExpiresAt
+      });
+    }
 
     // Find latest unused OTP for this email
     const otps = await airtableQuery('AuthOTPs',
