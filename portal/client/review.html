@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cutroom — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/_tokens.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Unified Token System */
+            --bg-base: #050508;
+            --bg-elevated: #0a0a0f;
+            --bg-surface: #0f0f14;
+            --bg-card: #101015;
+            --bg-hover: #16161c;
+            --bg-active: #1c1c24;
+
+            --border-subtle: rgba(59, 130, 246, 0.08);
+            --border-default: rgba(59, 130, 246, 0.12);
+            --border-strong: rgba(59, 130, 246, 0.2);
+
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --text-faint: #475569;
+
+            /* Accent Colors */
+            --accent-blue: #3b82f6;
+            --accent-blue-soft: rgba(59,130,246,0.12);
+            --accent-green: #22c55e;
+            --accent-green-soft: rgba(34,197,94,0.12);
+            --accent-orange: #f59e0b;
+            --accent-orange-soft: rgba(245,158,11,0.12);
+            --accent-red: #ef4444;
+            --accent-red-soft: rgba(239,68,68,0.12);
+            --accent-purple: #a855f7;
+            --accent-purple-soft: rgba(168,85,247,0.12);
+            --accent-yellow: #eab308;
+            --accent-yellow-soft: rgba(234,179,8,0.12);
+
+            /* Feedback Colors */
+            --feedback-cut: #ef4444;
+            --feedback-change: #f59e0b;
+            --feedback-love: #22c55e;
+            --feedback-note: #3b82f6;
+
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 24px;
+            --space-2xl: 32px;
+
+            /* Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+
+            /* Layout */
+            --header-height: 56px;
+            --panel-width: 360px;
+
+            /* Animation */
+            --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg-base);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ==================== APP LAYOUT ==================== */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ==================== HEADER ==================== */
+        .cutroom-header {
+            height: var(--header-height);
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-lg);
+            gap: var(--space-lg);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .back-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .back-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .project-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .project-badge {
+            padding: 4px 10px;
+            background: var(--accent-purple-soft);
+            border-radius: var(--radius-sm);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-purple);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .header-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .header-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .header-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .approve-btn {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #16a34a 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .approve-btn:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+        }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .cutroom-main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ==================== VIDEO AREA ==================== */
+        .video-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            position: relative;
+        }
+
+        .video-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            object-fit: contain;
+        }
+
+        /* Video Controls */
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--space-lg);
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            opacity: 0;
+            transition: opacity 0.3s var(--ease-out);
+        }
+
+        .video-area:hover .video-controls {
+            opacity: 1;
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .play-btn svg {
+            width: 18px;
+            height: 18px;
+            margin-left: 2px;
+        }
+
+        .time-display {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timeline-wrapper {
+            flex: 1;
+            position: relative;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .timeline-track {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            transform: translateY(-50%);
+        }
+
+        .timeline-progress {
+            height: 100%;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            width: 35%;
+            transition: width 0.1s linear;
+        }
+
+        .timeline-handle {
+            position: absolute;
+            top: 50%;
+            left: 35%;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            cursor: grab;
+        }
+
+        /* Timeline Markers */
+        .timeline-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .marker-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .timeline-marker:hover .marker-dot {
+            transform: scale(1.3);
+        }
+
+        .marker-dot.cut { background: var(--feedback-cut); }
+        .marker-dot.change { background: var(--feedback-change); }
+        .marker-dot.love { background: var(--feedback-love); }
+        .marker-dot.note { background: var(--feedback-note); }
+
+        .marker-preview {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .timeline-marker:hover .marker-preview {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .volume-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--space-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .volume-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .fullscreen-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--space-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s var(--ease-out);
+        }
+
+        .fullscreen-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .fullscreen-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==================== FEEDBACK PANEL ==================== */
+        .feedback-panel {
+            width: var(--panel-width);
+            background: var(--bg-elevated);
+            border-left: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .panel-tabs {
+            display: flex;
+            gap: var(--space-xs);
+            background: var(--bg-surface);
+            padding: var(--space-xs);
+            border-radius: var(--radius-md);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: var(--space-sm) var(--space-md);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .panel-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .panel-tab.active {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .panel-tab .tab-count {
+            margin-left: var(--space-xs);
+            padding: 2px 6px;
+            background: var(--accent-red);
+            border-radius: 10px;
+            font-size: 10px;
+            color: white;
+        }
+
+        /* Feedback List */
+        .feedback-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+        }
+
+        .feedback-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            overflow: hidden;
+            transition: all 0.3s var(--ease-out);
+            animation: feedbackSlideIn 0.3s var(--ease-out);
+        }
+
+        @keyframes feedbackSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-item.resolved {
+            opacity: 0.5;
+        }
+
+        .feedback-item.resolved .feedback-content {
+            text-decoration: line-through;
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            cursor: pointer;
+        }
+
+        .feedback-type {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .feedback-type.cut { background: var(--feedback-cut); }
+        .feedback-type.change { background: var(--feedback-change); }
+        .feedback-type.love { background: var(--feedback-love); }
+        .feedback-type.note { background: var(--feedback-note); }
+
+        .feedback-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .feedback-content {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .feedback-resolve {
+            width: 24px;
+            height: 24px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .feedback-resolve:hover {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .feedback-resolve svg {
+            width: 12px;
+            height: 12px;
+            color: var(--text-muted);
+        }
+
+        .feedback-resolve:hover svg {
+            color: white;
+        }
+
+        .feedback-item.resolved .feedback-resolve {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .feedback-item.resolved .feedback-resolve svg {
+            color: white;
+        }
+
+        /* Add Feedback */
+        .add-feedback {
+            padding: var(--space-md);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .feedback-type-selector {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .type-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .type-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .type-btn.active {
+            border-color: currentColor;
+        }
+
+        .type-btn.cut { color: var(--feedback-cut); }
+        .type-btn.cut.active { background: var(--accent-red-soft); }
+        .type-btn.change { color: var(--feedback-change); }
+        .type-btn.change.active { background: var(--accent-orange-soft); }
+        .type-btn.love { color: var(--feedback-love); }
+        .type-btn.love.active { background: var(--accent-green-soft); }
+        .type-btn.note { color: var(--feedback-note); }
+        .type-btn.note.active { background: var(--accent-blue-soft); }
+
+        .type-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .type-btn span {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .feedback-input-wrapper {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .feedback-input {
+            flex: 1;
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: var(--text-primary);
+            outline: none;
+            resize: none;
+            min-height: 44px;
+            transition: border-color 0.2s var(--ease-out);
+        }
+
+        .feedback-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .feedback-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .feedback-submit {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .feedback-submit:hover {
+            background: #2563eb;
+        }
+
+        .feedback-submit:disabled {
+            background: var(--bg-active);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .feedback-submit svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Progress Stats */
+        .progress-stats {
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .progress-label span:first-child {
+            color: var(--text-muted);
+        }
+
+        .progress-label span:last-child {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-hover);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), #4ade80);
+            border-radius: 3px;
+            transition: width 0.5s var(--ease-out);
+        }
+
+        /* ==================== APPROVAL MODAL ==================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s var(--ease-out);
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s var(--ease-spring);
+            text-align: center;
+        }
+
+        .modal-overlay.visible .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-green-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+        }
+
+        .modal-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-green);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Rating */
+        .rating-section {
+            margin-bottom: var(--space-xl);
+        }
+
+        .rating-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .rating-star {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .rating-star:hover,
+        .rating-star.active {
+            background: var(--accent-yellow-soft);
+            border-color: var(--accent-yellow);
+        }
+
+        .rating-star svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .rating-star:hover svg,
+        .rating-star.active svg {
+            color: var(--accent-yellow);
+            fill: var(--accent-yellow);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #16a34a 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+        }
+
+        /* ==================== POST KIT PANEL ==================== */
+        .post-kit-panel {
+            display: none;
+            padding: var(--space-lg);
+        }
+
+        .post-kit-panel.visible {
+            display: block;
+        }
+
+        .post-kit-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+        }
+
+        .platform-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .platform-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .platform-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .platform-btn.selected {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-soft);
+        }
+
+        .platform-btn svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-muted);
+        }
+
+        .platform-btn.selected svg {
+            color: var(--accent-blue);
+        }
+
+        .platform-btn span {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .caption-section {
+            margin-bottom: var(--space-lg);
+        }
+
+        .caption-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .caption-box {
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: var(--space-sm);
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-blue-soft);
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #2563eb 100%);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            transition: all 0.3s var(--ease-out);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .download-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==================== CONFETTI ==================== */
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            opacity: 0;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+            }
+        }
+
+        /* Celebrate Toggle in Settings */
+        .celebrate-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .celebrate-toggle:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .celebrate-toggle.active {
+            background: var(--accent-green-soft);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .celebrate-toggle svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .feedback-panel {
+                position: fixed;
+                top: var(--header-height);
+                right: 0;
+                bottom: 0;
+                z-index: 50;
+                transform: translateX(100%);
+            }
+
+            .feedback-panel.visible {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cutroom-header {
+                padding: 0 var(--space-md);
+            }
+
+            .project-title {
+                display: none;
+            }
+
+            .header-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="cutroom-header">
+            <a href="https://app.contentbug.io/dashboard" class="back-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                Back
+            </a>
+            <div class="project-info">
+                <h1 class="project-title" id="projectTitle">Behind the Scenes: My Morning Routine</h1>
+                <span class="project-badge">Ready for Review</span>
+            </div>
+            <div class="header-actions">
+                <button class="celebrate-toggle" id="celebrateToggle" onclick="toggleCelebrate()" title="Toggle confetti on approval" aria-label="Toggle celebration confetti" aria-pressed="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"/></svg>
+                </button>
+                <button class="header-btn" onclick="requestRevisions()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>Request Revisions</span>
+                </button>
+                <button class="header-btn approve-btn" onclick="openApprovalModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Approve</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="cutroom-main">
+            <!-- Video Area -->
+            <div class="video-area">
+                <div class="video-container">
+                    <div class="video-wrapper">
+                        <video class="video-player" id="videoPlayer" poster="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/placeholder.jpg">
+                            <source src="" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <div class="controls-row">
+                        <button class="play-btn" id="playBtn" onclick="togglePlay()">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </button>
+                        <span class="time-display" id="currentTime">0:00</span>
+                        <div class="timeline-wrapper" id="timeline" onclick="seekVideo(event)">
+                            <div class="timeline-track">
+                                <div class="timeline-progress" id="timelineProgress"></div>
+                            </div>
+                            <div class="timeline-handle" id="timelineHandle"></div>
+                            <div class="timeline-markers" id="timelineMarkers">
+                                <div class="timeline-marker" style="left: 15%">
+                                    <div class="marker-dot cut"></div>
+                                    <div class="marker-preview">Cut this section</div>
+                                </div>
+                                <div class="timeline-marker" style="left: 35%">
+                                    <div class="marker-dot change"></div>
+                                    <div class="marker-preview">Change music here</div>
+                                </div>
+                                <div class="timeline-marker" style="left: 65%">
+                                    <div class="marker-dot love"></div>
+                                    <div class="marker-preview">Love this part!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="time-display" id="totalTime">15:42</span>
+                        <div class="volume-control">
+                            <button class="volume-btn" onclick="toggleMute()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            </button>
+                            <input type="range" class="volume-slider" min="0" max="100" value="80">
+                        </div>
+                        <button class="fullscreen-btn" onclick="toggleFullscreen()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Panel -->
+            <aside class="feedback-panel" id="feedbackPanel">
+                <div class="panel-header">
+                    <div class="panel-tabs">
+                        <button class="panel-tab active" data-tab="feedback">
+                            Feedback
+                            <span class="tab-count" id="feedbackCount">3</span>
+                        </button>
+                        <button class="panel-tab" data-tab="postkit">Post Kit</button>
+                    </div>
+                </div>
+
+                <!-- Feedback Tab -->
+                <div class="feedback-list" id="feedbackList">
+                    <div class="feedback-item" data-time="142">
+                        <div class="feedback-header" onclick="seekToTime(142)">
+                            <div class="feedback-type cut"></div>
+                            <span class="feedback-time">2:22</span>
+                            <span class="feedback-content">Cut the awkward pause here, feels too long</span>
+                            <button class="feedback-resolve" onclick="resolveFeedback(event, this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="feedback-item" data-time="330">
+                        <div class="feedback-header" onclick="seekToTime(330)">
+                            <div class="feedback-type change"></div>
+                            <span class="feedback-time">5:30</span>
+                            <span class="feedback-content">Change the background music to something more upbeat</span>
+                            <button class="feedback-resolve" onclick="resolveFeedback(event, this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="feedback-item resolved" data-time="612">
+                        <div class="feedback-header" onclick="seekToTime(612)">
+                            <div class="feedback-type love"></div>
+                            <span class="feedback-time">10:12</span>
+                            <span class="feedback-content">Love this transition! Perfect.</span>
+                            <button class="feedback-resolve" onclick="resolveFeedback(event, this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-stats">
+                    <div class="progress-label">
+                        <span>Feedback resolved</span>
+                        <span id="resolvedCount">1 of 3</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="resolvedProgress" style="width: 33%"></div>
+                    </div>
+                </div>
+
+                <div class="add-feedback">
+                    <div class="feedback-type-selector">
+                        <button class="type-btn cut active" data-type="cut">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+                            <span>Cut</span>
+                        </button>
+                        <button class="type-btn change" data-type="change">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <span>Change</span>
+                        </button>
+                        <button class="type-btn love" data-type="love">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span>Love</span>
+                        </button>
+                        <button class="type-btn note" data-type="note">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>Note</span>
+                        </button>
+                    </div>
+                    <div class="feedback-input-wrapper">
+                        <textarea class="feedback-input" id="feedbackInput" placeholder="Add feedback at current time..." rows="1"></textarea>
+                        <button class="feedback-submit" id="feedbackSubmit" onclick="addFeedback()" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Post Kit Tab -->
+                <div class="post-kit-panel" id="postKitPanel">
+                    <h3 class="post-kit-title">Download & Post</h3>
+                    <div class="platform-buttons">
+                        <button class="platform-btn selected" data-platform="youtube">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            <span>YouTube</span>
+                        </button>
+                        <button class="platform-btn" data-platform="instagram">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg>
+                            <span>Instagram</span>
+                        </button>
+                        <button class="platform-btn" data-platform="tiktok">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                            <span>TikTok</span>
+                        </button>
+                    </div>
+                    <div class="caption-section">
+                        <div class="caption-label">Suggested Caption</div>
+                        <div class="caption-box" id="captionBox">
+                            Ever wonder what my morning routine looks like? Here's a behind-the-scenes look at how I start every day...
+
+#morningroutine #behindthescenes #productivity #contentcreator
+                        </div>
+                        <button class="copy-btn" onclick="copyCaption()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            Copy Caption
+                        </button>
+                    </div>
+                    <button class="download-btn" onclick="downloadVideo()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download Video
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- Approval Modal -->
+    <div class="modal-overlay" id="approvalModal" role="dialog" aria-modal="true" aria-labelledby="approvalModalTitle">
+        <div class="modal-content" role="document">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h2 class="modal-title" id="approvalModalTitle">Approve This Edit?</h2>
+            <p class="modal-subtitle">Rate your experience to help us improve</p>
+
+            <div class="rating-section">
+                <div class="rating-label">How satisfied are you with this edit?</div>
+                <div class="rating-stars" id="ratingStars">
+                    <button class="rating-star" data-rating="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                    <button class="rating-star" data-rating="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                    <button class="rating-star" data-rating="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                    <button class="rating-star" data-rating="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                    <button class="rating-star" data-rating="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeApprovalModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="confirmApproval()">Approve & Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STATE ====================
+        let currentFeedbackType = 'cut';
+        let selectedRating = 0;
+        let isPlaying = false;
+        let celebrateEnabled = localStorage.getItem('cb_celebrate') !== 'false'; // Default true
+
+        // ==================== CELEBRATE TOGGLE ====================
+        function initCelebrateToggle() {
+            const toggle = document.getElementById('celebrateToggle');
+            if (celebrateEnabled) {
+                toggle.classList.add('active');
+            }
+        }
+
+        function toggleCelebrate() {
+            celebrateEnabled = !celebrateEnabled;
+            localStorage.setItem('cb_celebrate', celebrateEnabled);
+            const toggle = document.getElementById('celebrateToggle');
+            toggle.classList.toggle('active', celebrateEnabled);
+            toggle.setAttribute('aria-pressed', celebrateEnabled);
+        }
+
+        // ==================== CONFETTI (FINAL APPROVAL ONLY) ====================
+        function launchConfetti() {
+            // Only launch if celebrate is enabled
+            if (!celebrateEnabled) return;
+
+            // Check for reduced motion preference
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#a855f7', '#ec4899', '#06b6d4'];
+            const shapes = ['square', 'circle'];
+            const pieceCount = 80;
+
+            for (let i = 0; i < pieceCount; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                const size = Math.random() * 8 + 6;
+                const left = Math.random() * 100;
+                const delay = Math.random() * 0.5;
+                const duration = Math.random() * 2 + 2;
+
+                piece.style.cssText = `
+                    left: ${left}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    border-radius: ${shape === 'circle' ? '50%' : '2px'};
+                    animation: confettiFall ${duration}s ease-out ${delay}s forwards;
+                `;
+
+                container.appendChild(piece);
+            }
+
+            // Clean up after animation
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 4000);
+        }
+
+        // ==================== VIDEO CONTROLS ====================
+        function togglePlay() {
+            const video = document.getElementById('videoPlayer');
+            const playBtn = document.getElementById('playBtn');
+
+            if (isPlaying) {
+                video.pause();
+                playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+            } else {
+                video.play();
+                playBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function seekVideo(event) {
+            const timeline = document.getElementById('timeline');
+            const rect = timeline.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            updateTimeline(percent * 100);
+        }
+
+        function updateTimeline(percent) {
+            document.getElementById('timelineProgress').style.width = percent + '%';
+            document.getElementById('timelineHandle').style.left = percent + '%';
+        }
+
+        function seekToTime(seconds) {
+            const video = document.getElementById('videoPlayer');
+            const duration = 942; // 15:42 in seconds
+            const percent = (seconds / duration) * 100;
+            updateTimeline(percent);
+            video.currentTime = seconds;
+        }
+
+        function toggleMute() {
+            const video = document.getElementById('videoPlayer');
+            video.muted = !video.muted;
+        }
+
+        function toggleFullscreen() {
+            const videoArea = document.querySelector('.video-area');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                videoArea.requestFullscreen();
+            }
+        }
+
+        // ==================== FEEDBACK ====================
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFeedbackType = this.dataset.type;
+            });
+        });
+
+        const feedbackInput = document.getElementById('feedbackInput');
+        const feedbackSubmit = document.getElementById('feedbackSubmit');
+
+        feedbackInput.addEventListener('input', function() {
+            feedbackSubmit.disabled = this.value.trim() === '';
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        function addFeedback() {
+            const text = feedbackInput.value.trim();
+            if (!text) return;
+
+            const time = '3:45'; // Current video time
+            const feedbackList = document.getElementById('feedbackList');
+
+            const feedbackHTML = `
+                <div class="feedback-item" data-time="225">
+                    <div class="feedback-header" onclick="seekToTime(225)">
+                        <div class="feedback-type ${currentFeedbackType}"></div>
+                        <span class="feedback-time">${time}</span>
+                        <span class="feedback-content">${escapeHtml(text)}</span>
+                        <button class="feedback-resolve" onclick="resolveFeedback(event, this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            feedbackList.insertAdjacentHTML('beforeend', feedbackHTML);
+            feedbackInput.value = '';
+            feedbackSubmit.disabled = true;
+            updateFeedbackCount();
+        }
+
+        function resolveFeedback(event, btn) {
+            event.stopPropagation();
+            const item = btn.closest('.feedback-item');
+            item.classList.toggle('resolved');
+            updateFeedbackCount();
+        }
+
+        function updateFeedbackCount() {
+            const items = document.querySelectorAll('.feedback-item');
+            const resolved = document.querySelectorAll('.feedback-item.resolved').length;
+            const total = items.length;
+
+            document.getElementById('feedbackCount').textContent = total - resolved;
+            document.getElementById('resolvedCount').textContent = `${resolved} of ${total}`;
+            document.getElementById('resolvedProgress').style.width = (resolved / total * 100) + '%';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== TABS ====================
+        document.querySelectorAll('.panel-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const tabName = this.dataset.tab;
+                if (tabName === 'postkit') {
+                    document.getElementById('feedbackList').style.display = 'none';
+                    document.querySelector('.add-feedback').style.display = 'none';
+                    document.querySelector('.progress-stats').style.display = 'none';
+                    document.getElementById('postKitPanel').classList.add('visible');
+                } else {
+                    document.getElementById('feedbackList').style.display = 'block';
+                    document.querySelector('.add-feedback').style.display = 'block';
+                    document.querySelector('.progress-stats').style.display = 'block';
+                    document.getElementById('postKitPanel').classList.remove('visible');
+                }
+            });
+        });
+
+        // ==================== POST KIT ====================
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        function copyCaption() {
+            const caption = document.getElementById('captionBox').textContent;
+            navigator.clipboard.writeText(caption.trim());
+
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+            setTimeout(() => {
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Caption';
+            }, 2000);
+        }
+
+        function downloadVideo() {
+            // Trigger download
+            alert('Video download started! Your file will be ready shortly.');
+        }
+
+        // ==================== APPROVAL ====================
+        let previousActiveElement = null;
+
+        function openApprovalModal() {
+            previousActiveElement = document.activeElement;
+            const modal = document.getElementById('approvalModal');
+            modal.classList.add('visible');
+
+            // Focus the first button in the modal
+            setTimeout(() => {
+                const firstFocusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (firstFocusable) firstFocusable.focus();
+            }, 100);
+        }
+
+        function closeApprovalModal() {
+            document.getElementById('approvalModal').classList.remove('visible');
+
+            // Return focus to previous element
+            if (previousActiveElement) {
+                previousActiveElement.focus();
+            }
+        }
+
+        // Focus trapping for modal
+        function trapFocus(modal, event) {
+            const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            if (event.shiftKey && document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement.focus();
+            } else if (!event.shiftKey && document.activeElement === lastElement) {
+                event.preventDefault();
+                firstElement.focus();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('approvalModal');
+
+            // Escape to close modal
+            if (e.key === 'Escape' && modal.classList.contains('visible')) {
+                closeApprovalModal();
+            }
+
+            // Tab focus trapping
+            if (e.key === 'Tab' && modal.classList.contains('visible')) {
+                trapFocus(modal, e);
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('approvalModal').addEventListener('click', function(e) {
+            if (e.target === this) closeApprovalModal();
+        });
+
+        // Rating stars
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                document.querySelectorAll('.rating-star').forEach((s, i) => {
+                    s.classList.toggle('active', i < selectedRating);
+                });
+            });
+        });
+
+        function confirmApproval() {
+            // Launch confetti on FINAL APPROVAL ONLY (not on individual resolves)
+            launchConfetti();
+
+            // Show success, then redirect
+            const modal = document.querySelector('.modal-content');
+            modal.innerHTML = `
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="width: 64px; height: 64px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" width="32" height="32"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h3 style="margin-bottom: 8px;">Approved!</h3>
+                    <p style="color: var(--text-muted); font-size: 14px;">Redirecting to download...</p>
+                </div>
+            `;
+
+            setTimeout(() => {
+                // Switch to Post Kit tab
+                closeApprovalModal();
+                document.querySelector('[data-tab="postkit"]').click();
+            }, 2000);
+        }
+
+        function requestRevisions() {
+            const unresolvedCount = document.querySelectorAll('.feedback-item:not(.resolved)').length;
+            if (unresolvedCount === 0) {
+                alert('Please add at least one piece of feedback before requesting revisions.');
+                return;
+            }
+            alert(`Revision request sent with ${unresolvedCount} items. Your editor will be notified.`);
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFeedbackCount();
+            initCelebrateToggle();
+
+            // Get project from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('project');
+            if (projectId) {
+                console.log('Loading project:', projectId);
+            }
+        });
+    </script>
+    <!-- Shell Controller for persistence -->
+    <script src="../shared/_app.js" defer></script>
+</body>
+</html>

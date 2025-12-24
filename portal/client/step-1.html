@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Activate Your Portal — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/_tokens.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success-green: #22c55e;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background: var(--dark-bg);
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-white);
+            line-height: 1.6;
+        }
+
+        /* ==================== BACKGROUND ==================== */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1200px;
+            height: 800px;
+            background: radial-gradient(ellipse at center,
+                rgba(30, 58, 138, 0.15) 0%,
+                rgba(37, 99, 235, 0.08) 30%,
+                transparent 60%);
+            filter: blur(80px);
+            animation: bgPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        /* ==================== CONTAINER ==================== */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ==================== STEP BADGE ==================== */
+        .step-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 28px;
+            width: fit-content;
+            padding: 10px 24px 10px 12px;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.2), transparent);
+            animation: badgeShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes badgeShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .step-badge-num {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .step-badge-text {
+            font-size: 15px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ==================== 3-STEP PROGRESS CARDS ==================== */
+        .steps-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .step-card {
+            flex: 1;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 18px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright), var(--blue-dark));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .step-card.active {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: linear-gradient(165deg, rgba(30, 58, 138, 0.15) 0%, rgba(10, 10, 15, 0.98) 100%);
+            box-shadow: 0 0 30px -10px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-card.active::before {
+            opacity: 1;
+        }
+
+        .step-card.inactive {
+            opacity: 0.5;
+        }
+
+        .step-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .step-card.active .step-num {
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .step-card.inactive .step-num {
+            background: var(--dark-border);
+            color: var(--text-muted);
+        }
+
+        .step-num-text { position: relative; z-index: 1; }
+        .step-check { display: none; }
+
+        .step-info { flex: 1; min-width: 0; }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .step-card.active .step-title { color: var(--text-white); }
+        .step-card.inactive .step-title { color: var(--text-muted); }
+
+        .step-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ==================== MAIN CARD ==================== */
+        .main-card {
+            position: relative;
+            background: linear-gradient(165deg, 
+                rgba(15, 15, 25, 0.98) 0%, 
+                rgba(8, 8, 15, 0.99) 100%);
+            border-radius: 28px;
+            padding: 48px 40px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, 0.1),
+                0 25px 60px -12px rgba(0, 0, 0, 0.9),
+                0 0 120px -30px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Animated border glow */
+        .card-border {
+            position: absolute;
+            inset: 0;
+            border-radius: 28px;
+            padding: 1px;
+            background: conic-gradient(
+                from var(--angle, 0deg),
+                transparent 0%,
+                rgba(59, 130, 246, 0.4) 10%,
+                rgba(147, 197, 253, 0.6) 15%,
+                rgba(59, 130, 246, 0.4) 20%,
+                transparent 30%,
+                transparent 70%,
+                rgba(59, 130, 246, 0.3) 80%,
+                rgba(147, 197, 253, 0.5) 85%,
+                rgba(59, 130, 246, 0.3) 90%,
+                transparent 100%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotateBorder 6s linear infinite;
+            pointer-events: none;
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        @keyframes rotateBorder {
+            to { --angle: 360deg; }
+        }
+
+        /* Inner ambient light */
+        .card-ambient {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 250px;
+            background: radial-gradient(ellipse at center top,
+                rgba(59, 130, 246, 0.12) 0%,
+                transparent 70%);
+            pointer-events: none;
+            animation: ambientPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes ambientPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Subtle background grid */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+        }
+
+        /* ==================== CARD HEADER ==================== */
+        .card-header {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-ring {
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            animation: ringRotate 12s linear infinite;
+        }
+
+        .icon-ring::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--blue-bright);
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px rgba(59, 130, 246, 0.6);
+        }
+
+        @keyframes ringRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .icon-glow {
+            position: absolute;
+            inset: -20px;
+            background: radial-gradient(circle, 
+                rgba(59, 130, 246, 0.25) 0%, 
+                transparent 70%);
+            animation: iconGlow 3s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        @keyframes iconGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .icon-emoji {
+            font-size: 42px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.4));
+        }
+
+        .card-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, 
+                #fff 0%, 
+                #fff 35%, 
+                var(--blue-light) 50%, 
+                #fff 65%, 
+                #fff 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .card-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .title-line {
+            width: 0;
+            height: 2px;
+            margin: 20px auto 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--blue-bright), 
+                var(--blue-light), 
+                var(--blue-bright), 
+                transparent);
+            border-radius: 2px;
+            animation: lineExpand 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes lineExpand {
+            to { width: 120px; }
+        }
+
+        /* ==================== FORM STYLES ==================== */
+        .form-section {
+            position: relative;
+            z-index: 2;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 20px;
+            background: #08080c !important;
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            color: #fff !important;
+            font-size: 15px;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-text-fill-color: #fff !important;
+            caret-color: #fff;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+            -webkit-text-fill-color: var(--text-muted);
+        }
+
+        .form-input:-webkit-autofill,
+        .form-input:-webkit-autofill:hover,
+        .form-input:-webkit-autofill:focus,
+        .form-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 50px #08080c inset !important;
+            -webkit-text-fill-color: #fff !important;
+            background-color: #08080c !important;
+            caret-color: #fff !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+            background: rgba(30, 58, 138, 0.15) !important;
+            box-shadow: 
+                0 0 0 4px rgba(59, 130, 246, 0.1),
+                0 0 40px -10px rgba(59, 130, 246, 0.3),
+                inset 0 0 30px rgba(59, 130, 246, 0.03);
+        }
+
+        .form-input:focus:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 50px rgba(30, 58, 138, 0.15) inset, 0 0 0 4px rgba(59, 130, 246, 0.1), 0 0 40px -10px rgba(59, 130, 246, 0.3) !important;
+        }
+
+        /* Focus line animation */
+        .focus-line {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright), var(--blue-dark));
+            border-radius: 0 0 14px 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .form-input:focus ~ .focus-line {
+            width: calc(100% - 2px);
+        }
+
+        /* Valid checkmark */
+        .valid-check {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            color: var(--blue-bright);
+            font-size: 16px;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-wrapper.valid .valid-check {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding-left: 2px;
+        }
+
+        /* Tooltip */
+        .tooltip-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .tooltip-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--dark-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip-icon:hover {
+            background: var(--blue-dark);
+            color: var(--blue-light);
+        }
+
+        .tooltip-box {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            width: 240px;
+            padding: 12px 14px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-light);
+            line-height: 1.5;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip-box::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--dark-border);
+        }
+
+        .tooltip-wrap:hover .tooltip-box {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* Password toggle */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .password-toggle:hover {
+            opacity: 1;
+            color: var(--blue-bright);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .password-wrapper .valid-check {
+            right: 48px;
+        }
+
+        /* ==================== SUBMIT BUTTON ==================== */
+        .btn-row {
+            margin-top: 32px;
+        }
+
+        .btn-cta {
+            width: 100%;
+            padding: 20px 32px;
+            background: linear-gradient(135deg, 
+                var(--blue-dark) 0%, 
+                var(--blue-mid) 50%, 
+                var(--blue-bright) 100%);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 24px rgba(30, 58, 138, 0.4),
+                0 0 50px -10px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: buttonBreath 3s ease-in-out infinite;
+        }
+
+        @keyframes buttonBreath {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .btn-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-cta:hover::before {
+            left: 100%;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 40px rgba(59, 130, 246, 0.5),
+                0 0 60px -10px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-cta:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-cta:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-arrow {
+            transition: transform 0.3s ease;
+            font-size: 20px;
+        }
+
+        .btn-cta:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .trust-signal {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 16px;
+        }
+
+        /* ==================== HELP FOOTER ==================== */
+        .help-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            position: relative;
+            z-index: 2;
+        }
+
+        .help-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .help-text a {
+            color: var(--blue-bright);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .help-text a:hover {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .social-proof-footer {
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        /* ==================== SUCCESS OVERLAY ==================== */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .success-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-icon-container {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .success-ring {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            animation: successRingPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes successRingPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .success-glow {
+            position: absolute;
+            inset: -30px;
+            background: radial-gradient(circle, 
+                rgba(59, 130, 246, 0.4) 0%, 
+                transparent 70%);
+            animation: successGlow 1.5s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        @keyframes successGlow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .success-checkmark {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            animation: successPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 60px rgba(59, 130, 246, 0.5);
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-checkmark svg {
+            width: 50px;
+            height: 50px;
+        }
+
+        .success-checkmark svg path {
+            stroke: url(#successGradient);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: drawCheck 0.5s ease-out 0.3s forwards;
+        }
+
+        @keyframes drawCheck {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .success-text {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, var(--blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .success-subtext {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px 60px;
+            }
+
+            .steps-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .step-card {
+                padding: 16px;
+            }
+
+            .main-card {
+                padding: 32px 24px;
+                border-radius: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header h2 {
+                font-size: 24px;
+            }
+
+            .icon-container {
+                width: 70px;
+                height: 70px;
+            }
+
+            .icon-emoji {
+                font-size: 36px;
+            }
+
+            .btn-cta {
+                padding: 18px 28px;
+                font-size: 16px;
+            }
+
+            .tooltip-box {
+                width: 200px;
+                left: 0;
+                transform: translateX(0) scale(0.9);
+            }
+
+            .tooltip-wrap:hover .tooltip-box {
+                transform: translateX(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+    </div>
+
+    <div class="container">
+        <!-- Step Badge -->
+        <div class="step-badge">
+            <div class="step-badge-num">1</div>
+            <span class="step-badge-text">Step 1 of 3</span>
+        </div>
+
+        <!-- 3-Step Progress Cards -->
+        <div class="steps-container">
+            <div class="step-card active">
+                <div class="step-num">
+                    <span class="step-num-text">1</span>
+                    <span class="step-check">✓</span>
+                </div>
+                <div class="step-info">
+                    <div class="step-title">Activate Portal</div>
+                    <div class="step-desc">Create your login</div>
+                </div>
+            </div>
+
+            <div class="step-card inactive">
+                <div class="step-num">
+                    <span class="step-num-text">2</span>
+                    <span class="step-check">✓</span>
+                </div>
+                <div class="step-info">
+                    <div class="step-title">Style Blueprint</div>
+                    <div class="step-desc">Build your edit style</div>
+                </div>
+            </div>
+
+            <div class="step-card inactive">
+                <div class="step-num">
+                    <span class="step-num-text">3</span>
+                    <span class="step-check">✓</span>
+                </div>
+                <div class="step-info">
+                    <div class="step-title">Submit Project</div>
+                    <div class="step-desc">Upload first edit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <div class="card-border"></div>
+            <div class="card-ambient"></div>
+            <div class="bg-grid"></div>
+
+            <div class="card-header">
+                <div class="icon-container">
+                    <div class="icon-glow"></div>
+                    <div class="icon-ring"></div>
+                    <span class="icon-emoji">⚡</span>
+                </div>
+                <h2>Activate Your Content Portal</h2>
+                <p>Create your login and unlock full dashboard access</p>
+                <div class="title-line"></div>
+            </div>
+
+            <form id="account-form" class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" class="form-input" name="first_name" placeholder="John" required autocomplete="given-name">
+                            <span class="valid-check">✓</span>
+                            <div class="focus-line"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" class="form-input" name="last_name" placeholder="Smith" required autocomplete="family-name">
+                            <span class="valid-check">✓</span>
+                            <div class="focus-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Email Address
+                        <div class="tooltip-wrap">
+                            <span class="tooltip-icon">?</span>
+                            <div class="tooltip-box">This will be your portal login email. We'll send project updates and finished edits here.</div>
+                        </div>
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="email" class="form-input" name="email" placeholder="john@example.com" required autocomplete="email">
+                        <span class="valid-check">✓</span>
+                        <div class="focus-line"></div>
+                    </div>
+                    <p class="form-hint">Used for portal login & project delivery</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <div class="input-wrapper">
+                        <input type="tel" class="form-input" name="phone" placeholder="+1 (555) 123-4567" required autocomplete="tel">
+                        <span class="valid-check">✓</span>
+                        <div class="focus-line"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Create Password</label>
+                    <div class="password-wrapper input-wrapper">
+                        <input type="password" class="form-input" name="password" id="password-input" placeholder="••••••••" required minlength="8" autocomplete="new-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                        <span class="valid-check">✓</span>
+                        <div class="focus-line"></div>
+                    </div>
+                    <p class="form-hint">Minimum 8 characters</p>
+                </div>
+
+                <div class="btn-row">
+                    <button type="submit" class="btn-cta" id="submit-btn">
+                        <span class="btn-content" id="btn-content">
+                            Activate My Portal
+                            <span class="btn-arrow">→</span>
+                        </span>
+                    </button>
+                    <p class="trust-signal">🔒 256-bit encrypted • Your data stays private</p>
+                </div>
+            </form>
+
+            <div class="help-footer">
+                <p class="help-text">Need help? <a href="mailto:contentbug@contentbug.io">contentbug@contentbug.io</a></p>
+                <p class="social-proof-footer">⭐ Trusted by 500+ creators & agencies worldwide</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="success-overlay">
+        <div class="success-icon-container">
+            <div class="success-ring"></div>
+            <div class="success-glow"></div>
+            <div class="success-checkmark">
+                <svg viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="successGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fff"/>
+                            <stop offset="100%" stop-color="#93c5fd"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+        </div>
+        <p class="success-text">Portal Activated!</p>
+        <p class="success-subtext">Redirecting to your blueprint...</p>
+    </div>
+
+    <script>
+        // ============================================
+        // CONTENT PORTAL CONFIGURATION
+        // ============================================
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
+
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('password-input');
+            const btn = event.target;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        // Input validation and typing states
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const wrapper = this.closest('.input-wrapper');
+                if (wrapper) {
+                    if (this.type === 'email') {
+                        wrapper.classList.toggle('valid', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value));
+                    } else if (this.type === 'password') {
+                        wrapper.classList.toggle('valid', this.value.length >= 8);
+                    } else if (this.type === 'tel') {
+                        wrapper.classList.toggle('valid', this.value.length >= 10);
+                    } else {
+                        wrapper.classList.toggle('valid', this.value.length >= 2);
+                    }
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('account-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const btnContent = document.getElementById('btn-content');
+            
+            btn.disabled = true;
+            btnContent.innerHTML = '<span class="spinner"></span> Creating Portal...';
+
+            const formData = new FormData(this);
+            const data = {
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password'),
+                contact_name: `${formData.get('first_name')} ${formData.get('last_name')}`,
+                source: 'Free Trial Funnel - Step 1',
+                // GHL Custom Fields
+                step_1_complete_yn: 'Y',
+                post_login_step: 'Step 1 Complete - Resume Step 2',
+                active_free_trial_yn: 'Y',
+                content_portal_status: 'Preview - Free Trial'
+            };
+
+            try {
+                // Send to GHL webhook
+                const ghlPromise = fetch('https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                // Send to Airtable Users table
+                const airtableData = {
+                    records: [{
+                        fields: {
+                            "Name": data.contact_name,
+                            "First Name": data.first_name,
+                            "Last Name": data.last_name,
+                            "Email": data.email,
+                            "Phone": data.phone,
+                            "Password": data.password,
+                            "Plan": "Free Trial",
+                            "Subscription Status": "Free Trial",
+                            "Subscription Type": "Free Trial",
+                            "Step 1 Completed": "Y",
+                            "Step 2 Completed": "N",
+                            "Step 3 Completed": "N"
+                        }
+                    }]
+                };
+
+                const airtablePromise = fetch('https://api.airtable.com/v0/appIrlFuwtsxj8hly/Users', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer patVDHIF4sdlIAZd3.2e92a65859b20b655bddbe29500d079491eca3cc281704e8ebd461fc95d36a93',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(airtableData)
+                });
+
+                // Wait for both to complete
+                const [ghlResponse, airtableResponse] = await Promise.all([ghlPromise, airtablePromise]);
+
+                // Get Airtable record ID for updating in later steps
+                const airtableResult = await airtableResponse.json();
+                const airtableRecordId = airtableResult.records?.[0]?.id || '';
+
+                // Store in localStorage
+                localStorage.setItem('cb_email', data.email);
+                localStorage.setItem('cb_name', data.contact_name);
+                localStorage.setItem('cb_phone', data.phone);
+                localStorage.setItem('cb_first_name', data.first_name);
+                localStorage.setItem('cb_airtable_id', airtableRecordId);
+
+                // Create Google Drive folder for this client via MCP server
+                try {
+                    const folderResponse = await fetch(`${MCP_SERVER_URL}/client/create-folder`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            client_name: data.contact_name,
+                            client_id: airtableRecordId,
+                            email: data.email
+                        })
+                    });
+                    const folderResult = await folderResponse.json();
+                    if (folderResult.success && folderResult.folder_url) {
+                        // Store main folder URL in localStorage
+                        localStorage.setItem('cb_folder_url', folderResult.folder_url);
+                        console.log('Client folder created:', folderResult.folder_url);
+
+                        // Update Airtable with all folder URLs
+                        await fetch(`https://api.airtable.com/v0/appIrlFuwtsxj8hly/Users/${airtableRecordId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Authorization': 'Bearer patW8QGZbjGkib5kY.ee72a270de99dbeb731ff11ddfab6505b6612f988555e1b1f0cf77bf938c04e3',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                fields: {
+                                    "Google Drive Folder": folderResult.folder_url,
+                                    "Brand Assets Folder ID": folderResult.brand_assets_id || '',
+                                    "Logos Folder ID": folderResult.logos_id || '',
+                                    "Profile Pictures Folder ID": folderResult.profile_pictures_id || '',
+                                    "Thumbnail Photos Folder ID": folderResult.thumbnail_photos_id || '',
+                                    "Project Files Folder ID": folderResult.project_files_id || '',
+                                    "Approved Videos Folder ID": folderResult.approved_videos_id || ''
+                                }
+                            })
+                        });
+                        console.log('Folder URLs saved to Airtable');
+                    }
+                } catch (folderErr) {
+                    console.warn('Folder creation skipped:', folderErr);
+                    // Non-blocking - continue even if folder creation fails
+                }
+
+                // Show success overlay
+                document.getElementById('success-overlay').classList.add('show');
+
+                // Redirect after animation
+                setTimeout(() => {
+                    window.location.href = `https://app.contentbug.io/step-2-style-blueprint?email=${encodeURIComponent(data.email)}&name=${encodeURIComponent(data.contact_name)}`;
+                }, 1800);
+
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btnContent.innerHTML = 'Activate My Portal <span class="btn-arrow">→</span>';
+            }
+        });
+    </script>
+    <!-- Shell Controller for persistence -->
+    <script src="../shared/_app.js" defer></script>
+</body>
+</html>

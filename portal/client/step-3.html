@@ -1,0 +1,4100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Submit Your First Project — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/_tokens.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --mint-dark: #059669;
+            --mint-mid: #10b981;
+            --mint-bright: #34d399;
+            --mint-glow: #6ee7b7;
+            --mint-light: #a7f3d0;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background: var(--dark-bg);
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-white);
+            line-height: 1.6;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1200px;
+            height: 800px;
+            background: radial-gradient(ellipse at center,
+                rgba(30, 58, 138, 0.15) 0%,
+                rgba(37, 99, 235, 0.08) 30%,
+                transparent 60%);
+            filter: blur(80px);
+            animation: bgPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        .container {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Step Badge */
+        .step-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 28px;
+            width: fit-content;
+            padding: 10px 24px 10px 12px;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.2), transparent);
+            animation: badgeShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes badgeShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .step-badge-num {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .step-badge-text {
+            font-size: 15px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blue-light) 0%, var(--blue-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Main Card */
+        .main-card {
+            position: relative;
+            background: linear-gradient(165deg, 
+                rgba(15, 15, 25, 0.98) 0%, 
+                rgba(8, 8, 15, 0.99) 100%);
+            border-radius: 28px;
+            padding: 44px 40px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, 0.1),
+                0 25px 60px -12px rgba(0, 0, 0, 0.9),
+                0 0 120px -30px rgba(59, 130, 246, 0.2);
+        }
+
+        .card-border {
+            position: absolute;
+            inset: 0;
+            border-radius: 28px;
+            padding: 1px;
+            background: conic-gradient(
+                from var(--angle, 0deg),
+                transparent 0%,
+                rgba(59, 130, 246, 0.4) 10%,
+                rgba(147, 197, 253, 0.6) 15%,
+                rgba(59, 130, 246, 0.4) 20%,
+                transparent 30%,
+                transparent 70%,
+                rgba(59, 130, 246, 0.3) 80%,
+                rgba(147, 197, 253, 0.5) 85%,
+                rgba(59, 130, 246, 0.3) 90%,
+                transparent 100%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotateBorder 6s linear infinite;
+            pointer-events: none;
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        @keyframes rotateBorder {
+            to { --angle: 360deg; }
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+        }
+
+        /* Header */
+        .card-header {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .loading-circle-anchor {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon {
+            font-size: 40px;
+            filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.4));
+            position: relative;
+            z-index: 1;
+        }
+
+        .icon-ring {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            animation: ringRotate 12s linear infinite;
+        }
+
+        .icon-ring::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: var(--blue-bright);
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px rgba(59, 130, 246, 0.6);
+        }
+
+        @keyframes ringRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .card-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #fff 0%, #fff 35%, var(--blue-light) 50%, #fff 65%, #fff 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .card-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        /* Form */
+        .form-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 16px;
+            color: var(--text-white);
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--blue-bright);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 44px;
+        }
+
+        /* Upload Box */
+        .upload-box {
+            border: 2px dashed var(--dark-border);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(165deg, rgba(30, 58, 138, 0.05) 0%, rgba(8, 8, 15, 0.95) 100%);
+        }
+
+        .upload-box:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: linear-gradient(165deg, rgba(30, 58, 138, 0.1) 0%, rgba(8, 8, 15, 0.95) 100%);
+        }
+
+        .upload-box.has-content {
+            border-color: var(--mint-mid);
+            border-style: solid;
+            background: linear-gradient(165deg, rgba(16, 185, 129, 0.08) 0%, rgba(8, 8, 15, 0.95) 100%);
+        }
+
+        .upload-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .upload-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 6px;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .upload-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .upload-divider::before,
+        .upload-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--dark-border);
+        }
+
+        .upload-divider span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .link-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .link-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-white);
+            transition: all 0.3s ease;
+        }
+
+        .link-input:focus {
+            outline: none;
+            border-color: var(--blue-bright);
+        }
+
+        .link-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .link-btn {
+            padding: 12px 18px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .link-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .link-success {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            color: var(--mint-bright);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
+        .link-success.show {
+            display: flex;
+        }
+
+        /* ============================================
+           VIDEO ANALYSIS PANEL
+           ============================================ */
+        .video-analysis-panel {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.1) 0%, rgba(8, 8, 15, 0.95) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .video-analysis-panel.show {
+            display: flex;
+        }
+
+        .video-preview-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 16/9;
+        }
+
+        .video-preview-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .video-loading-overlay.hidden {
+            display: none;
+        }
+
+        .video-loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top-color: var(--blue-bright);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .video-loading-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .video-loading-text span {
+            color: var(--blue-glow);
+        }
+
+        /* Timeline */
+        .video-timeline-container {
+            padding: 16px 0 8px;
+        }
+
+        .timeline-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .timeline-label .icon {
+            font-size: 14px;
+        }
+
+        .video-timeline {
+            position: relative;
+            height: 48px;
+            background: rgba(30, 58, 138, 0.15);
+            border-radius: 8px;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-mid));
+            border-radius: 8px 0 0 8px;
+            pointer-events: none;
+            transition: width 0.1s linear;
+        }
+
+        .timeline-playhead {
+            position: absolute;
+            top: -4px;
+            width: 3px;
+            height: calc(100% + 8px);
+            background: var(--blue-glow);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--blue-glow);
+            pointer-events: none;
+            transition: left 0.1s linear;
+        }
+
+        /* Hook Markers */
+        .hook-marker {
+            position: absolute;
+            top: -8px;
+            transform: translateX(-50%);
+            cursor: pointer;
+            z-index: 20;
+            transition: transform 0.2s ease;
+        }
+
+        .hook-marker:hover {
+            transform: translateX(-50%) scale(1.15);
+        }
+
+        .hook-marker-pin {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hook-marker-pin span {
+            transform: rotate(45deg);
+            font-size: 10px;
+        }
+
+        .hook-marker-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 8, 15, 0.95);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            border-radius: 10px;
+            padding: 10px 14px;
+            min-width: 200px;
+            max-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .hook-marker:hover .hook-marker-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hook-marker-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(249, 115, 22, 0.4);
+        }
+
+        .hook-tooltip-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .hook-tooltip-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .hook-tooltip-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .hook-tooltip-text {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        /* Hook Selection Cards */
+        .hooks-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hooks-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hooks-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .hooks-title .icon {
+            font-size: 16px;
+        }
+
+        .hooks-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .hook-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hook-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(8, 8, 15, 0.6);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hook-card:hover {
+            border-color: rgba(249, 115, 22, 0.4);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        .hook-card.selected {
+            border-color: #f97316;
+            background: rgba(249, 115, 22, 0.1);
+            box-shadow: 0 0 20px -5px rgba(249, 115, 22, 0.3);
+        }
+
+        .hook-card-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--dark-border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .hook-card.selected .hook-card-radio {
+            border-color: #f97316;
+            background: #f97316;
+        }
+
+        .hook-card.selected .hook-card-radio::after {
+            content: '✓';
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .hook-card-content {
+            flex: 1;
+        }
+
+        .hook-card-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #f97316;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .hook-card-text {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .hook-card-play {
+            width: 36px;
+            height: 36px;
+            background: rgba(249, 115, 22, 0.15);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f97316;
+            font-size: 12px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .hook-card:hover .hook-card-play {
+            background: rgba(249, 115, 22, 0.25);
+            transform: scale(1.1);
+        }
+
+        /* Let Editor Choose Option */
+        .hook-card.editor-choice {
+            border-style: dashed;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .hook-card.editor-choice:hover {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .hook-card.editor-choice.selected {
+            border-color: #10b981;
+            border-style: solid;
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.3);
+        }
+
+        .hook-card.editor-choice.selected .hook-card-radio {
+            border-color: #10b981;
+            background: #10b981;
+        }
+
+        .hook-card.editor-choice .hook-card-time {
+            color: #10b981;
+        }
+        
+        .editor-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-right: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Hook Preference Section */
+        .hook-preference-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(30, 58, 138, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .hook-preference-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hook-preference-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hook-option {
+            cursor: pointer;
+        }
+
+        .hook-option input[type="radio"] {
+            display: none;
+        }
+
+        .hook-option-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(5, 5, 8, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .hook-option:hover .hook-option-content {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(30, 58, 138, 0.15);
+        }
+
+        .hook-option input:checked + .hook-option-content {
+            border-color: var(--blue-glow);
+            background: rgba(30, 58, 138, 0.2);
+            box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .hook-option-icon {
+            font-size: 20px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .hook-option-text {
+            flex: 1;
+        }
+
+        .hook-option-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .hook-option-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .hook-option-check {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: transparent;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .hook-option input:checked + .hook-option-content .hook-option-check {
+            background: var(--blue-glow);
+            border-color: var(--blue-glow);
+            color: #fff;
+        }
+
+        .custom-hook-input {
+            padding-top: 8px;
+        }
+
+        .custom-hook-input textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(5, 5, 8, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            transition: all 0.2s ease;
+        }
+
+        .custom-hook-input textarea:focus {
+            outline: none;
+            border-color: var(--blue-glow);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .custom-hook-input textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Estimated Length Section (Long-form only) */
+        .estimated-length-section {
+            display: none;
+            margin-top: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.12) 0%, rgba(37, 99, 235, 0.06) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+        }
+
+        .estimated-length-section.show {
+            display: block;
+        }
+
+        .estimated-length-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .estimated-length-icon {
+            font-size: 18px;
+        }
+
+        .estimated-length-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .estimated-length-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .estimated-length-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .estimated-length-select:focus {
+            outline: none;
+            border-color: var(--blue-bright);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* SLA Estimate Display */
+        .sla-estimate-display {
+            display: none;
+            margin: 20px 0;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.06) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .sla-estimate-display.show {
+            display: block;
+            animation: fadeSlideUp 0.3s ease-out;
+        }
+
+        .sla-estimate-display.custom-timeline {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(161, 98, 7, 0.06) 100%);
+            border-color: rgba(234, 179, 8, 0.3);
+        }
+
+        .sla-estimate-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .sla-estimate-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--mint-bright);
+        }
+
+        .sla-estimate-display.custom-timeline .sla-estimate-value {
+            color: #EAB308;
+        }
+
+        .sla-estimate-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Short Form Splitting */
+        .shorts-section {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(168, 85, 247, 0.08);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+
+        .shorts-section.show {
+            display: flex;
+        }
+
+        .shorts-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shorts-icon {
+            font-size: 20px;
+        }
+
+        .shorts-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .shorts-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .shorts-counter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .shorts-counter-label {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .shorts-counter-btns {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shorts-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px;
+            color: #a855f7;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .shorts-btn:hover:not(:disabled) {
+            background: rgba(168, 85, 247, 0.25);
+            transform: scale(1.05);
+        }
+
+        .shorts-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .shorts-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: #a855f7;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .shorts-note {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .shorts-note span {
+            color: #a855f7;
+        }
+
+        /* Transcription Status */
+        .transcription-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(30, 58, 138, 0.15);
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .transcription-status .status-icon {
+            font-size: 16px;
+        }
+
+        .transcription-status .status-text {
+            color: var(--text-muted);
+        }
+
+        .transcription-status .status-text span {
+            color: var(--blue-glow);
+            font-weight: 500;
+        }
+
+        .transcription-status.analyzing .status-icon {
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .transcription-status.complete {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .transcription-status.complete .status-text span {
+            color: var(--mint-bright);
+        }
+
+        /* ============================================
+           STYLE SELECTOR - PREMIUM TIER GRID
+           ============================================ */
+        .style-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Custom Blueprint - Premium Card */
+        .blueprint-card {
+            position: relative;
+            padding: 20px;
+            background: linear-gradient(165deg, rgba(15, 15, 25, 0.98) 0%, rgba(8, 8, 15, 0.99) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .blueprint-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: conic-gradient(
+                from var(--bp-angle, 0deg),
+                transparent 0%,
+                rgba(59, 130, 246, 0.3) 10%,
+                rgba(147, 197, 253, 0.5) 15%,
+                rgba(59, 130, 246, 0.3) 20%,
+                transparent 30%
+            );
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            animation: bpBorderRotate 4s linear infinite;
+        }
+
+        @property --bp-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        @keyframes bpBorderRotate {
+            to { --bp-angle: 360deg; }
+        }
+
+        .blueprint-card:hover::before,
+        .blueprint-card.selected::before {
+            opacity: 1;
+        }
+
+        .blueprint-card-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .blueprint-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+        }
+
+        .blueprint-icon::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(147, 197, 253, 0.3));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .blueprint-card:hover .blueprint-icon::after,
+        .blueprint-card.selected .blueprint-icon::after {
+            opacity: 1;
+        }
+
+        .blueprint-info {
+            flex: 1;
+        }
+
+        .blueprint-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 197, 253, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--blue-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .blueprint-label-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--blue-bright);
+            border-radius: 50%;
+            animation: bpDotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes bpDotPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .blueprint-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 4px;
+            background: linear-gradient(90deg, #fff, var(--blue-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blueprint-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .blueprint-check {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .blueprint-card.selected .blueprint-check {
+            background: linear-gradient(135deg, var(--blue-dark), var(--blue-bright));
+            border-color: var(--blue-bright);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .blueprint-check::after {
+            content: '✓';
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+
+        .blueprint-card.selected .blueprint-check::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .blueprint-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        .blueprint-card.selected {
+            border-color: var(--blue-bright);
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Divider with "Or" */
+        .style-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 8px 0;
+        }
+
+        .style-divider::before,
+        .style-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--dark-border), transparent);
+        }
+
+        .style-divider span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Tier Rows Container */
+        .tier-rows-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Tier Row */
+        .tier-row {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+        }
+
+        .tier-row:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .tier-row.tier-1-row:hover { border-color: rgba(16, 185, 129, 0.3); }
+        .tier-row.tier-2-row:hover { border-color: rgba(245, 158, 11, 0.3); }
+        .tier-row.tier-3-row:hover { border-color: rgba(167, 139, 250, 0.3); }
+
+        /* Tier Row Header */
+        .tier-row-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .tier-row-header:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tier-row-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tier-row-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tier-1-row .tier-row-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .tier-2-row .tier-row-badge {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .tier-3-row .tier-row-badge {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(196, 181, 253, 0.1));
+            color: #c4b5fd;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+
+        .tier-row-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        .tier-row-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tier-row-eta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tier-row-eta-icon {
+            font-size: 12px;
+        }
+
+        .tier-row-chevron {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+
+        .tier-row.expanded .tier-row-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Tier Row Content (Expandable) */
+        .tier-row-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 0 16px 16px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tier-row.expanded .tier-row-content {
+            max-height: 800px;
+            opacity: 1;
+            padding-top: 4px;
+        }
+
+        /* Style Card - Grid Version */
+        .style-card {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+        }
+
+        .style-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .tier-1-row .style-card:hover {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.2), 0 0 0 1px rgba(16, 185, 129, 0.3);
+        }
+
+        .tier-2-row .style-card:hover {
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.2), 0 0 0 1px rgba(245, 158, 11, 0.3);
+        }
+
+        .tier-3-row .style-card:hover {
+            border-color: rgba(167, 139, 250, 0.5);
+            box-shadow: 0 8px 32px rgba(167, 139, 250, 0.2), 0 0 0 1px rgba(167, 139, 250, 0.3);
+        }
+
+        .style-card.selected {
+            transform: translateY(-2px);
+        }
+
+        .tier-1-row .style-card.selected {
+            border-color: #10b981;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .tier-2-row .style-card.selected {
+            border-color: #f59e0b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .tier-3-row .style-card.selected {
+            border-color: #a78bfa;
+            box-shadow: 0 0 30px rgba(167, 139, 250, 0.3);
+        }
+
+        /* Video Preview Thumbnail */
+        .style-card-preview {
+            position: relative;
+            aspect-ratio: 9/16;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .style-card-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .style-card-preview::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Play Button Overlay */
+        .style-card-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .style-card:hover .style-card-play {
+            opacity: 1;
+        }
+
+        .style-card-play-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .style-card:hover .style-card-play-btn {
+            transform: scale(1.1);
+        }
+
+        /* Style Card Info */
+        .style-card-info {
+            padding: 12px;
+            position: relative;
+        }
+
+        .style-card-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .style-card-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Selected Checkmark */
+        .style-card-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .style-card:hover .style-card-check,
+        .style-card.selected .style-card-check {
+            opacity: 1;
+        }
+
+        .style-card.selected .style-card-check {
+            border-color: #fff;
+        }
+
+        .tier-1-row .style-card.selected .style-card-check { background: #10b981; }
+        .tier-2-row .style-card.selected .style-card-check { background: #f59e0b; }
+        .tier-3-row .style-card.selected .style-card-check { background: #a78bfa; }
+
+        .style-card-check::after {
+            content: '✓';
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+        }
+
+        .style-card.selected .style-card-check::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Hover Detail Panel */
+        .style-card-detail {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 100%);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+        }
+
+        .style-card:hover .style-card-detail {
+            transform: translateY(0);
+        }
+
+        .style-card-detail-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .style-card-detail-features {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .style-card-detail-feature {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .style-card-detail-feature::before {
+            content: '✓';
+            font-size: 10px;
+        }
+
+        .tier-1-row .style-card-detail-feature::before { color: #34d399; }
+        .tier-2-row .style-card-detail-feature::before { color: #fbbf24; }
+        .tier-3-row .style-card-detail-feature::before { color: #c4b5fd; }
+
+        /* LEGACY STYLES - Keep for backward compatibility */
+        .style-option {
+            display: none;
+        }
+
+        .more-styles-btn {
+            display: none;
+        }
+
+        .preset-styles {
+            display: none;
+        }
+
+        .tier-header {
+            display: none;
+        }
+
+        .tier-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tier-badge.tier-1 {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: #fff;
+        }
+
+        .tier-badge.tier-2 {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: #fff;
+        }
+
+        .tier-badge.tier-3 {
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            color: #fff;
+        }
+
+        .tier-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .tier-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .tier-bottom-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-left: 2px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.25s ease;
+        }
+
+        .tier-header.expanded .tier-bottom-row {
+            max-height: 30px;
+            opacity: 1;
+            margin-top: 6px;
+        }
+
+        .tier-eta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tier-eta-label {
+            color: var(--text-dim);
+        }
+
+        .tier-eta-value {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .tier-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            flex: 1;
+        }
+
+        .preview-btn {
+            display: none;
+        }
+
+        /* Video Preview Modal */
+        .video-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.95);
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .video-container {
+            position: relative;
+            max-width: 400px;
+            width: 100%;
+            background: var(--dark-card);
+            border-radius: 20px;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+        }
+
+        .video-modal.active .video-container {
+            transform: scale(1);
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+
+        .video-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-close:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .video-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .video-info {
+            padding: 16px 20px;
+            background: var(--dark-card);
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .video-info-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .video-tier-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .video-tier-badge.tier-1 {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .video-tier-badge.tier-2 {
+            background: rgba(249, 115, 22, 0.15);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .video-tier-badge.tier-3 {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .video-description {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .video-turnaround {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .turnaround-label {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .turnaround-value {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .turnaround-value.tier-1 {
+            color: #22c55e;
+        }
+
+        .turnaround-value.tier-2 {
+            color: #f97316;
+        }
+
+        .turnaround-value.tier-3 {
+            color: #a855f7;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 20px 32px;
+            margin-top: 32px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            animation: btnGradient 4s ease infinite;
+        }
+
+        @keyframes btnGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-arrow {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-submit:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        .time-estimate {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .time-estimate span {
+            color: var(--blue-glow);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           LOADING ANIMATION OVERLAY
+           ============================================ */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: background 0.5s ease, opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            pointer-events: all;
+            opacity: 1;
+            background: rgba(5, 5, 8, 0.92);
+        }
+
+        .loading-circle {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform: scale(0);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .loading-overlay.active .loading-circle {
+            transform: scale(1);
+        }
+
+        .loading-circle.expand {
+            transform: scale(1.4);
+        }
+
+        .circle-bg {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.08) 100%);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .circle-spinner {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--mint-bright);
+            border-right-color: var(--mint-glow);
+            animation: spinLoader 1s linear infinite;
+        }
+
+        @keyframes spinLoader {
+            to { transform: rotate(360deg); }
+        }
+
+        .circle-spinner-inner {
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-bottom-color: var(--mint-mid);
+            border-left-color: var(--mint-dark);
+            animation: spinLoader 0.8s linear infinite reverse;
+        }
+
+        .circle-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .circle-icon.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .loading-text {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active .loading-text {
+            opacity: 1;
+        }
+
+        /* Checkmark SVG Animation */
+        .checkmark-svg {
+            width: 44px;
+            height: 44px;
+        }
+
+        .checkmark-circle {
+            stroke: var(--mint-bright);
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            fill: none;
+            animation: checkStroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark-check {
+            stroke: var(--mint-bright);
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke-width: 3;
+            fill: none;
+            animation: checkStroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+        }
+
+        @keyframes checkStroke {
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* ============================================
+           CREATIVE ALIGNMENT CALL MODAL
+           ============================================ */
+        .booking-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.96);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .booking-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .booking-card {
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(165deg, rgba(12, 14, 22, 0.99) 0%, rgba(6, 8, 14, 1) 100%);
+            border-radius: 24px;
+            padding: 36px 32px;
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.94) translateY(16px);
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, 0.15),
+                0 30px 80px -12px rgba(0, 0, 0, 0.95),
+                0 0 120px -40px rgba(59, 130, 246, 0.2);
+        }
+
+        .booking-modal.active .booking-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .booking-border {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: conic-gradient(
+                from var(--angle, 0deg),
+                transparent 0%,
+                rgba(59, 130, 246, 0.3) 10%,
+                rgba(16, 185, 129, 0.4) 15%,
+                rgba(59, 130, 246, 0.3) 20%,
+                transparent 30%,
+                transparent 70%,
+                rgba(59, 130, 246, 0.2) 80%,
+                rgba(16, 185, 129, 0.3) 85%,
+                rgba(59, 130, 246, 0.2) 90%,
+                transparent 100%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotateBorder 8s linear infinite;
+            pointer-events: none;
+        }
+
+        .booking-header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .booking-header h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .booking-header p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            max-width: 340px;
+            margin: 0 auto;
+        }
+
+        /* Authority Strip */
+        .authority-strip {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .authority-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .authority-person {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .authority-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--mint-mid) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .authority-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .authority-info .role {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .authority-info .stats {
+            font-size: 11px;
+            color: var(--mint-bright);
+            font-weight: 600;
+        }
+
+        .authority-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* Alignment List */
+        .alignment-section {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .alignment-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .alignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alignment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .alignment-item::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: var(--mint-bright);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Reassurance */
+        .reassurance {
+            text-align: center;
+            padding: 14px 0;
+            margin-bottom: 20px;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .reassurance p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .reassurance strong {
+            color: var(--mint-bright);
+        }
+
+        /* CTA Buttons */
+        .btn-book {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--mint-mid) 100%);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.35);
+            background-position: 100% 50%;
+        }
+
+        .btn-optional {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            margin-left: 6px;
+        }
+
+        .skip-booking {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .skip-booking:hover {
+            color: var(--text-light);
+        }
+
+        .modal-microcopy {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 11px;
+            color: rgba(100, 116, 139, 0.7);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ============================================
+           FINAL SUCCESS OVERLAY
+           ============================================ */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.97);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .success-circle {
+            width: 140px;
+            height: 140px;
+            position: relative;
+            margin-bottom: 32px;
+            transform: scale(0);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .success-overlay.active .success-circle {
+            transform: scale(1);
+        }
+
+        .success-bg {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--mint-dark) 0%, var(--mint-mid) 100%);
+            box-shadow: 
+                0 0 60px rgba(16, 185, 129, 0.5),
+                0 0 120px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-ring {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            animation: successRingPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes successRingPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .success-check {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-check svg {
+            width: 70px;
+            height: 70px;
+        }
+
+        .success-check .check-path {
+            stroke: #fff;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawCheck 0.6s ease 0.3s forwards;
+        }
+
+        @keyframes drawCheck {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .success-title {
+            font-size: 32px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, var(--mint-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease 0.5s forwards;
+        }
+
+        .success-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease 0.6s forwards;
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-portal {
+            padding: 18px 48px;
+            background: linear-gradient(135deg, var(--mint-dark) 0%, var(--mint-mid) 100%);
+            border: none;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 25px rgba(16, 185, 129, 0.4);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease 0.7s forwards;
+        }
+
+        .btn-portal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(16, 185, 129, 0.5);
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 24px 16px 60px; }
+            .main-card { padding: 32px 24px; border-radius: 24px; }
+            .card-header h2 { font-size: 22px; }
+            .booking-card { padding: 32px 24px; }
+            .time-slots { grid-template-columns: repeat(2, 1fr); }
+            .success-circle { width: 120px; height: 120px; }
+            .success-title { font-size: 26px; }
+        }
+
+        /* Portal Navigation Header */
+        .portal-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(8, 8, 12, 0.95) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+        }
+
+        .portal-nav .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .portal-nav .back-link:hover {
+            color: var(--blue-glow);
+        }
+
+        .portal-nav .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .portal-nav .nav-logo {
+            height: 28px;
+            filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.3));
+        }
+
+        .portal-nav .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Adjust container padding for fixed nav */
+        .container { padding-top: 80px !important; }
+    </style>
+</head>
+<body>
+    <!-- Portal Navigation -->
+    <nav class="portal-nav">
+        <a href="https://app.contentbug.io/dashboard" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+            Back to Dashboard
+        </a>
+        <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" class="nav-logo">
+        <span class="nav-title">Submit Project</span>
+    </nav>
+
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+    </div>
+
+    <!-- Video Preview Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-container">
+            <button class="video-close" id="videoClose">✕</button>
+            <video id="previewVideo" controls playsinline>
+                <source src="" type="video/mp4">
+            </video>
+            <div class="video-info">
+                <div class="video-info-header">
+                    <div class="video-title" id="videoTitle">Style Preview</div>
+                    <div class="video-tier-badge" id="videoTierBadge">Tier 1</div>
+                </div>
+                <div class="video-description" id="videoDescription">Clean, minimal editing perfect for educational content</div>
+                <div class="video-turnaround" id="videoTurnaround">
+                    <span class="turnaround-label">Est. Turnaround:</span>
+                    <span class="turnaround-value" id="turnaroundValue">~1 day</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-circle" id="loadingCircle">
+            <div class="circle-bg"></div>
+            <div class="circle-spinner"></div>
+            <div class="circle-spinner-inner"></div>
+            <div class="circle-icon" id="circleIcon">
+                <svg class="checkmark-svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <div class="loading-text" id="loadingText">Submitting your project...</div>
+        </div>
+    </div>
+
+    <!-- Creative Alignment Call Modal -->
+    <div class="booking-modal" id="bookingModal">
+        <div class="booking-card">
+            <div class="booking-border"></div>
+
+            <div class="booking-header">
+                <h3>Let's Get It Right the First Time</h3>
+                <p>We hate revisions too. This quick alignment call helps us understand your exact editing style, structure, and expectations — so your first edit lands clean.</p>
+            </div>
+
+            <!-- Authority Strip -->
+            <div class="authority-strip">
+                <div class="authority-label">Free Content Alignment Call with</div>
+                <div class="authority-person">
+                    <div class="authority-avatar">SC</div>
+                    <div class="authority-info">
+                        <h4>Sean Conley</h4>
+                        <div class="role">Co-Founder · Full-Time Creator</div>
+                        <div class="stats">1B+ views · 2.5M+ combined followers</div>
+                    </div>
+                </div>
+                <p class="authority-note">You'll be aligning with someone who's built content from the creator side — not just the editing side.</p>
+            </div>
+
+            <!-- What We'll Align On -->
+            <div class="alignment-section">
+                <div class="alignment-label">What We'll Align On</div>
+                <div class="alignment-list">
+                    <div class="alignment-item">Your editing style, pacing, and structure</div>
+                    <div class="alignment-item">The outputs you actually care about</div>
+                    <div class="alignment-item">Context around your brand and content direction</div>
+                    <div class="alignment-item">How to reduce revisions and back-and-forth</div>
+                </div>
+            </div>
+
+            <!-- Reassurance -->
+            <div class="reassurance">
+                <p>This is <strong>not a sales call</strong>.<br>Your edit is already in progress.</p>
+            </div>
+
+            <!-- CTA - Goes to booking page -->
+            <a href="https://app.contentbug.io/book-call" class="btn-book" id="btnBook" onclick="trackAlignmentClick()">
+                Align With Your Editor <span class="btn-optional">(Optional)</span>
+            </a>
+
+            <a href="#" class="skip-booking" id="skipBooking">
+                Continue without a call →
+            </a>
+
+            <p class="modal-microcopy">Most creators skip this. Some use it to dial things in faster.</p>
+        </div>
+    </div>
+
+    <!-- Final Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-circle">
+            <div class="success-ring"></div>
+            <div class="success-bg"></div>
+            <div class="success-check">
+                <svg viewBox="0 0 50 50">
+                    <path class="check-path" d="M14 27 l8 8 l16 -18"/>
+                </svg>
+            </div>
+        </div>
+        <h2 class="success-title">You're All Set!</h2>
+        <p class="success-subtitle">Your project is queued — we're on it</p>
+        <button class="btn-portal" id="btnPortal">
+            Enter Your Portal <span>→</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="step-badge">
+            <div class="step-badge-num">3</div>
+            <span class="step-badge-text">Final Step</span>
+        </div>
+
+        <div class="main-card">
+            <div class="card-border"></div>
+            <div class="bg-grid"></div>
+
+            <div class="card-header">
+                <div class="loading-circle-anchor">
+                    <div class="icon-ring"></div>
+                    <span class="header-icon">🚀</span>
+                </div>
+                <h2>Submit Your First Project</h2>
+                <p>Upload footage and we'll create your free trial edit</p>
+            </div>
+
+            <div class="form-content">
+                <!-- Project Name -->
+                <div class="input-group">
+                    <label class="input-label">Project Name</label>
+                    <input type="text" class="input-field" id="projectName" placeholder="e.g., YouTube Vlog Episode 1">
+                </div>
+
+                <!-- Project Type -->
+                <div class="input-group">
+                    <label class="input-label">Project Type</label>
+                    <select class="input-field" id="projectType">
+                        <option value="">Select type...</option>
+                        <option value="Short Form">Short Form</option>
+                        <option value="Long Form">Long Form</option>
+                    </select>
+
+                    <!-- Estimated Finished Length (Long-form only) -->
+                    <div class="estimated-length-section" id="estimatedLengthSection">
+                        <div class="estimated-length-header">
+                            <span class="estimated-length-icon">⏱️</span>
+                            <span class="estimated-length-title">Estimated Finished Length</span>
+                        </div>
+                        <div class="estimated-length-desc">Helps us estimate turnaround time for your project</div>
+                        <select class="estimated-length-select" id="estimatedLength">
+                            <option value="up_to_10">Up to 10 minutes</option>
+                            <option value="10_to_20">10–20 minutes</option>
+                            <option value="20_to_30">20–30 minutes</option>
+                            <option value="30_plus">30+ minutes (custom timeline)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Upload Footage -->
+                <div class="input-group">
+                    <label class="input-label">Raw Footage</label>
+                    <div class="upload-box" id="uploadBox">
+                        <span class="upload-icon">📁</span>
+                        <div class="upload-title">Drop files or click to upload</div>
+                        <div class="upload-hint">MP4, MOV, or any video format</div>
+                        
+                        <div class="upload-divider">
+                            <span>or paste a link</span>
+                        </div>
+
+                        <div class="link-input-wrapper">
+                            <input type="text" class="link-input" id="footageLink" placeholder="Google Drive, Dropbox, etc.">
+                            <button type="button" class="link-btn" id="addLinkBtn">Add Link</button>
+                        </div>
+
+                        <div class="link-success" id="linkSuccess">
+                            <span>✓</span> Link added successfully
+                        </div>
+                    </div>
+
+                    <!-- Video Analysis Panel -->
+                    <div class="video-analysis-panel" id="videoAnalysisPanel">
+                        <!-- Video Preview -->
+                        <div class="video-preview-container">
+                            <video id="footagePreview" controls></video>
+                            <div class="video-loading-overlay" id="videoLoadingOverlay">
+                                <div class="video-loading-spinner"></div>
+                                <div class="video-loading-text">Loading video...</div>
+                            </div>
+                        </div>
+
+                        <!-- Hook Preference Selection -->
+                        <div class="hook-preference-section" id="hookPreferenceSection">
+                            <div class="hook-preference-header">
+                                <span class="icon">🪝</span>
+                                <span>Hook Preference</span>
+                            </div>
+                            <div class="hook-preference-options">
+                                <label class="hook-option" id="hookOptionEditor">
+                                    <input type="radio" name="hookPreference" value="editor_choice" checked>
+                                    <div class="hook-option-content">
+                                        <div class="hook-option-icon">✨</div>
+                                        <div class="hook-option-text">
+                                            <div class="hook-option-title">Editor's Choice</div>
+                                            <div class="hook-option-desc">Let our editors pick the best hook from your footage</div>
+                                        </div>
+                                        <div class="hook-option-check">✓</div>
+                                    </div>
+                                </label>
+                                <label class="hook-option" id="hookOptionCustom">
+                                    <input type="radio" name="hookPreference" value="custom">
+                                    <div class="hook-option-content">
+                                        <div class="hook-option-icon">🎯</div>
+                                        <div class="hook-option-text">
+                                            <div class="hook-option-title">I Have a Specific Hook</div>
+                                            <div class="hook-option-desc">Tell us exactly where to start or what to use</div>
+                                        </div>
+                                        <div class="hook-option-check">✓</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <!-- Custom Hook Input (shows when "I Have a Specific Hook" is selected) -->
+                            <div class="custom-hook-input" id="customHookInput" style="display: none;">
+                                <label class="input-label">Describe your hook or timestamp</label>
+                                <textarea id="customHookText" placeholder="e.g., 'Start at 0:45 where I say the shocking stat' or 'Use the part where I ask the question about money'" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Short Form Splitting (shows for long videos when Short Form selected) -->
+                        <div class="shorts-section" id="shortsSection">
+                            <div class="shorts-header">
+                                <span class="shorts-icon">✂️</span>
+                                <div>
+                                    <div class="shorts-title">Turn into Multiple Shorts</div>
+                                    <div class="shorts-desc">We'll create separate clips from this footage. Each short becomes its own project for focused editing.</div>
+                                </div>
+                            </div>
+                            <div class="shorts-counter">
+                                <span class="shorts-counter-label">Number of shorts:</span>
+                                <div class="shorts-counter-btns">
+                                    <button type="button" class="shorts-btn" id="shortsDecrease">−</button>
+                                    <span class="shorts-count" id="shortsCount">1</span>
+                                    <button type="button" class="shorts-btn" id="shortsIncrease">+</button>
+                                </div>
+                            </div>
+                            <div class="shorts-note">Max <span>3 shorts</span> per submission • Each will be queued as a separate project</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Style -->
+                <div class="input-group">
+                    <label class="input-label">Editing Style</label>
+                    <div class="style-selector">
+                        <!-- Custom Blueprint - Premium Card -->
+                        <div class="blueprint-card selected" data-style="custom" id="blueprintCard">
+                            <div class="blueprint-card-inner">
+                                <div class="blueprint-icon">✨</div>
+                                <div class="blueprint-info">
+                                    <div class="blueprint-label">
+                                        <span class="blueprint-label-dot"></span>
+                                        Your Style Blueprint
+                                    </div>
+                                    <div class="blueprint-name" id="customStyleName">Your Custom Blueprint</div>
+                                    <div class="blueprint-desc">Your personalized editing style from Step 2</div>
+                                </div>
+                                <div class="blueprint-check"></div>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="style-divider">
+                            <span>Or choose a preset</span>
+                        </div>
+
+                        <!-- Tier Rows -->
+                        <div class="tier-rows-container">
+                            <!-- Tier 1 - Quick & Clean -->
+                            <div class="tier-row tier-1-row" id="tier1Row">
+                                <div class="tier-row-header" onclick="toggleTierRow('tier1Row')">
+                                    <div class="tier-row-left">
+                                        <span class="tier-row-badge">Tier 1</span>
+                                        <span class="tier-row-title">Quick & Clean</span>
+                                    </div>
+                                    <div class="tier-row-right">
+                                        <div class="tier-row-eta">
+                                            <span class="tier-row-eta-icon">⚡</span>
+                                            <span>~1 day</span>
+                                        </div>
+                                        <div class="tier-row-chevron">▼</div>
+                                    </div>
+                                </div>
+                                <div class="tier-row-content">
+                                    <!-- Ali Abdaal -->
+                                    <div class="style-card" data-style="Ali Abdaal Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcffe5b4c0b0f3f1b26.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Ali Abdaal</div>
+                                            <div class="style-card-desc">Clean minimal captions, simple cuts</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Bottom captions only</div>
+                                                <div class="style-card-detail-feature">Clean cuts & pacing</div>
+                                                <div class="style-card-detail-feature">No graphics/overlays</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Podcast Clean -->
+                                    <div class="style-card" data-style="Podcast Clean" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcffe5b4c0b0f3f1b26.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Podcast Clean</div>
+                                            <div class="style-card-desc">Simple podcast edits</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Deadspace removal</div>
+                                                <div class="style-card-detail-feature">Basic captions</div>
+                                                <div class="style-card-detail-feature">Audio cleanup</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Webinar Basic -->
+                                    <div class="style-card" data-style="Webinar Basic" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcffe5b4c0b0f3f1b26.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Webinar Basic</div>
+                                            <div class="style-card-desc">Live webinar cleanup</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Remove dead air</div>
+                                                <div class="style-card-detail-feature">Basic trimming</div>
+                                                <div class="style-card-detail-feature">Audio leveling</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tier 2 - Enhanced Style -->
+                            <div class="tier-row tier-2-row" id="tier2Row">
+                                <div class="tier-row-header" onclick="toggleTierRow('tier2Row')">
+                                    <div class="tier-row-left">
+                                        <span class="tier-row-badge">Tier 2</span>
+                                        <span class="tier-row-title">Enhanced Style</span>
+                                    </div>
+                                    <div class="tier-row-right">
+                                        <div class="tier-row-eta">
+                                            <span class="tier-row-eta-icon">⚡</span>
+                                            <span>~1-2 days</span>
+                                        </div>
+                                        <div class="tier-row-chevron">▼</div>
+                                    </div>
+                                </div>
+                                <div class="tier-row-content">
+                                    <!-- Alex Hormozi -->
+                                    <div class="style-card" data-style="Alex Hormozi Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcf79369e18768eb51d.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Alex Hormozi</div>
+                                            <div class="style-card-desc">Bold text overlays, red highlights</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Bold keyword overlays</div>
+                                                <div class="style-card-detail-feature">B-roll inserts</div>
+                                                <div class="style-card-detail-feature">Light animations</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- ContentCreatorClub -->
+                                    <div class="style-card" data-style="ContentCreatorClub Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcf988a5f4580a2274f.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">ContentCreator</div>
+                                            <div class="style-card-desc">Animated icons, bold text</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Icon animations</div>
+                                                <div class="style-card-detail-feature">Bold white text</div>
+                                                <div class="style-card-detail-feature">Dynamic cuts</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Jeremy Liner -->
+                                    <div class="style-card" data-style="Jeremy Liner Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcf7688a546e890c59a.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Jeremy Liner</div>
+                                            <div class="style-card-desc">Multi-color bold captions</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Color emphasis text</div>
+                                                <div class="style-card-detail-feature">Yellow highlights</div>
+                                                <div class="style-card-detail-feature">Engaging pacing</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Course Pro -->
+                                    <div class="style-card" data-style="Course Pro Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcf046d5173f422603e.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Course Pro</div>
+                                            <div class="style-card-desc">Educational course edits</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Screen annotations</div>
+                                                <div class="style-card-detail-feature">B-roll transitions</div>
+                                                <div class="style-card-detail-feature">Chapter markers</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tier 3 - Premium Production -->
+                            <div class="tier-row tier-3-row" id="tier3Row">
+                                <div class="tier-row-header" onclick="toggleTierRow('tier3Row')">
+                                    <div class="tier-row-left">
+                                        <span class="tier-row-badge">Tier 3</span>
+                                        <span class="tier-row-title">Premium Production</span>
+                                    </div>
+                                    <div class="tier-row-right">
+                                        <div class="tier-row-eta">
+                                            <span class="tier-row-eta-icon">⚡</span>
+                                            <span>~3-4 days</span>
+                                        </div>
+                                        <div class="tier-row-chevron">▼</div>
+                                    </div>
+                                </div>
+                                <div class="tier-row-content">
+                                    <!-- Bryan Mark -->
+                                    <div class="style-card" data-style="Bryan Mark Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcfb8e0d78afc3cc4f3.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Bryan Mark</div>
+                                            <div class="style-card-desc">Complex layered graphics</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Custom animations</div>
+                                                <div class="style-card-detail-feature">Layered graphics</div>
+                                                <div class="style-card-detail-feature">Viral clip sourcing</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- YouTuber Pro -->
+                                    <div class="style-card" data-style="YouTuber Pro Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcf988a5f6ebca22750.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">YouTuber Pro</div>
+                                            <div class="style-card-desc">Full YouTube production</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Intense transitions</div>
+                                                <div class="style-card-detail-feature">Motion graphics</div>
+                                                <div class="style-card-detail-feature">Cinematic polish</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Viral Shorts -->
+                                    <div class="style-card" data-style="Viral Shorts Style" onclick="selectStyleCard(this)">
+                                        <div class="style-card-preview">
+                                            <video muted loop playsinline preload="metadata" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/67575fcfb8e0d78afc3cc4f3.mp4#t=0.5"></video>
+                                            <div class="style-card-play">
+                                                <div class="style-card-play-btn">▶</div>
+                                            </div>
+                                            <div class="style-card-check"></div>
+                                        </div>
+                                        <div class="style-card-info">
+                                            <div class="style-card-name">Viral Shorts</div>
+                                            <div class="style-card-desc">TikTok/Reels optimized</div>
+                                        </div>
+                                        <div class="style-card-detail">
+                                            <div class="style-card-detail-title">What's included</div>
+                                            <div class="style-card-detail-features">
+                                                <div class="style-card-detail-feature">Jump cuts galore</div>
+                                                <div class="style-card-detail-feature">Trendy effects</div>
+                                                <div class="style-card-detail-feature">Custom b-roll</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLA Estimate Display -->
+                <div class="sla-estimate-display" id="slaEstimateDisplay">
+                    <div class="sla-estimate-label">Estimated Turnaround</div>
+                    <div class="sla-estimate-value" id="slaEstimateValue">2–3 business days</div>
+                    <div class="sla-estimate-note" id="slaEstimateNote">Based on your selected style and project type</div>
+                </div>
+
+                <button type="button" class="btn-submit" id="submitBtn">
+                    <span>Submit My Project</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <p class="time-estimate">Takes about <span>1 minute</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONTENT PORTAL CONFIGURATION
+        // ============================================
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
+
+        // Local file testing bypass
+        const isLocalFile = window.location.protocol === 'file:';
+
+        // Demo mode for local file testing
+        if (isLocalFile) {
+            // Set demo user data if not already set
+            if (!localStorage.getItem('cb_email')) {
+                localStorage.setItem('cb_email', 'demo@contentbug.io');
+                localStorage.setItem('cb_name', 'Demo User');
+                localStorage.setItem('cb_first_name', 'Demo');
+                localStorage.setItem('cb_role', 'client');
+                localStorage.setItem('cb_plan', 'Creator');
+                localStorage.setItem('cb_blueprint_name', 'My YouTube Style');
+            }
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userEmail = urlParams.get('email') || localStorage.getItem('cb_email') || '';
+        const userName = urlParams.get('name') || localStorage.getItem('cb_name') || '';
+        const airtableClientId = localStorage.getItem('cb_airtable_id') || '';
+        const blueprintId = localStorage.getItem('cb_blueprint_id') || '';
+        const blueprintName = localStorage.getItem('cb_blueprint_name') || 'Your Custom Blueprint';
+
+        const AIRTABLE_TOKEN = 'patVDHIF4sdlIAZd3.2e92a65859b20b655bddbe29500d079491eca3cc281704e8ebd461fc95d36a93';
+        const AIRTABLE_BASE = 'appIrlFuwtsxj8hly';
+        const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9';
+
+        document.getElementById('customStyleName').textContent = blueprintName;
+
+        let selectedStyle = 'custom';
+        let footageLinkAdded = false;
+        let selectedDate = null;
+        let selectedTime = null;
+
+        // ============================================
+        // SLA CALCULATION ENGINE (Client View)
+        // ============================================
+        const slaEngine = {
+            SHORTS_SLA: {
+                tier_1: { min: 1, max: 1 },
+                tier_2: { min: 1, max: 2 },
+                tier_3: { min: 2, max: 3 }
+            },
+            LONGFORM_BASE_SLA: {
+                tier_1: { min: 1, max: 2 },
+                tier_2: { min: 2, max: 3 },
+                tier_3: { min: 4, max: 5 }
+            },
+            LENGTH_ADJUSTMENTS: {
+                up_to_10:  { min: 0, max: 0 },
+                '10_to_20': { min: 1, max: 2 },
+                '20_to_30': { min: 2, max: 3 },
+                '30_plus':  { min: 0, max: 0, customRequired: true }
+            },
+            calculateSLA(format, tier, estimatedLength = 'up_to_10') {
+                const tierKey = 'tier_' + tier;
+                if (format === 'short') {
+                    const sla = this.SHORTS_SLA[tierKey] || this.SHORTS_SLA.tier_2;
+                    return { min: sla.min, max: sla.max, customRequired: false };
+                }
+                const baseSla = this.LONGFORM_BASE_SLA[tierKey] || this.LONGFORM_BASE_SLA.tier_2;
+                const adjustment = this.LENGTH_ADJUSTMENTS[estimatedLength] || this.LENGTH_ADJUSTMENTS.up_to_10;
+                if (adjustment.customRequired) {
+                    return { min: baseSla.min, max: baseSla.max, customRequired: true };
+                }
+                return {
+                    min: baseSla.min + adjustment.min,
+                    max: baseSla.max + adjustment.max,
+                    customRequired: false
+                };
+            },
+            formatForClient(minDays, maxDays, customRequired) {
+                if (customRequired) {
+                    return 'Custom timeline required';
+                }
+                if (minDays === maxDays) {
+                    return minDays === 1 ? '1 business day' : `${minDays} business days`;
+                }
+                return `${minDays}–${maxDays} business days`;
+            }
+        };
+
+        // Style to tier mapping
+        const styleTierMap = {
+            'Ali Abdaal Style': 1,
+            'Podcast Clean': 1,
+            'Webinar Basic': 1,
+            'Alex Hormozi Style': 2,
+            'ContentCreatorClub Style': 2,
+            'Jeremy Liner Style': 2,
+            'Course Pro Style': 2,
+            'Bryan Mark Style': 3,
+            'YouTuber Pro Style': 3,
+            'Viral Shorts Style': 3,
+            'custom': 2 // Default for custom blueprint
+        };
+
+        // SLA Display Elements
+        const slaEstimateDisplay = document.getElementById('slaEstimateDisplay');
+        const slaEstimateValue = document.getElementById('slaEstimateValue');
+        const slaEstimateNote = document.getElementById('slaEstimateNote');
+        const estimatedLengthSection = document.getElementById('estimatedLengthSection');
+        const estimatedLengthSelect = document.getElementById('estimatedLength');
+        const projectTypeSelect = document.getElementById('projectType');
+
+        // Update SLA estimate based on current selections
+        function updateSlaEstimate() {
+            const projectType = projectTypeSelect.value;
+            const estimatedLength = estimatedLengthSelect?.value || 'up_to_10';
+            const tier = styleTierMap[selectedStyle] || 2;
+
+            // Only show SLA if project type is selected
+            if (!projectType) {
+                slaEstimateDisplay.classList.remove('show');
+                return;
+            }
+
+            const format = projectType === 'Short Form' ? 'short' : 'long';
+            const sla = slaEngine.calculateSLA(format, tier, estimatedLength);
+            const displayText = slaEngine.formatForClient(sla.min, sla.max, sla.customRequired);
+
+            slaEstimateValue.textContent = displayText;
+            slaEstimateDisplay.classList.add('show');
+
+            if (sla.customRequired) {
+                slaEstimateDisplay.classList.add('custom-timeline');
+                slaEstimateNote.textContent = 'Timeline will be confirmed after reviewing your project';
+            } else {
+                slaEstimateDisplay.classList.remove('custom-timeline');
+                slaEstimateNote.textContent = 'Based on your selected style and project type';
+            }
+        }
+
+        // Show/hide estimated length based on project type
+        function updateEstimatedLengthVisibility() {
+            const projectType = projectTypeSelect.value;
+            if (projectType === 'Long Form') {
+                estimatedLengthSection.classList.add('show');
+            } else {
+                estimatedLengthSection.classList.remove('show');
+            }
+            updateSlaEstimate();
+        }
+
+        // Event listeners for SLA calculation
+        projectTypeSelect.addEventListener('change', updateEstimatedLengthVisibility);
+        estimatedLengthSelect?.addEventListener('change', updateSlaEstimate);
+
+        function generateDateSlots() {
+            const container = document.getElementById('dateSlots');
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            let count = 0;
+            let date = new Date();
+            
+            while (count < 2) {
+                date.setDate(date.getDate() + 1);
+                const dayOfWeek = date.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    const slot = document.createElement('div');
+                    slot.className = 'date-slot';
+                    slot.dataset.date = date.toISOString().split('T')[0];
+                    slot.innerHTML = `
+                        <div class="date-day">${days[dayOfWeek]}</div>
+                        <div class="date-num">${date.getDate()}</div>
+                    `;
+                    container.appendChild(slot);
+                    count++;
+                }
+            }
+        }
+        generateDateSlots();
+
+        document.getElementById('dateSlots').addEventListener('click', (e) => {
+            const slot = e.target.closest('.date-slot');
+            if (!slot) return;
+            document.querySelectorAll('.date-slot').forEach(s => s.classList.remove('selected'));
+            slot.classList.add('selected');
+            selectedDate = slot.dataset.date;
+            updateBookButton();
+        });
+
+        document.getElementById('timeSlots').addEventListener('click', (e) => {
+            const slot = e.target.closest('.time-slot');
+            if (!slot) return;
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+            slot.classList.add('selected');
+            selectedTime = slot.dataset.time;
+            updateBookButton();
+        });
+
+        function updateBookButton() {
+            document.getElementById('btnBook').disabled = !(selectedDate && selectedTime);
+        }
+
+        // ============================================
+        // VIDEO ANALYSIS SYSTEM
+        // ============================================
+        const CLAUDE_API_KEY = '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';
+        const PROJECTS_FOLDER_ID = '131CAkK8L0cWy2BJX9o8m-h3arwFvPr5c'; // Airtable Records > Projects
+        
+        let videoDuration = 0;
+        let transcriptData = null;
+        let hookPreference = 'editor_choice';
+        let customHookText = '';
+        let shortsCount = 1;
+        let projectFolderUrl = null;
+        
+        const footageLink = document.getElementById('footageLink');
+        const addLinkBtn = document.getElementById('addLinkBtn');
+        const videoAnalysisPanel = document.getElementById('videoAnalysisPanel');
+        const footagePreview = document.getElementById('footagePreview');
+        const videoLoadingOverlay = document.getElementById('videoLoadingOverlay');
+        const hookPreferenceSection = document.getElementById('hookPreferenceSection');
+        const customHookInput = document.getElementById('customHookInput');
+        const shortsSection = document.getElementById('shortsSection');
+        
+        // Convert cloud links to direct video URLs
+        function getDirectVideoUrl(url) {
+            // Google Drive
+            if (url.includes('drive.google.com')) {
+                const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (fileIdMatch) {
+                    return `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`;
+                }
+            }
+            // Dropbox
+            if (url.includes('dropbox.com')) {
+                return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '');
+            }
+            // Direct video URL
+            return url;
+        }
+        
+        // Format seconds to MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Format date as MMDDYYYY
+        function formatDateForFolder(date) {
+            const d = date || new Date();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            return `${mm}${dd}${yyyy}`;
+        }
+        
+        // Sanitize folder name (remove special characters)
+        function sanitizeFolderName(name) {
+            return name.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '_').substring(0, 100);
+        }
+        
+        // Background transcription (runs silently, stores to Airtable)
+        async function transcribeVideoInBackground(videoUrl, duration) {
+            // For demo: generate mock transcript
+            // In production: send to Whisper API backend
+            const mockStatements = [
+                "What if I told you everything you know about productivity is wrong?",
+                "Here's the thing nobody tells you about building an audience.",
+                "I wasted three years doing this the hard way so you don't have to.",
+                "This one strategy changed everything for my business.",
+                "Most people completely miss this crucial step.",
+                "The secret isn't what you think it is.",
+                "Let me show you exactly what I mean.",
+                "Stop doing this immediately if you want to grow.",
+                "I'm about to share something I've never told anyone before.",
+                "This is the framework I use every single day."
+            ];
+            
+            let transcript = '';
+            const segmentDuration = duration / mockStatements.length;
+            
+            mockStatements.forEach((statement, index) => {
+                const timestamp = index * segmentDuration;
+                transcript += `[${formatTime(timestamp)}] ${statement}\n`;
+            });
+            
+            return transcript;
+        }
+        
+        // Hook preference change handler
+        document.querySelectorAll('input[name="hookPreference"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                hookPreference = e.target.value;
+                customHookInput.style.display = hookPreference === 'custom' ? 'block' : 'none';
+            });
+        });
+        
+        // Custom hook text handler
+        document.getElementById('customHookText')?.addEventListener('input', (e) => {
+            customHookText = e.target.value;
+        });
+        
+        // Handle video load - simplified
+        async function handleVideoLoad(url) {
+            const directUrl = getDirectVideoUrl(url);
+            
+            // Show analysis panel with video preview
+            videoAnalysisPanel.classList.add('show');
+            videoLoadingOverlay.style.display = 'flex';
+            
+            // Load video
+            footagePreview.src = directUrl;
+            
+            footagePreview.onloadedmetadata = async () => {
+                videoDuration = footagePreview.duration;
+                videoLoadingOverlay.style.display = 'none';
+                
+                // Show hook preference section
+                hookPreferenceSection.style.display = 'block';
+                
+                // Run transcription silently in background
+                try {
+                    transcriptData = await transcribeVideoInBackground(directUrl, videoDuration);
+                    console.log('Transcription captured silently');
+                } catch (err) {
+                    console.error('Background transcription error:', err);
+                }
+                
+                // Show shorts option for videos over 2 minutes
+                if (videoDuration > 120) {
+                    shortsSection.classList.add('show');
+                }
+            };
+            
+            footagePreview.onerror = () => {
+                videoLoadingOverlay.style.display = 'none';
+                // Still show hook preference even if video preview fails
+                hookPreferenceSection.style.display = 'block';
+                console.log('Video preview failed but form still functional');
+            };
+        }
+        
+        // Shorts counter
+        document.getElementById('shortsDecrease')?.addEventListener('click', () => {
+            if (shortsCount > 1) {
+                shortsCount--;
+                document.getElementById('shortsCount').textContent = shortsCount;
+            }
+        });
+        
+        document.getElementById('shortsIncrease')?.addEventListener('click', () => {
+            if (shortsCount < 3) {
+                shortsCount++;
+                document.getElementById('shortsCount').textContent = shortsCount;
+            }
+        });
+        
+        // Add Link button handler
+        document.getElementById('addLinkBtn').addEventListener('click', () => {
+            const link = document.getElementById('footageLink').value.trim();
+            if (link) {
+                footageLinkAdded = true;
+                document.getElementById('uploadBox').classList.add('has-content');
+                document.getElementById('linkSuccess').classList.add('show');
+                document.getElementById('addLinkBtn').textContent = 'Updated';
+                
+                // Start video analysis
+                handleVideoLoad(link);
+            }
+        });
+        
+        // Also trigger on Enter key
+        document.getElementById('footageLink').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('addLinkBtn').click();
+            }
+        });
+
+        // ============================================
+        // NEW STYLE SELECTOR SYSTEM
+        // ============================================
+
+        // Toggle tier row expansion
+        function toggleTierRow(rowId) {
+            const row = document.getElementById(rowId);
+            const wasExpanded = row.classList.contains('expanded');
+
+            // Close all rows first
+            document.querySelectorAll('.tier-row').forEach(r => r.classList.remove('expanded'));
+
+            // If it wasn't expanded, expand it
+            if (!wasExpanded) {
+                row.classList.add('expanded');
+            }
+        }
+
+        // Select style card
+        function selectStyleCard(card) {
+            // Deselect blueprint
+            document.getElementById('blueprintCard').classList.remove('selected');
+
+            // Deselect all style cards
+            document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+
+            // Select this card
+            card.classList.add('selected');
+            selectedStyle = card.dataset.style;
+
+            // Update SLA estimate when style changes
+            updateSlaEstimate();
+        }
+
+        // Blueprint card click handler
+        document.getElementById('blueprintCard').addEventListener('click', () => {
+            // Deselect all style cards
+            document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+
+            // Select blueprint
+            document.getElementById('blueprintCard').classList.add('selected');
+            selectedStyle = 'custom';
+
+            // Update SLA estimate when switching to blueprint
+            updateSlaEstimate();
+        });
+
+        // Style card video hover play
+        document.querySelectorAll('.style-card').forEach(card => {
+            const video = card.querySelector('video');
+            if (video) {
+                card.addEventListener('mouseenter', () => {
+                    video.play().catch(() => {});
+                });
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+            }
+        });
+
+        // Video Preview Modal
+        const videoModal = document.getElementById('videoModal');
+        const previewVideo = document.getElementById('previewVideo');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoTierBadge = document.getElementById('videoTierBadge');
+        const videoDescription = document.getElementById('videoDescription');
+        const turnaroundValue = document.getElementById('turnaroundValue');
+
+        // Style metadata for preview modal
+        const styleData = {
+            'Ali Abdaal Style': {
+                tier: 1,
+                description: 'Clean, minimal editing perfect for educational content. Focus on clarity and viewer retention with subtle enhancements.',
+                turnaround: '~1 day'
+            },
+            'Podcast Clean': {
+                tier: 1,
+                description: 'Simple podcast editing with deadspace removal, basic captions, and audio cleanup.',
+                turnaround: '~1 day'
+            },
+            'Webinar Basic': {
+                tier: 1,
+                description: 'Live webinar cleanup with dead air removal, basic trimming, and audio leveling.',
+                turnaround: '~1 day'
+            },
+            'Alex Hormozi Style': {
+                tier: 2,
+                description: 'High-energy business content with punchy cuts, bold text overlays, and attention-grabbing transitions.',
+                turnaround: '~1-2 days'
+            },
+            'ContentCreatorClub Style': {
+                tier: 2,
+                description: 'Dynamic creator-focused editing with trending effects, smooth transitions, and engaging visual elements.',
+                turnaround: '~1-2 days'
+            },
+            'Jeremy Liner Style': {
+                tier: 2,
+                description: 'Fast-paced motivational style with quick cuts, impactful text animations, and energetic flow.',
+                turnaround: '~1-2 days'
+            },
+            'Course Pro Style': {
+                tier: 2,
+                description: 'Educational course editing with screen annotations, b-roll transitions, and chapter markers.',
+                turnaround: '~1-2 days'
+            },
+            'Bryan Mark Style': {
+                tier: 3,
+                description: 'Premium production value with advanced motion graphics, custom animations, and cinematic polish.',
+                turnaround: '~3-4 days'
+            },
+            'YouTuber Pro Style': {
+                tier: 3,
+                description: 'Full YouTube production with intense transitions, motion graphics, and cinematic polish.',
+                turnaround: '~3-4 days'
+            },
+            'Viral Shorts Style': {
+                tier: 3,
+                description: 'TikTok/Reels optimized with jump cuts, trendy effects, and custom b-roll sourcing.',
+                turnaround: '~3-4 days'
+            }
+        };
+
+        function updateVideoModal(styleName) {
+            const data = styleData[styleName];
+            videoTitle.textContent = styleName;
+
+            if (data) {
+                videoTierBadge.textContent = 'Tier ' + data.tier;
+                videoTierBadge.className = 'video-tier-badge tier-' + data.tier;
+                videoDescription.textContent = data.description;
+                turnaroundValue.textContent = data.turnaround;
+                turnaroundValue.className = 'turnaround-value tier-' + data.tier;
+            } else {
+                // Custom blueprint
+                videoTierBadge.textContent = 'Custom';
+                videoTierBadge.className = 'video-tier-badge tier-1';
+                videoDescription.textContent = 'Your personalized editing style based on your blueprint preferences.';
+                turnaroundValue.textContent = 'Varies';
+                turnaroundValue.className = 'turnaround-value tier-1';
+            }
+        }
+
+        // Legacy support - keep for any remaining old elements
+        document.querySelectorAll('.tier-badge').forEach(badge => {
+            const header = badge.closest('.tier-header');
+            if (header) {
+                badge.addEventListener('mouseenter', () => {
+                    header.classList.add('expanded');
+                });
+                badge.addEventListener('mouseleave', () => {
+                    header.classList.remove('expanded');
+                });
+            }
+        });
+
+        // Thumb play overlay click to open video modal
+        document.querySelectorAll('.thumb-play').forEach(thumb => {
+            thumb.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const styleOption = thumb.closest('.style-option');
+                const video = styleOption.querySelector('video');
+                if (video) {
+                    const videoUrl = video.src.split('#')[0];
+                    const styleName = styleOption.dataset.style;
+                    previewVideo.src = videoUrl;
+                    updateVideoModal(styleName);
+                    videoModal.classList.add('active');
+                    previewVideo.play();
+                }
+            });
+        });
+
+        document.querySelectorAll('.preview-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const videoUrl = btn.dataset.video;
+                const styleName = btn.closest('.style-option').dataset.style;
+                previewVideo.src = videoUrl;
+                updateVideoModal(styleName);
+                videoModal.classList.add('active');
+                previewVideo.play();
+            });
+        });
+
+        document.getElementById('videoClose').addEventListener('click', () => {
+            videoModal.classList.remove('active');
+            previewVideo.pause();
+            previewVideo.src = '';
+        });
+
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) {
+                videoModal.classList.remove('active');
+                previewVideo.pause();
+                previewVideo.src = '';
+            }
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const projectName = document.getElementById('projectName').value.trim();
+            const projectType = document.getElementById('projectType').value;
+            const footageLink = document.getElementById('footageLink').value.trim();
+
+            if (!projectName) { alert('Please enter a project name'); return; }
+            if (!projectType) { alert('Please select a project type'); return; }
+            if (!footageLink && !footageLinkAdded) { alert('Please add a link to your footage'); return; }
+
+            const overlay = document.getElementById('loadingOverlay');
+            const circleIcon = document.getElementById('circleIcon');
+            const loadingText = document.getElementById('loadingText');
+            const loadingCircle = document.getElementById('loadingCircle');
+
+            overlay.classList.add('active');
+
+            // Get blueprint data from localStorage
+            const blueprintDataStr = localStorage.getItem('cb_blueprint_data');
+            const blueprintData = blueprintDataStr ? JSON.parse(blueprintDataStr) : null;
+            
+            // Determine number of projects to create
+            const isShortsMode = shortsSection.classList.contains('show') && shortsCount > 1;
+            const projectsToCreate = isShortsMode ? shortsCount : 1;
+
+            try {
+                const createdProjects = [];
+                
+                for (let i = 0; i < projectsToCreate; i++) {
+                    const isMultipleShorts = projectsToCreate > 1;
+                    const shortIndex = i + 1;
+                    const finalProjectName = isMultipleShorts ? `${projectName} (Short ${shortIndex}/${projectsToCreate})` : projectName;
+                    
+                    // Build project payload for Airtable
+                    const projectPayload = {
+                        fields: {
+                            "Project Name": finalProjectName,
+                            "Project Type": isMultipleShorts ? "Short Form" : projectType,
+                            "Raw Footage Link": footageLink,
+                            "Project Style": selectedStyle === 'custom' ? blueprintName : selectedStyle,
+                            "Project Status": "Submitted",
+                            "Is Free Trial": true,
+                            "Hook Preference": hookPreference === 'custom' ? customHookText : "Editor's Choice"
+                        }
+                    };
+                    
+                    // Generate folder name for backend automation
+                    const folderName = `${sanitizeFolderName(finalProjectName)}_${sanitizeFolderName(projectType)}_${formatDateForFolder()}`;
+                    projectPayload.fields["Folder Name"] = folderName;
+                    
+                    // Add video duration if captured
+                    if (videoDuration > 0) {
+                        projectPayload.fields["Video Duration"] = formatTime(videoDuration);
+                    }
+                    
+                    // Add transcript if available
+                    if (transcriptData && !isMultipleShorts) {
+                        projectPayload.fields["Transcript"] = transcriptData.substring(0, 5000); // Airtable limit
+                    }
+                    
+                    // Mark as part of batch if multiple shorts
+                    if (isMultipleShorts) {
+                        projectPayload.fields["Batch Notes"] = `Short ${shortIndex} of ${projectsToCreate} from same source footage`;
+                    }
+
+                    // Link to Client record
+                    if (airtableClientId) {
+                        projectPayload.fields["Client"] = [airtableClientId];
+                    }
+
+                    // Link to Style Blueprint record (for custom blueprints)
+                    if (blueprintId && selectedStyle === 'custom') {
+                        projectPayload.fields["Style Blueprint"] = [blueprintId];
+                    }
+                    
+                    // Update loading text for multiple projects
+                    if (isMultipleShorts) {
+                        loadingText.textContent = `Creating project ${shortIndex} of ${projectsToCreate}...`;
+                    }
+
+                    // Submit to Airtable Projects table
+                    const projectResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/Projects`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(projectPayload)
+                    });
+
+                    const projectData = await projectResponse.json();
+                    console.log(`Project ${shortIndex} created:`, projectData);
+                    createdProjects.push(projectData);
+                    
+                    if (projectData.id && i === 0) {
+                        localStorage.setItem('cb_project_id', projectData.id);
+                    }
+                    
+                    // Small delay between batch creates
+                    if (i < projectsToCreate - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
+                }
+
+                // Update User record - Step 3 Completed
+                if (airtableClientId) {
+                    await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/Users/${airtableClientId}`, {
+                        method: 'PATCH',
+                        headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fields: { "Step 3 Completed": "Y" } })
+                    });
+                }
+
+                // Build GHL webhook payload with all blueprint fields
+                const ghlPayload = {
+                    project_name: projectName,
+                    project_count: projectsToCreate,
+                    is_shorts_batch: projectsToCreate > 1,
+                    email: userEmail,
+                    name: userName,
+                    project_name: projectName,
+                    project_type: projectType,
+                    raw_footage_link: footageLink,
+                    project_style: selectedStyle === 'custom' ? blueprintName : selectedStyle,
+                    step_3_complete_yn: 'Y',
+                    first_project_complete_yn: 'Y',
+                    post_login_step: 'Step 3 Complete - Pending Intro Call',
+                    content_portal_status: 'Preview - Free Trial'
+                };
+
+                // Add blueprint fields to GHL payload if custom blueprint selected
+                if (selectedStyle === 'custom' && blueprintData) {
+                    ghlPayload.cut_speed = blueprintData.cut_speed || '';
+                    ghlPayload.caption_font = blueprintData.caption_font || '';
+                    ghlPayload.caption_position = blueprintData.caption_position || '';
+                    ghlPayload.caption_style = blueprintData.caption_style || '';
+                    ghlPayload.caption_size = blueprintData.caption_size || '';
+                    ghlPayload.caption_lines = blueprintData.caption_lines || '';
+                    ghlPayload.broll_frequency = blueprintData.broll_frequency || '';
+                    ghlPayload.broll_style = blueprintData.broll_style || '';
+                    ghlPayload.broll_type = blueprintData.broll_type || '';
+                    ghlPayload.broll_source = blueprintData.broll_source || '';
+                    ghlPayload.broll_ratio = blueprintData.broll_ratio || '';
+                    ghlPayload.title_animation_style = blueprintData.title_animation_style || '';
+                    ghlPayload.title_frequency = blueprintData.title_frequency || '';
+                    ghlPayload.png_overlays = blueprintData.png_overlays || '';
+                    ghlPayload.music_source = blueprintData.music_source || '';
+                    ghlPayload.music_type = blueprintData.music_type || '';
+                    ghlPayload.music_volume = blueprintData.music_volume || '';
+                    ghlPayload.sfx_frequency = blueprintData.sfx_frequency || '';
+                    ghlPayload.color_grading = blueprintData.color_grading || '';
+                    ghlPayload.export_resolution = blueprintData.export_resolution || '';
+                    ghlPayload.export_frame_rate = blueprintData.export_frame_rate || '';
+                    ghlPayload.export_format = blueprintData.export_format || '';
+                }
+                
+                // Add hook selection data to GHL
+                if (selectedHook) {
+                    ghlPayload.suggested_hook = selectedHook.text;
+                    ghlPayload.hook_timestamp = formatTime(selectedHook.timestamp);
+                    ghlPayload.hook_is_editor_choice = selectedHook.isEditorChoice ? 'Y' : 'N';
+                }
+                
+                // Add video metadata
+                if (videoDuration > 0) {
+                    ghlPayload.video_duration = formatTime(videoDuration);
+                }
+
+                await fetch(GHL_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ghlPayload)
+                });
+
+                setTimeout(() => {
+                    loadingText.textContent = 'Project submitted!';
+                    document.querySelector('.circle-spinner').style.display = 'none';
+                    document.querySelector('.circle-spinner-inner').style.display = 'none';
+                    circleIcon.classList.add('show');
+                    loadingCircle.classList.add('expand');
+
+                    setTimeout(() => {
+                        overlay.classList.remove('active');
+                        document.getElementById('bookingModal').classList.add('active');
+                    }, 1500);
+                }, 2000);
+
+            } catch (error) {
+                console.error('Submit error:', error);
+                loadingText.textContent = 'Project submitted!';
+                document.querySelector('.circle-spinner').style.display = 'none';
+                document.querySelector('.circle-spinner-inner').style.display = 'none';
+                circleIcon.classList.add('show');
+                
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    document.getElementById('bookingModal').classList.add('active');
+                }, 1500);
+            }
+        });
+
+        // Track alignment call click
+        function trackAlignmentClick() {
+            fetch(GHL_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    name: userName,
+                    alignment_call_clicked: 'Y',
+                    post_login_step: 'Alignment Call Clicked'
+                })
+            }).catch(() => {});
+
+            // Store in localStorage so confirmation page can access
+            localStorage.setItem('cb_alignment_clicked', 'true');
+        }
+
+        // Skip button - goes directly to portal without reminder
+        document.getElementById('skipBooking').addEventListener('click', (e) => {
+            e.preventDefault();
+            goToPortal();
+        });
+
+        document.getElementById('btnPortal').addEventListener('click', goToPortal);
+
+        function goToPortal() {
+            window.location.href = `https://app.contentbug.io/projects?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
+        }
+    </script>
+    <!-- Shell Controller for persistence -->
+    <script src="../shared/_app.js" defer></script>
+</body>
+</html>

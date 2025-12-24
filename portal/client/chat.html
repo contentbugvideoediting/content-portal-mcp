@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat — Content Bug Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/_tokens.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Neutral Luxury Palette */
+            --bg-base: #0a0a0c;
+            --bg-elevated: #111114;
+            --bg-surface: #161619;
+            --bg-hover: #1c1c20;
+            --bg-active: #222226;
+
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-default: rgba(255,255,255,0.1);
+            --border-strong: rgba(255,255,255,0.15);
+
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --text-faint: #52525b;
+
+            /* Accent Colors */
+            --accent-blue: #3b82f6;
+            --accent-blue-soft: rgba(59,130,246,0.15);
+            --accent-green: #22c55e;
+            --accent-green-soft: rgba(34,197,94,0.15);
+            --accent-orange: #f59e0b;
+            --accent-orange-soft: rgba(245,158,11,0.15);
+            --accent-red: #ef4444;
+            --accent-red-soft: rgba(239,68,68,0.15);
+            --accent-purple: #a855f7;
+            --accent-purple-soft: rgba(168,85,247,0.15);
+
+            /* Role Colors */
+            --role-owner: #a855f7;
+            --role-admin: #ef4444;
+            --role-editor: #3b82f6;
+            --role-client: #22c55e;
+
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 12px;
+            --space-lg: 16px;
+            --space-xl: 24px;
+            --space-2xl: 32px;
+
+            /* Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+
+            /* Layout */
+            --header-height: 56px;
+            --sidebar-width: 280px;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg-base);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* ==================== APP SHELL ==================== */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ==================== HEADER ==================== */
+        .app-header {
+            height: var(--header-height);
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-xl);
+            flex-shrink: 0;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .brand-logo {
+            height: 32px;
+            width: auto;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-btn.active {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        .nav-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--bg-hover);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-blue), #60a5fa);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .user-avatar.owner { background: linear-gradient(135deg, var(--role-owner), #c084fc); }
+        .user-avatar.admin { background: linear-gradient(135deg, var(--role-admin), #f87171); }
+        .user-avatar.editor { background: linear-gradient(135deg, var(--role-editor), #60a5fa); }
+        .user-avatar.client { background: linear-gradient(135deg, var(--role-client), #4ade80); }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .user-role.owner { color: var(--role-owner); }
+        .user-role.admin { color: var(--role-admin); }
+        .user-role.editor { color: var(--role-editor); }
+        .user-role.client { color: var(--role-client); }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .app-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ==================== CHAT SIDEBAR ==================== */
+        .chat-sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-elevated);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-md);
+        }
+
+        .sidebar-search {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+        }
+
+        .sidebar-search svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .sidebar-search input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .sidebar-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+        }
+
+        /* ==================== CHANNEL CATEGORIES ==================== */
+        .channel-category {
+            margin-bottom: var(--space-lg);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-sm) var(--space-sm);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: background 0.15s ease;
+        }
+
+        .category-header:hover {
+            background: var(--bg-hover);
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .category-title svg {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .category-header.collapsed .category-title svg {
+            transform: rotate(-90deg);
+        }
+
+        .category-add {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.15s ease;
+        }
+
+        .category-header:hover .category-add {
+            opacity: 1;
+        }
+
+        .category-add:hover {
+            background: var(--bg-active);
+            color: var(--text-primary);
+        }
+
+        .category-add svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .channel-list {
+            margin-top: var(--space-xs);
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .channel-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .channel-item.active {
+            background: var(--bg-active);
+        }
+
+        .channel-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .channel-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .channel-name {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .channel-item.active .channel-name,
+        .channel-item:hover .channel-name {
+            color: var(--text-primary);
+        }
+
+        .channel-badge {
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: var(--accent-red);
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .channel-item.unread .channel-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ==================== DIRECT MESSAGES ==================== */
+        .dm-section {
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .dm-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .dm-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .dm-item.active {
+            background: var(--bg-active);
+        }
+
+        .dm-avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-blue);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .dm-avatar .online-indicator {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-green);
+            border: 2px solid var(--bg-elevated);
+            border-radius: 50%;
+        }
+
+        .dm-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dm-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dm-item.active .dm-name,
+        .dm-item:hover .dm-name {
+            color: var(--text-primary);
+        }
+
+        .dm-role {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .dm-role.owner { color: var(--role-owner); }
+        .dm-role.admin { color: var(--role-admin); }
+        .dm-role.editor { color: var(--role-editor); }
+        .dm-role.client { color: var(--role-client); }
+
+        /* ==================== CHAT MAIN AREA ==================== */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-base);
+        }
+
+        .chat-header {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-xl);
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .chat-header-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .chat-header-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .chat-header-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .chat-header-topic {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: var(--space-md);
+            padding-left: var(--space-md);
+            border-left: 1px solid var(--border-default);
+        }
+
+        .chat-header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .chat-header-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .chat-header-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .chat-header-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==================== MESSAGES AREA ==================== */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .message {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .message-avatar.owner { background: linear-gradient(135deg, var(--role-owner), #c084fc); }
+        .message-avatar.admin { background: linear-gradient(135deg, var(--role-admin), #f87171); }
+        .message-avatar.editor { background: linear-gradient(135deg, var(--role-editor), #60a5fa); }
+        .message-avatar.client { background: linear-gradient(135deg, var(--role-client), #4ade80); }
+        .message-avatar.system { background: var(--bg-active); color: var(--text-muted); }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xs);
+        }
+
+        .message-author {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message-author.owner { color: var(--role-owner); }
+        .message-author.admin { color: var(--role-admin); }
+        .message-author.editor { color: var(--role-editor); }
+        .message-author.client { color: var(--role-client); }
+
+        .message-role-badge {
+            padding: 2px 6px;
+            background: var(--bg-active);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message-role-badge.owner { background: var(--accent-purple-soft); color: var(--role-owner); }
+        .message-role-badge.admin { background: var(--accent-red-soft); color: var(--role-admin); }
+        .message-role-badge.editor { background: var(--accent-blue-soft); color: var(--role-editor); }
+        .message-role-badge.client { background: var(--accent-green-soft); color: var(--role-client); }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .message-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .message-text a {
+            color: var(--accent-blue);
+        }
+
+        /* System Messages */
+        .system-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .system-message svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ==================== CHAT INPUT ==================== */
+        .chat-input-area {
+            padding: var(--space-lg) var(--space-xl);
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+        }
+
+        .chat-input-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .input-action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .input-action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .input-action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-primary);
+            resize: none;
+            min-height: 24px;
+            max-height: 120px;
+            line-height: 1.5;
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-send-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            background: var(--bg-active);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .chat-send-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==================== MEMBERS PANEL (Owner/Admin only) ==================== */
+        .members-panel {
+            width: 240px;
+            background: var(--bg-elevated);
+            border-left: 1px solid var(--border-subtle);
+            display: none;
+            flex-direction: column;
+        }
+
+        .members-panel.visible {
+            display: flex;
+        }
+
+        .members-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .members-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+        }
+
+        .member-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .member-group-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: var(--space-sm);
+            margin-bottom: var(--space-xs);
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .member-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .member-avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-blue);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .member-avatar.owner { background: linear-gradient(135deg, var(--role-owner), #c084fc); }
+        .member-avatar.admin { background: linear-gradient(135deg, var(--role-admin), #f87171); }
+        .member-avatar.editor { background: linear-gradient(135deg, var(--role-editor), #60a5fa); }
+        .member-avatar.client { background: linear-gradient(135deg, var(--role-client), #4ade80); }
+
+        .member-avatar .status-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-green);
+            border: 2px solid var(--bg-elevated);
+            border-radius: 50%;
+        }
+
+        .member-avatar .status-dot.offline {
+            background: var(--text-muted);
+        }
+
+        .member-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ==================== ROLE-BASED VISIBILITY ==================== */
+        /* Elements hidden by default, shown based on role */
+        .owner-only, .admin-only, .owner-admin-only {
+            display: none;
+        }
+
+        .app-container[data-role="owner"] .owner-only,
+        .app-container[data-role="owner"] .owner-admin-only {
+            display: flex;
+        }
+
+        .app-container[data-role="admin"] .admin-only,
+        .app-container[data-role="admin"] .owner-admin-only {
+            display: flex;
+        }
+
+        /* DM visibility - only owners can see all DMs */
+        .dm-item.private {
+            display: none;
+        }
+
+        .app-container[data-role="owner"] .dm-item.private {
+            display: flex;
+        }
+
+        /* Channel visibility for admin+ */
+        .channel-category.admin-channels {
+            display: none;
+        }
+
+        .app-container[data-role="owner"] .channel-category.admin-channels,
+        .app-container[data-role="admin"] .channel-category.admin-channels {
+            display: block;
+        }
+
+        /* Members panel visibility */
+        .app-container[data-role="owner"] .members-panel,
+        .app-container[data-role="admin"] .members-panel {
+            display: flex;
+        }
+
+        /* ==================== USER MENU DROPDOWN ==================== */
+        .user-profile {
+            position: relative;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 180px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: var(--space-xs);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .user-menu.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .user-menu-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .user-menu-item.logout {
+            color: var(--accent-red);
+        }
+
+        .user-menu-item.logout:hover {
+            background: var(--accent-red-soft);
+        }
+
+        .user-menu-divider {
+            height: 1px;
+            background: var(--border-subtle);
+            margin: var(--space-xs) 0;
+        }
+
+        /* ==================== OWNER PRIVATE DM STYLING ==================== */
+        .dm-item.owner-dm {
+            display: none;
+        }
+
+        .app-container[data-role="owner"] .dm-item.owner-dm {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" id="appContainer" data-role="client">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="Content Bug" class="brand-logo">
+            </div>
+
+            <nav class="header-nav">
+                <a href="https://app.contentbug.io/dashboard" class="nav-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Dashboard
+                </a>
+                <a href="https://app.contentbug.io/chat" class="nav-btn active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Chat
+                </a>
+                <a href="https://app.contentbug.io/team" class="nav-btn owner-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Team
+                </a>
+                <a href="https://app.contentbug.io/admin" class="nav-btn owner-admin-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Admin
+                </a>
+            </nav>
+
+            <div class="user-section">
+                <div class="user-profile" id="userProfile">
+                    <div class="user-avatar client" id="userAvatar">SC</div>
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Sean Conley</span>
+                        <span class="user-role client" id="userRole">Client</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="app-main">
+            <!-- Chat Sidebar -->
+            <aside class="chat-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">Channels</div>
+                    <div class="sidebar-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+
+                <div class="sidebar-content">
+                    <!-- General Channels -->
+                    <div class="channel-category">
+                        <div class="category-header">
+                            <div class="category-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                General
+                            </div>
+                            <button class="category-add owner-admin-only">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                        </div>
+                        <div class="channel-list">
+                            <div class="channel-item active">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+                                </div>
+                                <span class="channel-name">announcements</span>
+                            </div>
+                            <div class="channel-item unread">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </div>
+                                <span class="channel-name">general</span>
+                                <span class="channel-badge">3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Project Channels -->
+                    <div class="channel-category">
+                        <div class="category-header">
+                            <div class="category-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                My Projects
+                            </div>
+                        </div>
+                        <div class="channel-list">
+                            <div class="channel-item">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                                </div>
+                                <span class="channel-name">youtube-course-launch</span>
+                            </div>
+                            <div class="channel-item unread">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                                </div>
+                                <span class="channel-name">instagram-reel</span>
+                                <span class="channel-badge">1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Channels (Owner/Admin only) -->
+                    <div class="channel-category admin-channels">
+                        <div class="category-header">
+                            <div class="category-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                Admin
+                            </div>
+                            <button class="category-add owner-only">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                        </div>
+                        <div class="channel-list">
+                            <div class="channel-item">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                </div>
+                                <span class="channel-name">admin-chat</span>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                </div>
+                                <span class="channel-name">editor-team</span>
+                            </div>
+                            <div class="channel-item">
+                                <div class="channel-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                </div>
+                                <span class="channel-name">urgent-issues</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct Messages -->
+                    <div class="dm-section">
+                        <div class="category-header">
+                            <div class="category-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                Direct Messages
+                            </div>
+                        </div>
+                        <div class="channel-list">
+                            <div class="dm-item">
+                                <div class="dm-avatar editor" style="background: var(--role-editor);">
+                                    JM
+                                    <div class="online-indicator"></div>
+                                </div>
+                                <div class="dm-info">
+                                    <div class="dm-name">Jake Martinez</div>
+                                    <div class="dm-role editor">Editor</div>
+                                </div>
+                            </div>
+                            <div class="dm-item">
+                                <div class="dm-avatar admin" style="background: linear-gradient(135deg, var(--role-admin), #f87171);">CB</div>
+                                <div class="dm-info">
+                                    <div class="dm-name">Content Bug Support</div>
+                                    <div class="dm-role admin">Support</div>
+                                </div>
+                            </div>
+                            <!-- Owner Private DMs - Only visible to owners (Sean & Stockton) -->
+                            <div class="dm-item owner-dm" id="ownerDmSean">
+                                <div class="dm-avatar" style="background: linear-gradient(135deg, var(--role-owner), #c084fc);">
+                                    SC
+                                    <div class="online-indicator"></div>
+                                </div>
+                                <div class="dm-info">
+                                    <div class="dm-name">Sean Conley</div>
+                                    <div class="dm-role owner">Owner</div>
+                                </div>
+                            </div>
+                            <div class="dm-item owner-dm" id="ownerDmStockton">
+                                <div class="dm-avatar" style="background: linear-gradient(135deg, var(--role-owner), #c084fc);">
+                                    SW
+                                    <div class="online-indicator"></div>
+                                </div>
+                                <div class="dm-info">
+                                    <div class="dm-name">Stockton Walbeck</div>
+                                    <div class="dm-role owner">Owner</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Main Area -->
+            <main class="chat-main">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <div class="chat-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <span class="chat-header-title">general</span>
+                        <span class="chat-header-topic">General discussion for all members</span>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button class="chat-header-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </button>
+                        <button class="chat-header-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        </button>
+                        <button class="chat-header-btn" id="toggleMembersBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="system-message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Welcome to #general! This is the start of the channel.
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar owner">SC</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author owner">Sean Conley</span>
+                                <span class="message-role-badge owner">Owner</span>
+                                <span class="message-time">Today at 9:00 AM</span>
+                            </div>
+                            <div class="message-text">Hey team! We're rolling out some exciting updates to the portal this week. Stay tuned for announcements!</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar editor">JM</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author editor">Jake Martinez</span>
+                                <span class="message-role-badge editor">Editor</span>
+                                <span class="message-time">Today at 9:15 AM</span>
+                            </div>
+                            <div class="message-text">Awesome! Looking forward to it. Quick question - are we getting any updates to the review system?</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar admin">SW</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author admin">Stockton Walbeck</span>
+                                <span class="message-role-badge admin">Admin</span>
+                                <span class="message-time">Today at 9:22 AM</span>
+                            </div>
+                            <div class="message-text">Yes! The review system is getting a major upgrade. We're adding live co-watching, better timestamped comments, and a drawing tool for frame-specific feedback.</div>
+                        </div>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-avatar client">MC</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author client">Mike Chen</span>
+                                <span class="message-role-badge client">Client</span>
+                                <span class="message-time">Today at 10:45 AM</span>
+                            </div>
+                            <div class="message-text">This is great! Will clients be able to invite team members to review together?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="chat-input-wrapper">
+                        <div class="chat-input-actions">
+                            <button class="input-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            </button>
+                            <button class="input-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            </button>
+                        </div>
+                        <textarea class="chat-input" id="chatInput" placeholder="Message #general" rows="1"></textarea>
+                        <button class="chat-send-btn" id="sendBtn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Members Panel (Owner/Admin only) -->
+            <aside class="members-panel" id="membersPanel">
+                <div class="members-header">Members — 24</div>
+                <div class="members-list">
+                    <div class="member-group">
+                        <div class="member-group-title">Owners — 2</div>
+                        <div class="member-item">
+                            <div class="member-avatar owner">SC<div class="status-dot"></div></div>
+                            <span class="member-name">Sean Conley</span>
+                        </div>
+                        <div class="member-item">
+                            <div class="member-avatar owner">SW<div class="status-dot"></div></div>
+                            <span class="member-name">Stockton Walbeck</span>
+                        </div>
+                    </div>
+
+                    <div class="member-group">
+                        <div class="member-group-title">Admins — 3</div>
+                        <div class="member-item">
+                            <div class="member-avatar admin">KM<div class="status-dot"></div></div>
+                            <span class="member-name">Kevin Martinez</span>
+                        </div>
+                        <div class="member-item">
+                            <div class="member-avatar admin">TN<div class="status-dot offline"></div></div>
+                            <span class="member-name">Tyler Nguyen</span>
+                        </div>
+                    </div>
+
+                    <div class="member-group">
+                        <div class="member-group-title">Editors — 8</div>
+                        <div class="member-item">
+                            <div class="member-avatar editor">JM<div class="status-dot"></div></div>
+                            <span class="member-name">Jake Martinez</span>
+                        </div>
+                        <div class="member-item">
+                            <div class="member-avatar editor">MS<div class="status-dot"></div></div>
+                            <span class="member-name">Maria Santos</span>
+                        </div>
+                        <div class="member-item">
+                            <div class="member-avatar editor">DK<div class="status-dot offline"></div></div>
+                            <span class="member-name">David Kim</span>
+                        </div>
+                    </div>
+
+                    <div class="member-group">
+                        <div class="member-group-title">Clients — 11</div>
+                        <div class="member-item">
+                            <div class="member-avatar client">MC<div class="status-dot"></div></div>
+                            <span class="member-name">Mike Chen</span>
+                        </div>
+                        <div class="member-item">
+                            <div class="member-avatar client">SK<div class="status-dot offline"></div></div>
+                            <span class="member-name">Sarah Kim</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONTENT PORTAL CONFIGURATION
+        // ============================================
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
+        const AIRTABLE_BASE_ID = 'appIrlFuwtsxj8hly';
+        const GHL_LOCATION_ID = 'mCNHhjy593eUueqfuqyU';
+
+        // ============================================
+        // CHAT API FUNCTIONS (connected to MCP server)
+        // ============================================
+        async function sendChatMessage(channelId, content, senderInfo) {
+            try {
+                const response = await fetch(`${MCP_SERVER_URL}/chat/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        channel_id: channelId,
+                        sender_id: senderInfo.id,
+                        sender_name: senderInfo.name,
+                        sender_role: senderInfo.role || 'client',
+                        content: content,
+                        message_type: 'text'
+                    })
+                });
+                return await response.json();
+            } catch (err) {
+                console.error('Chat send error:', err);
+                return null;
+            }
+        }
+
+        async function getChatMessages(channelId, since = null) {
+            try {
+                let url = `${MCP_SERVER_URL}/chat/messages/${channelId}`;
+                if (since) url += `?since=${encodeURIComponent(since)}`;
+                const response = await fetch(url);
+                return await response.json();
+            } catch (err) {
+                console.error('Chat fetch error:', err);
+                return { messages: [] };
+            }
+        }
+
+        async function pollForNewMessages(channelId, since = null) {
+            try {
+                let url = `${MCP_SERVER_URL}/chat/poll/${channelId}`;
+                if (since) url += `?since=${encodeURIComponent(since)}`;
+                const response = await fetch(url);
+                return await response.json();
+            } catch (err) {
+                console.error('Poll error:', err);
+                return { has_new: false, messages: [] };
+            }
+        }
+
+        async function getTeamInbox() {
+            try {
+                const response = await fetch(`${MCP_SERVER_URL}/inbox?role=admin`);
+                return await response.json();
+            } catch (err) {
+                console.error('Inbox fetch error:', err);
+                return { inbox: [] };
+            }
+        }
+
+        // ==================== USER DATA MANAGEMENT ====================
+        function getUserData() {
+            return {
+                role: localStorage.getItem('cb_role') || 'client',
+                name: localStorage.getItem('cb_name') || 'User',
+                firstName: localStorage.getItem('cb_first_name') || localStorage.getItem('cb_name') || 'User',
+                email: localStorage.getItem('cb_email') || '',
+                plan: localStorage.getItem('cb_plan') || 'Free Trial',
+                airtableId: localStorage.getItem('cb_airtable_id') || ''
+            };
+        }
+
+        function logout() {
+            localStorage.removeItem('cb_email');
+            localStorage.removeItem('cb_name');
+            localStorage.removeItem('cb_first_name');
+            localStorage.removeItem('cb_role');
+            localStorage.removeItem('cb_plan');
+            localStorage.removeItem('cb_airtable_id');
+            localStorage.removeItem('cb_subscription_status');
+            localStorage.removeItem('cb_onboarding_complete');
+            localStorage.removeItem('cb_edit_slots');
+            window.location.href = 'https://app.contentbug.io/login';
+        }
+
+        function checkAuth() {
+            const email = localStorage.getItem('cb_email');
+            if (!email) {
+                window.location.href = 'https://app.contentbug.io/login';
+                return false;
+            }
+            return true;
+        }
+
+        // ==================== ROLE MANAGEMENT ====================
+        function getUserRole() {
+            return localStorage.getItem('cb_role') || 'client';
+        }
+
+        function setUserRole(role) {
+            localStorage.setItem('cb_role', role);
+            document.getElementById('appContainer').setAttribute('data-role', role);
+            updateUserDisplay(role);
+            updateNavigationForRole(role);
+            updateChannelVisibility(role);
+        }
+
+        function updateUserDisplay(role) {
+            const userData = getUserData();
+            const avatar = document.getElementById('userAvatar');
+            const roleEl = document.getElementById('userRole');
+            const nameEl = document.getElementById('userName');
+
+            // Update name
+            nameEl.textContent = userData.firstName;
+
+            // Update initials
+            const initials = userData.firstName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            avatar.textContent = initials;
+
+            // Update role classes
+            avatar.className = 'user-avatar ' + role;
+            roleEl.className = 'user-role ' + role;
+            roleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+        }
+
+        function updateNavigationForRole(role) {
+            // Update nav links based on role
+            const dashboardLink = document.querySelector('.nav-btn[href="https://app.contentbug.io/dashboard"]');
+
+            if (dashboardLink) {
+                // Route to appropriate dashboard
+                if (role === 'owner' || role === 'admin') {
+                    dashboardLink.href = 'https://app.contentbug.io/admin';
+                    dashboardLink.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Admin
+                    `;
+                } else if (role === 'editor') {
+                    dashboardLink.href = 'https://app.contentbug.io/editor';
+                    dashboardLink.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Team
+                    `;
+                } else {
+                    dashboardLink.href = 'https://app.contentbug.io/projects';
+                    dashboardLink.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        Dashboard
+                    `;
+                }
+            }
+        }
+
+        function updateChannelVisibility(role) {
+            const userData = getUserData();
+            const email = userData.email.toLowerCase();
+
+            // Owner emails for private DM visibility
+            const ownerEmails = ['sean@contentbug.io', 'stockton@contentbug.io', 'seanconley@contentbug.io'];
+            const isOwner = ownerEmails.includes(email) || role === 'owner';
+
+            // Show/hide private DMs - only between owners
+            document.querySelectorAll('.dm-item.owner-dm').forEach(dm => {
+                dm.style.display = isOwner ? 'flex' : 'none';
+            });
+
+            // Editor-specific channels
+            const editorGroupChannel = document.getElementById('editorGroupChannel');
+            if (editorGroupChannel) {
+                editorGroupChannel.style.display = (role === 'editor' || role === 'admin' || role === 'owner') ? 'block' : 'none';
+            }
+
+            // Client-specific: show only their assigned channels
+            if (role === 'client') {
+                // Hide admin channels category
+                document.querySelectorAll('.channel-category.admin-channels').forEach(cat => {
+                    cat.style.display = 'none';
+                });
+
+                // Show only their project channels (would be filtered by Airtable data in production)
+                // For now, show My Projects category
+            }
+        }
+
+        // ==================== CHAT FUNCTIONALITY ====================
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatMessages = document.getElementById('chatMessages');
+
+        chatInput.addEventListener('input', function() {
+            sendBtn.disabled = this.value.trim() === '';
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const role = getUserRole();
+            const userData = getUserData();
+            const initials = userData.firstName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+            const messageHtml = `
+                <div class="message">
+                    <div class="message-avatar ${role}">${initials}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author ${role}">${userData.firstName}</span>
+                            <span class="message-role-badge ${role}">${role.charAt(0).toUpperCase() + role.slice(1)}</span>
+                            <span class="message-time">Just now</span>
+                        </div>
+                        <div class="message-text">${escapeHtml(text)}</div>
+                    </div>
+                </div>
+            `;
+
+            chatMessages.insertAdjacentHTML('beforeend', messageHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            sendBtn.disabled = true;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== CHANNEL NAVIGATION ====================
+        document.querySelectorAll('.channel-item, .dm-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.channel-item, .dm-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                this.classList.remove('unread');
+                const badge = this.querySelector('.channel-badge');
+                if (badge) badge.remove();
+            });
+        });
+
+        // ==================== MEMBERS PANEL TOGGLE ====================
+        document.getElementById('toggleMembersBtn').addEventListener('click', function() {
+            document.getElementById('membersPanel').classList.toggle('visible');
+        });
+
+        // ==================== USER MENU ====================
+        function initUserMenu() {
+            const userProfile = document.getElementById('userProfile');
+
+            // Create dropdown menu
+            const menu = document.createElement('div');
+            menu.className = 'user-menu';
+            menu.innerHTML = `
+                <a href="https://app.contentbug.io/account" class="user-menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Account Settings
+                </a>
+                <a href="https://app.contentbug.io/dashboard" class="user-menu-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Dashboard
+                </a>
+                <div class="user-menu-divider"></div>
+                <button class="user-menu-item logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Logout
+                </button>
+            `;
+
+            userProfile.appendChild(menu);
+
+            userProfile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('visible');
+            });
+
+            document.addEventListener('click', function() {
+                menu.classList.remove('visible');
+            });
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            let userData = getUserData();
+
+            // Check if user is logged in (allow local file testing)
+            const isLocalFile = window.location.protocol === 'file:';
+            if (!userData.email && !isLocalFile) {
+                window.location.href = 'https://app.contentbug.io/login';
+                return;
+            }
+
+            // Demo mode for local file testing
+            if (isLocalFile && !userData.email) {
+                localStorage.setItem('cb_email', 'sean@contentbug.io');
+                localStorage.setItem('cb_name', 'Sean Conley');
+                localStorage.setItem('cb_first_name', 'Sean');
+                localStorage.setItem('cb_role', 'owner');
+                localStorage.setItem('cb_plan', 'Pro');
+                userData = getUserData();
+            }
+
+            const role = userData.role;
+            setUserRole(role);
+            initUserMenu();
+
+            // For demo: Allow role switching via console
+            window.setUserRole = setUserRole;
+            window.logout = logout;
+        });
+    </script>
+    <!-- Shell Controller for persistence -->
+    <script src="../shared/_app.js" defer></script>
+</body>
+</html>

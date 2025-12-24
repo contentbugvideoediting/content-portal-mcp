@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/_tokens.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        *::before, *::after { box-sizing: border-box; }
+        
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            background: var(--dark-bg);
+            overflow-x: hidden;
+        }
+        
+        html {
+            background: var(--dark-bg);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-white);
+            min-height: 100vh;
+            min-width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: var(--dark-bg);
+        }
+
+        /* ==================== MINIMAL BACKGROUND ==================== */
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--dark-bg);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250vw;
+            height: 200vh;
+            background: radial-gradient(ellipse at center,
+                rgba(30, 58, 138, 0.08) 0%,
+                rgba(15, 23, 42, 0.04) 40%,
+                transparent 70%);
+            filter: blur(100px);
+        }
+
+        /* ==================== LOGIN CONTAINER ==================== */
+        .login-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 460px;
+            padding: 20px;
+        }
+
+        /* ==================== PREMIUM CARD ==================== */
+        .login-card {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(165deg, 
+                rgba(15, 15, 25, 0.98) 0%, 
+                rgba(8, 8, 15, 0.99) 100%);
+            border-radius: 24px;
+            padding: 52px 48px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, 0.1),
+                0 25px 50px -12px rgba(0, 0, 0, 0.9),
+                0 0 100px -20px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Animated border glow */
+        .card-border {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: conic-gradient(
+                from var(--angle, 0deg),
+                transparent 0%,
+                rgba(59, 130, 246, 0.4) 10%,
+                rgba(147, 197, 253, 0.6) 15%,
+                rgba(59, 130, 246, 0.4) 20%,
+                transparent 30%,
+                transparent 70%,
+                rgba(59, 130, 246, 0.3) 80%,
+                rgba(147, 197, 253, 0.5) 85%,
+                rgba(59, 130, 246, 0.3) 90%,
+                transparent 100%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotateBorder 6s linear infinite;
+            pointer-events: none;
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        @keyframes rotateBorder {
+            to { --angle: 360deg; }
+        }
+
+        /* Inner ambient light */
+        .card-ambient {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(ellipse at center top,
+                rgba(59, 130, 246, 0.12) 0%,
+                transparent 70%);
+            pointer-events: none;
+            animation: ambientPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes ambientPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Background grid - more visible */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 85%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 85%);
+        }
+
+        /* Slow moving blue glow that illuminates the grid */
+        .bg-glow-sweep {
+            position: absolute;
+            width: 700px;
+            height: 500px;
+            background: radial-gradient(ellipse 70% 50% at center, rgba(30, 58, 138, 0.18) 0%, rgba(37, 99, 235, 0.08) 50%, transparent 80%);
+            border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+            filter: blur(120px);
+            animation: glowSweep 20s ease-in-out infinite, glowMorph 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowSweep {
+            0% { top: -150px; left: -200px; opacity: 0.35; }
+            25% { top: -50px; left: 55%; opacity: 0.55; }
+            50% { top: 45%; left: 65%; opacity: 0.4; }
+            75% { top: 55%; left: -150px; opacity: 0.5; }
+            100% { top: -150px; left: -200px; opacity: 0.35; }
+        }
+
+        @keyframes glowMorph {
+            0%, 100% { border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%; }
+            25% { border-radius: 45% 55% 40% 60% / 55% 45% 60% 40%; }
+            50% { border-radius: 55% 45% 60% 40% / 40% 55% 45% 60%; }
+            75% { border-radius: 40% 60% 45% 55% / 60% 40% 55% 45%; }
+        }
+
+        /* Decorative corner lines */
+        .corner-lines {
+            position: absolute;
+            inset: 20px;
+            pointer-events: none;
+        }
+
+        .corner-line {
+            position: absolute;
+            background: linear-gradient(90deg, var(--blue-bright), transparent);
+            opacity: 0.3;
+        }
+
+        .corner-line.top-left-h { top: 0; left: 0; width: 50px; height: 1px; }
+        .corner-line.top-left-v { top: 0; left: 0; width: 1px; height: 50px; background: linear-gradient(180deg, var(--blue-bright), transparent); }
+        .corner-line.bottom-right-h { bottom: 0; right: 0; width: 50px; height: 1px; background: linear-gradient(270deg, var(--blue-bright), transparent); }
+        .corner-line.bottom-right-v { bottom: 0; right: 0; width: 1px; height: 50px; background: linear-gradient(0deg, var(--blue-bright), transparent); }
+
+        /* ==================== LOGO SECTION ==================== */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 28px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animated ring around logo */
+        .logo-ring {
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            animation: ringRotate 12s linear infinite;
+        }
+
+        .logo-ring::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--blue-bright);
+            border-radius: 50%;
+            box-shadow: 0 0 12px 4px rgba(59, 130, 246, 0.6);
+        }
+
+        @keyframes ringRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pulsing glow behind logo */
+        .logo-glow {
+            position: absolute;
+            inset: -20px;
+            background: radial-gradient(circle, 
+                rgba(59, 130, 246, 0.25) 0%, 
+                transparent 70%);
+            animation: logoGlow 3s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(59, 130, 246, 0.4));
+            animation: logoBreathe 4s ease-in-out infinite;
+        }
+
+        @keyframes logoBreathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.03); }
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Loading spinner in logo */
+        .logo-spinner {
+            position: absolute;
+            width: 65px;
+            height: 65px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .logo-spinner svg {
+            width: 100%;
+            height: 100%;
+            animation: spinLoader 1s linear infinite;
+        }
+
+        .logo-spinner circle {
+            fill: none;
+            stroke: var(--blue-bright);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 120;
+            stroke-dashoffset: 90;
+        }
+
+        @keyframes spinLoader {
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-container.loading .logo-icon img {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-container.loading .logo-spinner {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-container.loading .logo-glow {
+            background: radial-gradient(circle,
+                rgba(59, 130, 246, 0.35) 0%,
+                transparent 70%);
+            animation: loadingGlow 1s ease-in-out infinite;
+        }
+
+        @keyframes loadingGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.05); }
+        }
+
+        /* Success checkmark animation - dark mint green */
+        .logo-container.success .logo-icon img {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-container.success .logo-spinner {
+            opacity: 0;
+        }
+
+        .logo-container.success .logo-glow {
+            background: radial-gradient(circle,
+                rgba(16, 185, 129, 0.4) 0%,
+                transparent 70%);
+            animation: successGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes successGlow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .checkmark-svg {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+        }
+
+        .logo-container.success .checkmark-svg {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .checkmark-svg path {
+            stroke: url(#checkGradient);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+        }
+
+        .logo-container.success .checkmark-svg path {
+            animation: drawCheck 0.5s ease-out 0.2s forwards;
+        }
+
+        @keyframes drawCheck {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Success shimmer effect on checkmark */
+        .checkmark-shimmer {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: linear-gradient(
+                135deg,
+                transparent 0%,
+                transparent 40%,
+                rgba(255, 255, 255, 0.4) 50%,
+                transparent 60%,
+                transparent 100%
+            );
+            background-size: 200% 200%;
+        }
+
+        .logo-container.success .checkmark-shimmer {
+            opacity: 1;
+            animation: checkShimmer 1.2s ease-out 0.6s forwards;
+        }
+
+        @keyframes checkShimmer {
+            0% { background-position: 150% 150%; }
+            100% { background-position: -50% -50%; }
+        }
+
+        .logo-container.success .logo-ring::before {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 0 20px 6px rgba(16, 185, 129, 0.6);
+        }
+
+        .logo-container.success .logo-ring {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* ==================== HEADER TEXT ==================== */
+        .header-section {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, 
+                #fff 0%, 
+                #fff 35%, 
+                var(--blue-light) 50%, 
+                #fff 65%, 
+                #fff 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: 400;
+            animation: fadeSlideUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animated underline */
+        .title-line {
+            width: 0;
+            height: 2px;
+            margin: 20px auto 0;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--blue-bright), 
+                var(--blue-light), 
+                var(--blue-bright), 
+                transparent);
+            border-radius: 2px;
+            animation: lineExpand 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes lineExpand {
+            to { width: 100px; }
+        }
+
+        /* ==================== FORM STYLES ==================== */
+        .form-section {
+            position: relative;
+            z-index: 2;
+            animation: fadeSlideUp 0.8s ease-out 0.4s both;
+        }
+
+        .form-view { display: none; }
+        .form-view.active { display: block; }
+
+        /* OTP Code Input */
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .otp-input {
+            width: 52px;
+            height: 64px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            background: #08080c;
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'SF Mono', Monaco, monospace;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .otp-input.filled {
+            border-color: var(--blue-bright);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .otp-input.error {
+            border-color: #ef4444;
+            animation: shake 0.4s ease;
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .resend-link a {
+            color: var(--blue-bright);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+
+        .resend-link a.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .email-display {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+        }
+
+        .email-display .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .email-display .email {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .change-email {
+            font-size: 12px;
+            color: var(--blue-bright);
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .change-email:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 18px 18px 52px;
+            background: #08080c !important;
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            color: #fff !important;
+            font-size: 15px;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-text-fill-color: #fff !important;
+            caret-color: #fff;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+            -webkit-text-fill-color: var(--text-muted);
+        }
+
+        /* Override browser autofill */
+        .form-input:-webkit-autofill,
+        .form-input:-webkit-autofill:hover,
+        .form-input:-webkit-autofill:focus,
+        .form-input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 50px #08080c inset !important;
+            -webkit-text-fill-color: #fff !important;
+            background-color: #08080c !important;
+            caret-color: #fff !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+            background: rgba(30, 58, 138, 0.15) !important;
+            box-shadow: 
+                0 0 0 4px rgba(59, 130, 246, 0.1),
+                0 0 40px -10px rgba(59, 130, 246, 0.3),
+                inset 0 0 30px rgba(59, 130, 246, 0.03);
+        }
+
+        .form-input:focus:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 50px rgba(30, 58, 138, 0.15) inset, 0 0 0 4px rgba(59, 130, 246, 0.1), 0 0 40px -10px rgba(59, 130, 246, 0.3) !important;
+        }
+
+        .form-input:focus ~ .form-label {
+            color: var(--blue-bright);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .form-input:focus ~ .input-icon {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Animated focus line */
+        .focus-line {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright), var(--blue-dark));
+            border-radius: 0 0 14px 14px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .form-input:focus ~ .focus-line {
+            width: calc(100% - 2px);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .password-toggle:hover {
+            opacity: 1;
+            color: var(--blue-bright);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Form Options Row */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .checkbox-custom {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--dark-border);
+            border-radius: 5px;
+            background: var(--dark-input);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-custom::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 9px;
+            border: solid var(--blue-bright);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg) scale(0);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .remember-me input:checked + .checkbox-custom {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--blue-mid);
+        }
+
+        .remember-me input:checked + .checkbox-custom::after {
+            transform: rotate(45deg) scale(1);
+            opacity: 1;
+        }
+
+        .remember-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+
+        .remember-me:hover .remember-text {
+            color: var(--text-light);
+        }
+
+        .forgot-link {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-link:hover {
+            color: var(--blue-bright);
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        /* ==================== PREMIUM BUTTON ==================== */
+        .btn-submit {
+            width: 100%;
+            padding: 18px 28px;
+            background: linear-gradient(135deg, 
+                var(--blue-dark) 0%, 
+                var(--blue-mid) 50%, 
+                var(--blue-bright) 100%);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 20px rgba(30, 58, 138, 0.4),
+                0 0 40px -10px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: buttonBreath 3s ease-in-out infinite;
+        }
+
+        @keyframes buttonBreath {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 40px rgba(59, 130, 246, 0.5),
+                0 0 60px -10px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-arrow {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-submit:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        /* ==================== DIVIDER ==================== */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 32px 0;
+            gap: 16px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--dark-border), transparent);
+        }
+
+        .divider-text {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* ==================== SECONDARY BUTTON ==================== */
+        .btn-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 24px;
+            background: transparent;
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            color: var(--text-white);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-secondary:hover::before {
+            opacity: 1;
+        }
+
+        .btn-secondary:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        .btn-secondary .btn-arrow {
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .trial-note {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            opacity: 0.7;
+        }
+
+        /* ==================== FOOTER LINK ==================== */
+        .footer-text {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-text a {
+            color: var(--blue-bright);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .footer-text a::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--blue-bright);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .footer-text a:hover::after {
+            width: 100%;
+        }
+
+        .footer-text a:hover {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        /* ==================== TRUST INDICATORS ==================== */
+        .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .trust-item:hover {
+            opacity: 1;
+            color: var(--text-light);
+        }
+
+        .trust-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* ==================== MESSAGES ==================== */
+        .message {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 22px;
+            display: none;
+        }
+
+        .message.show { display: block; }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #f87171;
+            animation: shake 0.4s ease;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: #34d399;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* ==================== LOADING ==================== */
+        .btn-loading {
+            pointer-events: none;
+        }
+
+        .btn-loading .btn-text,
+        .btn-loading .btn-arrow {
+            opacity: 0;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==================== FORM ROWS ==================== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-row .form-input {
+            padding-left: 18px;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 480px) {
+            .login-wrapper { padding: 16px; }
+            .login-card { padding: 36px 28px; }
+            .title { font-size: 26px; }
+            .form-row { grid-template-columns: 1fr; }
+            .trust-row { gap: 16px; flex-wrap: wrap; justify-content: center; }
+        }
+
+        /* ==================== SMOOTH 30FPS ==================== */
+        @media (prefers-reduced-motion: no-preference) {
+            * {
+                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Minimal Background -->
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+        <div class="bg-glow-sweep"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <!-- Card Effects -->
+            <div class="card-border"></div>
+            <div class="card-ambient"></div>
+
+            <!-- Corner Lines -->
+            <div class="corner-lines">
+                <div class="corner-line top-left-h"></div>
+                <div class="corner-line top-left-v"></div>
+                <div class="corner-line bottom-right-h"></div>
+                <div class="corner-line bottom-right-v"></div>
+            </div>
+
+            <!-- Logo -->
+            <div class="logo-section">
+                <div class="logo-container" id="logoContainer">
+                    <div class="logo-glow"></div>
+                    <div class="logo-ring"></div>
+                    <div class="logo-icon">
+                        <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug">
+                    </div>
+                    <!-- Loading spinner -->
+                    <div class="logo-spinner">
+                        <svg viewBox="0 0 50 50">
+                            <circle cx="25" cy="25" r="20"/>
+                        </svg>
+                    </div>
+                    <!-- Success checkmark - dark mint green -->
+                    <svg class="checkmark-svg" viewBox="0 0 24 24">
+                        <defs>
+                            <linearGradient id="checkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#10b981"/>
+                                <stop offset="100%" stop-color="#059669"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M4 12l6 6L20 6"/>
+                    </svg>
+                    <!-- Shimmer overlay -->
+                    <div class="checkmark-shimmer"></div>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="header-section">
+                <h1 class="title">Welcome Back</h1>
+                <p class="subtitle">Login To Your Content Portal</p>
+                <div class="title-line"></div>
+            </div>
+
+            <!-- Form Section -->
+            <div class="form-section">
+                <!-- Step 1: Email Entry -->
+                <div class="form-view active" id="emailView">
+                    <div class="message error" id="emailError"></div>
+
+                    <form id="emailForm">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <div class="input-container">
+                                <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com" required autocomplete="email">
+                                <span class="input-icon">✉️</span>
+                                <div class="focus-line"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="sendCodeBtn">
+                            <span class="btn-text">Send Login Code</span>
+                            <span class="btn-arrow">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <div class="divider-line"></div>
+                        <span class="divider-text">New to Content Bug?</span>
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <a href="https://contentbug.io/free-trial" class="btn-secondary">
+                        <span class="btn-text">Start Your Free Trial</span>
+                        <span class="btn-arrow">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </a>
+                    <p class="trial-note">No credit card required</p>
+
+                    <div class="trust-row">
+                        <div class="trust-item">
+                            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Secure</span>
+                        </div>
+                        <div class="trust-item">
+                            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Passwordless</span>
+                        </div>
+                        <div class="trust-item">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <span>Private</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: OTP Code Entry -->
+                <div class="form-view" id="otpView">
+                    <div class="email-display">
+                        <div class="label">Sending code to</div>
+                        <div class="email">
+                            <span id="displayEmail"></span>
+                            <span class="change-email" onclick="showView('emailView')">Change</span>
+                        </div>
+                    </div>
+
+                    <div class="message error" id="otpError"></div>
+                    <div class="message success" id="otpSuccess"></div>
+
+                    <form id="otpForm">
+                        <label class="form-label" style="text-align: center; display: block;">Enter 6-Digit Code</label>
+                        <div class="otp-inputs">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="verifyCodeBtn">
+                            <span class="btn-text">Verify & Sign In</span>
+                            <span class="btn-arrow">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </form>
+
+                    <div class="resend-link">
+                        Didn't receive the code? <a id="resendLink" onclick="resendCode()">Resend code</a>
+                        <span id="resendTimer"></span>
+                    </div>
+
+                    <div class="trust-row">
+                        <div class="trust-item">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>Code expires in 10 min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forgot Password Form (now uses OTP) -->
+                <div class="form-view" id="forgotView">
+                    <div class="header-section" style="margin-bottom: 28px;">
+                        <h1 class="title">Reset Password</h1>
+                        <p class="subtitle">We'll send you a reset link</p>
+                        <div class="title-line"></div>
+                    </div>
+
+                    <div class="message error" id="forgotError"></div>
+                    <div class="message success" id="forgotSuccess"></div>
+
+                    <form id="forgotForm">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <div class="input-container">
+                                <input type="email" class="form-input" id="forgotEmail" placeholder="you@example.com" required autocomplete="email">
+                                <span class="input-icon">✉️</span>
+                                <div class="focus-line"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <span class="btn-text">Send Reset Link</span>
+                            <span class="btn-arrow">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <div class="divider-line"></div>
+                        <span class="divider-text">or</span>
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <p class="footer-text">
+                        Remember your password? <a href="#" onclick="showView('loginView'); return false;">Sign in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONTENT PORTAL OTP AUTHENTICATION
+        // ============================================
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
+        const PORTAL_BASE = 'https://app.contentbug.io';
+
+        // Portal URLs by role
+        const PORTAL_ROUTES = {
+            owner: `${PORTAL_BASE}/admin`,
+            admin: `${PORTAL_BASE}/admin`,
+            editor: `${PORTAL_BASE}/editor`,
+            client: `${PORTAL_BASE}/dashboard`,
+            free_trial: `${PORTAL_BASE}/dashboard`
+        };
+
+        // State
+        let currentEmail = '';
+        let resendCooldown = 0;
+        let resendTimer = null;
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function showView(viewId) {
+            document.querySelectorAll('.form-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.querySelectorAll('.message').forEach(m => {
+                m.classList.remove('show');
+                m.textContent = '';
+            });
+
+            // Update header based on view
+            const title = document.querySelector('.header-section .title');
+            const subtitle = document.querySelector('.header-section .subtitle');
+            if (viewId === 'emailView') {
+                title.textContent = 'Welcome Back';
+                subtitle.textContent = 'Login To Your Content Portal';
+            } else if (viewId === 'otpView') {
+                title.textContent = 'Check Your Email';
+                subtitle.textContent = 'Enter the 6-digit code we sent';
+            }
+        }
+
+        function showMessage(elementId, message) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = message;
+                el.classList.add('show');
+            }
+        }
+
+        function setLoading(btn, loading) {
+            if (btn) {
+                btn.classList.toggle('btn-loading', loading);
+                btn.disabled = loading;
+            }
+        }
+
+        function startResendCooldown(seconds = 60) {
+            resendCooldown = seconds;
+            const link = document.getElementById('resendLink');
+            const timer = document.getElementById('resendTimer');
+
+            link.classList.add('disabled');
+            updateResendTimer();
+
+            resendTimer = setInterval(() => {
+                resendCooldown--;
+                updateResendTimer();
+                if (resendCooldown <= 0) {
+                    clearInterval(resendTimer);
+                    link.classList.remove('disabled');
+                    timer.textContent = '';
+                }
+            }, 1000);
+        }
+
+        function updateResendTimer() {
+            const timer = document.getElementById('resendTimer');
+            if (resendCooldown > 0) {
+                timer.textContent = ` (${resendCooldown}s)`;
+            }
+        }
+
+        // ============================================
+        // OTP INPUT HANDLING
+        // ============================================
+        function setupOTPInputs() {
+            const inputs = document.querySelectorAll('.otp-input');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('keydown', (e) => {
+                    // Clear on any key except tab
+                    if (e.key !== 'Tab') {
+                        input.classList.remove('error');
+                    }
+
+                    // Backspace - move to previous
+                    if (e.key === 'Backspace' && !input.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    input.value = value;
+
+                    if (value) {
+                        input.classList.add('filled');
+                        // Auto-advance to next input
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    } else {
+                        input.classList.remove('filled');
+                    }
+
+                    // Auto-submit when all filled
+                    const code = getOTPCode();
+                    if (code.length === 6) {
+                        document.getElementById('otpForm').dispatchEvent(new Event('submit'));
+                    }
+                });
+
+                // Handle paste
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+
+                    pastedData.split('').forEach((char, i) => {
+                        if (inputs[i]) {
+                            inputs[i].value = char;
+                            inputs[i].classList.add('filled');
+                        }
+                    });
+
+                    // Focus last filled or next empty
+                    const lastIndex = Math.min(pastedData.length, inputs.length - 1);
+                    inputs[lastIndex].focus();
+
+                    // Auto-submit if complete
+                    if (pastedData.length === 6) {
+                        setTimeout(() => {
+                            document.getElementById('otpForm').dispatchEvent(new Event('submit'));
+                        }, 100);
+                    }
+                });
+            });
+        }
+
+        function getOTPCode() {
+            const inputs = document.querySelectorAll('.otp-input');
+            return Array.from(inputs).map(i => i.value).join('');
+        }
+
+        function clearOTPInputs() {
+            const inputs = document.querySelectorAll('.otp-input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled', 'error');
+            });
+            inputs[0]?.focus();
+        }
+
+        function showOTPError() {
+            const inputs = document.querySelectorAll('.otp-input');
+            inputs.forEach(input => input.classList.add('error'));
+        }
+
+        // ============================================
+        // AUTH API CALLS
+        // ============================================
+        async function requestOTP(email) {
+            const response = await fetch(`${MCP_SERVER_URL}/auth/request-code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Failed to send code');
+            }
+            return data;
+        }
+
+        async function verifyOTP(email, code) {
+            const response = await fetch(`${MCP_SERVER_URL}/auth/verify-code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, code })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || data.error || 'Invalid code');
+            }
+            return data;
+        }
+
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${MCP_SERVER_URL}/auth/status`, {
+                    credentials: 'include'
+                });
+                return await response.json();
+            } catch (e) {
+                return { authenticated: false };
+            }
+        }
+
+        // ============================================
+        // FORM HANDLERS
+        // ============================================
+
+        // Email form - Step 1
+        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('sendCodeBtn');
+            const logoContainer = document.getElementById('logoContainer');
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+
+            if (!email) return;
+
+            setLoading(btn, true);
+            logoContainer.classList.add('loading');
+            document.getElementById('emailError').classList.remove('show');
+
+            try {
+                const result = await requestOTP(email);
+
+                currentEmail = email;
+                document.getElementById('displayEmail').textContent = email;
+
+                // Show success then transition
+                logoContainer.classList.remove('loading');
+                setLoading(btn, false);
+
+                showView('otpView');
+                startResendCooldown(60);
+
+                // Focus first OTP input
+                setTimeout(() => {
+                    document.querySelector('.otp-input')?.focus();
+                }, 300);
+
+                // Show if new user
+                if (result.is_new_user) {
+                    showMessage('otpSuccess', 'Welcome! This will create your new account.');
+                }
+
+            } catch (err) {
+                logoContainer.classList.remove('loading');
+                showMessage('emailError', err.message || 'Unable to send code. Please try again.');
+                setLoading(btn, false);
+            }
+        });
+
+        // OTP form - Step 2
+        document.getElementById('otpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('verifyCodeBtn');
+            const logoContainer = document.getElementById('logoContainer');
+            const code = getOTPCode();
+
+            if (code.length !== 6) {
+                showOTPError();
+                showMessage('otpError', 'Please enter all 6 digits');
+                return;
+            }
+
+            setLoading(btn, true);
+            logoContainer.classList.add('loading');
+            document.getElementById('otpError').classList.remove('show');
+
+            try {
+                const result = await verifyOTP(currentEmail, code);
+
+                // Store user info in localStorage for portal use
+                localStorage.setItem('cb_email', result.user.email);
+                localStorage.setItem('cb_name', result.user.name || '');
+                localStorage.setItem('cb_first_name', (result.user.name || '').split(' ')[0]);
+                localStorage.setItem('cb_role', result.user.role);
+                localStorage.setItem('cb_airtable_id', result.user.record_id || '');
+
+                // Success animation
+                logoContainer.classList.remove('loading');
+                logoContainer.classList.add('success');
+                setLoading(btn, false);
+                btn.innerHTML = '<span class="btn-text">Welcome!</span>';
+                btn.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+
+                await new Promise(r => setTimeout(r, 1500));
+
+                // Route based on role
+                const portalUrl = PORTAL_ROUTES[result.user.role] || PORTAL_ROUTES.client;
+                window.location.href = portalUrl;
+
+            } catch (err) {
+                logoContainer.classList.remove('loading');
+                showOTPError();
+                showMessage('otpError', err.message || 'Invalid code. Please try again.');
+                setLoading(btn, false);
+            }
+        });
+
+        // Resend code
+        async function resendCode() {
+            if (resendCooldown > 0) return;
+
+            const link = document.getElementById('resendLink');
+            link.textContent = 'Sending...';
+
+            try {
+                await requestOTP(currentEmail);
+                link.textContent = 'Resend code';
+                startResendCooldown(60);
+                showMessage('otpSuccess', 'New code sent!');
+                clearOTPInputs();
+            } catch (err) {
+                link.textContent = 'Resend code';
+                showMessage('otpError', err.message || 'Failed to resend. Please try again.');
+            }
+        }
+
+        // Forgot password form (uses same OTP flow)
+        document.getElementById('forgotForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('.btn-submit');
+            const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+
+            setLoading(btn, true);
+
+            try {
+                await requestOTP(email);
+                currentEmail = email;
+                document.getElementById('displayEmail').textContent = email;
+                showView('otpView');
+                startResendCooldown(60);
+            } catch (err) {
+                showMessage('forgotError', err.message || 'Unable to send code.');
+            } finally {
+                setLoading(btn, false);
+            }
+        });
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            setupOTPInputs();
+
+            // Check for remembered email
+            const rememberedEmail = localStorage.getItem('cb_remembered_email');
+            if (rememberedEmail) {
+                document.getElementById('loginEmail').value = rememberedEmail;
+            }
+
+            // Check if already authenticated
+            const status = await checkAuthStatus();
+            if (status.authenticated) {
+                const portalUrl = PORTAL_ROUTES[status.user?.role] || PORTAL_ROUTES.client;
+                window.location.href = portalUrl;
+            }
+        });
+    </script>
+    <!-- Shell Controller (handles logout cleanup) -->
+    <script src="../shared/_app.js" defer></script>
+</body>
+</html>

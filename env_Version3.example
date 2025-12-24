@@ -1,0 +1,32 @@
+```text
+# .env.example - COPY to .env and fill with your NEW (rotated) keys
+# DO NOT paste old leaked keys here or in chat.
+
+# Server
+PORT=3000
+
+# AI providers
+CLAUDE_API_KEY=sk-claude-REPLACE_WITH_NEW_KEY
+CLAUDE_API_URL=https://api.anthropic.com/v1/complete
+CLAUDE_MODEL=claude-2
+
+# Optional OpenAI
+OPENAI_API_KEY=sk-openai-REPLACE_WITH_NEW_KEY
+OPENAI_API_URL=https://api.openai.com/v1/chat/completions
+
+# Airtable (for persistence/logs)
+AIRTABLE_API_KEY=patREPLACE_WITH_NEW_KEY
+AIRTABLE_BASE_ID=appREPLACE_WITH_BASE_ID
+AIRTABLE_TABLE=Conversations
+
+# Optional outgoing webhook (GHL, Zapier)
+GHL_WEBHOOK_URL=https://hooks.zapier.com/hooks/catch/REPLACE
+
+# Shared secrets for incoming webhooks
+MAKE_SHARED_SECRET=replace-with-make-secret
+GHL_SHARED_SECRET=replace-with-ghl-secret
+HMAC_HEADER=x-mcp-signature
+
+# Tuning
+MAX_TOKENS=800
+```

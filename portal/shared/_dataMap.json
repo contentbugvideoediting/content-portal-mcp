@@ -1,0 +1,549 @@
+{
+  "$schema": "ContentBug Portal - Canonical Airtable Field Mapping",
+  "version": "1.0.0",
+  "description": "Maps portal data to canonical Airtable fields. All page scripts MUST use these mappings.",
+
+  "tables": {
+    "Contacts": {
+      "description": "Client records from GHL sync",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "email": { "airtable": "Email", "type": "email" },
+        "name": { "airtable": "Contact Name", "type": "string" },
+        "firstName": { "airtable": "First Name", "type": "string" },
+        "phone": { "airtable": "Phone", "type": "phone" },
+        "avatarURL": { "airtable": "AvatarURL", "type": "url" },
+        "plan": { "airtable": "Plan", "type": "singleSelect", "options": ["Free Trial", "Starter", "Growth", "Creator", "Pro"] },
+        "onboardingStep": { "airtable": "OnboardingStep", "type": "singleSelect", "options": ["step-1", "step-2", "step-3", "complete"] },
+        "entitlementStatus": {
+          "airtable": "Entitlement Status",
+          "type": "singleSelect",
+          "options": ["trial", "active", "past_due", "locked", "canceled"],
+          "canonical": true,
+          "description": "PRIMARY field for access gating"
+        },
+        "entitlementReason": { "airtable": "Entitlement Reason", "type": "string" },
+        "dashboardLastVisit": { "airtable": "DashboardLastVisit", "type": "dateTime" },
+        "chatDockState": { "airtable": "ChatDockState", "type": "singleSelect", "options": ["collapsed", "narrow", "full"] },
+        "editorAssigned": { "airtable": "EditorAssigned", "type": "linkedRecord", "linkedTable": "Team" },
+        "trialStartDate": { "airtable": "TrialStartDate", "type": "dateTime", "description": "When free trial began" },
+        "lastActivityAt": { "airtable": "LastActivityAt", "type": "dateTime", "description": "Last portal activity" },
+        "projectsSubmitted": { "airtable": "ProjectsSubmitted", "type": "number", "description": "Total projects submitted" },
+        "chatChannelId": { "airtable": "ChatChannelID", "type": "string", "description": "Auto-created chat channel ID" },
+        "driveFolderId": { "airtable": "DriveFolderID", "type": "string", "description": "Root Google Drive folder ID" },
+        "driveApprovedFolderId": { "airtable": "DriveApprovedFolderID", "type": "string" },
+        "driveBrandAssetsFolderId": { "airtable": "DriveBrandAssetsFolderID", "type": "string" },
+        "lastActiveAt": {
+          "airtable": "LastActiveAt",
+          "type": "dateTime",
+          "description": "Last portal activity ping (every 60s if active)"
+        },
+        "qualifyingComplete": {
+          "airtable": "QualifyingComplete",
+          "type": "checkbox",
+          "description": "True if user has completed one-time qualifying questions (pages 9-12)"
+        },
+        "notifyOnReviewReady": {
+          "airtable": "NotifyOnReviewReady",
+          "type": "checkbox",
+          "default": true,
+          "description": "Send notification when edit is ready for review"
+        },
+        "notifyOnDelivery": {
+          "airtable": "NotifyOnDelivery",
+          "type": "checkbox",
+          "default": true,
+          "description": "Send notification when project is delivered"
+        },
+        "notifyOnRevisionResponse": {
+          "airtable": "NotifyOnRevisionResponse",
+          "type": "checkbox",
+          "default": true,
+          "description": "Send notification when editor responds to revision"
+        },
+        "notificationChannels": {
+          "airtable": "NotificationChannels",
+          "type": "multipleSelect",
+          "options": ["email", "sms"],
+          "default": ["email"],
+          "description": "Preferred notification channels"
+        },
+        "isWhiteLabelPartner": {
+          "airtable": "IsWhiteLabelPartner",
+          "type": "checkbox",
+          "description": "True if this contact is a white-label partner"
+        },
+        "whiteLabelBrandName": {
+          "airtable": "WhiteLabelBrandName",
+          "type": "string",
+          "description": "Partner's brand name for white-label display"
+        },
+        "whiteLabelSlug": {
+          "airtable": "WhiteLabelSlug",
+          "type": "string",
+          "description": "URL-safe slug for white-label partner"
+        },
+        "whiteLabelActive": {
+          "airtable": "WhiteLabelActive",
+          "type": "checkbox",
+          "description": "True if white-label features are active"
+        },
+        "whiteLabelPartnerId": {
+          "airtable": "WhiteLabelPartnerID",
+          "type": "linkedRecord",
+          "linkedTable": "Contacts",
+          "description": "Link to white-label partner (for partner's clients)"
+        }
+      }
+    },
+
+    "Projects": {
+      "description": "Client projects / edit requests",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "projectUUID": {
+          "airtable": "Project UUID",
+          "type": "string",
+          "canonical": true,
+          "description": "Unique identifier for URL references"
+        },
+        "title": { "airtable": "Project Name", "type": "string" },
+        "clientId": { "airtable": "Client", "type": "linkedRecord", "linkedTable": "Contacts" },
+        "status": {
+          "airtable": "Status",
+          "type": "singleSelect",
+          "options": ["draft", "awaiting_call", "queued", "in_edit", "review_ready", "revisions", "approved", "delivered", "archived"],
+          "canonical": true,
+          "description": "PRIMARY status field - use this, not 'Project Status'"
+        },
+        "legacyStatus": {
+          "airtable": "Project Status",
+          "type": "singleSelect",
+          "deprecated": true,
+          "fallbackFor": "Status",
+          "description": "DEPRECATED - migrate to 'Status' field"
+        },
+        "assignedEditor": { "airtable": "Assigned Editor", "type": "linkedRecord", "linkedTable": "Team" },
+        "assignedEditorId": { "airtable": "AssignedEditorId", "type": "string", "description": "Text ID for filtering" },
+        "dueDate": { "airtable": "DueDate", "type": "dateTime" },
+        "eta": { "airtable": "ETA", "type": "dateTime" },
+        "slaRisk": {
+          "airtable": "SLARisk",
+          "type": "singleSelect",
+          "options": ["none", "watch", "at_risk"],
+          "computed": {
+            "watch": "due within 24h AND status NOT IN (review_ready, approved, delivered, archived)",
+            "at_risk": "overdue AND status NOT IN (approved, delivered, archived)"
+          }
+        },
+        "thumbnailURL": { "airtable": "ThumbnailURL", "type": "url" },
+        "videoURL": { "airtable": "VideoURL", "type": "url" },
+        "reviewVideoURL": { "airtable": "ReviewVideoURL", "type": "url" },
+        "exportVideoURL": { "airtable": "ExportVideoURL", "type": "url" },
+        "heroOrder": { "airtable": "HeroOrder", "type": "number" },
+        "duration": { "airtable": "Duration", "type": "number" },
+        "feedbackCount": { "airtable": "FeedbackCount", "type": "number" },
+        "resolvedCount": { "airtable": "ResolvedCount", "type": "number" },
+        "revisionCount": { "airtable": "RevisionCount", "type": "number" },
+        "qualityScore": { "airtable": "QualityScore", "type": "number", "description": "1-10 client rating" },
+        "turnaroundScore": { "airtable": "TurnaroundScore", "type": "number", "description": "Computed based on delivery timing" },
+
+        "projectFormat": {
+          "airtable": "Project Format",
+          "type": "singleSelect",
+          "options": ["short", "long"],
+          "description": "Short (<90s) or Long-form (>90s)"
+        },
+        "projectTier": {
+          "airtable": "Project Tier",
+          "type": "singleSelect",
+          "options": ["tier_1", "tier_2", "tier_3"],
+          "description": "Editing complexity tier"
+        },
+        "estimatedFinishedLength": {
+          "airtable": "Estimated Finished Length",
+          "type": "singleSelect",
+          "options": ["up_to_10", "10_to_20", "20_to_30", "30_plus"],
+          "description": "Expected final video length in minutes (long-form only)"
+        },
+        "finalSlaMinDays": {
+          "airtable": "Final SLA Min Days",
+          "type": "number",
+          "description": "Calculated minimum SLA in business days"
+        },
+        "finalSlaMaxDays": {
+          "airtable": "Final SLA Max Days",
+          "type": "number",
+          "description": "Calculated maximum SLA in business days"
+        },
+        "editorDueDate": {
+          "airtable": "Editor Due Date",
+          "type": "dateTime",
+          "description": "Hard deadline for editor (created_at + SLA Min). EDITOR VIEW ONLY.",
+          "visibility": ["editor", "admin", "owner"]
+        },
+        "expectedDueDate": {
+          "airtable": "Expected Due Date",
+          "type": "dateTime",
+          "description": "Client-facing latest date (created_at + SLA Max). ADMIN VIEW ONLY.",
+          "visibility": ["admin", "owner"]
+        },
+        "slaStatus": {
+          "airtable": "SLA Status",
+          "type": "singleSelect",
+          "options": ["on_track", "watch", "at_risk"],
+          "description": "Current SLA health. ADMIN VIEW ONLY.",
+          "visibility": ["admin", "owner"],
+          "computed": {
+            "on_track": "now < Editor Due Date",
+            "watch": "now >= Editor Due Date AND now < Expected Due Date",
+            "at_risk": "now >= Expected Due Date AND Status NOT IN (delivered, archived)"
+          }
+        },
+        "customTimelineRequired": {
+          "airtable": "Custom Timeline Required",
+          "type": "checkbox",
+          "description": "True if 30+ min video requiring manual timeline confirmation"
+        },
+        "revisionRoundCount": {
+          "airtable": "Revision Round Count",
+          "type": "number",
+          "description": "Number of revision rounds submitted by client"
+        },
+        "revisionHistory": {
+          "airtable": "Revision History",
+          "type": "longText",
+          "description": "JSON array of revision submissions with timestamp + editor ID"
+        },
+        "revisionFlag": {
+          "airtable": "Revision Flag",
+          "type": "singleSelect",
+          "options": ["normal", "warning", "critical"],
+          "description": "Auto-set: 1-3=normal, 4-5=warning, 6+=critical",
+          "computed": {
+            "normal": "Revision Round Count <= 3",
+            "warning": "Revision Round Count >= 4 AND Revision Round Count <= 5",
+            "critical": "Revision Round Count >= 6"
+          }
+        },
+        "rawFootageDuration": {
+          "airtable": "Raw Footage Duration",
+          "type": "number",
+          "description": "Duration of uploaded raw footage in seconds"
+        },
+        "requestedShortsCount": {
+          "airtable": "Requested Shorts Count",
+          "type": "number",
+          "description": "Number of shorts requested (1-5)"
+        },
+        "shortsMode": {
+          "airtable": "Shorts Mode",
+          "type": "singleSelect",
+          "options": ["manual", "editor_choice"],
+          "description": "manual = client specified count, editor_choice = editor decides"
+        },
+        "maxShortsAllowed": {
+          "airtable": "Max Shorts Allowed",
+          "type": "number",
+          "description": "Calculated max shorts based on raw footage duration"
+        },
+        "blueprintId": {
+          "airtable": "Blueprint",
+          "type": "linkedRecord",
+          "linkedTable": "Style-Blueprints",
+          "description": "Linked style blueprint for this project"
+        }
+      }
+    },
+
+    "Team": {
+      "description": "Internal team members (editors, admins, owners)",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "name": { "airtable": "Name", "type": "string" },
+        "email": { "airtable": "Email", "type": "email" },
+        "role": { "airtable": "Role", "type": "singleSelect", "options": ["editor", "admin", "owner"] },
+        "avatarURL": { "airtable": "AvatarURL", "type": "url" },
+        "specialization": { "airtable": "Specialization", "type": "multipleSelect", "options": ["shorts", "longform", "podcast", "social"] },
+        "activeProjectCount": { "airtable": "ActiveProjectCount", "type": "number" },
+        "avgTurnaroundScore": { "airtable": "AvgTurnaroundScore", "type": "number" },
+        "avgQualityScore": { "airtable": "AvgQualityScore", "type": "number" },
+        "timezone": { "airtable": "Timezone", "type": "string" },
+        "currentPayout": { "airtable": "CurrentPayout", "type": "number", "description": "Pending payout amount in cents" },
+        "lateProjectCount": { "airtable": "LateProjectCount", "type": "number" },
+        "unreadMessages": { "airtable": "UnreadMessages", "type": "number" },
+        "activeClients": { "airtable": "ActiveClients", "type": "number", "description": "Number of assigned clients" },
+        "lastActiveAt": {
+          "airtable": "LastActiveAt",
+          "type": "dateTime",
+          "description": "Last portal activity ping (every 60s if active)"
+        }
+      }
+    },
+
+    "Chat-Channels": {
+      "description": "Chat channels per client/project",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "name": { "airtable": "Channel Name", "type": "string" },
+        "type": { "airtable": "Type", "type": "singleSelect", "options": ["project", "support", "team", "private"] },
+        "clientId": { "airtable": "Client", "type": "linkedRecord", "linkedTable": "Contacts" },
+        "projectId": { "airtable": "Project", "type": "linkedRecord", "linkedTable": "Projects" },
+        "lastMessageAt": { "airtable": "LastMessageAt", "type": "dateTime" },
+        "archived": { "airtable": "Archived", "type": "checkbox" },
+        "isPrivate": {
+          "airtable": "IsPrivate",
+          "type": "checkbox",
+          "description": "Private channel - only visible to members + owners"
+        },
+        "visibleToOwners": {
+          "airtable": "VisibleToOwners",
+          "type": "checkbox",
+          "default": true,
+          "description": "Owners can always see this channel (default true)"
+        },
+        "createdByRole": {
+          "airtable": "CreatedByRole",
+          "type": "singleSelect",
+          "options": ["client", "editor", "admin", "owner"],
+          "description": "Role of channel creator"
+        },
+        "createdById": {
+          "airtable": "CreatedByID",
+          "type": "string",
+          "description": "Record ID of channel creator"
+        },
+        "memberIds": {
+          "airtable": "MemberIDs",
+          "type": "longText",
+          "description": "JSON array of member record IDs"
+        },
+        "categoryName": {
+          "airtable": "CategoryName",
+          "type": "string",
+          "description": "Visual category grouping (e.g., white-label brand name)"
+        },
+        "categoryOrder": {
+          "airtable": "CategoryOrder",
+          "type": "number",
+          "description": "Sort order for categories in chat UI"
+        },
+        "whiteLabelPartnerId": {
+          "airtable": "WhiteLabelPartnerID",
+          "type": "linkedRecord",
+          "linkedTable": "Contacts",
+          "description": "Link to white-label partner (for partner channel grouping)"
+        }
+      }
+    },
+
+    "Chat-Messages": {
+      "description": "Individual chat messages",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "channelId": { "airtable": "Channel", "type": "linkedRecord", "linkedTable": "Chat-Channels" },
+        "senderId": { "airtable": "Sender", "type": "string" },
+        "senderRole": { "airtable": "SenderRole", "type": "singleSelect", "options": ["client", "editor", "admin", "system"] },
+        "content": { "airtable": "Content", "type": "longText" },
+        "timestamp": { "airtable": "Timestamp", "type": "dateTime" },
+        "replyToMessageId": { "airtable": "ReplyToMessageID", "type": "string" },
+        "attachmentURL": { "airtable": "AttachmentURL", "type": "url" },
+        "attachmentType": { "airtable": "AttachmentType", "type": "singleSelect", "options": ["image", "video", "file", "link"] }
+      }
+    },
+
+    "Style-Blueprints": {
+      "description": "Client editing preferences/blueprints",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "clientId": { "airtable": "Client", "type": "linkedRecord", "linkedTable": "Contacts" },
+        "blueprintName": {
+          "airtable": "Blueprint Name",
+          "type": "string",
+          "description": "Custom name for this blueprint (e.g., 'YouTube Shorts – Clean & Punchy')"
+        },
+        "pacing": { "airtable": "Pacing", "type": "singleSelect" },
+        "musicStyle": { "airtable": "Music Style", "type": "multipleSelect" },
+        "captionStyle": { "airtable": "Caption Style", "type": "singleSelect" },
+        "colorGrade": { "airtable": "Color Grade", "type": "singleSelect" },
+        "transitions": { "airtable": "Transitions", "type": "multipleSelect" },
+        "specialInstructions": { "airtable": "Special Instructions", "type": "longText" },
+        "exportResolution": {
+          "airtable": "Export Resolution",
+          "type": "singleSelect",
+          "options": ["1920x1080", "1080x1920", "1280x720", "3840x2160", "2160x3840"],
+          "description": "Preferred export resolution (WxH)"
+        },
+        "exportFrameRate": {
+          "airtable": "Export Frame Rate",
+          "type": "singleSelect",
+          "options": ["24", "30", "60"],
+          "description": "Preferred frame rate (fps)"
+        },
+        "exportFormat": {
+          "airtable": "Export Format",
+          "type": "singleSelect",
+          "options": ["MP4", "MOV", "ProRes"],
+          "description": "Preferred export format"
+        }
+      }
+    },
+
+    "Errors": {
+      "description": "Error logging table for debugging",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "errorId": { "airtable": "ErrorID", "type": "string" },
+        "timestamp": { "airtable": "Timestamp", "type": "dateTime" },
+        "userRole": { "airtable": "UserRole", "type": "singleSelect" },
+        "userId": { "airtable": "UserID", "type": "string" },
+        "context": { "airtable": "Context", "type": "string" },
+        "message": { "airtable": "Message", "type": "longText" },
+        "stack": { "airtable": "Stack", "type": "longText" },
+        "page": { "airtable": "Page", "type": "string" }
+      }
+    },
+
+    "AuthOTPs": {
+      "description": "Email OTP codes for authentication",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "email": { "airtable": "Email", "type": "email" },
+        "otpHash": { "airtable": "OTPHash", "type": "string", "description": "Hashed OTP code (never plaintext)" },
+        "expiresAt": { "airtable": "ExpiresAt", "type": "dateTime" },
+        "attempts": { "airtable": "Attempts", "type": "number" },
+        "used": { "airtable": "Used", "type": "checkbox" },
+        "userType": { "airtable": "UserType", "type": "singleSelect", "options": ["contact", "team"] },
+        "userRecordId": { "airtable": "UserRecordID", "type": "string" },
+        "verifiedAt": { "airtable": "VerifiedAt", "type": "dateTime" },
+        "createdAt": { "airtable": "CreatedAt", "type": "dateTime" }
+      }
+    },
+
+    "AuthSessions": {
+      "description": "Active user sessions",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "sessionToken": { "airtable": "SessionToken", "type": "string" },
+        "userId": { "airtable": "UserID", "type": "string" },
+        "userRecordId": { "airtable": "UserRecordID", "type": "string" },
+        "email": { "airtable": "Email", "type": "email" },
+        "role": { "airtable": "Role", "type": "singleSelect", "options": ["client", "editor", "admin", "owner"] },
+        "expiresAt": { "airtable": "ExpiresAt", "type": "dateTime" },
+        "lastActivity": { "airtable": "LastActivity", "type": "dateTime" },
+        "ip": { "airtable": "IP", "type": "string" },
+        "userAgent": { "airtable": "UserAgent", "type": "longText" },
+        "loggedOutAt": { "airtable": "LoggedOutAt", "type": "dateTime" },
+        "createdAt": { "airtable": "CreatedAt", "type": "dateTime" }
+      }
+    },
+
+    "AuthCredentials": {
+      "description": "User passwords and 2FA secrets (encrypted storage recommended)",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "email": { "airtable": "Email", "type": "email" },
+        "userRecordId": { "airtable": "UserRecordID", "type": "string" },
+        "passwordHash": { "airtable": "PasswordHash", "type": "string" },
+        "hasPassword": { "airtable": "HasPassword", "type": "checkbox" },
+        "totpSecret": { "airtable": "TOTPSecret", "type": "string" },
+        "totpSecretPending": { "airtable": "TOTPSecretPending", "type": "string" },
+        "totpEnabled": { "airtable": "TOTPEnabled", "type": "checkbox" },
+        "totpEnabledAt": { "airtable": "TOTPEnabledAt", "type": "dateTime" },
+        "totpDisabledAt": { "airtable": "TOTPDisabledAt", "type": "dateTime" },
+        "recoveryCodesHash": { "airtable": "RecoveryCodesHash", "type": "longText" },
+        "createdAt": { "airtable": "CreatedAt", "type": "dateTime" },
+        "updatedAt": { "airtable": "UpdatedAt", "type": "dateTime" }
+      }
+    },
+
+    "AuthAuditLog": {
+      "description": "Security audit log for authentication events",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "eventType": {
+          "airtable": "EventType",
+          "type": "singleSelect",
+          "options": ["otp_requested", "otp_verify_failed", "otp_lockout", "login_success", "logout", "password_set", "password_changed", "password_login_failed", "password_login_success", "2fa_enabled", "2fa_disabled"]
+        },
+        "email": { "airtable": "Email", "type": "email" },
+        "ip": { "airtable": "IP", "type": "string" },
+        "userAgent": { "airtable": "UserAgent", "type": "longText" },
+        "success": { "airtable": "Success", "type": "checkbox" },
+        "details": { "airtable": "Details", "type": "longText" },
+        "timestamp": { "airtable": "Timestamp", "type": "dateTime" }
+      }
+    },
+
+    "Transactions": {
+      "description": "Revenue transactions synced from GHL",
+      "source": "GHL",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "transactionId": { "airtable": "TransactionID", "type": "string", "description": "GHL transaction ID" },
+        "clientId": { "airtable": "Client", "type": "linkedRecord", "linkedTable": "Contacts" },
+        "eventType": {
+          "airtable": "Event Type",
+          "type": "singleSelect",
+          "options": ["purchase", "refund", "trial_start", "upgrade", "downgrade", "cancellation"],
+          "description": "Type of revenue event"
+        },
+        "planName": { "airtable": "Plan Name", "type": "string" },
+        "amount": { "airtable": "Amount", "type": "number", "description": "Transaction amount in cents" },
+        "currency": { "airtable": "Currency", "type": "string", "default": "USD" },
+        "status": {
+          "airtable": "Status",
+          "type": "singleSelect",
+          "options": ["completed", "pending", "failed", "refunded"]
+        },
+        "timestamp": { "airtable": "Timestamp", "type": "dateTime" },
+        "metadata": { "airtable": "Metadata", "type": "longText", "description": "Raw GHL payload JSON" }
+      }
+    },
+
+    "Revenue-Metrics": {
+      "description": "Aggregated revenue metrics (computed/cached)",
+      "fields": {
+        "id": { "airtable": "Record ID", "type": "string", "readonly": true },
+        "period": { "airtable": "Period", "type": "string", "description": "YYYY-MM format" },
+        "totalRevenue": { "airtable": "Total Revenue", "type": "number" },
+        "totalRefunds": { "airtable": "Total Refunds", "type": "number" },
+        "netRevenue": { "airtable": "Net Revenue", "type": "number" },
+        "activeSubscriptions": { "airtable": "Active Subscriptions", "type": "number" },
+        "newPurchases": { "airtable": "New Purchases", "type": "number" },
+        "newTrials": { "airtable": "New Trials", "type": "number" },
+        "trialConversions": { "airtable": "Trial Conversions", "type": "number" },
+        "churnCount": { "airtable": "Churn Count", "type": "number" },
+        "updatedAt": { "airtable": "UpdatedAt", "type": "dateTime" }
+      }
+    }
+  },
+
+  "statusMappings": {
+    "description": "How to map legacy statuses to new canonical statuses",
+    "legacy_to_canonical": {
+      "Submitted": "queued",
+      "In Progress": "in_edit",
+      "Review": "review_ready",
+      "Revisions": "revisions",
+      "Approved": "approved",
+      "Completed": "delivered",
+      "Archived": "archived"
+    }
+  },
+
+  "computedFields": {
+    "isLate": {
+      "formula": "DueDate < NOW() AND Status NOT IN ('approved', 'delivered', 'archived')",
+      "description": "Project is overdue"
+    },
+    "isDueToday": {
+      "formula": "DATETRUNC(DueDate, 'day') = TODAY() AND Status NOT IN ('approved', 'delivered', 'archived')",
+      "description": "Project due today"
+    },
+    "isUnassigned": {
+      "formula": "AssignedEditor = '' AND Status IN ('queued', 'in_edit')",
+      "description": "Project needs editor assignment"
+    }
+  }
+}

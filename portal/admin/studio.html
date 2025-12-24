@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/_tokens.css">
+    <style>
+        :root {
+            /* Content Bug Design System */
+            --bg-base: #050508;
+            --bg-elevated: #0a0a0f;
+            --bg-surface: #0f0f14;
+            --bg-hover: #1c1c20;
+            --bg-active: #222226;
+
+            --border-subtle: rgba(59, 130, 246, 0.1);
+            --border-default: rgba(59, 130, 246, 0.15);
+            --border-strong: rgba(59, 130, 246, 0.2);
+
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            /* Accent Colors */
+            --accent-blue: #3b82f6;
+            --accent-blue-soft: rgba(59,130,246,0.15);
+            --accent-green: #22c55e;
+            --accent-green-soft: rgba(34,197,94,0.15);
+            --accent-orange: #f59e0b;
+            --accent-orange-soft: rgba(245,158,11,0.15);
+            --accent-red: #ef4444;
+            --accent-red-soft: rgba(239,68,68,0.15);
+            --accent-purple: #a855f7;
+
+            /* Role Colors */
+            --role-owner: #a855f7;
+            --role-admin: #ef4444;
+            --role-editor: #3b82f6;
+            --role-client: #22c55e;
+
+            /* Glass Effect */
+            --glass-bg: rgba(10, 10, 15, 0.85);
+            --glass-bg-light: rgba(15, 15, 20, 0.92);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-glow: rgba(59, 130, 246, 0.1);
+
+            /* Comment Colors */
+            --comment-blue: #0A84FF;
+            --fire-orange: #3b82f6;
+            --success-green: #22c55e;
+
+            /* Radius */
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --radius-xs: 6px;
+
+            /* Spacing */
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 20px;
+            --space-xl: 24px;
+            --space-2xl: 32px;
+
+            /* Layout */
+            --header-height: 56px;
+            --panel-width: 380px;
+            --toolbar-height: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ==================== HEADER ==================== */
+        .app-header {
+            height: var(--header-height);
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-xl);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .brand-logo {
+            height: 28px;
+            width: auto;
+            opacity: 0.9;
+        }
+
+        .header-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--glass-border);
+        }
+
+        .project-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .project-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .version-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .version-selector:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .version-badge {
+            background: var(--accent-blue);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .version-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .compare-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .compare-btn:hover {
+            background: var(--accent-blue-soft);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .compare-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .action-btn.secondary {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .action-btn.approve {
+            background: linear-gradient(135deg, #059669, #22c55e);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .action-btn.approve:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+        }
+
+        .action-btn.reject {
+            background: var(--bg-surface);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn.reject:hover {
+            background: var(--accent-red-soft);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar.owner { background: linear-gradient(135deg, var(--role-owner), #c084fc); }
+        .user-avatar.admin { background: linear-gradient(135deg, var(--role-admin), #f87171); }
+        .user-avatar.editor { background: linear-gradient(135deg, var(--role-editor), #60a5fa); }
+        .user-avatar.client { background: linear-gradient(135deg, var(--role-client), #4ade80); }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        .app-layout {
+            display: flex;
+            height: calc(100vh - var(--header-height));
+            margin-top: var(--header-height);
+        }
+
+        /* ==================== VIDEO AREA ==================== */
+        .video-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: var(--space-lg);
+        }
+
+        .video-container {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        video {
+            display: block;
+            max-width: 100%;
+            max-height: calc(100vh - var(--header-height) - 200px);
+            border-radius: var(--radius-lg);
+        }
+
+        /* Drawing Canvas Overlay */
+        .drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .drawing-canvas.active {
+            pointer-events: auto;
+            cursor: crosshair;
+        }
+
+        /* Annotation Markers on Video */
+        .annotation-marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: var(--comment-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .annotation-marker:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 16px rgba(10, 132, 255, 0.5);
+        }
+
+        /* ==================== DRAWING TOOLBAR ==================== */
+        .drawing-toolbar {
+            position: absolute;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs);
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 20;
+        }
+
+        .drawing-toolbar.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .tool-btn.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .tool-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .tool-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--glass-border);
+            margin: 0 var(--space-xs);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 4px;
+        }
+
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .color-dot.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--bg-base);
+        }
+
+        .color-dot.red { background: #ef4444; }
+        .color-dot.orange { background: #f59e0b; }
+        .color-dot.blue { background: #3b82f6; }
+        .color-dot.green { background: #22c55e; }
+
+        /* ==================== TIMELINE SECTION ==================== */
+        .timeline-section {
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-top: 1px solid var(--glass-border);
+            padding: var(--space-md) var(--space-xl);
+        }
+
+        .timeline-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .ctrl-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .ctrl-btn.play-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .ctrl-btn.play-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .ctrl-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .time-display {
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-primary);
+            min-width: 100px;
+        }
+
+        .time-separator {
+            color: var(--text-muted);
+            margin: 0 4px;
+        }
+
+        .timeline-zoom {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-left: auto;
+        }
+
+        .zoom-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .zoom-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Timeline Track */
+        .timeline-wrapper {
+            position: relative;
+        }
+
+        .timeline-track {
+            position: relative;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        /* Waveform Visualization */
+        .waveform {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            padding: 0 4px;
+        }
+
+        .waveform-bar {
+            flex: 1;
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 1px;
+            min-width: 2px;
+            transition: background 0.1s ease;
+        }
+
+        .waveform-bar.played {
+            background: var(--accent-blue);
+        }
+
+        /* Progress Line */
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background: rgba(59, 130, 246, 0.2);
+            pointer-events: none;
+        }
+
+        .timeline-playhead {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent-blue);
+            box-shadow: 0 0 8px var(--accent-blue);
+            z-index: 5;
+        }
+
+        .timeline-playhead::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Comment Markers on Timeline */
+        .timeline-marker {
+            position: absolute;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--comment-blue);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            z-index: 3;
+        }
+
+        .timeline-marker::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--comment-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+        }
+
+        .timeline-marker:hover {
+            width: 5px;
+        }
+
+        .timeline-marker:hover::before {
+            transform: translateX(-50%) scale(1.2);
+        }
+
+        /* ==================== COMMENTS PANEL ==================== */
+        .comments-panel {
+            width: var(--panel-width);
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-left: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, width 0.3s ease;
+        }
+
+        .comments-panel.collapsed {
+            transform: translateX(calc(var(--panel-width) - 48px));
+        }
+
+        .panel-toggle {
+            position: absolute;
+            left: -40px;
+            top: var(--space-lg);
+            width: 32px;
+            height: 48px;
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-right: none;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .panel-toggle:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .panel-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .comments-panel.collapsed .panel-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        /* Panel Header */
+        .panel-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .comment-count {
+            background: var(--accent-blue);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        /* Panel Tabs */
+        .panel-tabs {
+            display: flex;
+            padding: 0 var(--space-lg);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: var(--space-sm) 0;
+            background: none;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .panel-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .panel-tab.active {
+            color: var(--accent-blue);
+        }
+
+        .panel-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-blue);
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* Comments List */
+        .comments-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+        }
+
+        .comment-thread {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .comment-thread:hover {
+            border-color: var(--border-default);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .comment-thread.active {
+            border-color: var(--comment-blue);
+            background: rgba(10, 132, 255, 0.08);
+        }
+
+        .comment-main {
+            padding: var(--space-md);
+            cursor: pointer;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .comment-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .comment-avatar.editor { background: linear-gradient(135deg, var(--role-editor), #60a5fa); }
+        .comment-avatar.client { background: linear-gradient(135deg, var(--role-client), #4ade80); }
+        .comment-avatar.admin { background: linear-gradient(135deg, var(--role-admin), #f87171); }
+
+        .comment-meta {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .comment-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .comment-timestamp {
+            background: var(--comment-blue);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .comment-thread:hover .comment-actions {
+            opacity: 1;
+        }
+
+        .comment-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .comment-action-btn:hover {
+            color: var(--accent-blue);
+        }
+
+        .comment-action-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Replies */
+        .comment-replies {
+            border-top: 1px solid var(--glass-border);
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .reply {
+            display: flex;
+            gap: var(--space-sm);
+            padding: var(--space-sm) 0;
+        }
+
+        .reply:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .reply-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .reply-content {
+            flex: 1;
+        }
+
+        .reply-author {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .reply-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Comment Input */
+        .comment-input-area {
+            padding: var(--space-md);
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .comment-input-wrapper {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: flex-end;
+        }
+
+        .comment-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            resize: none;
+            min-height: 40px;
+            max-height: 100px;
+            transition: all 0.2s ease;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .comment-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .comment-submit-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .comment-submit-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .comment-submit-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==================== COMPARE MODE ==================== */
+        .compare-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 200;
+            display: none;
+        }
+
+        .compare-overlay.visible {
+            display: flex;
+        }
+
+        .compare-container {
+            flex: 1;
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-xl);
+            padding-top: calc(var(--header-height) + var(--space-xl));
+        }
+
+        .compare-video-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .compare-video-wrapper video {
+            max-width: 100%;
+            max-height: calc(100vh - 200px);
+            border-radius: var(--radius-lg);
+        }
+
+        .compare-label {
+            margin-top: var(--space-md);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .compare-close {
+            position: absolute;
+            top: calc(var(--header-height) + var(--space-md));
+            right: var(--space-xl);
+            width: 40px;
+            height: 40px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .compare-close:hover {
+            background: var(--accent-red-soft);
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+        }
+
+        /* ==================== APPROVAL MODAL ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 480px;
+            padding: var(--space-2xl);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #059669, #22c55e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+        }
+
+        .modal-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Rating Slider */
+        .rating-section {
+            margin-bottom: var(--space-xl);
+        }
+
+        .rating-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+
+        .rating-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .rating-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent-green);
+        }
+
+        .rating-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .rating-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+        }
+
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-xs);
+        }
+
+        .rating-labels span {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Modal Actions */
+        .modal-actions {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: var(--space-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--bg-hover);
+        }
+
+        .modal-btn.confirm {
+            background: linear-gradient(135deg, #059669, #22c55e);
+            color: white;
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+        }
+
+        .modal-btn.confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        /* ==================== TOAST ==================== */
+        .toast {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--glass-bg-light);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.28, 0, 0.21, 1);
+            z-index: 500;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-green);
+        }
+
+        .toast-message {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* ==================== SCROLLBAR ==================== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1024px) {
+            .comments-panel {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="Content Bug" class="brand-logo">
+            <div class="header-divider"></div>
+            <div class="project-info">
+                <span class="project-title" id="projectTitle">YouTube Tutorial: Complete Guide</span>
+                <span class="project-meta">Submitted Dec 20, 2024 • 2:34 duration</span>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <div class="version-selector" id="versionSelector">
+                <span class="version-badge">V2</span>
+                <span class="version-label">Current Version</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <button class="compare-btn" onclick="toggleCompareMode()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+                Compare
+            </button>
+        </div>
+
+        <div class="header-right">
+            <button class="action-btn reject" onclick="requestRevisions()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Request Revisions
+            </button>
+            <button class="action-btn approve" onclick="showApprovalModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Approve Edit
+            </button>
+            <div class="user-avatar client" id="userAvatar" onclick="toggleUserMenu()">SC</div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="app-layout">
+        <!-- Video Area -->
+        <div class="video-area">
+            <div class="video-wrapper">
+                <div class="video-container" id="videoContainer">
+                    <video id="videoPlayer" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+                    <canvas class="drawing-canvas" id="drawingCanvas"></canvas>
+                    <!-- Annotation markers will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Drawing Toolbar -->
+            <div class="drawing-toolbar" id="drawingToolbar">
+                <button class="tool-btn active" data-tool="arrow" onclick="selectTool('arrow')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+                <button class="tool-btn" data-tool="circle" onclick="selectTool('circle')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                </button>
+                <button class="tool-btn" data-tool="rect" onclick="selectTool('rect')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                </button>
+                <button class="tool-btn" data-tool="pen" onclick="selectTool('pen')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                </button>
+                <div class="tool-divider"></div>
+                <div class="color-picker">
+                    <div class="color-dot red active" data-color="#ef4444" onclick="selectColor('#ef4444')"></div>
+                    <div class="color-dot orange" data-color="#f59e0b" onclick="selectColor('#f59e0b')"></div>
+                    <div class="color-dot blue" data-color="#3b82f6" onclick="selectColor('#3b82f6')"></div>
+                    <div class="color-dot green" data-color="#22c55e" onclick="selectColor('#22c55e')"></div>
+                </div>
+                <div class="tool-divider"></div>
+                <button class="tool-btn" onclick="clearDrawing()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+                <button class="tool-btn" onclick="toggleDrawingMode()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <!-- Timeline Section -->
+            <div class="timeline-section">
+                <div class="timeline-controls">
+                    <div class="playback-controls">
+                        <button class="ctrl-btn" onclick="skip(-5)" title="Back 5s">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                        </button>
+                        <button class="ctrl-btn" onclick="frameStep(-1)" title="Previous Frame">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                        </button>
+                        <button class="ctrl-btn play-btn" id="playBtn" onclick="togglePlay()">
+                            <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            <svg class="pause-icon" style="display: none;" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        </button>
+                        <button class="ctrl-btn" onclick="frameStep(1)" title="Next Frame">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                        </button>
+                        <button class="ctrl-btn" onclick="skip(5)" title="Forward 5s">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span class="time-separator">/</span>
+                        <span id="totalTime">0:00</span>
+                    </div>
+
+                    <div class="timeline-zoom">
+                        <span class="zoom-label">Zoom</span>
+                        <input type="range" class="zoom-slider" min="1" max="5" value="1" id="zoomSlider">
+                    </div>
+
+                    <button class="ctrl-btn" id="annotateBtn" onclick="toggleDrawingMode()" title="Draw/Annotate">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                    </button>
+                </div>
+
+                <div class="timeline-wrapper">
+                    <div class="timeline-track" id="timelineTrack" onclick="seekToPosition(event)">
+                        <!-- Waveform Visualization -->
+                        <div class="waveform" id="waveform"></div>
+                        <!-- Progress Overlay -->
+                        <div class="timeline-progress" id="timelineProgress"></div>
+                        <!-- Playhead -->
+                        <div class="timeline-playhead" id="timelinePlayhead"></div>
+                        <!-- Comment markers will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Panel -->
+        <aside class="comments-panel" id="commentsPanel">
+            <button class="panel-toggle" onclick="toggleCommentsPanel()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+
+            <div class="panel-header">
+                <span class="panel-title">Comments</span>
+                <span class="comment-count" id="commentCount">3</span>
+            </div>
+
+            <div class="panel-tabs">
+                <button class="panel-tab active" data-tab="all">All</button>
+                <button class="panel-tab" data-tab="unresolved">Unresolved</button>
+                <button class="panel-tab" data-tab="resolved">Resolved</button>
+            </div>
+
+            <div class="comments-list" id="commentsList">
+                <!-- Sample Comment Thread 1 -->
+                <div class="comment-thread" data-time="12" onclick="jumpToTimestamp(12)">
+                    <div class="comment-main">
+                        <div class="comment-header">
+                            <div class="comment-avatar editor">JM</div>
+                            <div class="comment-meta">
+                                <span class="comment-author">Jake Martinez</span>
+                                <span class="comment-time">2 hours ago</span>
+                            </div>
+                            <span class="comment-timestamp">0:12</span>
+                        </div>
+                        <div class="comment-text">Added the motion graphics you requested here. Let me know if you want any color adjustments!</div>
+                        <div class="comment-actions">
+                            <button class="comment-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Reply
+                            </button>
+                            <button class="comment-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Resolve
+                            </button>
+                        </div>
+                    </div>
+                    <div class="comment-replies">
+                        <div class="reply">
+                            <div class="reply-avatar client" style="background: linear-gradient(135deg, var(--role-client), #4ade80);">SC</div>
+                            <div class="reply-content">
+                                <span class="reply-author">Sean Conley</span>
+                                <span class="reply-text">Looks great! Can we make the text slightly bigger?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Comment Thread 2 -->
+                <div class="comment-thread" data-time="45" onclick="jumpToTimestamp(45)">
+                    <div class="comment-main">
+                        <div class="comment-header">
+                            <div class="comment-avatar client">SC</div>
+                            <div class="comment-meta">
+                                <span class="comment-author">Sean Conley</span>
+                                <span class="comment-time">1 hour ago</span>
+                            </div>
+                            <span class="comment-timestamp">0:45</span>
+                        </div>
+                        <div class="comment-text">Love this transition! The timing feels perfect now.</div>
+                        <div class="comment-actions">
+                            <button class="comment-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Reply
+                            </button>
+                            <button class="comment-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Resolve
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Comment Thread 3 -->
+                <div class="comment-thread" data-time="78" onclick="jumpToTimestamp(78)">
+                    <div class="comment-main">
+                        <div class="comment-header">
+                            <div class="comment-avatar editor">JM</div>
+                            <div class="comment-meta">
+                                <span class="comment-author">Jake Martinez</span>
+                                <span class="comment-time">30 min ago</span>
+                            </div>
+                            <span class="comment-timestamp">1:18</span>
+                        </div>
+                        <div class="comment-text">Color graded this section to match your brand palette. Added some subtle warmth to the highlights.</div>
+                        <div class="comment-actions">
+                            <button class="comment-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Reply
+                            </button>
+                            <button class="comment-action-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Resolve
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment-input-area">
+                <div class="comment-input-wrapper">
+                    <textarea class="comment-input" id="commentInput" placeholder="Add a comment at current timestamp..." rows="1"></textarea>
+                    <button class="comment-submit-btn" onclick="submitComment()">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Compare Mode Overlay -->
+    <div class="compare-overlay" id="compareOverlay">
+        <div class="compare-container">
+            <div class="compare-video-wrapper">
+                <video id="compareVideoOld" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+                <span class="compare-label">Version 1 (Previous)</span>
+            </div>
+            <div class="compare-video-wrapper">
+                <video id="compareVideoNew" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+                <span class="compare-label">Version 2 (Current)</span>
+            </div>
+        </div>
+        <button class="compare-close" onclick="toggleCompareMode()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+
+    <!-- Approval Modal -->
+    <div class="modal-overlay" id="approvalModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <h2 class="modal-title">Approve This Edit?</h2>
+                <p class="modal-subtitle">Once approved, this version will be finalized and available for download.</p>
+            </div>
+
+            <div class="rating-section">
+                <div class="rating-label">
+                    <span class="rating-text">Rate the quality of this edit</span>
+                    <span class="rating-value" id="ratingValue">8</span>
+                </div>
+                <input type="range" class="rating-slider" id="ratingSlider" min="1" max="10" value="8" oninput="updateRating(this.value)">
+                <div class="rating-labels">
+                    <span>Needs Work</span>
+                    <span>Perfect</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="hideApprovalModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="confirmApproval()">Approve & Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="toast-message" id="toastMessage">Success!</span>
+    </div>
+
+    <script>
+        // ============================================
+        // CONTENT PORTAL CONFIGURATION
+        // ============================================
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
+
+        // ==================== STATE & ELEMENTS ====================
+        const video = document.getElementById('videoPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const timelineTrack = document.getElementById('timelineTrack');
+        const timelineProgress = document.getElementById('timelineProgress');
+        const timelinePlayhead = document.getElementById('timelinePlayhead');
+        const waveform = document.getElementById('waveform');
+        const drawingCanvas = document.getElementById('drawingCanvas');
+        const drawingToolbar = document.getElementById('drawingToolbar');
+        const commentsPanel = document.getElementById('commentsPanel');
+        const annotateBtn = document.getElementById('annotateBtn');
+
+        let isDrawingMode = false;
+        let currentTool = 'arrow';
+        let currentColor = '#ef4444';
+        let comments = [];
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for local file testing
+            const isLocalFile = window.location.protocol === 'file:';
+
+            // Demo mode setup
+            if (isLocalFile) {
+                localStorage.setItem('cb_email', 'sean@contentbug.io');
+                localStorage.setItem('cb_name', 'Sean Conley');
+                localStorage.setItem('cb_first_name', 'Sean');
+                localStorage.setItem('cb_role', 'client');
+                localStorage.setItem('cb_plan', 'Pro');
+            }
+
+            initVideoControls();
+            initWaveform();
+            initTimelineMarkers();
+            initDrawingCanvas();
+            initKeyboardShortcuts();
+        });
+
+        // ==================== VIDEO CONTROLS ====================
+        function initVideoControls() {
+            video.addEventListener('loadedmetadata', () => {
+                document.getElementById('totalTime').textContent = formatTime(video.duration);
+            });
+
+            video.addEventListener('timeupdate', updateTimeline);
+            video.addEventListener('play', updatePlayButton);
+            video.addEventListener('pause', updatePlayButton);
+        }
+
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        function skip(seconds) {
+            video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + seconds));
+        }
+
+        function frameStep(direction) {
+            video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + (direction * 0.033)));
+        }
+
+        function updatePlayButton() {
+            const playIcon = playBtn.querySelector('.play-icon');
+            const pauseIcon = playBtn.querySelector('.pause-icon');
+
+            if (video.paused) {
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            } else {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            }
+        }
+
+        function updateTimeline() {
+            const percent = (video.currentTime / video.duration) * 100;
+            timelineProgress.style.width = percent + '%';
+            timelinePlayhead.style.left = percent + '%';
+            document.getElementById('currentTime').textContent = formatTime(video.currentTime);
+        }
+
+        function seekToPosition(e) {
+            const rect = timelineTrack.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            video.currentTime = percent * video.duration;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // ==================== WAVEFORM VISUALIZATION ====================
+        function initWaveform() {
+            // Generate mock waveform bars
+            const barCount = 150;
+            for (let i = 0; i < barCount; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'waveform-bar';
+                const height = 20 + Math.random() * 60;
+                bar.style.height = height + '%';
+                waveform.appendChild(bar);
+            }
+        }
+
+        // ==================== TIMELINE MARKERS ====================
+        function initTimelineMarkers() {
+            // Add markers for existing comments
+            const commentThreads = document.querySelectorAll('.comment-thread');
+            commentThreads.forEach(thread => {
+                const time = parseInt(thread.dataset.time);
+                addTimelineMarker(time);
+            });
+        }
+
+        function addTimelineMarker(time) {
+            const marker = document.createElement('div');
+            marker.className = 'timeline-marker';
+            marker.style.left = ((time / video.duration) * 100) + '%';
+            marker.onclick = (e) => {
+                e.stopPropagation();
+                jumpToTimestamp(time);
+            };
+            timelineTrack.appendChild(marker);
+        }
+
+        function jumpToTimestamp(time) {
+            video.currentTime = time;
+
+            // Highlight the corresponding comment
+            document.querySelectorAll('.comment-thread').forEach(thread => {
+                thread.classList.remove('active');
+                if (parseInt(thread.dataset.time) === time) {
+                    thread.classList.add('active');
+                    thread.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        }
+
+        // ==================== DRAWING MODE ====================
+        function initDrawingCanvas() {
+            const ctx = drawingCanvas.getContext('2d');
+
+            // Resize canvas to match video
+            function resizeCanvas() {
+                const container = document.getElementById('videoContainer');
+                drawingCanvas.width = container.offsetWidth;
+                drawingCanvas.height = container.offsetHeight;
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+        }
+
+        function toggleDrawingMode() {
+            isDrawingMode = !isDrawingMode;
+            drawingCanvas.classList.toggle('active', isDrawingMode);
+            drawingToolbar.classList.toggle('visible', isDrawingMode);
+            annotateBtn.classList.toggle('active', isDrawingMode);
+
+            if (isDrawingMode) {
+                video.pause();
+            }
+        }
+
+        function selectTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tool === tool);
+            });
+        }
+
+        function selectColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-dot').forEach(dot => {
+                dot.classList.toggle('active', dot.dataset.color === color);
+            });
+        }
+
+        function clearDrawing() {
+            const ctx = drawingCanvas.getContext('2d');
+            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        }
+
+        // ==================== COMMENTS ====================
+        function submitComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const time = Math.floor(video.currentTime);
+
+            // Add to comments list (in real app, save to backend)
+            const commentsList = document.getElementById('commentsList');
+            const newThread = document.createElement('div');
+            newThread.className = 'comment-thread';
+            newThread.dataset.time = time;
+            newThread.onclick = () => jumpToTimestamp(time);
+            newThread.innerHTML = `
+                <div class="comment-main">
+                    <div class="comment-header">
+                        <div class="comment-avatar client">SC</div>
+                        <div class="comment-meta">
+                            <span class="comment-author">Sean Conley</span>
+                            <span class="comment-time">Just now</span>
+                        </div>
+                        <span class="comment-timestamp">${formatTime(time)}</span>
+                    </div>
+                    <div class="comment-text">${text}</div>
+                    <div class="comment-actions">
+                        <button class="comment-action-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Reply
+                        </button>
+                        <button class="comment-action-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            Resolve
+                        </button>
+                    </div>
+                </div>
+            `;
+            commentsList.appendChild(newThread);
+
+            // Add timeline marker
+            addTimelineMarker(time);
+
+            // Update count
+            const countEl = document.getElementById('commentCount');
+            countEl.textContent = parseInt(countEl.textContent) + 1;
+
+            // Clear input
+            input.value = '';
+
+            showToast('Comment added');
+        }
+
+        // ==================== PANEL CONTROLS ====================
+        function toggleCommentsPanel() {
+            commentsPanel.classList.toggle('collapsed');
+        }
+
+        function toggleCompareMode() {
+            const overlay = document.getElementById('compareOverlay');
+            overlay.classList.toggle('visible');
+
+            if (overlay.classList.contains('visible')) {
+                video.pause();
+            }
+        }
+
+        // ==================== APPROVAL WORKFLOW ====================
+        function showApprovalModal() {
+            document.getElementById('approvalModal').classList.add('visible');
+        }
+
+        function hideApprovalModal() {
+            document.getElementById('approvalModal').classList.remove('visible');
+        }
+
+        function updateRating(value) {
+            document.getElementById('ratingValue').textContent = value;
+        }
+
+        function confirmApproval() {
+            hideApprovalModal();
+            showToast('Edit approved! Preparing download...');
+
+            // In real app, trigger download and save rating
+            setTimeout(() => {
+                showToast('Download ready!');
+            }, 2000);
+        }
+
+        function requestRevisions() {
+            // Scroll to comments panel and focus input
+            commentsPanel.classList.remove('collapsed');
+            document.getElementById('commentInput').focus();
+            showToast('Add your revision notes below');
+        }
+
+        // ==================== TOAST ====================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+
+                switch(e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        togglePlay();
+                        break;
+                    case 'ArrowLeft':
+                        skip(-5);
+                        break;
+                    case 'ArrowRight':
+                        skip(5);
+                        break;
+                    case 'd':
+                        toggleDrawingMode();
+                        break;
+                    case 'c':
+                        document.getElementById('commentInput').focus();
+                        break;
+                    case 'Escape':
+                        if (isDrawingMode) toggleDrawingMode();
+                        break;
+                }
+            });
+        }
+
+        // Comment input auto-resize
+        document.getElementById('commentInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // Submit on Enter
+        document.getElementById('commentInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitComment();
+            }
+        });
+    </script>
+    <!-- Shell Controller for persistence -->
+    <script src="../shared/_app.js" defer></script>
+</body>
+</html>
