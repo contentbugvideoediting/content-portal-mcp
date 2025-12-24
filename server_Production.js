@@ -1,6 +1,7 @@
 // server_Production.js
-// ContentBug Production MCP Server v2.1.0
-// Handles: Make webhooks, Claude/OpenAI AI, Airtable storage, GHL forwarding, chat, auth, AND Google Drive
+// ContentBug Production MCP Server v2.3.1
+// Handles: Make webhooks, Claude/OpenAI AI, Airtable storage, GHL forwarding, chat, auth, Google Drive, Apify Research, Creator Intelligence
+// v2.3.1: Improved OTP delivery with GHL API direct email + webhook fallback
 // Deploy to Railway - runs 24/7
 
 const express = require('express');
@@ -178,6 +179,22 @@ const GHL_SHARED_SECRET = process.env.GHL_SHARED_SECRET || '';
 const HMAC_HEADER = process.env.HMAC_HEADER || 'x-mcp-signature';
 const MAX_TOKENS = parseInt(process.env.MAX_TOKENS || '800', 10);
 
+// Apify config
+const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN || '';
+const APIFY_API_URL = 'https://api.apify.com/v2';
+
+// GHL API config for direct email sending
+const GHL_API_KEY = process.env.GHL_API_KEY || '';
+const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID || '';
+const GHL_API_URL = 'https://services.leadconnectorhq.com';
+const GHL_PRIVATE_TOKEN = process.env.GHL_PRIVATE_INTEGRATION || '';
+
+// Email delivery debug mode (set EMAIL_DELIVERY_DEBUG=true to log OTP)
+const EMAIL_DELIVERY_DEBUG = process.env.EMAIL_DELIVERY_DEBUG === 'true';
+
+// Admin notification emails for OTP requests
+const OTP_NOTIFY_EMAILS = ['stockton@contentbug.io', 'sean@contentbug.io'];
+
 // Auth config
 const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 const SESSION_MAX_AGE_MS = parseInt(process.env.SESSION_MAX_AGE_MS || String(24 * 60 * 60 * 1000), 10); // 24h default
@@ -215,12 +232,21 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.1.0',
+  version: 'production-2.3.1',
   auth: true,
   portal: true,
   drive: {
     ready: driveServiceReady,
     error: driveServiceReady ? null : driveInitError
+  },
+  apify: {
+    configured: !!APIFY_API_TOKEN,
+    ready: !!APIFY_API_TOKEN
+  },
+  otp: {
+    ghl_api: !!GHL_API_KEY && !!GHL_LOCATION_ID,
+    ghl_webhook: !!GHL_WEBHOOK_URL,
+    debug_mode: EMAIL_DELIVERY_DEBUG
   }
 }));
 
@@ -558,18 +584,118 @@ app.post('/auth/request-code', authRequestLimiter, authEmailLimiter, async (req,
       CreatedAt: new Date().toISOString()
     });
 
-    // Send OTP via GHL (email/SMS)
-    if (GHL_WEBHOOK_URL) {
+    // Debug mode - log OTP to console (disable in production)
+    if (EMAIL_DELIVERY_DEBUG) {
+      console.log(`[OTP DEBUG] Email: ${normalizedEmail}, Code: ${otp}, Expires: ${Math.floor(OTP_EXPIRY_MS / 60000)} min`);
+    }
+
+    // Send OTP via multiple channels for reliability
+    let emailSent = false;
+    let deliveryMethod = 'none';
+
+    // Method 1: Try GHL API direct email
+    if (GHL_API_KEY && GHL_LOCATION_ID) {
+      try {
+        // First, find or create contact in GHL
+        let contactId = null;
+
+        // Search for existing contact
+        const searchRes = await axios.get(
+          `${GHL_API_URL}/contacts/search/duplicate`,
+          {
+            params: { locationId: GHL_LOCATION_ID, email: normalizedEmail },
+            headers: {
+              'Authorization': `Bearer ${GHL_API_KEY}`,
+              'Version': '2021-07-28'
+            },
+            timeout: 10000
+          }
+        ).catch(() => null);
+
+        if (searchRes?.data?.contact?.id) {
+          contactId = searchRes.data.contact.id;
+        } else {
+          // Create contact
+          const createRes = await axios.post(
+            `${GHL_API_URL}/contacts/`,
+            {
+              locationId: GHL_LOCATION_ID,
+              email: normalizedEmail,
+              name: normalizedEmail.split('@')[0],
+              tags: ['portal-user']
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${GHL_API_KEY}`,
+                'Version': '2021-07-28',
+                'Content-Type': 'application/json'
+              },
+              timeout: 10000
+            }
+          ).catch(() => null);
+
+          contactId = createRes?.data?.contact?.id;
+        }
+
+        if (contactId) {
+          // Send email via GHL conversations/messages API
+          await axios.post(
+            `${GHL_API_URL}/conversations/messages`,
+            {
+              type: 'Email',
+              contactId: contactId,
+              message: `Your secure Content Bug login code is: <strong>${otp}</strong>\n\nThis code expires in 10 minutes.\n\nIf you didn't request this code, please ignore this email.`,
+              subject: 'Your Content Bug Login Code',
+              emailFrom: 'Content Bug <noreply@contentbug.io>'
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${GHL_API_KEY}`,
+                'Version': '2021-07-28',
+                'Content-Type': 'application/json'
+              },
+              timeout: 15000
+            }
+          );
+          emailSent = true;
+          deliveryMethod = 'ghl_api';
+          console.log(`[OTP] Email sent via GHL API to ${normalizedEmail}`);
+        }
+      } catch (e) {
+        console.warn('[OTP] GHL API email failed:', e.response?.data || e.message);
+      }
+    }
+
+    // Method 2: Fallback to webhook trigger (for workflow)
+    if (!emailSent && GHL_WEBHOOK_URL) {
       try {
         await axios.post(GHL_WEBHOOK_URL, {
           type: 'auth_otp',
           email: normalizedEmail,
           otp: otp,
+          code: otp, // alias for workflow compatibility
           expires_minutes: Math.floor(OTP_EXPIRY_MS / 60000),
           is_new_user: isNewUser
         }, { timeout: 10000 });
+        deliveryMethod = 'ghl_webhook';
+        console.log(`[OTP] Webhook triggered for ${normalizedEmail}`);
       } catch (e) {
-        console.warn('GHL OTP send failed:', e.message);
+        console.warn('[OTP] GHL webhook failed:', e.message);
+      }
+    }
+
+    // Send internal notification to admins
+    if (OTP_NOTIFY_EMAILS.length > 0 && GHL_WEBHOOK_URL) {
+      try {
+        await axios.post(GHL_WEBHOOK_URL, {
+          type: 'otp_admin_notify',
+          otp_email: normalizedEmail,
+          timestamp: new Date().toISOString(),
+          delivery_method: deliveryMethod,
+          is_new_user: isNewUser
+        }, { timeout: 5000 });
+      } catch (e) {
+        // Silent fail for admin notifications
       }
     }
 
@@ -1994,12 +2120,1245 @@ app.post('/api/upload', requireAuth(), uploadLimiter, upload.single('file'), asy
 });
 
 // ============================================
+// APIFY SOCIAL RESEARCH (ADMIN ONLY)
+// ============================================
+// Backend tool for studying accounts, posts, thumbnails, etc.
+// Uses Apify actors for YouTube, TikTok, Instagram, Facebook
+
+// Rate limiter for Apify endpoints (expensive API calls)
+const apifyLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 50, // 50 research requests per hour
+  message: { error: 'apify_rate_limit', message: 'Research rate limit exceeded. Try again later.' }
+});
+
+// Apify helper function
+async function callApifyActor(actorId, input, options = {}) {
+  if (!APIFY_API_TOKEN) {
+    return { success: false, error: 'apify_not_configured' };
+  }
+
+  try {
+    // Start the actor run
+    const runResponse = await axios.post(
+      `${APIFY_API_URL}/acts/${actorId}/runs`,
+      input,
+      {
+        headers: {
+          'Authorization': `Bearer ${APIFY_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        params: {
+          timeout: options.timeout || 300, // 5 min default timeout
+          memory: options.memory || 1024,  // 1GB memory
+          waitForFinish: options.waitForFinish || 120 // Wait up to 2 min for completion
+        }
+      }
+    );
+
+    const run = runResponse.data.data;
+
+    // If still running, return run ID for polling
+    if (run.status === 'RUNNING') {
+      return {
+        success: true,
+        status: 'running',
+        runId: run.id,
+        pollUrl: `/api/research/status/${run.id}`
+      };
+    }
+
+    // If finished, get results
+    if (run.status === 'SUCCEEDED') {
+      const datasetId = run.defaultDatasetId;
+      const resultsResponse = await axios.get(
+        `${APIFY_API_URL}/datasets/${datasetId}/items`,
+        {
+          headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` },
+          params: { limit: options.limit || 100 }
+        }
+      );
+
+      return {
+        success: true,
+        status: 'completed',
+        runId: run.id,
+        itemCount: resultsResponse.data.length,
+        data: resultsResponse.data
+      };
+    }
+
+    // Handle other statuses
+    return {
+      success: false,
+      status: run.status,
+      runId: run.id,
+      error: run.status === 'FAILED' ? 'Actor run failed' : `Unexpected status: ${run.status}`
+    };
+
+  } catch (err) {
+    console.error('[Apify] Actor call failed:', err.response?.data || err.message);
+    return {
+      success: false,
+      error: 'apify_error',
+      message: err.response?.data?.error?.message || err.message
+    };
+  }
+}
+
+// GET /api/research/status - Check Apify availability
+app.get('/api/research/status', requireAuth(['admin', 'owner']), (req, res) => {
+  return res.json({
+    available: !!APIFY_API_TOKEN,
+    actors: {
+      youtube: 'streamers~youtube-scraper',
+      tiktok: 'clockworks~tiktok-scraper',
+      instagram_reels: 'apify~instagram-reel-scraper',
+      instagram_profile: 'apify~instagram-profile-scraper',
+      facebook_posts: 'apify~facebook-posts-scraper'
+    }
+  });
+});
+
+// GET /api/research/run/:runId - Check status of a running scrape
+app.get('/api/research/run/:runId', requireAuth(['admin', 'owner']), async (req, res) => {
+  if (!APIFY_API_TOKEN) {
+    return res.status(503).json({ error: 'apify_not_configured' });
+  }
+
+  try {
+    const { runId } = req.params;
+
+    const runResponse = await axios.get(
+      `${APIFY_API_URL}/actor-runs/${runId}`,
+      { headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` } }
+    );
+
+    const run = runResponse.data.data;
+
+    if (run.status === 'SUCCEEDED') {
+      // Get results
+      const resultsResponse = await axios.get(
+        `${APIFY_API_URL}/datasets/${run.defaultDatasetId}/items`,
+        {
+          headers: { 'Authorization': `Bearer ${APIFY_API_TOKEN}` },
+          params: { limit: 100 }
+        }
+      );
+
+      return res.json({
+        status: 'completed',
+        runId: run.id,
+        itemCount: resultsResponse.data.length,
+        data: resultsResponse.data
+      });
+    }
+
+    return res.json({
+      status: run.status.toLowerCase(),
+      runId: run.id,
+      startedAt: run.startedAt,
+      finishedAt: run.finishedAt
+    });
+
+  } catch (err) {
+    console.error('[Apify] Status check failed:', err.message);
+    return res.status(500).json({ error: 'status_check_failed', message: err.message });
+  }
+});
+
+// POST /api/research/youtube/channel - Scrape YouTube channel data
+app.post('/api/research/youtube/channel', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { channelUrl, channelId, maxVideos } = req.body;
+
+    if (!channelUrl && !channelId) {
+      return res.status(400).json({ error: 'missing_input', message: 'channelUrl or channelId required' });
+    }
+
+    const input = {
+      startUrls: channelUrl ? [{ url: channelUrl }] : [],
+      channelIds: channelId ? [channelId] : [],
+      maxResults: maxVideos || 50,
+      sortBy: 'date',
+      downloadSubtitles: false,
+      downloadThumbnails: false, // We store URLs, not actual thumbnails
+      extendOutputFunction: `async ({ data, item, page, request, customData }) => {
+        return {
+          ...item,
+          thumbnailUrl: item.thumbnails?.[0]?.url || item.thumbnail?.url || null,
+          channelUrl: item.channelUrl,
+          viewCount: item.viewCount,
+          likeCount: item.likeCount,
+          duration: item.duration
+        };
+      }`
+    };
+
+    const result = await callApifyActor('streamers~youtube-scraper', input, {
+      timeout: 600,
+      waitForFinish: 180
+    });
+
+    // Log the research request
+    await airtableCreate('ResearchLog', {
+      Type: 'youtube_channel',
+      Input: JSON.stringify({ channelUrl, channelId }),
+      Status: result.status || 'error',
+      RunID: result.runId || '',
+      ResultCount: result.itemCount || 0,
+      RequestedBy: req.user.email,
+      Timestamp: new Date().toISOString()
+    }).catch(() => {});
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Research] YouTube channel error:', err);
+    return res.status(500).json({ error: 'research_failed', message: err.message });
+  }
+});
+
+// POST /api/research/youtube/videos - Scrape specific YouTube videos
+app.post('/api/research/youtube/videos', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { videoUrls, videoIds } = req.body;
+
+    if ((!videoUrls || videoUrls.length === 0) && (!videoIds || videoIds.length === 0)) {
+      return res.status(400).json({ error: 'missing_input', message: 'videoUrls or videoIds array required' });
+    }
+
+    // Limit to 100 videos per request
+    const urls = (videoUrls || []).slice(0, 100);
+    const ids = (videoIds || []).slice(0, 100);
+
+    const input = {
+      startUrls: urls.map(url => ({ url })),
+      videoIds: ids,
+      downloadSubtitles: false,
+      downloadThumbnails: false
+    };
+
+    const result = await callApifyActor('streamers~youtube-scraper', input, {
+      timeout: 600,
+      waitForFinish: 180,
+      limit: 100
+    });
+
+    // Log the research request
+    await airtableCreate('ResearchLog', {
+      Type: 'youtube_videos',
+      Input: JSON.stringify({ videoCount: urls.length + ids.length }),
+      Status: result.status || 'error',
+      RunID: result.runId || '',
+      ResultCount: result.itemCount || 0,
+      RequestedBy: req.user.email,
+      Timestamp: new Date().toISOString()
+    }).catch(() => {});
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Research] YouTube videos error:', err);
+    return res.status(500).json({ error: 'research_failed', message: err.message });
+  }
+});
+
+// POST /api/research/youtube/search - Search YouTube for videos
+app.post('/api/research/youtube/search', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { query, maxResults, sortBy } = req.body;
+
+    if (!query) {
+      return res.status(400).json({ error: 'missing_input', message: 'query required' });
+    }
+
+    const input = {
+      searchQueries: [query],
+      maxResults: Math.min(maxResults || 30, 100),
+      sortBy: sortBy || 'relevance', // relevance, date, viewCount
+      downloadSubtitles: false,
+      downloadThumbnails: false
+    };
+
+    const result = await callApifyActor('streamers~youtube-scraper', input, {
+      timeout: 300,
+      waitForFinish: 120
+    });
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Research] YouTube search error:', err);
+    return res.status(500).json({ error: 'research_failed', message: err.message });
+  }
+});
+
+// POST /api/research/tiktok/profile - Scrape TikTok profile
+app.post('/api/research/tiktok/profile', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { username, profileUrl, maxVideos } = req.body;
+
+    if (!username && !profileUrl) {
+      return res.status(400).json({ error: 'missing_input', message: 'username or profileUrl required' });
+    }
+
+    const input = {
+      profiles: username ? [username] : [],
+      profileUrls: profileUrl ? [profileUrl] : [],
+      resultsPerPage: Math.min(maxVideos || 30, 100),
+      shouldDownloadVideos: false,
+      shouldDownloadCovers: false
+    };
+
+    const result = await callApifyActor('clockworks~tiktok-scraper', input, {
+      timeout: 300,
+      waitForFinish: 120
+    });
+
+    // Log research
+    await airtableCreate('ResearchLog', {
+      Type: 'tiktok_profile',
+      Input: JSON.stringify({ username, profileUrl }),
+      Status: result.status || 'error',
+      RunID: result.runId || '',
+      ResultCount: result.itemCount || 0,
+      RequestedBy: req.user.email,
+      Timestamp: new Date().toISOString()
+    }).catch(() => {});
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Research] TikTok profile error:', err);
+    return res.status(500).json({ error: 'research_failed', message: err.message });
+  }
+});
+
+// POST /api/research/instagram/profile - Scrape Instagram profile
+app.post('/api/research/instagram/profile', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { username, profileUrl, maxPosts } = req.body;
+
+    if (!username && !profileUrl) {
+      return res.status(400).json({ error: 'missing_input', message: 'username or profileUrl required' });
+    }
+
+    const input = {
+      usernames: username ? [username] : [],
+      directUrls: profileUrl ? [profileUrl] : [],
+      resultsLimit: Math.min(maxPosts || 30, 100)
+    };
+
+    const result = await callApifyActor('apify~instagram-profile-scraper', input, {
+      timeout: 300,
+      waitForFinish: 120
+    });
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Research] Instagram profile error:', err);
+    return res.status(500).json({ error: 'research_failed', message: err.message });
+  }
+});
+
+// POST /api/research/instagram/reels - Scrape Instagram reels
+app.post('/api/research/instagram/reels', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { username, reelUrls, maxReels } = req.body;
+
+    if (!username && (!reelUrls || reelUrls.length === 0)) {
+      return res.status(400).json({ error: 'missing_input', message: 'username or reelUrls required' });
+    }
+
+    const input = {
+      username: username || undefined,
+      directUrls: reelUrls || [],
+      resultsLimit: Math.min(maxReels || 30, 100)
+    };
+
+    const result = await callApifyActor('apify~instagram-reel-scraper', input, {
+      timeout: 300,
+      waitForFinish: 120
+    });
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Research] Instagram reels error:', err);
+    return res.status(500).json({ error: 'research_failed', message: err.message });
+  }
+});
+
+// POST /api/research/thumbnails/analyze - Store thumbnail metadata for analysis
+// This stores URLs and metadata - NOT the actual images
+app.post('/api/research/thumbnails/analyze', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { thumbnails, source, category } = req.body;
+
+    if (!thumbnails || !Array.isArray(thumbnails) || thumbnails.length === 0) {
+      return res.status(400).json({ error: 'missing_input', message: 'thumbnails array required' });
+    }
+
+    // Limit to 100 thumbnails per request
+    const batch = thumbnails.slice(0, 100);
+
+    // Store each thumbnail's metadata in Airtable
+    const stored = [];
+    for (const thumb of batch) {
+      const record = await airtableCreate('ThumbnailResearch', {
+        ThumbnailURL: thumb.url || thumb.thumbnailUrl,
+        VideoTitle: thumb.title || thumb.videoTitle || '',
+        VideoURL: thumb.videoUrl || thumb.url || '',
+        ChannelName: thumb.channelName || thumb.channelTitle || '',
+        ViewCount: thumb.viewCount || thumb.views || 0,
+        UploadDate: thumb.uploadDate || thumb.publishedAt || '',
+        Source: source || 'youtube',
+        Category: category || 'uncategorized',
+        AnalyzedAt: new Date().toISOString(),
+        AddedBy: req.user.email
+      });
+
+      if (record) {
+        stored.push(record.id);
+      }
+    }
+
+    return res.json({
+      success: true,
+      stored: stored.length,
+      total: batch.length
+    });
+
+  } catch (err) {
+    console.error('[Research] Thumbnail analyze error:', err);
+    return res.status(500).json({ error: 'storage_failed', message: err.message });
+  }
+});
+
+// GET /api/research/thumbnails - Get stored thumbnail research data
+app.get('/api/research/thumbnails', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { category, source, limit, offset } = req.query;
+
+    let filter = '';
+    if (category) {
+      filter = `{Category}='${category}'`;
+    }
+    if (source) {
+      filter = filter ? `AND(${filter}, {Source}='${source}')` : `{Source}='${source}'`;
+    }
+
+    const result = await airtableQuery('ThumbnailResearch', filter, {
+      maxRecords: parseInt(limit) || 50,
+      sort: [{ field: 'AnalyzedAt', direction: 'desc' }],
+      offset: offset || undefined
+    });
+
+    const thumbnails = result.records.map(r => ({
+      id: r.id,
+      thumbnailUrl: r.fields.ThumbnailURL,
+      videoTitle: r.fields.VideoTitle,
+      videoUrl: r.fields.VideoURL,
+      channelName: r.fields.ChannelName,
+      viewCount: r.fields.ViewCount,
+      uploadDate: r.fields.UploadDate,
+      source: r.fields.Source,
+      category: r.fields.Category,
+      analyzedAt: r.fields.AnalyzedAt
+    }));
+
+    return res.json({
+      thumbnails,
+      count: thumbnails.length,
+      hasMore: !!result.offset
+    });
+
+  } catch (err) {
+    console.error('[Research] Thumbnail fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// ============================================
+// THUMBNAIL INTELLIGENCE ENGINE (ADMIN ONLY)
+// ============================================
+// Scrapes seed creators, stores thumbnails, analyzes patterns
+// Never says "AI" - uses "proven high-performing layouts"
+
+// Seed creators for thumbnail intelligence
+const SEED_CREATORS = [
+  { name: 'Alex Hormozi', channelId: 'UCHGNcNAMJpuw1Xay_dZNJuQ' },
+  { name: 'MrBeast', channelId: 'UCX6OQ3DkcsbYNE6H8uQQuVA' },
+  { name: 'Ali Abdaal', channelId: 'UCoOae5nYA7VqaXzerajD0lg' },
+  { name: 'Course Creator Pro', channelId: 'UCfLYr5q5m1p1JE8lDJRzg0A' },
+  { name: 'Full Time Filmmaker', channelId: 'UCfJQRIvnC5v0gMiWZE1SZEA' }
+];
+
+// POST /api/intelligence/scrape-creator - Scrape a seed creator's videos + thumbnails
+app.post('/api/intelligence/scrape-creator', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { creatorName, channelId, maxVideos } = req.body;
+
+    if (!channelId) {
+      return res.status(400).json({ error: 'missing_input', message: 'channelId required' });
+    }
+
+    const input = {
+      channelIds: [channelId],
+      maxResults: maxVideos || 250,
+      sortBy: 'date',
+      downloadSubtitles: false,
+      downloadThumbnails: false
+    };
+
+    const result = await callApifyActor('streamers~youtube-scraper', input, {
+      timeout: 900,
+      waitForFinish: 300,
+      limit: 500
+    });
+
+    if (result.success && result.data) {
+      // Process and store each video
+      let stored = 0;
+      for (const video of result.data) {
+        // Calculate performance metrics
+        const views = video.viewCount || 0;
+        const subs = video.channelSubscribers || 0;
+        const ratio = subs > 0 ? views / subs : 0;
+
+        // Get highest res thumbnail
+        let thumbnailUrl = '';
+        if (video.thumbnails && video.thumbnails.length > 0) {
+          thumbnailUrl = video.thumbnails[video.thumbnails.length - 1].url;
+        } else if (video.thumbnail) {
+          thumbnailUrl = video.thumbnail.url || video.thumbnail;
+        }
+
+        // Store in Thumbnail_Intelligence
+        await airtableCreate('Thumbnail_Intelligence', {
+          Creator: creatorName || video.channelTitle,
+          VideoURL: video.url || `https://www.youtube.com/watch?v=${video.id}`,
+          VideoID: video.id,
+          Title: video.title,
+          Views: views,
+          Subscribers: subs,
+          ViewsPerSubRatio: Math.round(ratio * 10000) / 10000,
+          TitleLength: (video.title || '').length,
+          PublishDate: video.uploadDate || video.date,
+          UploadAgeDays: Math.floor((Date.now() - new Date(video.uploadDate || video.date).getTime()) / (1000 * 60 * 60 * 24)),
+          ThumbnailURL: thumbnailUrl,
+          ScrapedAt: new Date().toISOString()
+        });
+        stored++;
+      }
+
+      // Update Seed_Creators table
+      const seedCreators = await airtableQuery('Seed_Creators', `{YouTubeChannelID}='${channelId}'`, { maxRecords: 1 });
+      if (seedCreators.records?.[0]) {
+        await airtableUpdate('Seed_Creators', seedCreators.records[0].id, {
+          LastScraped: new Date().toISOString(),
+          VideosSscraped: stored,
+          Status: 'Active',
+          Subscribers: result.data[0]?.channelSubscribers || 0
+        });
+      }
+
+      return res.json({
+        success: true,
+        creator: creatorName,
+        videosProcessed: stored,
+        runId: result.runId
+      });
+    }
+
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[Intelligence] Scrape creator error:', err);
+    return res.status(500).json({ error: 'scrape_failed', message: err.message });
+  }
+});
+
+// POST /api/intelligence/scrape-all-creators - Scrape all seed creators
+app.post('/api/intelligence/scrape-all-creators', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { maxVideosPerCreator } = req.body;
+    const results = [];
+
+    for (const creator of SEED_CREATORS) {
+      // Log start
+      console.log(`[Intelligence] Starting scrape for ${creator.name}...`);
+
+      const input = {
+        channelIds: [creator.channelId],
+        maxResults: maxVideosPerCreator || 250,
+        sortBy: 'date',
+        downloadSubtitles: false,
+        downloadThumbnails: false
+      };
+
+      const result = await callApifyActor('streamers~youtube-scraper', input, {
+        timeout: 900,
+        waitForFinish: 300,
+        limit: 500
+      });
+
+      results.push({
+        creator: creator.name,
+        status: result.status,
+        runId: result.runId,
+        itemCount: result.itemCount || 0
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Scrape jobs initiated for all seed creators',
+      results
+    });
+
+  } catch (err) {
+    console.error('[Intelligence] Scrape all creators error:', err);
+    return res.status(500).json({ error: 'batch_scrape_failed', message: err.message });
+  }
+});
+
+// POST /api/intelligence/calculate-performance-tiers - Calculate performance tiers for all videos
+app.post('/api/intelligence/calculate-performance-tiers', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { creator } = req.body;
+
+    let filter = '';
+    if (creator) {
+      filter = `{Creator}='${creator}'`;
+    }
+
+    // Get all videos
+    const videos = await airtableQuery('Thumbnail_Intelligence', filter, {
+      maxRecords: 1000,
+      sort: [{ field: 'Views', direction: 'desc' }]
+    });
+
+    if (videos.records.length === 0) {
+      return res.json({ success: false, message: 'No videos found' });
+    }
+
+    // Calculate percentiles
+    const total = videos.records.length;
+    const top10Idx = Math.floor(total * 0.1);
+    const top25Idx = Math.floor(total * 0.25);
+    const medianIdx = Math.floor(total * 0.5);
+
+    let updated = 0;
+    for (let i = 0; i < videos.records.length; i++) {
+      const record = videos.records[i];
+      let tier = 'Below Median';
+
+      if (i < top10Idx) tier = 'Top 10%';
+      else if (i < top25Idx) tier = 'Top 25%';
+      else if (i < medianIdx) tier = 'Median';
+
+      await airtableUpdate('Thumbnail_Intelligence', record.id, {
+        PerformanceTier: tier
+      });
+      updated++;
+    }
+
+    return res.json({
+      success: true,
+      totalVideos: total,
+      updated,
+      tiers: {
+        'Top 10%': top10Idx,
+        'Top 25%': top25Idx - top10Idx,
+        'Median': medianIdx - top25Idx,
+        'Below Median': total - medianIdx
+      }
+    });
+
+  } catch (err) {
+    console.error('[Intelligence] Calculate tiers error:', err);
+    return res.status(500).json({ error: 'calculation_failed', message: err.message });
+  }
+});
+
+// GET /api/intelligence/top-thumbnails - Get top performing thumbnails
+app.get('/api/intelligence/top-thumbnails', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { creator, tier, limit } = req.query;
+
+    let filter = `{PerformanceTier}='Top 10%'`;
+    if (creator) {
+      filter = `AND(${filter}, {Creator}='${creator}')`;
+    }
+    if (tier) {
+      filter = `{PerformanceTier}='${tier}'`;
+      if (creator) {
+        filter = `AND(${filter}, {Creator}='${creator}')`;
+      }
+    }
+
+    const result = await airtableQuery('Thumbnail_Intelligence', filter, {
+      maxRecords: parseInt(limit) || 50,
+      sort: [{ field: 'Views', direction: 'desc' }]
+    });
+
+    const thumbnails = result.records.map(r => ({
+      id: r.id,
+      creator: r.fields.Creator,
+      title: r.fields.Title,
+      views: r.fields.Views,
+      viewsPerSubRatio: r.fields.ViewsPerSubRatio,
+      thumbnailUrl: r.fields.ThumbnailURL,
+      videoUrl: r.fields.VideoURL,
+      tier: r.fields.PerformanceTier
+    }));
+
+    return res.json({ thumbnails, count: thumbnails.length });
+
+  } catch (err) {
+    console.error('[Intelligence] Top thumbnails error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// ============================================
+// CREATOR PROFILE INTELLIGENCE (CLIENT METRICS)
+// ============================================
+// Scrapes client social profiles, tracks performance over time
+
+// POST /api/client/save-profiles - Save client social profile URLs
+app.post('/api/client/save-profiles', requireAuth(), async (req, res) => {
+  try {
+    const { youtube, instagram, tiktok, twitter } = req.body;
+    const clientId = req.user.userRecordId;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'no_client_id' });
+    }
+
+    // Save to Contacts table
+    const profileUrls = JSON.stringify({
+      youtube: youtube || null,
+      instagram: instagram || null,
+      tiktok: tiktok || null,
+      twitter: twitter || null
+    });
+
+    await airtableUpdate('Contacts', clientId, {
+      ProfileURLs: profileUrls
+    });
+
+    return res.json({ success: true, message: 'Profile URLs saved' });
+
+  } catch (err) {
+    console.error('[Profiles] Save error:', err);
+    return res.status(500).json({ error: 'save_failed', message: err.message });
+  }
+});
+
+// GET /api/client/profiles - Get client's saved profile URLs
+app.get('/api/client/profiles', requireAuth(), async (req, res) => {
+  try {
+    const clientId = req.user.userRecordId;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'no_client_id' });
+    }
+
+    const contact = await airtableQuery('Contacts', `RECORD_ID()='${clientId}'`, { maxRecords: 1 });
+
+    if (!contact.records?.[0]) {
+      return res.json({ profiles: {} });
+    }
+
+    let profiles = {};
+    try {
+      profiles = JSON.parse(contact.records[0].fields.ProfileURLs || '{}');
+    } catch (e) {
+      profiles = {};
+    }
+
+    return res.json({ profiles });
+
+  } catch (err) {
+    console.error('[Profiles] Fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// POST /api/client/scrape-profile - Scrape a specific client profile (admin triggered)
+app.post('/api/client/scrape-profile', requireAuth(['admin', 'owner']), apifyLimiter, async (req, res) => {
+  try {
+    const { clientId, platform, profileUrl } = req.body;
+
+    if (!clientId || !platform || !profileUrl) {
+      return res.status(400).json({ error: 'missing_input', message: 'clientId, platform, and profileUrl required' });
+    }
+
+    let result;
+    let stats = {};
+
+    switch (platform.toLowerCase()) {
+      case 'youtube':
+        result = await callApifyActor('streamers~youtube-scraper', {
+          startUrls: [{ url: profileUrl }],
+          maxResults: 30,
+          downloadSubtitles: false,
+          downloadThumbnails: false
+        }, { timeout: 300, waitForFinish: 120 });
+
+        if (result.success && result.data?.[0]) {
+          const channelData = result.data[0];
+          stats = {
+            followers: channelData.subscriberCount || channelData.channelSubscribers,
+            totalPosts: result.data.length,
+            avgViews: Math.round(result.data.reduce((sum, v) => sum + (v.viewCount || 0), 0) / result.data.length),
+            avgEngagement: 0 // Would need likes+comments/views calculation
+          };
+        }
+        break;
+
+      case 'instagram':
+        result = await callApifyActor('apify~instagram-profile-scraper', {
+          directUrls: [profileUrl],
+          resultsLimit: 30
+        }, { timeout: 300, waitForFinish: 120 });
+
+        if (result.success && result.data?.[0]) {
+          const profile = result.data[0];
+          stats = {
+            followers: profile.followersCount,
+            totalPosts: profile.postsCount,
+            avgViews: 0,
+            avgEngagement: profile.engagement || 0
+          };
+        }
+        break;
+
+      case 'tiktok':
+        result = await callApifyActor('clockworks~tiktok-scraper', {
+          profileUrls: [profileUrl],
+          resultsPerPage: 30,
+          shouldDownloadVideos: false
+        }, { timeout: 300, waitForFinish: 120 });
+
+        if (result.success && result.data?.[0]) {
+          const profile = result.data[0];
+          stats = {
+            followers: profile.authorMeta?.fans || 0,
+            totalPosts: result.data.length,
+            avgViews: Math.round(result.data.reduce((sum, v) => sum + (v.playCount || 0), 0) / result.data.length),
+            avgEngagement: 0
+          };
+        }
+        break;
+
+      default:
+        return res.status(400).json({ error: 'unsupported_platform', message: 'Use youtube, instagram, or tiktok' });
+    }
+
+    // Get previous stats to calculate trend
+    const prevStats = await airtableQuery('Creator_Profile_Stats',
+      `AND({ClientID}='${clientId}', {Platform}='${platform}')`,
+      { maxRecords: 1, sort: [{ field: 'LastScrapedAt', direction: 'desc' }] }
+    );
+
+    let trend = 'Flat';
+    if (prevStats.records?.[0]) {
+      const prevFollowers = prevStats.records[0].fields.Followers || 0;
+      if (stats.followers > prevFollowers * 1.02) trend = 'Up';
+      else if (stats.followers < prevFollowers * 0.98) trend = 'Down';
+    }
+
+    // Save new stats
+    await airtableCreate('Creator_Profile_Stats', {
+      ClientID: clientId,
+      Platform: platform.charAt(0).toUpperCase() + platform.slice(1),
+      ProfileURL: profileUrl,
+      Username: profileUrl.split('/').pop(),
+      Followers: stats.followers || 0,
+      TotalPosts: stats.totalPosts || 0,
+      AvgViewsPerPost: stats.avgViews || 0,
+      AvgEngagementPercent: stats.avgEngagement || 0,
+      TrendDirection: trend,
+      LastScrapedAt: new Date().toISOString(),
+      HistoricalData: JSON.stringify([{
+        date: new Date().toISOString(),
+        followers: stats.followers,
+        avgViews: stats.avgViews
+      }])
+    });
+
+    return res.json({
+      success: true,
+      platform,
+      stats,
+      trend
+    });
+
+  } catch (err) {
+    console.error('[Profiles] Scrape error:', err);
+    return res.status(500).json({ error: 'scrape_failed', message: err.message });
+  }
+});
+
+// GET /api/client/performance - Get client's content performance stats
+app.get('/api/client/performance', requireAuth(), async (req, res) => {
+  try {
+    const clientId = req.user.userRecordId;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'no_client_id' });
+    }
+
+    const stats = await airtableQuery('Creator_Profile_Stats',
+      `{ClientID}='${clientId}'`,
+      { sort: [{ field: 'LastScrapedAt', direction: 'desc' }] }
+    );
+
+    // Get latest stats per platform
+    const platforms = {};
+    for (const record of stats.records) {
+      const platform = record.fields.Platform?.toLowerCase();
+      if (platform && !platforms[platform]) {
+        platforms[platform] = {
+          followers: record.fields.Followers,
+          totalPosts: record.fields.TotalPosts,
+          avgViews: record.fields.AvgViewsPerPost,
+          avgEngagement: record.fields.AvgEngagementPercent,
+          trend: record.fields.TrendDirection,
+          lastUpdated: record.fields.LastScrapedAt
+        };
+      }
+    }
+
+    return res.json({
+      success: true,
+      platforms,
+      hasData: Object.keys(platforms).length > 0
+    });
+
+  } catch (err) {
+    console.error('[Performance] Fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// ============================================
+// THUMBNAIL PREFERENCES & DELIVERY
+// ============================================
+
+// POST /api/client/thumbnail-preferences - Save client thumbnail preferences
+app.post('/api/client/thumbnail-preferences', requireAuth(), async (req, res) => {
+  try {
+    const { includeThumbnails, inspiredBy, preferredEmotion, textApproval, customNotes } = req.body;
+    const clientId = req.user.userRecordId;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'no_client_id' });
+    }
+
+    // Check if preferences already exist
+    const existing = await airtableQuery('Thumbnail_Preferences', `{ClientID}='${clientId}'`, { maxRecords: 1 });
+
+    if (existing.records?.[0]) {
+      await airtableUpdate('Thumbnail_Preferences', existing.records[0].id, {
+        IncludeThumbnails: includeThumbnails || false,
+        InspiredBy: inspiredBy || null,
+        PreferredEmotion: preferredEmotion || 'No Preference',
+        TextApproval: textApproval || 'Let Content Bug Decide',
+        CustomNotes: customNotes || '',
+        UpdatedAt: new Date().toISOString()
+      });
+    } else {
+      await airtableCreate('Thumbnail_Preferences', {
+        ClientID: clientId,
+        IncludeThumbnails: includeThumbnails || false,
+        InspiredBy: inspiredBy || null,
+        PreferredEmotion: preferredEmotion || 'No Preference',
+        TextApproval: textApproval || 'Let Content Bug Decide',
+        CustomNotes: customNotes || '',
+        CreatedAt: new Date().toISOString(),
+        UpdatedAt: new Date().toISOString()
+      });
+    }
+
+    return res.json({ success: true, message: 'Thumbnail preferences saved' });
+
+  } catch (err) {
+    console.error('[Thumbnail Prefs] Save error:', err);
+    return res.status(500).json({ error: 'save_failed', message: err.message });
+  }
+});
+
+// GET /api/client/thumbnail-preferences - Get client thumbnail preferences
+app.get('/api/client/thumbnail-preferences', requireAuth(), async (req, res) => {
+  try {
+    const clientId = req.user.userRecordId;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'no_client_id' });
+    }
+
+    const prefs = await airtableQuery('Thumbnail_Preferences', `{ClientID}='${clientId}'`, { maxRecords: 1 });
+
+    if (!prefs.records?.[0]) {
+      return res.json({
+        exists: false,
+        preferences: {
+          includeThumbnails: false,
+          inspiredBy: null,
+          preferredEmotion: 'No Preference',
+          textApproval: 'Let Content Bug Decide'
+        }
+      });
+    }
+
+    const record = prefs.records[0];
+    return res.json({
+      exists: true,
+      preferences: {
+        includeThumbnails: record.fields.IncludeThumbnails,
+        inspiredBy: record.fields.InspiredBy,
+        preferredEmotion: record.fields.PreferredEmotion,
+        textApproval: record.fields.TextApproval,
+        customNotes: record.fields.CustomNotes
+      }
+    });
+
+  } catch (err) {
+    console.error('[Thumbnail Prefs] Fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// POST /api/project/thumbnails - Create thumbnail options for a project (admin)
+app.post('/api/project/thumbnails', requireAuth(['admin', 'owner', 'editor']), async (req, res) => {
+  try {
+    const { projectId, clientId, options } = req.body;
+
+    if (!projectId || !clientId || !options || options.length < 1) {
+      return res.status(400).json({ error: 'missing_input', message: 'projectId, clientId, and options array required' });
+    }
+
+    const thumbnailData = {
+      ProjectID: projectId,
+      ClientID: clientId,
+      Status: 'Ready for Review',
+      GeneratedAt: new Date().toISOString()
+    };
+
+    // Add up to 3 options
+    for (let i = 0; i < Math.min(options.length, 3); i++) {
+      const opt = options[i];
+      const num = i + 1;
+      thumbnailData[`Option${num}URL`] = opt.url;
+      thumbnailData[`Option${num}Explanation`] = opt.explanation || `Hand-selected using proven high-performing layouts from top creators.`;
+      thumbnailData[`Option${num}CTRRange`] = opt.ctrRange || '4-7%';
+    }
+
+    const record = await airtableCreate('Project_Thumbnails', thumbnailData);
+
+    return res.json({
+      success: true,
+      recordId: record?.id,
+      message: 'Thumbnail options created'
+    });
+
+  } catch (err) {
+    console.error('[Thumbnails] Create options error:', err);
+    return res.status(500).json({ error: 'create_failed', message: err.message });
+  }
+});
+
+// GET /api/project/:projectId/thumbnails - Get thumbnail options for a project
+app.get('/api/project/:projectId/thumbnails', requireAuth(), async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const thumbnails = await airtableQuery('Project_Thumbnails', `{ProjectID}='${projectId}'`, { maxRecords: 1 });
+
+    if (!thumbnails.records?.[0]) {
+      return res.json({ exists: false });
+    }
+
+    const record = thumbnails.records[0];
+    const options = [];
+
+    for (let i = 1; i <= 3; i++) {
+      const url = record.fields[`Option${i}URL`];
+      if (url) {
+        options.push({
+          number: i,
+          url,
+          explanation: record.fields[`Option${i}Explanation`],
+          ctrRange: record.fields[`Option${i}CTRRange`]
+        });
+      }
+    }
+
+    return res.json({
+      exists: true,
+      recordId: record.id,
+      status: record.fields.Status,
+      selectedOption: record.fields.SelectedOption,
+      finalThumbnailUrl: record.fields.FinalThumbnailURL,
+      options
+    });
+
+  } catch (err) {
+    console.error('[Thumbnails] Fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// POST /api/project/:projectId/thumbnails/select - Client selects a thumbnail
+app.post('/api/project/:projectId/thumbnails/select', requireAuth(), async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { selectedOption } = req.body;
+
+    if (!selectedOption || !['Option 1', 'Option 2', 'Option 3'].includes(selectedOption)) {
+      return res.status(400).json({ error: 'invalid_option' });
+    }
+
+    const thumbnails = await airtableQuery('Project_Thumbnails', `{ProjectID}='${projectId}'`, { maxRecords: 1 });
+
+    if (!thumbnails.records?.[0]) {
+      return res.status(404).json({ error: 'not_found' });
+    }
+
+    const record = thumbnails.records[0];
+    const optionNum = selectedOption.split(' ')[1];
+    const finalUrl = record.fields[`Option${optionNum}URL`];
+
+    await airtableUpdate('Project_Thumbnails', record.id, {
+      SelectedOption: selectedOption,
+      FinalThumbnailURL: finalUrl,
+      Status: 'Selected',
+      SelectedAt: new Date().toISOString()
+    });
+
+    return res.json({
+      success: true,
+      selectedOption,
+      finalThumbnailUrl: finalUrl
+    });
+
+  } catch (err) {
+    console.error('[Thumbnails] Select error:', err);
+    return res.status(500).json({ error: 'select_failed', message: err.message });
+  }
+});
+
+// ============================================
+// CLIENT RAW THUMBNAIL UPLOAD (Camera Capture)
+// ============================================
+
+// POST /api/client/thumbnail-photo - Upload a raw thumbnail photo
+app.post('/api/client/thumbnail-photo', requireAuth(), uploadLimiter, upload.single('photo'), async (req, res) => {
+  try {
+    const clientId = req.user.userRecordId;
+    const { sessionId, lightingScore, focusScore, framingScore, uploadMethod } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'no_file' });
+    }
+
+    // Upload to Drive
+    const clientName = req.user.email?.split('@')[0] || 'unknown';
+    const structure = await getClientFolderStructure(clientName, clientId);
+
+    if (!structure) {
+      return res.status(500).json({ error: 'drive_not_ready' });
+    }
+
+    const targetFolder = structure.brand_thumbnails || structure.brand_assets || structure.root;
+    const fileName = `thumb_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.jpg`;
+
+    const uploadResult = await uploadToDrive(req.file, targetFolder, fileName);
+
+    if (!uploadResult.success) {
+      return res.status(500).json(uploadResult);
+    }
+
+    // Calculate overall score
+    const lighting = parseInt(lightingScore) || 0;
+    const focus = parseInt(focusScore) || 0;
+    const framing = parseInt(framingScore) || 0;
+    const overall = Math.round((lighting + focus + framing) / 3);
+
+    // Store in Airtable
+    await airtableCreate('Client_Raw_Thumbnails', {
+      ClientID: clientId,
+      SessionID: sessionId || `session_${Date.now()}`,
+      PhotoURL: uploadResult.file.viewLink,
+      DriveFileID: uploadResult.file.id,
+      LightingScore: lighting,
+      FocusScore: focus,
+      FramingScore: framing,
+      OverallScore: overall,
+      Status: 'Raw',
+      CapturedAt: new Date().toISOString(),
+      UploadMethod: uploadMethod || 'Manual Upload'
+    });
+
+    return res.json({
+      success: true,
+      photoUrl: uploadResult.file.viewLink,
+      driveId: uploadResult.file.id,
+      scores: { lighting, focus, framing, overall }
+    });
+
+  } catch (err) {
+    console.error('[Thumbnail Photo] Upload error:', err);
+    return res.status(500).json({ error: 'upload_failed', message: err.message });
+  }
+});
+
+// GET /api/client/thumbnail-photos - Get client's raw thumbnail photos
+app.get('/api/client/thumbnail-photos', requireAuth(), async (req, res) => {
+  try {
+    const clientId = req.user.userRecordId;
+    const { status } = req.query;
+
+    let filter = `{ClientID}='${clientId}'`;
+    if (status) {
+      filter = `AND(${filter}, {Status}='${status}')`;
+    }
+
+    const photos = await airtableQuery('Client_Raw_Thumbnails', filter, {
+      maxRecords: 50,
+      sort: [{ field: 'CapturedAt', direction: 'desc' }]
+    });
+
+    const results = photos.records.map(r => ({
+      id: r.id,
+      photoUrl: r.fields.PhotoURL,
+      overallScore: r.fields.OverallScore,
+      status: r.fields.Status,
+      capturedAt: r.fields.CapturedAt,
+      uploadMethod: r.fields.UploadMethod
+    }));
+
+    return res.json({ photos: results, count: results.length });
+
+  } catch (err) {
+    console.error('[Thumbnail Photos] Fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 
 app.listen(PORT, () => {
   console.log(`\n${'='.repeat(50)}`);
-  console.log(`ContentBug Production MCP Server v2.1.0`);
+  console.log(`ContentBug Production MCP Server v2.3.1`);
   console.log(`${'='.repeat(50)}`);
   console.log(`Port: ${PORT}`);
   console.log(`Environment: ${IS_PRODUCTION ? 'PRODUCTION' : 'development'}`);
@@ -2008,5 +3367,7 @@ app.listen(PORT, () => {
   console.log(`  Auth:    enabled`);
   console.log(`  Chat:    enabled`);
   console.log(`  Drive:   ${driveServiceReady ? 'enabled' : 'DISABLED - ' + driveInitError}`);
+  console.log(`  Apify:   ${APIFY_API_TOKEN ? 'enabled' : 'DISABLED - no token'}`);
+  console.log(`  OTP:     GHL API=${!!GHL_API_KEY}, Webhook=${!!GHL_WEBHOOK_URL}, Debug=${EMAIL_DELIVERY_DEBUG}`);
   console.log(`\n${'='.repeat(50)}\n`);
 });
