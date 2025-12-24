@@ -1,6 +1,6 @@
 // server_Production.js
-// ContentBug Production MCP Server v1.1
-// Handles: Make webhooks, Claude/OpenAI AI, Airtable storage, GHL forwarding, chat, AND authentication
+// ContentBug Production MCP Server v2.1.0
+// Handles: Make webhooks, Claude/OpenAI AI, Airtable storage, GHL forwarding, chat, auth, AND Google Drive
 // Deploy to Railway - runs 24/7
 
 const express = require('express');
@@ -16,31 +16,132 @@ const multer = require('multer');
 const { Readable } = require('stream');
 require('dotenv').config();
 
-// Google Drive setup
-let googleDrive = null;
-try {
-  const { google } = require('googleapis');
-  const GOOGLE_SERVICE_ACCOUNT = process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?
-    JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON) : null;
+// ============================================
+// GOOGLE DRIVE SERVICE (PRODUCTION HARDENED)
+// ============================================
+// Uses service account auth only - no OAuth
+// Scope: drive.file (minimal - can only access files it creates)
+// Never logs credentials, never writes to disk
 
-  if (GOOGLE_SERVICE_ACCOUNT) {
+let googleDrive = null;
+let driveServiceReady = false;
+let driveInitError = null;
+
+// Allowed MIME types for upload security
+const ALLOWED_MIME_TYPES = {
+  // Video
+  'video/mp4': { ext: '.mp4', category: 'video' },
+  'video/quicktime': { ext: '.mov', category: 'video' },
+  'video/x-msvideo': { ext: '.avi', category: 'video' },
+  'video/webm': { ext: '.webm', category: 'video' },
+  'video/x-matroska': { ext: '.mkv', category: 'video' },
+  'video/x-m4v': { ext: '.m4v', category: 'video' },
+  // Audio
+  'audio/mpeg': { ext: '.mp3', category: 'audio' },
+  'audio/wav': { ext: '.wav', category: 'audio' },
+  'audio/x-wav': { ext: '.wav', category: 'audio' },
+  'audio/aac': { ext: '.aac', category: 'audio' },
+  'audio/x-m4a': { ext: '.m4a', category: 'audio' },
+  'audio/mp4': { ext: '.m4a', category: 'audio' },
+  // Images
+  'image/jpeg': { ext: '.jpg', category: 'image' },
+  'image/png': { ext: '.png', category: 'image' },
+  'image/gif': { ext: '.gif', category: 'image' },
+  'image/webp': { ext: '.webp', category: 'image' },
+  'image/svg+xml': { ext: '.svg', category: 'image' }
+};
+
+// Upload limits by category
+const UPLOAD_LIMITS = {
+  video: 500 * 1024 * 1024,    // 500MB
+  audio: 100 * 1024 * 1024,    // 100MB
+  image: 25 * 1024 * 1024,     // 25MB
+  default: 50 * 1024 * 1024    // 50MB fallback
+};
+
+// Drive folder structure constants
+const DRIVE_FOLDER_STRUCTURE = {
+  ROOT_NAME: 'Content Bug Clients',
+  SUBFOLDERS: ['Brand Assets', 'Raw Uploads', 'Creator Lab Recordings', 'Approved Exports'],
+  BRAND_ASSET_SUBFOLDERS: ['Logos', 'Thumbnails', 'Headshots']
+};
+
+// Initialize Google Drive with security checks
+function initGoogleDrive() {
+  try {
+    const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+
+    if (!credentialsJson) {
+      driveInitError = 'GOOGLE_SERVICE_ACCOUNT_JSON not configured';
+      console.warn(`[Drive] ${driveInitError} - file uploads disabled`);
+      return false;
+    }
+
+    // Parse credentials (never log the actual content)
+    let credentials;
+    try {
+      credentials = JSON.parse(credentialsJson);
+    } catch (parseErr) {
+      driveInitError = 'Invalid JSON in GOOGLE_SERVICE_ACCOUNT_JSON';
+      console.error(`[Drive] ${driveInitError}`);
+      return false;
+    }
+
+    // Validate required fields exist (without logging values)
+    const requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
+    const missingFields = requiredFields.filter(f => !credentials[f]);
+    if (missingFields.length > 0) {
+      driveInitError = `Missing required fields: ${missingFields.join(', ')}`;
+      console.error(`[Drive] ${driveInitError}`);
+      return false;
+    }
+
+    if (credentials.type !== 'service_account') {
+      driveInitError = 'Credentials must be service_account type';
+      console.error(`[Drive] ${driveInitError}`);
+      return false;
+    }
+
+    const { google } = require('googleapis');
+
     const auth = new google.auth.GoogleAuth({
-      credentials: GOOGLE_SERVICE_ACCOUNT,
-      scopes: ['https://www.googleapis.com/auth/drive.file']
+      credentials: credentials,
+      scopes: ['https://www.googleapis.com/auth/drive.file'] // Minimal scope
     });
+
     googleDrive = google.drive({ version: 'v3', auth });
-    console.log('Google Drive API initialized');
-  } else {
-    console.warn('GOOGLE_SERVICE_ACCOUNT_JSON not configured - file uploads disabled');
+    driveServiceReady = true;
+
+    console.log(`[Drive] Service initialized (project: ${credentials.project_id})`);
+    return true;
+
+  } catch (e) {
+    driveInitError = e.message;
+    console.error('[Drive] Initialization failed:', e.message);
+    return false;
   }
-} catch (e) {
-  console.warn('googleapis not available or config error:', e.message);
 }
 
-// File upload config
+// Initialize Drive on startup
+initGoogleDrive();
+
+// File upload config with validation
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 500 * 1024 * 1024 } // 500MB limit
+  limits: {
+    fileSize: 500 * 1024 * 1024, // 500MB absolute max
+    files: 1 // Single file per request
+  },
+  fileFilter: (req, file, cb) => {
+    const mimeInfo = ALLOWED_MIME_TYPES[file.mimetype];
+    if (!mimeInfo) {
+      return cb(new Error(`File type not allowed: ${file.mimetype}`), false);
+    }
+
+    // Attach category for later size validation
+    file.category = mimeInfo.category;
+    cb(null, true);
+  }
 });
 
 // Try to load argon2 - fall back to crypto if not available
@@ -114,10 +215,13 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.0.1',
+  version: 'production-2.1.0',
   auth: true,
   portal: true,
-  uploads: !!googleDrive
+  drive: {
+    ready: driveServiceReady,
+    error: driveServiceReady ? null : driveInitError
+  }
 }));
 
 // ============================================
@@ -1505,69 +1609,156 @@ app.get('/inbox', verifyApiKey, async (req, res) => {
 });
 
 // ============================================
-// GOOGLE DRIVE FILE UPLOAD
+// GOOGLE DRIVE FILE UPLOAD (PRODUCTION HARDENED)
 // ============================================
 
-const PROJECTS_FOLDER_ID = process.env.GOOGLE_DRIVE_PROJECTS_FOLDER || '131CAkK8L0cWy2BJX9o8m-h3arwFvPr5c';
+// Root folder for all client content
+const DRIVE_ROOT_FOLDER_ID = process.env.GOOGLE_DRIVE_ROOT_FOLDER || '131CAkK8L0cWy2BJX9o8m-h3arwFvPr5c';
 
-// POST /api/upload - Upload file to Google Drive
-app.post('/api/upload', requireAuth(), upload.single('file'), async (req, res) => {
+// In-memory cache for folder IDs (persisted to Airtable)
+const folderCache = new Map();
+
+/**
+ * Get or create a folder in Drive
+ * @param {string} name - Folder name
+ * @param {string} parentId - Parent folder ID
+ * @returns {Promise<{id: string, webViewLink: string}>}
+ */
+async function getOrCreateFolder(name, parentId) {
+  if (!driveServiceReady) return null;
+
+  const cacheKey = `${parentId}:${name}`;
+  if (folderCache.has(cacheKey)) {
+    return folderCache.get(cacheKey);
+  }
+
   try {
-    if (!googleDrive) {
-      return res.status(501).json({ error: 'file_upload_not_configured', message: 'Google Drive API not available' });
+    // Search for existing folder
+    const searchResponse = await googleDrive.files.list({
+      q: `name='${name.replace(/'/g, "\\'")}' and '${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: 'files(id, name, webViewLink)',
+      pageSize: 1
+    });
+
+    if (searchResponse.data.files && searchResponse.data.files.length > 0) {
+      const folder = searchResponse.data.files[0];
+      folderCache.set(cacheKey, folder);
+      return folder;
     }
 
-    if (!req.file) {
-      return res.status(400).json({ error: 'no_file', message: 'No file provided' });
+    // Create new folder
+    const createResponse = await googleDrive.files.create({
+      requestBody: {
+        name: name,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [parentId]
+      },
+      fields: 'id, name, webViewLink'
+    });
+
+    const folder = createResponse.data;
+    folderCache.set(cacheKey, folder);
+    console.log(`[Drive] Created folder: ${name} (${folder.id})`);
+    return folder;
+
+  } catch (err) {
+    console.error(`[Drive] Folder operation failed for ${name}:`, err.message);
+    return null;
+  }
+}
+
+/**
+ * Get or create complete client folder structure
+ * @param {string} clientName - Client display name
+ * @param {string} clientId - Airtable client ID
+ * @returns {Promise<object>} Folder IDs for each subfolder
+ */
+async function getClientFolderStructure(clientName, clientId) {
+  if (!driveServiceReady) return null;
+
+  const sanitizedName = clientName.replace(/[<>:"/\\|?*]/g, '').trim();
+  const clientFolderName = `${sanitizedName} (${clientId})`;
+
+  // Get or create client root folder
+  const clientFolder = await getOrCreateFolder(clientFolderName, DRIVE_ROOT_FOLDER_ID);
+  if (!clientFolder) return null;
+
+  // Create all subfolders
+  const structure = {
+    root: clientFolder.id,
+    rootLink: clientFolder.webViewLink
+  };
+
+  for (const subfolderName of DRIVE_FOLDER_STRUCTURE.SUBFOLDERS) {
+    const subfolder = await getOrCreateFolder(subfolderName, clientFolder.id);
+    if (subfolder) {
+      const key = subfolderName.toLowerCase().replace(/\s+/g, '_');
+      structure[key] = subfolder.id;
+      structure[`${key}_link`] = subfolder.webViewLink;
     }
 
-    const { projectName, clientId, folderId } = req.body;
-    const file = req.file;
-
-    console.log(`Uploading file: ${file.originalname} (${Math.round(file.size / 1024 / 1024)}MB)`);
-
-    // Use provided folder or create/find client folder
-    let targetFolderId = folderId || PROJECTS_FOLDER_ID;
-
-    // If clientId provided, create a subfolder for this project
-    if (projectName && clientId) {
-      const folderName = `${projectName}_${clientId}_${Date.now()}`;
-      try {
-        const folderResponse = await googleDrive.files.create({
-          requestBody: {
-            name: folderName,
-            mimeType: 'application/vnd.google-apps.folder',
-            parents: [PROJECTS_FOLDER_ID]
-          },
-          fields: 'id, webViewLink'
-        });
-        targetFolderId = folderResponse.data.id;
-        console.log(`Created project folder: ${folderName} (${targetFolderId})`);
-      } catch (folderErr) {
-        console.warn('Could not create project folder, using root:', folderErr.message);
+    // Create Brand Asset subfolders
+    if (subfolderName === 'Brand Assets' && subfolder) {
+      for (const brandSub of DRIVE_FOLDER_STRUCTURE.BRAND_ASSET_SUBFOLDERS) {
+        const brandSubfolder = await getOrCreateFolder(brandSub, subfolder.id);
+        if (brandSubfolder) {
+          const brandKey = `brand_${brandSub.toLowerCase()}`;
+          structure[brandKey] = brandSubfolder.id;
+          structure[`${brandKey}_link`] = brandSubfolder.webViewLink;
+        }
       }
     }
+  }
 
-    // Upload file to Drive
+  return structure;
+}
+
+/**
+ * Upload file to Drive with full validation
+ * @param {object} file - Multer file object
+ * @param {string} folderId - Target folder ID
+ * @param {string} customName - Optional custom filename
+ * @returns {Promise<object>} Upload result
+ */
+async function uploadToDrive(file, folderId, customName = null) {
+  if (!driveServiceReady) {
+    return { success: false, error: 'drive_not_ready' };
+  }
+
+  // Validate file size by category
+  const category = file.category || 'default';
+  const maxSize = UPLOAD_LIMITS[category] || UPLOAD_LIMITS.default;
+
+  if (file.size > maxSize) {
+    return {
+      success: false,
+      error: 'file_too_large',
+      message: `${category} files must be under ${Math.round(maxSize / 1024 / 1024)}MB`
+    };
+  }
+
+  try {
     const bufferStream = new Readable();
     bufferStream.push(file.buffer);
     bufferStream.push(null);
 
+    const fileName = customName || file.originalname;
+
     const driveResponse = await googleDrive.files.create({
       requestBody: {
-        name: file.originalname,
-        parents: [targetFolderId]
+        name: fileName,
+        parents: [folderId]
       },
       media: {
         mimeType: file.mimetype,
         body: bufferStream
       },
-      fields: 'id, name, webViewLink, webContentLink, size'
+      fields: 'id, name, webViewLink, size, mimeType, createdTime'
     });
 
     const driveFile = driveResponse.data;
 
-    // Make file accessible via link
+    // Set link sharing (reader access for anyone with link)
     await googleDrive.permissions.create({
       fileId: driveFile.id,
       requestBody: {
@@ -1576,52 +1767,230 @@ app.post('/api/upload', requireAuth(), upload.single('file'), async (req, res) =
       }
     });
 
-    // Generate direct download link
-    const directLink = `https://drive.google.com/uc?export=download&id=${driveFile.id}`;
-    const viewLink = driveFile.webViewLink || `https://drive.google.com/file/d/${driveFile.id}/view`;
+    console.log(`[Drive] Uploaded: ${driveFile.name} (${Math.round(file.size / 1024 / 1024)}MB) -> ${driveFile.id}`);
 
-    console.log(`File uploaded: ${driveFile.name} (${driveFile.id})`);
+    return {
+      success: true,
+      file: {
+        id: driveFile.id,
+        name: driveFile.name,
+        size: parseInt(driveFile.size),
+        mimeType: driveFile.mimeType,
+        viewLink: driveFile.webViewLink || `https://drive.google.com/file/d/${driveFile.id}/view`,
+        directLink: `https://drive.google.com/uc?export=download&id=${driveFile.id}`,
+        embedLink: `https://drive.google.com/file/d/${driveFile.id}/preview`,
+        createdTime: driveFile.createdTime,
+        folderId: folderId
+      }
+    };
 
-    // Optionally update Airtable if projectId provided
-    const { projectId, airtableField } = req.body;
-    if (projectId && AIRTABLE_API_KEY) {
+  } catch (err) {
+    console.error('[Drive] Upload failed:', err.message);
+    return { success: false, error: 'upload_failed', message: err.message };
+  }
+}
+
+// Upload rate limiter (more restrictive for uploads)
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // 30 uploads per 15 min
+  message: { error: 'upload_rate_limit', message: 'Too many uploads, try again later' }
+});
+
+// GET /api/drive/status - Check Drive service status
+app.get('/api/drive/status', (req, res) => {
+  return res.json({
+    available: driveServiceReady,
+    error: driveServiceReady ? null : driveInitError,
+    limits: {
+      video: `${UPLOAD_LIMITS.video / 1024 / 1024}MB`,
+      audio: `${UPLOAD_LIMITS.audio / 1024 / 1024}MB`,
+      image: `${UPLOAD_LIMITS.image / 1024 / 1024}MB`
+    },
+    supportedTypes: Object.keys(ALLOWED_MIME_TYPES)
+  });
+});
+
+// Backward compatibility alias
+app.get('/api/upload/status', (req, res) => {
+  return res.json({
+    available: driveServiceReady,
+    maxSize: '500MB',
+    supportedTypes: ['video/*', 'audio/*', 'image/*']
+  });
+});
+
+// POST /api/drive/init-client - Initialize client folder structure
+app.post('/api/drive/init-client', requireAuth(), async (req, res) => {
+  try {
+    if (!driveServiceReady) {
+      return res.json({ success: false, error: 'drive_not_available' });
+    }
+
+    const { clientName, clientId } = req.body;
+
+    if (!clientName || !clientId) {
+      return res.status(400).json({ error: 'missing_fields', message: 'clientName and clientId required' });
+    }
+
+    const structure = await getClientFolderStructure(clientName, clientId);
+
+    if (!structure) {
+      return res.status(500).json({ error: 'folder_creation_failed' });
+    }
+
+    // Save folder structure to Airtable
+    if (AIRTABLE_API_KEY) {
       try {
-        const updateFields = {};
-        updateFields[airtableField || 'Raw Footage Link'] = viewLink;
-        updateFields['Drive File ID'] = driveFile.id;
-        updateFields['Drive Folder ID'] = targetFolderId;
-
-        await airtableUpdate('Projects', projectId, updateFields);
-        console.log(`Updated Airtable project ${projectId} with file link`);
+        await airtableUpdate('Contacts', clientId, {
+          'Drive Root Folder': structure.root,
+          'Drive Root Link': structure.rootLink,
+          'Drive Raw Uploads': structure.raw_uploads || '',
+          'Drive Brand Assets': structure.brand_assets || '',
+          'Drive Approved Exports': structure.approved_exports || ''
+        });
       } catch (atErr) {
-        console.warn('Could not update Airtable:', atErr.message);
+        console.warn('[Drive] Could not save folder structure to Airtable:', atErr.message);
+      }
+    }
+
+    return res.json({ success: true, folders: structure });
+
+  } catch (err) {
+    console.error('[Drive] Init client error:', err);
+    return res.status(500).json({ error: 'internal_error', message: err.message });
+  }
+});
+
+// POST /api/drive/upload - Upload file to Drive (production endpoint)
+app.post('/api/drive/upload', requireAuth(), uploadLimiter, upload.single('file'), async (req, res) => {
+  try {
+    // Check Drive availability
+    if (!driveServiceReady) {
+      return res.json({
+        success: false,
+        error: 'drive_not_available',
+        message: 'File uploads are currently disabled'
+      });
+    }
+
+    // Validate file exists
+    if (!req.file) {
+      return res.status(400).json({ error: 'no_file', message: 'No file provided' });
+    }
+
+    const file = req.file;
+    const {
+      clientId,
+      clientName,
+      uploadType,      // 'raw_upload', 'logo', 'thumbnail', 'headshot', 'creator_lab', 'export'
+      projectId,
+      customFileName
+    } = req.body;
+
+    // Determine target folder
+    let targetFolderId = DRIVE_ROOT_FOLDER_ID;
+
+    if (clientId && clientName) {
+      const structure = await getClientFolderStructure(clientName, clientId);
+
+      if (structure) {
+        // Route to correct subfolder based on upload type
+        switch (uploadType) {
+          case 'logo':
+            targetFolderId = structure.brand_logos || structure.brand_assets || structure.root;
+            break;
+          case 'thumbnail':
+            targetFolderId = structure.brand_thumbnails || structure.brand_assets || structure.root;
+            break;
+          case 'headshot':
+            targetFolderId = structure.brand_headshots || structure.brand_assets || structure.root;
+            break;
+          case 'creator_lab':
+            targetFolderId = structure.creator_lab_recordings || structure.root;
+            break;
+          case 'export':
+            targetFolderId = structure.approved_exports || structure.root;
+            break;
+          case 'raw_upload':
+          default:
+            targetFolderId = structure.raw_uploads || structure.root;
+            break;
+        }
+      }
+    }
+
+    // Perform upload
+    const result = await uploadToDrive(file, targetFolderId, customFileName);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    // Save to Airtable if project/client provided
+    if (AIRTABLE_API_KEY && result.file) {
+      try {
+        // Determine which table and field to update
+        if (projectId) {
+          const fieldMap = {
+            raw_upload: 'Raw Footage Link',
+            export: 'Deliverable Link'
+          };
+          const field = fieldMap[uploadType] || 'Raw Footage Link';
+
+          await airtableUpdate('Projects', projectId, {
+            [field]: result.file.viewLink,
+            'Drive File ID': result.file.id,
+            'Drive Folder ID': targetFolderId,
+            'Upload Timestamp': new Date().toISOString()
+          });
+        } else if (clientId && uploadType) {
+          const fieldMap = {
+            logo: 'Logo URL',
+            thumbnail: 'Thumbnail URL',
+            headshot: 'Headshot URL'
+          };
+          const field = fieldMap[uploadType];
+
+          if (field) {
+            await airtableUpdate('Contacts', clientId, {
+              [field]: result.file.viewLink,
+              [`${field} Drive ID`]: result.file.id
+            });
+          }
+        }
+      } catch (atErr) {
+        console.warn('[Drive] Airtable update failed:', atErr.message);
+        // Don't fail the upload if Airtable update fails
       }
     }
 
     return res.json({
       success: true,
-      file: {
-        id: driveFile.id,
-        name: driveFile.name,
-        size: driveFile.size,
-        viewLink: viewLink,
-        directLink: directLink,
-        folderId: targetFolderId
-      }
+      file: result.file,
+      uploadType: uploadType || 'raw_upload',
+      savedToAirtable: !!AIRTABLE_API_KEY
     });
+
   } catch (err) {
-    console.error('File upload error:', err);
+    // Handle multer errors
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'file_too_large', message: 'File exceeds maximum size' });
+    }
+    if (err.message && err.message.includes('File type not allowed')) {
+      return res.status(400).json({ error: 'invalid_file_type', message: err.message });
+    }
+
+    console.error('[Drive] Upload endpoint error:', err);
     return res.status(500).json({ error: 'upload_failed', message: err.message });
   }
 });
 
-// GET /api/upload/status - Check if upload is available
-app.get('/api/upload/status', (req, res) => {
-  return res.json({
-    available: !!googleDrive,
-    maxSize: '500MB',
-    supportedTypes: ['video/*', 'audio/*', 'image/*']
-  });
+// Backward compatibility: /api/upload still works
+app.post('/api/upload', requireAuth(), uploadLimiter, upload.single('file'), async (req, res) => {
+  // Redirect to new endpoint logic
+  req.body.uploadType = req.body.uploadType || 'raw_upload';
+  return res.redirect(307, '/api/drive/upload');
 });
 
 // ============================================
@@ -1629,9 +1998,15 @@ app.get('/api/upload/status', (req, res) => {
 // ============================================
 
 app.listen(PORT, () => {
-  console.log(`ContentBug Production MCP Server v2.0.1`);
-  console.log(`Listening on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/healthz`);
-  console.log(`Chat endpoints enabled`);
-  console.log(`File uploads: ${googleDrive ? 'enabled' : 'disabled'}`);
+  console.log(`\n${'='.repeat(50)}`);
+  console.log(`ContentBug Production MCP Server v2.1.0`);
+  console.log(`${'='.repeat(50)}`);
+  console.log(`Port: ${PORT}`);
+  console.log(`Environment: ${IS_PRODUCTION ? 'PRODUCTION' : 'development'}`);
+  console.log(`Health check: /healthz`);
+  console.log(`\nServices:`);
+  console.log(`  Auth:    enabled`);
+  console.log(`  Chat:    enabled`);
+  console.log(`  Drive:   ${driveServiceReady ? 'enabled' : 'DISABLED - ' + driveInitError}`);
+  console.log(`\n${'='.repeat(50)}\n`);
 });
