@@ -239,7 +239,7 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.3.2',
+  version: 'production-2.3.3',
   auth: true,
   portal: true,
   drive: {
@@ -3456,12 +3456,535 @@ app.get('/api/client/thumbnail-photos', requireAuth(), async (req, res) => {
 });
 
 // ============================================
+// PROJECT ENDPOINTS
+// ============================================
+
+// Calculate Edit Tier from Blueprint complexity
+function calculateEditTier(blueprint) {
+  if (!blueprint) return { tier: 'Tier 2', score: 50, sla: '3-5' };
+
+  let score = 0;
+  const fields = blueprint.fields || blueprint;
+
+  // B-Roll complexity (0-20 points)
+  const brollFreq = (fields['B-Roll Frequency'] || '').toLowerCase();
+  if (brollFreq.includes('heavy') || brollFreq.includes('high')) score += 20;
+  else if (brollFreq.includes('moderate') || brollFreq.includes('medium')) score += 12;
+  else if (brollFreq.includes('minimal') || brollFreq.includes('light')) score += 5;
+
+  // Caption complexity (0-15 points)
+  const captionStyle = (fields['Caption Style'] || '').toLowerCase();
+  if (captionStyle.includes('animated') || captionStyle.includes('kinetic')) score += 15;
+  else if (captionStyle.includes('styled') || captionStyle.includes('custom')) score += 10;
+  else score += 3;
+
+  // Title animations (0-15 points)
+  const titleStyle = (fields['Title Animation Style'] || '').toLowerCase();
+  if (titleStyle.includes('complex') || titleStyle.includes('custom')) score += 15;
+  else if (titleStyle.includes('animated') || titleStyle.includes('motion')) score += 10;
+  else score += 3;
+
+  // SFX (0-10 points)
+  const sfxFreq = (fields['SFX Frequency'] || '').toLowerCase();
+  if (sfxFreq.includes('heavy') || sfxFreq.includes('frequent')) score += 10;
+  else if (sfxFreq.includes('moderate')) score += 6;
+  else score += 2;
+
+  // Color grading (0-10 points)
+  const colorGrading = (fields['Color Grading'] || '').toLowerCase();
+  if (colorGrading.includes('custom') || colorGrading.includes('cinematic')) score += 10;
+  else if (colorGrading.includes('branded') || colorGrading.includes('stylized')) score += 6;
+  else score += 2;
+
+  // PNG overlays (0-10 points)
+  const pngOverlays = (fields['PNG Overlays'] || '').toLowerCase();
+  if (pngOverlays.includes('heavy') || pngOverlays.includes('frequent')) score += 10;
+  else if (pngOverlays.includes('moderate') || pngOverlays.includes('some')) score += 5;
+  else score += 1;
+
+  // Cut speed (0-10 points)
+  const cutSpeed = (fields['Cut Speed'] || '').toLowerCase();
+  if (cutSpeed.includes('fast') || cutSpeed.includes('rapid')) score += 10;
+  else if (cutSpeed.includes('dynamic') || cutSpeed.includes('varied')) score += 7;
+  else score += 3;
+
+  // Music (0-10 points)
+  const musicType = (fields['Music Type'] || '').toLowerCase();
+  if (musicType.includes('custom') || musicType.includes('original')) score += 10;
+  else if (musicType.includes('licensed') || musicType.includes('premium')) score += 6;
+  else score += 2;
+
+  // Determine tier and SLA
+  let tier, sla;
+  if (score >= 70) {
+    tier = 'Tier 3';
+    sla = '5-7';
+  } else if (score >= 40) {
+    tier = 'Tier 2';
+    sla = '3-5';
+  } else {
+    tier = 'Tier 1';
+    sla = '2-3';
+  }
+
+  return { tier, score, sla };
+}
+
+// GET /api/projects - Get projects for current user
+app.get('/api/projects', requireAuth(), async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const userRole = req.user.role || 'client';
+    const { status } = req.query;
+
+    let filter;
+    if (['admin', 'owner'].includes(userRole)) {
+      // Admins/owners see all projects
+      filter = status ? `{Status}='${status}'` : '';
+    } else if (userRole === 'editor') {
+      // Editors see assigned projects
+      filter = `OR({Contact Assigned Editor #1}='${req.user.name}',{Contact Assigned Editor #2}='${req.user.name}',{Contact Assigned Editor #3}='${req.user.name}')`;
+      if (status) filter = `AND(${filter},{Status}='${status}')`;
+    } else {
+      // Clients see their own projects
+      filter = `{Contact Email}='${userEmail}'`;
+      if (status) filter = `AND(${filter},{Status}='${status}')`;
+    }
+
+    const projects = await airtableQuery('Projects', filter, {
+      maxRecords: 100,
+      sort: [{ field: 'Project Date Created', direction: 'desc' }]
+    });
+
+    // Fetch blueprints for tier calculation if needed
+    const blueprintCache = {};
+
+    const results = await Promise.all(projects.records.map(async (r) => {
+      const f = r.fields;
+
+      // Get blueprint for tier if not set
+      let editTier = f['Edit Tier'];
+      let blueprintName = f['Blueprint Name'] || f['Project Style'] || '';
+
+      if (!editTier && f['Style Blueprint']?.[0]) {
+        const bpId = f['Style Blueprint'][0];
+        if (!blueprintCache[bpId]) {
+          try {
+            const bp = await airtableQuery('Blueprints', `RECORD_ID()='${bpId}'`, { maxRecords: 1 });
+            blueprintCache[bpId] = bp.records?.[0] || null;
+          } catch (e) { blueprintCache[bpId] = null; }
+        }
+        if (blueprintCache[bpId]) {
+          const tierInfo = calculateEditTier(blueprintCache[bpId]);
+          editTier = tierInfo.tier;
+          blueprintName = blueprintCache[bpId].fields?.['Contact Name'] || blueprintName;
+        }
+      }
+
+      // Determine project type badge
+      let projectTypeBadge = 'Short';
+      const projectType = (f['Project Type'] || '').toLowerCase();
+      const duration = f['Duration'] || f['Video Duration'] || '';
+
+      if (projectType.includes('long') || projectType.includes('youtube')) {
+        projectTypeBadge = 'Long';
+      } else if (projectType.includes('podcast')) {
+        projectTypeBadge = 'Podcast';
+      } else if (projectType.includes('youtube')) {
+        projectTypeBadge = 'YouTube';
+      } else if (duration) {
+        // Parse duration to determine type
+        const parts = duration.split(':').map(Number);
+        const totalSeconds = parts.length === 3
+          ? parts[0] * 3600 + parts[1] * 60 + parts[2]
+          : parts.length === 2
+            ? parts[0] * 60 + parts[1]
+            : parts[0];
+        if (totalSeconds > 90) projectTypeBadge = 'Long';
+      }
+
+      // Format dates
+      const dateCreated = f['Project Date Created']
+        ? new Date(f['Project Date Created']).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
+        : null;
+      const eta = f['Project ETA']
+        ? new Date(f['Project ETA']).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
+        : null;
+
+      // Map status
+      const statusMap = {
+        'queued': 'Queued',
+        'in_edit': 'In Edit',
+        'review': 'Review',
+        'revisions': 'Revisions',
+        'approved': 'Approved',
+        'active': 'In Edit',
+        'completed': 'Approved'
+      };
+      const normalizedStatus = (f['Status'] || f['Project Status'] || 'queued').toLowerCase().replace(/\s+/g, '_');
+      const displayStatus = statusMap[normalizedStatus] || f['Status'] || 'Queued';
+
+      return {
+        id: r.id,
+        projectId: f['Project ID'] || f['Project UUID'] || r.id,
+        title: f['Project Name'] || 'Untitled Project',
+        projectType: projectTypeBadge,
+        blueprintName: blueprintName,
+        editTier: editTier || 'Tier 2',
+        assignedEditor: f['Contact Assigned Editor #1'] || null,
+        dateSubmitted: dateCreated,
+        eta: eta,
+        status: displayStatus,
+        duration: f['Duration'] || f['Video Duration'] || null,
+        thumbnailUrl: f['ThumbnailURL'] || null,
+        reviewVideoUrl: f['ReviewVideoURL'] || null,
+        revisionCount: f['Project Revision Count'] || 0,
+        feedbackCount: f['FeedbackCount'] || 0,
+        resolvedCount: f['ResolvedCount'] || 0
+      };
+    }));
+
+    // Group by status for dashboard
+    const grouped = {
+      inEdit: results.filter(p => p.status === 'In Edit'),
+      review: results.filter(p => p.status === 'Review'),
+      queued: results.filter(p => p.status === 'Queued'),
+      revisions: results.filter(p => p.status === 'Revisions'),
+      approved: results.filter(p => p.status === 'Approved')
+    };
+
+    return res.json({
+      success: true,
+      projects: results,
+      grouped,
+      total: results.length
+    });
+
+  } catch (err) {
+    console.error('[Projects] Fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// POST /api/projects - Create a new project
+app.post('/api/projects', requireAuth(), async (req, res) => {
+  try {
+    const { title, projectType, blueprintId, rawFootageLink, hookPreference, batchNotes } = req.body;
+    const userEmail = req.user.email;
+    const userName = req.user.name;
+
+    if (!title) {
+      return res.status(400).json({ error: 'missing_title', message: 'Project title required' });
+    }
+
+    // Get blueprint for tier calculation
+    let editTier = 'Tier 2';
+    let blueprintName = '';
+    let sla = '3-5';
+
+    if (blueprintId) {
+      try {
+        const bp = await airtableQuery('Blueprints', `RECORD_ID()='${blueprintId}'`, { maxRecords: 1 });
+        if (bp.records?.[0]) {
+          const tierInfo = calculateEditTier(bp.records[0]);
+          editTier = tierInfo.tier;
+          sla = tierInfo.sla;
+          blueprintName = bp.records[0].fields?.['Contact Name'] || '';
+        }
+      } catch (e) { console.error('[Projects] Blueprint fetch error:', e); }
+    }
+
+    // Calculate ETA based on tier SLA
+    const etaDays = parseInt(sla.split('-')[1]) || 5;
+    const etaDate = new Date();
+    let addedDays = 0;
+    while (addedDays < etaDays) {
+      etaDate.setDate(etaDate.getDate() + 1);
+      if (etaDate.getDay() !== 0 && etaDate.getDay() !== 6) addedDays++;
+    }
+
+    const projectData = {
+      'Project Name': title,
+      'Project Type': projectType || 'Short Form',
+      'Contact Email': userEmail,
+      'Contact Name': userName,
+      'Status': 'queued',
+      'Edit Tier': editTier,
+      'Blueprint Name': blueprintName,
+      'Project Date Created': new Date().toISOString(),
+      'Project ETA': etaDate.toISOString(),
+      'Project Revision Count': 0,
+      'Hook Preference': hookPreference || '',
+      'Batch Notes': batchNotes || '',
+      'Raw Footage Link': rawFootageLink || ''
+    };
+
+    if (blueprintId) {
+      projectData['Style Blueprint'] = [blueprintId];
+    }
+
+    const record = await airtableCreate('Projects', projectData);
+
+    return res.json({
+      success: true,
+      projectId: record.id,
+      editTier,
+      sla: `${sla} business days`,
+      eta: etaDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' })
+    });
+
+  } catch (err) {
+    console.error('[Projects] Create error:', err);
+    return res.status(500).json({ error: 'create_failed', message: err.message });
+  }
+});
+
+// PATCH /api/projects/:id - Update project status
+app.patch('/api/projects/:id', requireAuth(), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, assignedEditor, eta } = req.body;
+    const userRole = req.user.role || 'client';
+
+    const updateData = {};
+
+    if (status) {
+      updateData['Status'] = status;
+      if (status === 'approved') {
+        updateData['Project Date Approved'] = new Date().toISOString();
+      }
+    }
+
+    if (assignedEditor && ['admin', 'owner'].includes(userRole)) {
+      updateData['Contact Assigned Editor #1'] = assignedEditor;
+    }
+
+    if (eta && ['admin', 'owner', 'editor'].includes(userRole)) {
+      updateData['Project ETA'] = new Date(eta).toISOString();
+    }
+
+    await airtableUpdate('Projects', id, updateData);
+
+    return res.json({ success: true, updated: Object.keys(updateData) });
+
+  } catch (err) {
+    console.error('[Projects] Update error:', err);
+    return res.status(500).json({ error: 'update_failed', message: err.message });
+  }
+});
+
+// ============================================
+// DISCORD-STYLE CHAT ENDPOINTS
+// ============================================
+
+// GET /api/chat/channels - Get user's chat channels
+app.get('/api/chat/channels', requireAuth(), async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const userRole = req.user.role || 'client';
+
+    let filter;
+    if (['admin', 'owner'].includes(userRole)) {
+      filter = ''; // See all channels
+    } else {
+      filter = `OR(FIND('${userEmail}', {Participants}) > 0, {CreatedBy}='${userEmail}')`;
+    }
+
+    const channels = await airtableQuery('Chat-Channels', filter, {
+      maxRecords: 50,
+      sort: [{ field: 'LastMessageAt', direction: 'desc' }]
+    });
+
+    const results = channels.records.map(r => ({
+      id: r.id,
+      channelId: r.fields['ChannelID'] || r.id,
+      name: r.fields['Name'] || 'General',
+      type: r.fields['Type'] || 'project', // project, private, support
+      projectId: r.fields['ProjectID'],
+      projectName: r.fields['ProjectName'],
+      participants: (r.fields['Participants'] || '').split(',').filter(Boolean),
+      lastMessage: r.fields['LastMessage'],
+      lastMessageAt: r.fields['LastMessageAt'],
+      unreadCount: r.fields['UnreadCount'] || 0,
+      createdAt: r.fields['CreatedAt']
+    }));
+
+    return res.json({ success: true, channels: results });
+
+  } catch (err) {
+    console.error('[Chat] Channels fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// GET /api/chat/channels/:channelId/messages - Get messages for a channel
+app.get('/api/chat/channels/:channelId/messages', requireAuth(), async (req, res) => {
+  try {
+    const { channelId } = req.params;
+    const { limit = 50, before } = req.query;
+
+    let filter = `{ChannelID}='${channelId}'`;
+    if (before) {
+      filter = `AND(${filter}, IS_BEFORE({CreatedAt}, '${before}'))`;
+    }
+
+    const messages = await airtableQuery('Chat-Messages', filter, {
+      maxRecords: parseInt(limit),
+      sort: [{ field: 'CreatedAt', direction: 'desc' }]
+    });
+
+    const results = messages.records.map(r => ({
+      id: r.id,
+      messageId: r.fields['MessageID'] || r.id,
+      channelId: r.fields['ChannelID'],
+      senderId: r.fields['SenderID'],
+      senderName: r.fields['SenderName'],
+      senderRole: r.fields['SenderRole'] || 'client',
+      senderAvatar: r.fields['SenderAvatar'],
+      content: r.fields['Content'],
+      type: r.fields['Type'] || 'text', // text, system, link, file
+      attachments: r.fields['Attachments'] ? JSON.parse(r.fields['Attachments']) : [],
+      linkPreview: r.fields['LinkPreview'] ? JSON.parse(r.fields['LinkPreview']) : null,
+      createdAt: r.fields['CreatedAt'],
+      editedAt: r.fields['EditedAt'],
+      isRead: r.fields['IsRead'] || false
+    })).reverse(); // Reverse to get chronological order
+
+    return res.json({ success: true, messages: results, hasMore: results.length >= parseInt(limit) });
+
+  } catch (err) {
+    console.error('[Chat] Messages fetch error:', err);
+    return res.status(500).json({ error: 'fetch_failed', message: err.message });
+  }
+});
+
+// POST /api/chat/channels/:channelId/messages - Send a message
+app.post('/api/chat/channels/:channelId/messages', requireAuth(), async (req, res) => {
+  try {
+    const { channelId } = req.params;
+    const { content, type = 'text', attachments } = req.body;
+    const user = req.user;
+
+    if (!content && !attachments?.length) {
+      return res.status(400).json({ error: 'empty_message' });
+    }
+
+    // Detect links and generate preview placeholder
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const links = content?.match(urlRegex) || [];
+    let linkPreview = null;
+    if (links.length > 0) {
+      linkPreview = { url: links[0], pending: true };
+    }
+
+    const messageData = {
+      'ChannelID': channelId,
+      'SenderID': user.email,
+      'SenderName': user.name || user.email.split('@')[0],
+      'SenderRole': user.role || 'client',
+      'Content': content,
+      'Type': type,
+      'CreatedAt': new Date().toISOString(),
+      'IsRead': false
+    };
+
+    if (attachments?.length) {
+      messageData['Attachments'] = JSON.stringify(attachments);
+    }
+    if (linkPreview) {
+      messageData['LinkPreview'] = JSON.stringify(linkPreview);
+    }
+
+    const record = await airtableCreate('Chat-Messages', messageData);
+
+    // Update channel's last message
+    const channelRecords = await airtableQuery('Chat-Channels', `{ChannelID}='${channelId}'`, { maxRecords: 1 });
+    if (channelRecords.records?.[0]) {
+      await airtableUpdate('Chat-Channels', channelRecords.records[0].id, {
+        'LastMessage': content?.substring(0, 100) || '[Attachment]',
+        'LastMessageAt': new Date().toISOString()
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: {
+        id: record.id,
+        channelId,
+        senderName: user.name,
+        content,
+        type,
+        createdAt: messageData['CreatedAt']
+      }
+    });
+
+  } catch (err) {
+    console.error('[Chat] Send message error:', err);
+    return res.status(500).json({ error: 'send_failed', message: err.message });
+  }
+});
+
+// POST /api/chat/channels - Create a new channel
+app.post('/api/chat/channels', requireAuth(), async (req, res) => {
+  try {
+    const { name, type = 'private', projectId, participants } = req.body;
+    const user = req.user;
+
+    const channelData = {
+      'ChannelID': `ch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      'Name': name || 'New Channel',
+      'Type': type,
+      'CreatedBy': user.email,
+      'Participants': [user.email, ...(participants || [])].join(','),
+      'CreatedAt': new Date().toISOString(),
+      'UnreadCount': 0
+    };
+
+    if (projectId) {
+      channelData['ProjectID'] = projectId;
+      // Fetch project name
+      const projects = await airtableQuery('Projects', `RECORD_ID()='${projectId}'`, { maxRecords: 1 });
+      if (projects.records?.[0]) {
+        channelData['ProjectName'] = projects.records[0].fields['Project Name'];
+      }
+    }
+
+    const record = await airtableCreate('Chat-Channels', channelData);
+
+    // Create system message for channel creation
+    await airtableCreate('Chat-Messages', {
+      'ChannelID': channelData['ChannelID'],
+      'SenderID': 'system',
+      'SenderName': 'Content Bug',
+      'SenderRole': 'system',
+      'Content': `${user.name || user.email} created this channel`,
+      'Type': 'system',
+      'CreatedAt': new Date().toISOString()
+    });
+
+    return res.json({
+      success: true,
+      channel: {
+        id: record.id,
+        channelId: channelData['ChannelID'],
+        name: channelData['Name'],
+        type: channelData['Type']
+      }
+    });
+
+  } catch (err) {
+    console.error('[Chat] Create channel error:', err);
+    return res.status(500).json({ error: 'create_failed', message: err.message });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 
 app.listen(PORT, () => {
   console.log(`\n${'='.repeat(50)}`);
-  console.log(`ContentBug Production MCP Server v2.3.1`);
+  console.log(`ContentBug Production MCP Server v2.3.3`);
   console.log(`${'='.repeat(50)}`);
   console.log(`Port: ${PORT}`);
   console.log(`Environment: ${IS_PRODUCTION ? 'PRODUCTION' : 'development'}`);

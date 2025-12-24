@@ -1,6 +1,6 @@
 {
   "name": "mcp-ai-integration",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "Middleware to connect Make, Claude, OpenAI, Airtable, GoHighLevel, Google Drive with Auth",
   "main": "server_Production.js",
   "scripts": {

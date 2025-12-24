@@ -726,10 +726,10 @@
             height: 14px;
         }
 
-        /* ==================== PROJECT CARDS (Visual Timeline) ==================== */
+        /* ==================== PROJECT CARDS (New Structure) ==================== */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: var(--space-lg);
         }
 
@@ -782,37 +782,133 @@
             color: var(--text-faint);
         }
 
-        .project-status {
-            position: absolute;
-            top: var(--space-md);
-            left: var(--space-md);
+        /* Header Row: Title + Type Badge */
+        .project-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: var(--space-sm);
+            padding: var(--space-lg);
+            padding-bottom: var(--space-sm);
+        }
+
+        .project-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .project-type-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .project-type-badge.short { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .project-type-badge.long { background: var(--accent-purple-soft); color: var(--accent-purple); }
+        .project-type-badge.youtube { background: rgba(255, 0, 0, 0.12); color: #ff4444; }
+        .project-type-badge.podcast { background: var(--accent-green-soft); color: var(--accent-green); }
+
+        /* Meta Row: Blueprint, Tier, Editor */
+        .project-meta-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: 0 var(--space-lg);
+            padding-bottom: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .meta-chip {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 10px;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            background: var(--bg-hover);
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .meta-chip svg {
+            width: 12px;
+            height: 12px;
+            color: var(--text-muted);
+        }
+
+        .meta-chip.tier {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-orange);
+        }
+
+        .meta-chip.tier.tier-1 { background: var(--accent-green-soft); color: var(--accent-green); }
+        .meta-chip.tier.tier-2 { background: var(--accent-orange-soft); color: var(--accent-orange); }
+        .meta-chip.tier.tier-3 { background: var(--accent-red-soft); color: var(--accent-red); }
+
+        .meta-chip.editor { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .meta-chip.unassigned { background: var(--bg-active); color: var(--text-muted); font-style: italic; }
+
+        /* Footer Row: Submitted, ETA, Status */
+        .project-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md) var(--space-lg);
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+        }
+
+        .project-dates {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .date-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .date-item svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .date-item strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .project-status-pill {
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .project-status.editing { color: var(--accent-blue); }
-        .project-status.editing::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: currentColor;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
+        .project-status-pill.queued { background: var(--accent-orange-soft); color: var(--accent-orange); }
+        .project-status-pill.in-edit { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .project-status-pill.review { background: var(--accent-purple-soft); color: var(--accent-purple); }
+        .project-status-pill.revisions { background: var(--accent-red-soft); color: var(--accent-red); }
+        .project-status-pill.approved { background: var(--accent-green-soft); color: var(--accent-green); }
 
-        .project-status.review { color: var(--accent-purple); }
-        .project-status.approved { color: var(--accent-green); }
-        .project-status.queue { color: var(--accent-orange); }
-
+        /* Duration Badge on Thumbnail */
         .project-duration {
             position: absolute;
             bottom: var(--space-md);
@@ -825,73 +921,47 @@
             font-weight: 600;
         }
 
-        .project-content {
-            padding: var(--space-lg);
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-3xl);
+            color: var(--text-muted);
         }
 
-        .project-title {
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-state p {
             font-size: 14px;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
-        .project-meta {
+        /* Loading State */
+        .loading-spinner {
             display: flex;
             align-items: center;
-            gap: var(--space-lg);
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: var(--space-md);
+            justify-content: center;
+            padding: var(--space-3xl);
         }
 
-        .project-meta-item {
-            display: flex;
-            align-items: center;
-            gap: var(--space-xs);
+        .loading-spinner::after {
+            content: '';
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-default);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .project-meta-item svg {
-            width: 14px;
-            height: 14px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        /* Progress Bar */
-        .project-progress {
-            height: 4px;
-            background: var(--bg-active);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: var(--space-md);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            border-radius: 2px;
-            transition: width 0.5s var(--ease-out);
-        }
-
-        .project-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border-subtle);
-        }
-
-        .project-eta {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .project-eta strong {
-            color: var(--text-primary);
-        }
-
+        /* Legacy support */
         .project-type {
             padding: 4px 8px;
             background: var(--bg-hover);
@@ -925,6 +995,7 @@
         }
 
         /* ==================== CHAT DOCK (Right Side) ==================== */
+        /* ==================== DISCORD-STYLE CHAT ==================== */
         .chat-dock {
             width: var(--chat-width);
             background: var(--bg-elevated);
@@ -940,7 +1011,8 @@
             width: var(--chat-collapsed);
         }
 
-        .chat-dock.collapsed .chat-content,
+        .chat-dock.collapsed .chat-channels,
+        .chat-dock.collapsed .chat-messages,
         .chat-dock.collapsed .chat-input-area {
             display: none;
         }
@@ -951,14 +1023,15 @@
             justify-content: space-between;
             padding: var(--space-lg);
             border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
         }
 
         .chat-dock-title {
             display: flex;
             align-items: center;
             gap: var(--space-sm);
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
         }
 
         .chat-dock.collapsed .chat-dock-title span {
@@ -968,7 +1041,7 @@
         .chat-toggle {
             width: 28px;
             height: 28px;
-            background: var(--bg-surface);
+            background: var(--bg-hover);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
             display: flex;
@@ -979,7 +1052,8 @@
         }
 
         .chat-toggle:hover {
-            background: var(--bg-hover);
+            background: var(--bg-active);
+            border-color: var(--border-default);
         }
 
         .chat-toggle svg {
@@ -993,83 +1067,269 @@
             transform: rotate(180deg);
         }
 
-        .chat-content {
-            flex: 1;
+        /* Channel List */
+        .chat-channels {
+            padding: var(--space-sm);
+            border-bottom: 1px solid var(--border-subtle);
+            max-height: 140px;
             overflow-y: auto;
-            padding: var(--space-md);
         }
 
-        .chat-message {
-            display: flex;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-md);
-            animation: fadeSlideUp 0.3s var(--ease-out);
-        }
-
-        .chat-avatar {
-            width: 28px;
-            height: 28px;
-            background: var(--accent-blue);
-            border-radius: var(--radius-sm);
+        .channel-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .channel-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .channel-item.active {
+            background: var(--accent-blue-soft);
+            color: var(--accent-blue);
+        }
+
+        .channel-item svg {
+            width: 16px;
+            height: 16px;
             flex-shrink: 0;
         }
 
-        .chat-avatar.editor { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
-        .chat-avatar.system { background: var(--bg-active); color: var(--text-muted); }
-
-        .chat-bubble {
+        .channel-name {
             flex: 1;
-            background: var(--bg-surface);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .chat-bubble-header {
+        .channel-unread {
+            min-width: 18px;
+            height: 18px;
+            background: var(--accent-red);
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-xs);
+            justify-content: center;
+            padding: 0 5px;
         }
 
-        .chat-sender {
+        /* Messages Area */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        /* Message Groups (Discord style) */
+        .message-group {
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-sm) 0;
+        }
+
+        .message-group:hover {
+            background: var(--bg-hover);
+            margin: 0 calc(-1 * var(--space-md));
+            padding-left: var(--space-md);
+            padding-right: var(--space-md);
+            border-radius: var(--radius-sm);
+        }
+
+        .msg-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
         }
 
-        .chat-time {
-            font-size: 10px;
+        .msg-avatar.editor { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+        .msg-avatar.system { background: var(--bg-active); color: var(--accent-purple); }
+        .msg-avatar.client { background: linear-gradient(135deg, var(--accent-green), #6ee7b7); }
+
+        .msg-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: baseline;
+            gap: var(--space-sm);
+            margin-bottom: 2px;
+        }
+
+        .msg-sender {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .msg-sender.editor { color: var(--accent-blue); }
+        .msg-sender.system { color: var(--accent-purple); }
+
+        .msg-time {
+            font-size: 11px;
             color: var(--text-faint);
         }
 
-        .chat-text {
-            font-size: 13px;
+        .msg-text {
+            font-size: 14px;
             color: var(--text-secondary);
-            line-height: 1.5;
+            line-height: 1.45;
+            word-break: break-word;
         }
 
+        /* Continuation message (same sender) */
+        .msg-continuation {
+            padding-left: calc(36px + var(--space-md));
+            padding-top: 2px;
+        }
+
+        .msg-continuation:hover {
+            background: var(--bg-hover);
+            margin: 0 calc(-1 * var(--space-md));
+            padding-left: calc(36px + var(--space-md) + var(--space-md));
+            padding-right: var(--space-md);
+            border-radius: var(--radius-sm);
+        }
+
+        .msg-continuation .msg-time {
+            display: none;
+        }
+
+        .msg-continuation:hover .msg-time {
+            display: inline;
+        }
+
+        /* System Messages */
+        .msg-system {
+            text-align: center;
+            padding: var(--space-md) 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .msg-system span {
+            background: var(--bg-surface);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-sm);
+        }
+
+        /* Link Preview */
+        .link-preview {
+            margin-top: var(--space-sm);
+            padding: var(--space-md);
+            background: var(--bg-surface);
+            border-left: 3px solid var(--accent-blue);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .link-preview-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-bottom: 4px;
+        }
+
+        .link-preview-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* File Attachment */
+        .msg-attachment {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            margin-top: var(--space-sm);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .msg-attachment:hover {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-soft);
+        }
+
+        .msg-attachment svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-blue);
+        }
+
+        .msg-attachment-name {
+            font-size: 13px;
+            color: var(--accent-blue);
+        }
+
+        /* Input Area */
         .chat-input-area {
             padding: var(--space-md);
             border-top: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
         }
 
         .chat-input-wrapper {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             gap: var(--space-sm);
-            padding: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             transition: border-color 0.2s var(--ease-out);
         }
 
         .chat-input-wrapper:focus-within {
             border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-soft);
+        }
+
+        .chat-attach-btn {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s var(--ease-out);
+        }
+
+        .chat-attach-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .chat-attach-btn svg {
+            width: 18px;
+            height: 18px;
         }
 
         .chat-input {
@@ -1640,153 +1900,69 @@
                     </div>
 
                     <!-- Edits in Progress -->
-                    <div class="section">
+                    <div class="section" id="inEditSection">
                         <div class="section-header">
                             <div class="section-title">
                                 <h2>Edits in Progress</h2>
-                                <span class="section-count" id="inProgressCount">2</span>
+                                <span class="section-count" id="inEditCount">0</span>
                             </div>
                         </div>
-                        <div class="projects-grid" id="inProgressGrid">
-                            <div class="project-card" onclick="openProject('proj_001')">
-                                <div class="project-thumbnail">
-                                    <div class="thumbnail-placeholder">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                                    </div>
-                                    <div class="project-status editing">Editing</div>
-                                    <span class="project-duration">12:34</span>
-                                </div>
-                                <div class="project-content">
-                                    <h3 class="project-title">How I Built a 7-Figure Business in 18 Months</h3>
-                                    <div class="project-meta">
-                                        <span class="project-meta-item">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                            Dec 20
-                                        </span>
-                                        <span class="project-meta-item">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                            Marcus T.
-                                        </span>
-                                    </div>
-                                    <div class="project-progress">
-                                        <div class="progress-fill" style="width: 75%"></div>
-                                    </div>
-                                    <div class="project-footer">
-                                        <span class="project-eta">ETA: <strong>Tomorrow, 3pm</strong></span>
-                                        <span class="project-type">Long-form</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="project-card" onclick="openProject('proj_002')">
-                                <div class="project-thumbnail">
-                                    <div class="thumbnail-placeholder">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                                    </div>
-                                    <div class="project-status editing">Editing</div>
-                                    <span class="project-duration">0:58</span>
-                                </div>
-                                <div class="project-content">
-                                    <h3 class="project-title">Quick tip: The #1 mistake new creators make</h3>
-                                    <div class="project-meta">
-                                        <span class="project-meta-item">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                            Dec 21
-                                        </span>
-                                        <span class="project-meta-item">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                            Sarah K.
-                                        </span>
-                                    </div>
-                                    <div class="project-progress">
-                                        <div class="progress-fill" style="width: 90%"></div>
-                                    </div>
-                                    <div class="project-footer">
-                                        <span class="project-eta">ETA: <strong>Today, 6pm</strong></span>
-                                        <span class="project-type">Short</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="projects-grid" id="inEditGrid">
+                            <div class="loading-spinner"></div>
                         </div>
                     </div>
 
                     <!-- Ready for Review -->
-                    <div class="section">
+                    <div class="section" id="reviewSection">
                         <div class="section-header">
                             <div class="section-title">
                                 <h2>Ready for Review</h2>
-                                <span class="section-count">1</span>
+                                <span class="section-count" id="reviewCount">0</span>
                             </div>
                         </div>
-                        <div class="projects-grid">
-                            <div class="project-card" onclick="openCutroom('proj_005')">
-                                <div class="project-thumbnail">
-                                    <div class="thumbnail-placeholder">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                                    </div>
-                                    <div class="project-status review">Review</div>
-                                    <span class="project-duration">15:42</span>
-                                </div>
-                                <div class="project-content">
-                                    <h3 class="project-title">Behind the Scenes: My Morning Routine</h3>
-                                    <div class="project-meta">
-                                        <span class="project-meta-item">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                            Dec 15
-                                        </span>
-                                    </div>
-                                    <div class="project-footer">
-                                        <span class="project-eta" style="color: var(--accent-purple);">Awaiting your review</span>
-                                        <div class="project-actions">
-                                            <button class="project-action-btn">Enter Cutroom</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="projects-grid" id="reviewGrid">
+                            <div class="loading-spinner"></div>
                         </div>
                     </div>
 
-                    <!-- Queue -->
-                    <div class="section">
+                    <!-- In Queue -->
+                    <div class="section" id="queueSection">
                         <div class="section-header">
                             <div class="section-title">
                                 <h2>In Queue</h2>
-                                <span class="section-count">2</span>
-                            </div>
-                            <button class="section-action">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-                                Reorder
-                            </button>
-                        </div>
-                        <div class="projects-grid">
-                            <div class="project-card" onclick="openProject('proj_003')">
-                                <div class="project-thumbnail">
-                                    <div class="thumbnail-placeholder">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                                    </div>
-                                    <div class="project-status queue">Queue #1</div>
-                                    <span class="project-duration">8:22</span>
-                                </div>
-                                <div class="project-content">
-                                    <h3 class="project-title">Complete Guide to Content Strategy</h3>
-                                    <div class="project-meta">
-                                        <span class="project-meta-item">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                            Dec 19
-                                        </span>
-                                    </div>
-                                    <div class="project-footer">
-                                        <span class="project-eta">Starts: <strong>Dec 24</strong></span>
-                                        <span class="project-type">Long-form</span>
-                                    </div>
-                                </div>
+                                <span class="section-count" id="queueCount">0</span>
                             </div>
                         </div>
+                        <div class="projects-grid" id="queueGrid">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+
+                    <!-- Revisions -->
+                    <div class="section" id="revisionsSection" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h2>Revisions Needed</h2>
+                                <span class="section-count" id="revisionsCount">0</span>
+                            </div>
+                        </div>
+                        <div class="projects-grid" id="revisionsGrid"></div>
+                    </div>
+
+                    <!-- Approved / Completed -->
+                    <div class="section" id="approvedSection" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h2>Approved</h2>
+                                <span class="section-count" id="approvedCount">0</span>
+                            </div>
+                        </div>
+                        <div class="projects-grid" id="approvedGrid"></div>
                     </div>
                 </div>
             </main>
 
-            <!-- Chat Dock (Right Side) -->
+            <!-- Discord-Style Chat Dock -->
             <aside class="chat-dock" id="chatDock">
                 <div class="chat-dock-header">
                     <div class="chat-dock-title">
@@ -1797,36 +1973,33 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                 </div>
-                <div class="chat-content" id="chatContent">
-                    <div class="chat-message">
-                        <div class="chat-avatar editor">MT</div>
-                        <div class="chat-bubble">
-                            <div class="chat-bubble-header">
-                                <span class="chat-sender">Marcus T.</span>
-                                <span class="chat-time">2 min ago</span>
-                            </div>
-                            <div class="chat-text">Just finished the intro sequence. Looking great! I'll have the full edit ready by tomorrow 3pm.</div>
-                        </div>
-                    </div>
-                    <div class="chat-message">
-                        <div class="chat-avatar system">CB</div>
-                        <div class="chat-bubble">
-                            <div class="chat-bubble-header">
-                                <span class="chat-sender">System</span>
-                                <span class="chat-time">12 min ago</span>
-                            </div>
-                            <div class="chat-text">Your project "Behind the Scenes" is ready for review in the Cutroom.</div>
-                        </div>
+
+                <!-- Channel List -->
+                <div class="chat-channels" id="chatChannels">
+                    <div class="channel-item active" data-channel="general" onclick="selectChannel('general')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span class="channel-name">General</span>
                     </div>
                 </div>
+
+                <!-- Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="msg-system"><span>Welcome to your project chat</span></div>
+                </div>
+
+                <!-- Input Area -->
                 <div class="chat-input-area">
                     <div class="chat-input-wrapper">
+                        <button class="chat-attach-btn" onclick="triggerFileUpload()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </button>
                         <input type="text" class="chat-input" id="chatInput" placeholder="Type a message...">
                         <button class="chat-send-btn" id="chatSendBtn" disabled>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         </button>
                     </div>
                 </div>
+                <input type="file" id="chatFileInput" style="display: none;" multiple>
             </aside>
         </div>
     </div>
@@ -1932,10 +2105,17 @@
             planBadge.className = 'plan-badge ' + plan.toLowerCase().replace(' ', '-');
         }
 
-        // ==================== CHAT DOCK ====================
+        // ==================== DISCORD-STYLE CHAT ====================
+        let currentChannelId = null;
+        let chatChannels = [];
+
         function toggleChat() {
             const chatDock = document.getElementById('chatDock');
             chatDock.classList.toggle('collapsed');
+        }
+
+        function triggerFileUpload() {
+            document.getElementById('chatFileInput').click();
         }
 
         // Chat input handling
@@ -1953,31 +2133,218 @@
             }
         });
 
-        function sendChatMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
+        function formatTimestamp(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
 
-            const userData = getUserData();
-            const initials = (userData.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays === 1) return 'Yesterday';
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
 
-            const chatContent = document.getElementById('chatContent');
-            const messageHTML = `
-                <div class="chat-message">
-                    <div class="chat-avatar">${initials}</div>
-                    <div class="chat-bubble">
-                        <div class="chat-bubble-header">
-                            <span class="chat-sender">You</span>
-                            <span class="chat-time">Just now</span>
+        function getInitials(name) {
+            return (name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        function renderMessage(msg, isFirst = true) {
+            const initials = getInitials(msg.senderName);
+            const roleClass = msg.senderRole === 'editor' ? 'editor' :
+                             msg.senderRole === 'system' ? 'system' : 'client';
+
+            if (msg.type === 'system') {
+                return `<div class="msg-system"><span>${escapeHtml(msg.content)}</span></div>`;
+            }
+
+            if (!isFirst) {
+                return `
+                    <div class="msg-continuation">
+                        <span class="msg-time">${formatTimestamp(msg.createdAt)}</span>
+                        <div class="msg-text">${formatMessageContent(msg.content)}</div>
+                        ${msg.attachments?.length ? renderAttachments(msg.attachments) : ''}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="message-group">
+                    <div class="msg-avatar ${roleClass}">${initials}</div>
+                    <div class="msg-content">
+                        <div class="msg-header">
+                            <span class="msg-sender ${roleClass}">${escapeHtml(msg.senderName)}</span>
+                            <span class="msg-time">${formatTimestamp(msg.createdAt)}</span>
                         </div>
-                        <div class="chat-text">${escapeHtml(text)}</div>
+                        <div class="msg-text">${formatMessageContent(msg.content)}</div>
+                        ${msg.attachments?.length ? renderAttachments(msg.attachments) : ''}
+                        ${msg.linkPreview ? renderLinkPreview(msg.linkPreview) : ''}
                     </div>
                 </div>
             `;
+        }
 
-            chatContent.insertAdjacentHTML('beforeend', messageHTML);
-            chatContent.scrollTop = chatContent.scrollHeight;
+        function formatMessageContent(content) {
+            if (!content) return '';
+            // Convert URLs to links
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return escapeHtml(content).replace(urlRegex, '<a href="$1" target="_blank" style="color: var(--accent-blue);">$1</a>');
+        }
+
+        function renderAttachments(attachments) {
+            return attachments.map(att => `
+                <a href="${att.url}" target="_blank" class="msg-attachment">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                    <span class="msg-attachment-name">${escapeHtml(att.name || 'File')}</span>
+                </a>
+            `).join('');
+        }
+
+        function renderLinkPreview(preview) {
+            if (!preview || preview.pending) return '';
+            return `
+                <div class="link-preview">
+                    <div class="link-preview-title">${escapeHtml(preview.title || preview.url)}</div>
+                    ${preview.description ? `<div class="link-preview-desc">${escapeHtml(preview.description)}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderMessages(messages) {
+            const container = document.getElementById('chatMessages');
+            if (!messages.length) {
+                container.innerHTML = '<div class="msg-system"><span>No messages yet. Start the conversation!</span></div>';
+                return;
+            }
+
+            let html = '';
+            let lastSender = null;
+            let lastTime = null;
+
+            messages.forEach(msg => {
+                // Group messages from same sender within 5 minutes
+                const msgTime = new Date(msg.createdAt);
+                const timeDiff = lastTime ? (msgTime - lastTime) / 60000 : 999;
+                const isFirst = msg.senderId !== lastSender || timeDiff > 5 || msg.type === 'system';
+
+                html += renderMessage(msg, isFirst);
+
+                lastSender = msg.senderId;
+                lastTime = msgTime;
+            });
+
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function renderChannels(channels) {
+            const container = document.getElementById('chatChannels');
+            if (!channels.length) {
+                container.innerHTML = `
+                    <div class="channel-item active" data-channel="general">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span class="channel-name">General</span>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = channels.map(ch => {
+                const icon = ch.type === 'project'
+                    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>'
+                    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+
+                return `
+                    <div class="channel-item ${ch.channelId === currentChannelId ? 'active' : ''}"
+                         data-channel="${ch.channelId}" onclick="selectChannel('${ch.channelId}')">
+                        ${icon}
+                        <span class="channel-name">${escapeHtml(ch.name || ch.projectName || 'Channel')}</span>
+                        ${ch.unreadCount > 0 ? `<span class="channel-unread">${ch.unreadCount}</span>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function selectChannel(channelId) {
+            currentChannelId = channelId;
+
+            // Update UI
+            document.querySelectorAll('.channel-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.channel === channelId);
+            });
+
+            // Load messages
+            try {
+                const response = await fetch(`/api/chat/channels/${channelId}/messages`, {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        renderMessages(data.messages);
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading messages:', err);
+            }
+        }
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text || !currentChannelId) return;
+
+            const userData = getUserData();
+
+            // Optimistically add message to UI
+            const tempMsg = {
+                senderId: userData.email,
+                senderName: userData.name || 'You',
+                senderRole: userData.role || 'client',
+                content: text,
+                type: 'text',
+                createdAt: new Date().toISOString()
+            };
+
+            const container = document.getElementById('chatMessages');
+            container.insertAdjacentHTML('beforeend', renderMessage(tempMsg, true));
+            container.scrollTop = container.scrollHeight;
+
             chatInput.value = '';
             chatSendBtn.disabled = true;
+
+            // Send to server
+            try {
+                await fetch(`/api/chat/channels/${currentChannelId}/messages`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: text })
+                });
+            } catch (err) {
+                console.error('Error sending message:', err);
+            }
+        }
+
+        async function loadChatChannels() {
+            try {
+                const response = await fetch('/api/chat/channels', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.channels.length > 0) {
+                        chatChannels = data.channels;
+                        renderChannels(data.channels);
+                        // Select first channel
+                        selectChannel(data.channels[0].channelId);
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading channels:', err);
+            }
         }
 
         function escapeHtml(text) {
@@ -2087,11 +2454,167 @@
 
         // ==================== PROJECT NAVIGATION ====================
         function openProject(projectId) {
-            window.location.href = `projects.html?project=${projectId}`;
+            window.location.href = `review.html?project=${projectId}`;
         }
 
         function openCutroom(projectId) {
             window.location.href = `review.html?project=${projectId}`;
+        }
+
+        // ==================== PROJECT CARD RENDERING ====================
+        function createProjectCard(project) {
+            const typeClass = project.projectType.toLowerCase();
+            const tierClass = project.editTier.toLowerCase().replace(' ', '-');
+            const statusClass = project.status.toLowerCase().replace(' ', '-');
+
+            return `
+                <div class="project-card" onclick="openProject('${project.id}')">
+                    <div class="project-thumbnail">
+                        ${project.thumbnailUrl
+                            ? `<img src="${project.thumbnailUrl}" alt="${project.title}">`
+                            : `<div class="thumbnail-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                               </div>`
+                        }
+                        ${project.duration ? `<span class="project-duration">${project.duration}</span>` : ''}
+                    </div>
+                    <div class="project-header">
+                        <h3 class="project-title">${escapeHtml(project.title)}</h3>
+                        <span class="project-type-badge ${typeClass}">${project.projectType}</span>
+                    </div>
+                    <div class="project-meta-row">
+                        ${project.blueprintName ? `<span class="meta-chip">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            ${escapeHtml(project.blueprintName)}
+                        </span>` : ''}
+                        <span class="meta-chip tier ${tierClass}">${project.editTier}</span>
+                        <span class="meta-chip ${project.assignedEditor ? 'editor' : 'unassigned'}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            ${project.assignedEditor || 'Unassigned'}
+                        </span>
+                    </div>
+                    <div class="project-footer">
+                        <div class="project-dates">
+                            ${project.dateSubmitted ? `<span class="date-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <strong>${project.dateSubmitted}</strong>
+                            </span>` : ''}
+                            ${project.eta ? `<span class="date-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ETA: <strong>${project.eta}</strong>
+                            </span>` : ''}
+                        </div>
+                        <span class="project-status-pill ${statusClass}">${project.status}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEmptyState(message) {
+            return `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function renderProjects(grouped) {
+            // In Edit section
+            const inEditGrid = document.getElementById('inEditGrid');
+            const inEditCount = document.getElementById('inEditCount');
+            if (grouped.inEdit.length > 0) {
+                inEditGrid.innerHTML = grouped.inEdit.map(createProjectCard).join('');
+                inEditCount.textContent = grouped.inEdit.length;
+                document.getElementById('inEditSection').style.display = '';
+            } else {
+                inEditGrid.innerHTML = renderEmptyState('No edits in progress');
+                inEditCount.textContent = '0';
+            }
+
+            // Review section
+            const reviewGrid = document.getElementById('reviewGrid');
+            const reviewCount = document.getElementById('reviewCount');
+            if (grouped.review.length > 0) {
+                reviewGrid.innerHTML = grouped.review.map(createProjectCard).join('');
+                reviewCount.textContent = grouped.review.length;
+                document.getElementById('reviewSection').style.display = '';
+            } else {
+                reviewGrid.innerHTML = renderEmptyState('No projects ready for review');
+                reviewCount.textContent = '0';
+            }
+
+            // Queue section
+            const queueGrid = document.getElementById('queueGrid');
+            const queueCount = document.getElementById('queueCount');
+            if (grouped.queued.length > 0) {
+                queueGrid.innerHTML = grouped.queued.map(createProjectCard).join('');
+                queueCount.textContent = grouped.queued.length;
+                document.getElementById('queueSection').style.display = '';
+            } else {
+                queueGrid.innerHTML = renderEmptyState('No projects in queue');
+                queueCount.textContent = '0';
+            }
+
+            // Revisions section
+            const revisionsGrid = document.getElementById('revisionsGrid');
+            const revisionsCount = document.getElementById('revisionsCount');
+            if (grouped.revisions.length > 0) {
+                revisionsGrid.innerHTML = grouped.revisions.map(createProjectCard).join('');
+                revisionsCount.textContent = grouped.revisions.length;
+                document.getElementById('revisionsSection').style.display = '';
+            } else {
+                document.getElementById('revisionsSection').style.display = 'none';
+            }
+
+            // Approved section
+            const approvedGrid = document.getElementById('approvedGrid');
+            const approvedCount = document.getElementById('approvedCount');
+            if (grouped.approved.length > 0) {
+                approvedGrid.innerHTML = grouped.approved.map(createProjectCard).join('');
+                approvedCount.textContent = grouped.approved.length;
+                document.getElementById('approvedSection').style.display = '';
+            } else {
+                document.getElementById('approvedSection').style.display = 'none';
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('/api/projects', {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load projects');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    renderProjects(data.grouped);
+
+                    // Update hero state based on real data
+                    const heroData = {
+                        review: data.grouped.review.map(p => ({ id: p.id, title: p.title })),
+                        inProgress: data.grouped.inEdit.map(p => ({
+                            id: p.id,
+                            title: p.title,
+                            editor: p.assignedEditor,
+                            eta: p.eta
+                        }))
+                    };
+                    const heroState = determineHeroState(heroData);
+                    updateHeroState(heroState.state, heroState.data);
+                } else {
+                    console.error('Failed to load projects:', data.error);
+                    renderProjects({ inEdit: [], review: [], queued: [], revisions: [], approved: [] });
+                }
+            } catch (err) {
+                console.error('Error loading projects:', err);
+                // Show empty states on error
+                renderProjects({ inEdit: [], review: [], queued: [], revisions: [], approved: [] });
+            }
         }
 
         // ==================== COUNT UP ANIMATION ====================
@@ -2222,19 +2745,8 @@
 
         // Initialize hero based on current project data
         function initHeroState() {
-            // Mock data - in production this would come from API/Airtable
-            const mockProjects = {
-                liveSession: null, // Set to { scheduledFor: 'Today 2pm' } to test
-                review: [
-                    { id: 'proj_005', title: 'Behind the Scenes: My Morning Routine' }
-                ],
-                inProgress: [
-                    { id: 'proj_001', title: 'How I Built a 7-Figure Business', editor: 'Marcus T.', eta: 'Tomorrow, 3pm' }
-                ]
-            };
-
-            const heroState = determineHeroState(mockProjects);
-            updateHeroState(heroState.state, heroState.data);
+            // Default to empty state - will be updated when projects load
+            updateHeroState('empty', {});
         }
 
         // ==================== INITIALIZATION ====================
@@ -2243,11 +2755,9 @@
             updateUserDisplay();
             initHeroState();
 
-            // Animate counts
-            document.querySelectorAll('.section-count').forEach(el => {
-                const target = parseInt(el.textContent);
-                animateCountUp(el, target, 800);
-            });
+            // Load projects and chat from API
+            loadProjects();
+            loadChatChannels();
         });
     </script>
     <!-- Shell Controller for persistence -->
