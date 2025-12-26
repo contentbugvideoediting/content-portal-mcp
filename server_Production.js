@@ -214,7 +214,7 @@ const app = express();
 
 // CORS - allow portal frontend with credentials
 app.use(cors({
-  origin: ['https://app.contentbug.io', 'https://go.contentbug.io', 'https://contentbug.io', 'http://localhost:3000', 'http://127.0.0.1:5500'],
+  origin: ['https://app.contentbug.io', 'https://go.contentbug.io', 'https://contentbug.io', 'https://content-portal-mcp-production.up.railway.app', 'http://localhost:3000', 'http://127.0.0.1:5500'],
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-make-secret', 'x-ghl-secret']
@@ -809,14 +809,15 @@ app.post('/auth/verify-code', authVerifyLimiter, async (req, res) => {
         CreatedAt: new Date().toISOString()
       });
 
-      // Set session cookie
+      // Set session cookie - detect domain from request
+      const isContentBugDomain = req.hostname?.includes('contentbug.io');
       res.cookie('cb_session', sessionToken, {
         httpOnly: true,
         secure: IS_PRODUCTION,
         signed: true,
         sameSite: IS_PRODUCTION ? 'none' : 'lax',
         maxAge: SESSION_MAX_AGE_MS,
-        domain: IS_PRODUCTION ? '.contentbug.io' : undefined
+        domain: isContentBugDomain ? '.contentbug.io' : undefined
       });
 
       // Log bypass login
@@ -954,14 +955,15 @@ app.post('/auth/verify-code', authVerifyLimiter, async (req, res) => {
       CreatedAt: new Date().toISOString()
     });
 
-    // Set session cookie
+    // Set session cookie - detect domain from request
+    const isContentBugDomain = req.hostname?.includes('contentbug.io');
     res.cookie('cb_session', sessionToken, {
       httpOnly: true,
       secure: IS_PRODUCTION,
       signed: true,
       sameSite: IS_PRODUCTION ? 'none' : 'lax',
       maxAge: SESSION_MAX_AGE_MS,
-      domain: IS_PRODUCTION ? '.contentbug.io' : undefined
+      domain: isContentBugDomain ? '.contentbug.io' : undefined
     });
 
     // Log success
@@ -1234,13 +1236,15 @@ app.post('/auth/login-password', authVerifyLimiter, async (req, res) => {
       CreatedAt: new Date().toISOString()
     });
 
+    // Set session cookie - detect domain from request
+    const isContentBugDomain = req.hostname?.includes('contentbug.io');
     res.cookie('cb_session', sessionToken, {
       httpOnly: true,
       secure: IS_PRODUCTION,
       signed: true,
       sameSite: IS_PRODUCTION ? 'none' : 'lax',
       maxAge: SESSION_MAX_AGE_MS,
-      domain: IS_PRODUCTION ? '.contentbug.io' : undefined
+      domain: isContentBugDomain ? '.contentbug.io' : undefined
     });
 
     await logAuthEvent('password_login_success', {
