@@ -278,6 +278,7 @@ const portalRoutes = {
   '/signup': 'signup.html',            // Client signup (free trial)
   '/team-login': 'team-login.html',    // Team/editor login
   '/team-signup': 'team-signup.html',  // Team/editor signup
+  '/editor-signup': 'editor-signup.html',  // Editor invite signup
   '/portal': 'portal.html',            // UNIFIED portal for ALL roles
   '/dashboard': 'portal.html',         // Dashboard = portal
   '/admin': 'portal.html',             // Admin = portal

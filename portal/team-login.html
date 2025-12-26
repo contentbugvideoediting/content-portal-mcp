@@ -73,8 +73,8 @@
             width: 250vw;
             height: 200vh;
             background: radial-gradient(ellipse at center,
-                rgba(30, 58, 138, 0.08) 0%,
-                rgba(15, 23, 42, 0.04) 40%,
+                rgba(226, 232, 240, 0.06) 0%,
+                rgba(148, 163, 184, 0.03) 40%,
                 transparent 70%);
             filter: blur(100px);
         }
@@ -92,19 +92,19 @@
         .login-card {
             position: relative;
             z-index: 2;
-            background: linear-gradient(165deg, 
-                rgba(15, 15, 25, 0.98) 0%, 
+            background: linear-gradient(165deg,
+                rgba(15, 15, 25, 0.98) 0%,
                 rgba(8, 8, 15, 0.99) 100%);
             border-radius: 24px;
             padding: 52px 48px;
             overflow: hidden;
             box-shadow:
-                0 0 0 1px rgba(59, 130, 246, 0.1),
+                0 0 0 1px rgba(226, 232, 240, 0.08),
                 0 25px 50px -12px rgba(0, 0, 0, 0.9),
-                0 0 100px -20px rgba(59, 130, 246, 0.15);
+                0 0 100px -20px rgba(226, 232, 240, 0.1);
         }
 
-        /* Animated border glow */
+        /* Animated border glow - WHITE ACCENT */
         .card-border {
             position: absolute;
             inset: 0;
@@ -113,14 +113,14 @@
             background: conic-gradient(
                 from var(--angle, 0deg),
                 transparent 0%,
-                rgba(59, 130, 246, 0.4) 10%,
-                rgba(147, 197, 253, 0.6) 15%,
-                rgba(59, 130, 246, 0.4) 20%,
+                rgba(226, 232, 240, 0.35) 10%,
+                rgba(255, 255, 255, 0.5) 15%,
+                rgba(226, 232, 240, 0.35) 20%,
                 transparent 30%,
                 transparent 70%,
-                rgba(59, 130, 246, 0.3) 80%,
-                rgba(147, 197, 253, 0.5) 85%,
-                rgba(59, 130, 246, 0.3) 90%,
+                rgba(226, 232, 240, 0.25) 80%,
+                rgba(255, 255, 255, 0.4) 85%,
+                rgba(226, 232, 240, 0.25) 90%,
                 transparent 100%
             );
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -140,7 +140,7 @@
             to { --angle: 360deg; }
         }
 
-        /* Inner ambient light */
+        /* Inner ambient light - WHITE ACCENT */
         .card-ambient {
             position: absolute;
             top: 0;
@@ -149,7 +149,7 @@
             width: 300px;
             height: 200px;
             background: radial-gradient(ellipse at center top,
-                rgba(59, 130, 246, 0.12) 0%,
+                rgba(226, 232, 240, 0.1) 0%,
                 transparent 70%);
             pointer-events: none;
             animation: ambientPulse 4s ease-in-out infinite;
@@ -160,24 +160,24 @@
             50% { opacity: 1; }
         }
 
-        /* Background grid - more visible */
+        /* Background grid - WHITE ACCENT */
         .bg-grid {
             position: absolute;
             inset: 0;
             background-image:
-                linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+                linear-gradient(rgba(226, 232, 240, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(226, 232, 240, 0.05) 1px, transparent 1px);
             background-size: 50px 50px;
             mask-image: radial-gradient(ellipse at center, black 0%, transparent 85%);
             -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 85%);
         }
 
-        /* Slow moving blue glow that illuminates the grid */
+        /* Slow moving glow that illuminates the grid - WHITE ACCENT */
         .bg-glow-sweep {
             position: absolute;
             width: 700px;
             height: 500px;
-            background: radial-gradient(ellipse 70% 50% at center, rgba(30, 58, 138, 0.18) 0%, rgba(37, 99, 235, 0.08) 50%, transparent 80%);
+            background: radial-gradient(ellipse 70% 50% at center, rgba(226, 232, 240, 0.12) 0%, rgba(148, 163, 184, 0.06) 50%, transparent 80%);
             border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
             filter: blur(120px);
             animation: glowSweep 20s ease-in-out infinite, glowMorph 15s ease-in-out infinite;
@@ -208,14 +208,14 @@
 
         .corner-line {
             position: absolute;
-            background: linear-gradient(90deg, var(--blue-bright), transparent);
-            opacity: 0.3;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+            opacity: 0.2;
         }
 
         .corner-line.top-left-h { top: 0; left: 0; width: 50px; height: 1px; }
-        .corner-line.top-left-v { top: 0; left: 0; width: 1px; height: 50px; background: linear-gradient(180deg, var(--blue-bright), transparent); }
-        .corner-line.bottom-right-h { bottom: 0; right: 0; width: 50px; height: 1px; background: linear-gradient(270deg, var(--blue-bright), transparent); }
-        .corner-line.bottom-right-v { bottom: 0; right: 0; width: 1px; height: 50px; background: linear-gradient(0deg, var(--blue-bright), transparent); }
+        .corner-line.top-left-v { top: 0; left: 0; width: 1px; height: 50px; background: linear-gradient(180deg, var(--accent-primary), transparent); }
+        .corner-line.bottom-right-h { bottom: 0; right: 0; width: 50px; height: 1px; background: linear-gradient(270deg, var(--accent-primary), transparent); }
+        .corner-line.bottom-right-v { bottom: 0; right: 0; width: 1px; height: 50px; background: linear-gradient(0deg, var(--accent-primary), transparent); }
 
         /* ==================== LOGO SECTION ==================== */
         .logo-section {
@@ -235,12 +235,12 @@
             justify-content: center;
         }
 
-        /* Animated ring around logo */
+        /* Animated ring around logo - WHITE ACCENT */
         .logo-ring {
             position: absolute;
             inset: -12px;
             border-radius: 50%;
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(226, 232, 240, 0.2);
             animation: ringRotate 12s linear infinite;
         }
 
@@ -252,21 +252,21 @@
             transform: translateX(-50%);
             width: 8px;
             height: 8px;
-            background: var(--blue-bright);
+            background: var(--accent-primary);
             border-radius: 50%;
-            box-shadow: 0 0 12px 4px rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 12px 4px rgba(226, 232, 240, 0.5);
         }
 
         @keyframes ringRotate {
             to { transform: rotate(360deg); }
         }
 
-        /* Pulsing glow behind logo */
+        /* Pulsing glow behind logo - WHITE ACCENT */
         .logo-glow {
             position: absolute;
             inset: -20px;
-            background: radial-gradient(circle, 
-                rgba(59, 130, 246, 0.25) 0%, 
+            background: radial-gradient(circle,
+                rgba(226, 232, 240, 0.2) 0%,
                 transparent 70%);
             animation: logoGlow 3s ease-in-out infinite;
             border-radius: 50%;
@@ -285,7 +285,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1;
-            filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(59, 130, 246, 0.4));
+            filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(226, 232, 240, 0.3));
             animation: logoBreathe 4s ease-in-out infinite;
         }
 
@@ -321,7 +321,7 @@
 
         .logo-spinner circle {
             fill: none;
-            stroke: var(--blue-bright);
+            stroke: var(--accent-primary);
             stroke-width: 3;
             stroke-linecap: round;
             stroke-dasharray: 120;
