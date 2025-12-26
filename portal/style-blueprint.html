@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Style Blueprint Builder | Content Bug</title>
+    <title>Create Style Blueprint | Content Bug</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../shared/_tokens.css">
+    <!-- CSS variables are inlined below -->
     <style>
         :root {
             --blue-deep: #0f172a;
@@ -161,6 +161,54 @@
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 0 20px rgba(59, 130, 246, 0.1); 
         }
         .form-input::placeholder { color: #444; }
+        .form-input.with-icon { padding-left: 52px; }
+
+        /* Dropdown Select */
+        .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+            padding-right: 48px;
+            cursor: pointer;
+        }
+        .form-select option {
+            background: var(--dark-card);
+            color: var(--text-white);
+            padding: 12px;
+        }
+
+        /* Input with Icon */
+        .input-with-icon {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .input-icon.youtube-icon { color: #FF0000; }
+        .input-icon.instagram-icon { color: #E4405F; }
+        .input-icon.tiktok-icon { color: #00F2EA; }
+        .input-icon.twitter-icon { color: #1DA1F2; }
+
+        /* Profiles Skip Note */
+        .profiles-skip-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
 
         /* Visual Option Cards */
         .option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -560,12 +608,12 @@
 <body>
     <!-- Portal Navigation -->
     <nav class="portal-nav">
-        <a href="https://app.contentbug.io/dashboard" class="back-link">
+        <a href="https://go.contentbug.io/dashboard" class="back-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back to Dashboard
         </a>
         <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" class="nav-logo">
-        <span class="nav-title">Style Blueprint Builder</span>
+        <span class="nav-title">Create Style Blueprint</span>
     </nav>
 
     <div class="bg-effects"><div class="top-glow"></div></div>
@@ -588,9 +636,10 @@
 
         <!-- Progress Bar -->
         <div class="progress-container">
-            <div class="progress-label">Building Your Style Blueprint</div>
+            <div class="progress-label">Creating Your Style Blueprint</div>
             <div class="progress-bars" id="progress-bars">
                 <div class="progress-bar active"></div>
+                <div class="progress-bar"></div>
                 <div class="progress-bar"></div>
                 <div class="progress-bar"></div>
                 <div class="progress-bar"></div>
@@ -1300,8 +1349,63 @@
             </div>
         </div>
 
-        <!-- PAGE 9: Qualifying - Videos Per Month -->
+        <!-- PAGE 9: Social Profiles (for Creator Performance tracking) -->
         <div class="page" id="page-9">
+            <div class="page-header">
+                <div class="page-icon">📱</div>
+                <h1 class="page-title">Your Social Profiles</h1>
+                <p class="page-subtitle">Connect your accounts to track performance and get personalized insights</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">YouTube Channel URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon youtube-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <input type="url" class="form-input with-icon" id="youtube_url" name="youtube_url" placeholder="https://youtube.com/@yourchannel" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Enter your YouTube channel URL to track subscriber growth and video performance</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Instagram Profile URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon instagram-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <input type="url" class="form-input with-icon" id="instagram_url" name="instagram_url" placeholder="https://instagram.com/yourprofile" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Track followers, engagement, and Reels performance</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">TikTok Profile URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon tiktok-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                    <input type="url" class="form-input with-icon" id="tiktok_url" name="tiktok_url" placeholder="https://tiktok.com/@yourprofile" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Monitor TikTok growth and video trends</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">X (Twitter) Profile URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon twitter-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    <input type="url" class="form-input with-icon" id="twitter_url" name="twitter_url" placeholder="https://x.com/yourprofile" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Track X engagement and impressions</p>
+            </div>
+
+            <p class="profiles-skip-note">Skip this step if you'd prefer to add these later from your dashboard.</p>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-9">
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 10: Qualifying - Videos Per Month -->
+        <div class="page" id="page-10">
             <div class="page-header">
                 <div class="page-icon">📊</div>
                 <h1 class="page-title">Monthly Content Volume</h1>
@@ -1338,7 +1442,7 @@
             </div>
 
             <div class="btn-container">
-                <button class="btn-continue" onclick="nextPage()" id="btn-9" disabled>
+                <button class="btn-continue" onclick="nextPage()" id="btn-10" disabled>
                     <span class="btn-text">Continue</span>
                     <span class="btn-arrow">→</span>
                 </button>
@@ -1346,8 +1450,8 @@
             </div>
         </div>
 
-        <!-- PAGE 10: Qualifying - Budget Range -->
-        <div class="page" id="page-10">
+        <!-- PAGE 11: Qualifying - Budget Range -->
+        <div class="page" id="page-11">
             <div class="page-header">
                 <div class="page-icon">💰</div>
                 <h1 class="page-title">Investment Range</h1>
@@ -1384,52 +1488,6 @@
             </div>
 
             <div class="btn-container">
-                <button class="btn-continue" onclick="nextPage()" id="btn-10" disabled>
-                    <span class="btn-text">Continue</span>
-                    <span class="btn-arrow">→</span>
-                </button>
-                <a class="btn-back" onclick="prevPage()">← Go Back</a>
-            </div>
-        </div>
-
-        <!-- PAGE 11: Qualifying - Timeline -->
-        <div class="page" id="page-11">
-            <div class="page-header">
-                <div class="page-icon">⏰</div>
-                <h1 class="page-title">Timeline</h1>
-                <p class="page-subtitle">When are you looking to get started?</p>
-            </div>
-
-            <div class="form-group">
-                <div class="option-grid">
-                    <label class="option-card" onclick="selectOption(this, 'start_timeline')">
-                        <input type="radio" name="start_timeline" value="Immediately">
-                        <div class="option-icon">⚡</div>
-                        <div class="option-title">Immediately</div>
-                        <div class="option-desc">Ready to start now</div>
-                    </label>
-                    <label class="option-card" onclick="selectOption(this, 'start_timeline')">
-                        <input type="radio" name="start_timeline" value="Within 2 weeks">
-                        <div class="option-icon">📅</div>
-                        <div class="option-title">Within 2 Weeks</div>
-                        <div class="option-desc">Soon as possible</div>
-                    </label>
-                    <label class="option-card" onclick="selectOption(this, 'start_timeline')">
-                        <input type="radio" name="start_timeline" value="Within 1 month">
-                        <div class="option-icon">🗓️</div>
-                        <div class="option-title">Within 1 Month</div>
-                        <div class="option-desc">Planning ahead</div>
-                    </label>
-                    <label class="option-card" onclick="selectOption(this, 'start_timeline')">
-                        <input type="radio" name="start_timeline" value="Just exploring">
-                        <div class="option-icon">🔍</div>
-                        <div class="option-title">Just Exploring</div>
-                        <div class="option-desc">Researching options</div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="btn-container">
                 <button class="btn-continue" onclick="nextPage()" id="btn-11" disabled>
                     <span class="btn-text">Continue</span>
                     <span class="btn-arrow">→</span>
@@ -1438,8 +1496,36 @@
             </div>
         </div>
 
-        <!-- PAGE 12: Qualifying - Editing Experience -->
+        <!-- PAGE 12: Qualifying - Timeline -->
         <div class="page" id="page-12">
+            <div class="page-header">
+                <div class="page-icon">⏰</div>
+                <h1 class="page-title">Timeline</h1>
+                <p class="page-subtitle">When are you looking to get started?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select your timeline</label>
+                <select class="form-input form-select" id="start_timeline" name="start_timeline" onchange="handleTimelineSelect(this)">
+                    <option value="" disabled selected>Choose an option...</option>
+                    <option value="I'm ready now!">I'm ready now!</option>
+                    <option value="1-2 weeks">1-2 weeks</option>
+                    <option value="1 month">1 month</option>
+                    <option value="Just looking around">Just looking around</option>
+                </select>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-12" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 13: Qualifying - Editing Experience -->
+        <div class="page" id="page-13">
             <div class="page-header">
                 <div class="page-icon">🎓</div>
                 <h1 class="page-title">Previous Experience</h1>
@@ -1476,7 +1562,7 @@
             </div>
 
             <div class="btn-container">
-                <button class="btn-continue" onclick="submitBlueprint()" id="btn-12" disabled>
+                <button class="btn-continue" onclick="submitBlueprint()" id="btn-13" disabled>
                     <span class="btn-text">Save Blueprint & Continue</span>
                     <span class="btn-arrow">→</span>
                 </button>
@@ -1541,9 +1627,9 @@
         // Check if qualifying questions have been completed
         const qualifyingComplete = localStorage.getItem('cb_qualifying_complete') === 'true';
 
-        // If qualifying questions done, we'll skip pages 9-12 and go straight to submit
-        const QUALIFYING_START_PAGE = 9;
-        const QUALIFYING_END_PAGE = 12;
+        // If qualifying questions done, we'll skip pages 10-13 and go straight to submit
+        const QUALIFYING_START_PAGE = 10;
+        const QUALIFYING_END_PAGE = 13;
         const skipQualifyingPages = qualifyingComplete;
 
         // Store in hidden fields
@@ -1562,7 +1648,7 @@
         }
 
         let currentPage = 1;
-        const totalPages = 12;
+        const totalPages = 13;
         let blueprintData = {};
 
         // ============================================
@@ -1705,6 +1791,11 @@
             tierScoring.updateDisplay();
         }
 
+        function handleTimelineSelect(select) {
+            blueprintData.start_timeline = select.value;
+            validatePage();
+        }
+
         function updateProgress() {
             const bars = document.querySelectorAll('.progress-bar');
             bars.forEach((bar, i) => {
@@ -1787,18 +1878,20 @@
                           document.querySelector('input[name="export_frame_rate"]:checked') &&
                           document.querySelector('input[name="export_format"]:checked');
             } else if (currentPage === 9) {
-                isValid = !!document.querySelector('input[name="videos_per_month"]:checked');
+                isValid = true; // Social profiles - optional
             } else if (currentPage === 10) {
-                isValid = !!document.querySelector('input[name="budget_range"]:checked');
+                isValid = !!document.querySelector('input[name="videos_per_month"]:checked');
             } else if (currentPage === 11) {
-                isValid = !!document.querySelector('input[name="start_timeline"]:checked');
+                isValid = !!document.querySelector('input[name="budget_range"]:checked');
             } else if (currentPage === 12) {
-                // Page 12 is either qualifying questions (editing_experience) OR skipped
+                // Timeline dropdown
+                const timeline = document.getElementById('start_timeline');
+                isValid = timeline && timeline.value !== '';
+            } else if (currentPage === 13) {
+                // Page 13 is editing_experience OR skipped
                 if (skipQualifyingPages) {
-                    // If skipping qualifying, page 12 is just the submit page - always valid
                     isValid = true;
                 } else {
-                    // Qualifying flow: need editing_experience selected
                     isValid = !!document.querySelector('input[name="editing_experience"]:checked');
                 }
             }
@@ -1849,9 +1942,15 @@
         initSlider('broll-ratio-slider', 'broll-ratio-value', 'broll_ratio', ['20% B-Roll', '40% B-Roll', '60% B-Roll', '80% B-Roll']);
         initSlider('music-volume-slider', 'music-volume-value', 'music_volume', ['Very Low (-20dB)', 'Low (-15dB)', 'Medium (-10dB)', 'Loud (-5dB)']);
 
+        // Validate profile inputs (optional - always allow continue)
+        function validateProfileInputs() {
+            // Profiles are optional, no validation needed
+            // This function is called on input but doesn't block progression
+        }
+
         // Submit blueprint
         async function submitBlueprint() {
-            const btn = document.getElementById('btn-12');
+            const btn = document.getElementById('btn-13');
             btn.disabled = true;
             btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span> Saving...';
 
@@ -1862,6 +1961,17 @@
             document.querySelectorAll('input[type="hidden"]').forEach(input => {
                 if (input.value) blueprintData[input.name] = input.value;
             });
+
+            // Collect social profile URLs
+            const youtubeUrl = document.getElementById('youtube_url')?.value?.trim() || '';
+            const instagramUrl = document.getElementById('instagram_url')?.value?.trim() || '';
+            const tiktokUrl = document.getElementById('tiktok_url')?.value?.trim() || '';
+            const twitterUrl = document.getElementById('twitter_url')?.value?.trim() || '';
+
+            blueprintData.youtube_url = youtubeUrl;
+            blueprintData.instagram_url = instagramUrl;
+            blueprintData.tiktok_url = tiktokUrl;
+            blueprintData.twitter_url = twitterUrl;
 
             const contentFormat = blueprintData.content_format;
             
@@ -1904,7 +2014,12 @@
                 videos_per_month: blueprintData.videos_per_month,
                 budget_range: blueprintData.budget_range,
                 start_timeline: blueprintData.start_timeline,
-                editing_experience: blueprintData.editing_experience
+                editing_experience: blueprintData.editing_experience,
+                // Social Profiles
+                youtube_url: youtubeUrl,
+                instagram_url: instagramUrl,
+                tiktok_url: tiktokUrl,
+                twitter_url: twitterUrl
             };
 
             // Use single Style Blueprints table
@@ -1938,7 +2053,11 @@
                         "Color Grading": blueprintData.color_grading,
                         "Export Resolution": blueprintData.export_resolution,
                         "Export Frame Rate": blueprintData.export_frame_rate,
-                        "Export Format": blueprintData.export_format
+                        "Export Format": blueprintData.export_format,
+                        "YouTube URL": youtubeUrl,
+                        "Instagram URL": instagramUrl,
+                        "TikTok URL": tiktokUrl,
+                        "Twitter URL": twitterUrl
                     }
                 }]
             };
@@ -1951,36 +2070,54 @@
                     body: JSON.stringify(ghlPayload)
                 });
 
-                // Send to Airtable Style Blueprints table
-                const airtableBlueprintPromise = fetch(`https://api.airtable.com/v0/appIrlFuwtsxj8hly/${encodeURIComponent(airtableTable)}`, {
+                // Send to Airtable Style Blueprints table via MCP server (secure)
+                const airtableBlueprintPromise = fetch(`${MCP_SERVER_URL}/airtable/create`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer patVDHIF4sdlIAZd3.2e92a65859b20b655bddbe29500d079491eca3cc281704e8ebd461fc95d36a93',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(airtableBlueprintData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        table: airtableTable,
+                        fields: airtableBlueprintData.records[0].fields
+                    })
                 });
 
-                // Update Airtable Users table - Step 2 Completed = Y
+                // Update Airtable Contacts table - Step 2 Completed = Y via MCP server
                 const airtableClientId = localStorage.getItem('cb_airtable_id') || '';
                 let airtableClientPromise = Promise.resolve();
                 if (airtableClientId) {
-                    airtableClientPromise = fetch(`https://api.airtable.com/v0/appIrlFuwtsxj8hly/Users/${airtableClientId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': 'Bearer patVDHIF4sdlIAZd3.2e92a65859b20b655bddbe29500d079491eca3cc281704e8ebd461fc95d36a93',
-                            'Content-Type': 'application/json'
-                        },
+                    airtableClientPromise = fetch(`${MCP_SERVER_URL}/airtable/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            fields: {
-                                "Step 2 Completed": "Y"
-                            }
+                            table: 'Contacts',
+                            recordId: airtableClientId,
+                            fields: { "Step 2 Completed": "Y" }
                         })
                     });
                 }
 
+                // Save social profiles to MCP server for Creator Performance tracking
+                let profilesPromise = Promise.resolve();
+                if (airtableClientId && (youtubeUrl || instagramUrl || tiktokUrl || twitterUrl)) {
+                    profilesPromise = fetch(`${MCP_SERVER_URL}/api/client/save-profiles`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            clientId: airtableClientId,
+                            profiles: {
+                                youtube: youtubeUrl,
+                                instagram: instagramUrl,
+                                tiktok: tiktokUrl,
+                                twitter: twitterUrl
+                            }
+                        })
+                    }).catch(err => {
+                        console.warn('Failed to save profiles to MCP server:', err);
+                        // Non-blocking - continue even if this fails
+                    });
+                }
+
                 // Wait for all requests
-                await Promise.all([ghlPromise, airtableBlueprintPromise, airtableClientPromise]);
+                await Promise.all([ghlPromise, airtableBlueprintPromise, airtableClientPromise, profilesPromise]);
 
                 // Store in localStorage
                 localStorage.setItem('cb_blueprint', blueprintData.blueprint_name);
@@ -1994,9 +2131,14 @@
                 // Show success overlay
                 document.getElementById('success-overlay').style.display = 'flex';
 
-                // Redirect after animation
+                // Redirect after animation (use local path in demo mode)
+                const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const nextStepUrl = IS_LOCAL_DEMO
+                    ? 'step-3.html?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName)
+                    : 'https://go.contentbug.io/submit-project?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName);
+
                 setTimeout(() => {
-                    window.location.href = 'https://app.contentbug.io/step-3-submit-project?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName);
+                    window.location.href = nextStepUrl;
                 }, 1500);
 
             } catch (err) {
@@ -2011,6 +2153,6 @@
         updateProgress();
     </script>
     <!-- Shell Controller for persistence -->
-    <script src="../shared/_app.js" defer></script>
+    <!-- Shell controller inlined - no external dependencies -->
 </body>
 </html>

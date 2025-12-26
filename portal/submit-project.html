@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Submit Your First Project — Content Bug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Project — Content Bug</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../shared/_tokens.css">
+    <!-- CSS variables are inlined below -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -338,6 +338,53 @@
             border-color: var(--mint-mid);
             border-style: solid;
             background: linear-gradient(165deg, rgba(16, 185, 129, 0.08) 0%, rgba(8, 8, 15, 0.95) 100%);
+        }
+
+        .upload-box.uploading {
+            border-color: var(--blue-bright);
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .upload-box.drag-over {
+            border-color: var(--blue-bright);
+            background: linear-gradient(165deg, rgba(59, 130, 246, 0.15) 0%, rgba(8, 8, 15, 0.95) 100%);
+            transform: scale(1.01);
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .upload-box.uploading .upload-progress {
+            display: block;
+        }
+
+        .upload-progress-bar {
+            height: 6px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .upload-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue-bright), var(--mint-mid));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .upload-progress-text {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .upload-file-input {
+            display: none;
         }
 
         .upload-icon {
@@ -2705,7 +2752,7 @@
 <body>
     <!-- Portal Navigation -->
     <nav class="portal-nav">
-        <a href="https://app.contentbug.io/dashboard" class="back-link">
+        <a href="https://go.contentbug.io/dashboard" class="back-link" id="backToDashboard">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back to Dashboard
         </a>
@@ -2795,7 +2842,7 @@
             </div>
 
             <!-- CTA - Goes to booking page -->
-            <a href="https://app.contentbug.io/book-call" class="btn-book" id="btnBook" onclick="trackAlignmentClick()">
+            <a href="https://go.contentbug.io/book-call" class="btn-book" id="btnBook" onclick="trackAlignmentClick()">
                 Align With Your Editor <span class="btn-optional">(Optional)</span>
             </a>
 
@@ -2879,11 +2926,12 @@
                 <!-- Upload Footage -->
                 <div class="input-group">
                     <label class="input-label">Raw Footage</label>
+                    <input type="file" id="fileInput" class="upload-file-input" accept="video/*,audio/*">
                     <div class="upload-box" id="uploadBox">
                         <span class="upload-icon">📁</span>
                         <div class="upload-title">Drop files or click to upload</div>
-                        <div class="upload-hint">MP4, MOV, or any video format</div>
-                        
+                        <div class="upload-hint">MP4, MOV, or any video format (max 500MB)</div>
+
                         <div class="upload-divider">
                             <span>or paste a link</span>
                         </div>
@@ -2895,6 +2943,13 @@
 
                         <div class="link-success" id="linkSuccess">
                             <span>✓</span> Link added successfully
+                        </div>
+
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="upload-progress-bar">
+                                <div class="upload-progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="upload-progress-text" id="progressText">Uploading... 0%</div>
                         </div>
                     </div>
 
@@ -3320,8 +3375,10 @@
         const blueprintId = localStorage.getItem('cb_blueprint_id') || '';
         const blueprintName = localStorage.getItem('cb_blueprint_name') || 'Your Custom Blueprint';
 
-        const AIRTABLE_TOKEN = 'patVDHIF4sdlIAZd3.2e92a65859b20b655bddbe29500d079491eca3cc281704e8ebd461fc95d36a93';
-        const AIRTABLE_BASE = 'appIrlFuwtsxj8hly';
+        // ============================================
+        // CONTENT PORTAL CONFIGURATION (Secure)
+        // ============================================
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
         const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9';
 
         document.getElementById('customStyleName').textContent = blueprintName;
@@ -3330,6 +3387,8 @@
         let footageLinkAdded = false;
         let selectedDate = null;
         let selectedTime = null;
+        let selectedHook = null; // Track user's hook selection
+        let videoDuration = 0; // Track video duration
 
         // ============================================
         // SLA CALCULATION ENGINE (Client View)
@@ -3512,7 +3571,165 @@
         const hookPreferenceSection = document.getElementById('hookPreferenceSection');
         const customHookInput = document.getElementById('customHookInput');
         const shortsSection = document.getElementById('shortsSection');
-        
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInput = document.getElementById('fileInput');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        // ============================================
+        // GOOGLE DRIVE FILE UPLOAD SYSTEM
+        // ============================================
+        let uploadedFileData = null;
+
+        // Check if uploads are available
+        async function checkUploadStatus() {
+            try {
+                const response = await fetch(`${MCP_SERVER_URL}/api/upload/status`);
+                const data = await response.json();
+                return data.available;
+            } catch (e) {
+                console.warn('Upload status check failed:', e);
+                return false;
+            }
+        }
+
+        // Upload file to Google Drive via MCP server
+        async function uploadFileToDrive(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('projectName', document.getElementById('projectName').value || 'Untitled');
+            formData.append('clientId', airtableClientId || 'unknown');
+
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressFill.style.width = `${percent}%`;
+                        progressText.textContent = `Uploading... ${percent}%`;
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (e) {
+                            reject(new Error('Invalid response from server'));
+                        }
+                    } else {
+                        try {
+                            const error = JSON.parse(xhr.responseText);
+                            reject(new Error(error.message || 'Upload failed'));
+                        } catch (e) {
+                            reject(new Error(`Upload failed: ${xhr.status}`));
+                        }
+                    }
+                });
+
+                xhr.addEventListener('error', () => reject(new Error('Network error')));
+                xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+
+                xhr.open('POST', `${MCP_SERVER_URL}/api/upload`);
+                xhr.withCredentials = true;
+                xhr.send(formData);
+            });
+        }
+
+        // Handle file selection
+        async function handleFileSelect(file) {
+            if (!file) return;
+
+            // Validate file size (500MB max)
+            const maxSize = 500 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('File too large. Maximum size is 500MB. Please use a link instead.');
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('video/') && !file.type.startsWith('audio/')) {
+                alert('Please select a video or audio file.');
+                return;
+            }
+
+            uploadBox.classList.add('uploading');
+            uploadBox.classList.remove('drag-over');
+            progressFill.style.width = '0%';
+            progressText.textContent = 'Preparing upload...';
+
+            try {
+                const result = await uploadFileToDrive(file);
+
+                if (result.success) {
+                    uploadedFileData = result.file;
+                    footageLink.value = result.file.viewLink;
+                    footageLinkAdded = true;
+
+                    uploadBox.classList.remove('uploading');
+                    uploadBox.classList.add('has-content');
+                    document.getElementById('linkSuccess').classList.add('show');
+                    document.querySelector('.upload-title').textContent = file.name;
+                    document.querySelector('.upload-hint').textContent = 'File uploaded to Google Drive';
+
+                    // Trigger video analysis
+                    handleVideoLoad(result.file.viewLink);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                uploadBox.classList.remove('uploading');
+                progressText.textContent = `Error: ${error.message}`;
+
+                setTimeout(() => {
+                    progressText.textContent = 'Uploading... 0%';
+                    progressFill.style.width = '0%';
+                }, 3000);
+
+                alert(`Upload failed: ${error.message}\n\nPlease try using a Google Drive or Dropbox link instead.`);
+            }
+        }
+
+        // Drag and drop handlers
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadBox.classList.add('drag-over');
+        });
+
+        uploadBox.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadBox.classList.remove('drag-over');
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadBox.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // Click to upload
+        uploadBox.addEventListener('click', (e) => {
+            // Don't trigger if clicking on the link input or button
+            if (e.target.closest('.link-input-wrapper')) return;
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
         // Convert cloud links to direct video URLs
         function getDirectVideoUrl(url) {
             // Google Drive
@@ -3907,7 +4124,7 @@
                             "Project Type": isMultipleShorts ? "Short Form" : projectType,
                             "Raw Footage Link": footageLink,
                             "Project Style": selectedStyle === 'custom' ? blueprintName : selectedStyle,
-                            "Project Status": "Submitted",
+                            "Status": "queued",
                             "Is Free Trial": true,
                             "Hook Preference": hookPreference === 'custom' ? customHookText : "Editor's Choice"
                         }
@@ -3932,6 +4149,15 @@
                         projectPayload.fields["Batch Notes"] = `Short ${shortIndex} of ${projectsToCreate} from same source footage`;
                     }
 
+                    // Add uploaded file data if file was uploaded to Drive
+                    if (uploadedFileData) {
+                        projectPayload.fields["Drive File ID"] = uploadedFileData.id;
+                        projectPayload.fields["Drive Folder ID"] = uploadedFileData.folderId;
+                        projectPayload.fields["Upload Method"] = "Direct Upload";
+                    } else {
+                        projectPayload.fields["Upload Method"] = "Link";
+                    }
+
                     // Link to Client record
                     if (airtableClientId) {
                         projectPayload.fields["Client"] = [airtableClientId];
@@ -3947,11 +4173,11 @@
                         loadingText.textContent = `Creating project ${shortIndex} of ${projectsToCreate}...`;
                     }
 
-                    // Submit to Airtable Projects table
-                    const projectResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/Projects`, {
+                    // Submit to Airtable Projects table via MCP server (secure)
+                    const projectResponse = await fetch(`${MCP_SERVER_URL}/airtable/create`, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify(projectPayload)
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ table: 'Projects', fields: projectPayload.fields })
                     });
 
                     const projectData = await projectResponse.json();
@@ -3968,12 +4194,16 @@
                     }
                 }
 
-                // Update User record - Step 3 Completed
+                // Update User record - Step 3 Completed via MCP server
                 if (airtableClientId) {
-                    await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE}/Users/${airtableClientId}`, {
-                        method: 'PATCH',
-                        headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ fields: { "Step 3 Completed": "Y" } })
+                    await fetch(`${MCP_SERVER_URL}/airtable/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            table: 'Contacts',
+                            recordId: airtableClientId,
+                            fields: { "Step 3 Completed": "Y" }
+                        })
                     });
                 }
 
@@ -4091,10 +4321,19 @@
         document.getElementById('btnPortal').addEventListener('click', goToPortal);
 
         function goToPortal() {
-            window.location.href = `https://app.contentbug.io/projects?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
+            // Use local path in demo mode
+            const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+            // Mark onboarding as complete
+            localStorage.setItem('cb_onboarding_complete', 'true');
+
+            const dashboardUrl = IS_LOCAL_DEMO
+                ? 'client.html'
+                : `https://go.contentbug.io/projects?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
+
+            window.location.href = dashboardUrl;
         }
     </script>
-    <!-- Shell Controller for persistence -->
-    <script src="../shared/_app.js" defer></script>
+    <!-- Shell controller inlined - no external dependencies -->
 </body>
 </html>

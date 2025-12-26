@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Content Bug</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../shared/_tokens.css">
+    <!-- CSS variables are inlined below -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -1232,7 +1232,7 @@
                         <div class="divider-line"></div>
                     </div>
 
-                    <a href="https://contentbug.io/free-trial" class="btn-secondary">
+                    <a href="https://go.contentbug.io/create-account" class="btn-secondary" id="freeTrialBtn">
                         <span class="btn-text">Start Your Free Trial</span>
                         <span class="btn-arrow">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1241,6 +1241,16 @@
                         </span>
                     </a>
                     <p class="trial-note">No credit card required</p>
+
+                    <!-- Demo Mode Quick Access (only visible in local testing) -->
+                    <div class="demo-quick-access" id="demoQuickAccess" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <p style="font-size: 12px; color: #f59e0b; margin-bottom: 12px; font-weight: 600;">Demo Mode - Quick Access:</p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button onclick="demoLogin('client')" style="padding: 8px 16px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; color: #3b82f6; font-size: 12px; font-weight: 600; cursor: pointer;">Client Dashboard</button>
+                            <button onclick="demoLogin('editor')" style="padding: 8px 16px; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; color: #f59e0b; font-size: 12px; font-weight: 600; cursor: pointer;">Editor View</button>
+                            <button onclick="demoLogin('admin')" style="padding: 8px 16px; background: rgba(168,85,247,0.2); border: 1px solid rgba(168,85,247,0.3); border-radius: 8px; color: #a855f7; font-size: 12px; font-weight: 600; cursor: pointer;">Admin View</button>
+                        </div>
+                    </div>
 
                     <div class="trust-row">
                         <div class="trust-item">
@@ -1355,10 +1365,17 @@
         // CONTENT PORTAL OTP AUTHENTICATION
         // ============================================
         const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
-        const PORTAL_BASE = 'https://app.contentbug.io';
+        const PORTAL_BASE = 'https://go.contentbug.io';
 
-        // Portal URLs by role
-        const PORTAL_ROUTES = {
+        // Portal URLs by role (local demo uses relative paths)
+        const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const PORTAL_ROUTES = IS_LOCAL_DEMO ? {
+            owner: 'admin.html',
+            admin: 'admin.html',
+            editor: 'editor.html',
+            client: 'client.html',
+            free_trial: 'client.html'
+        } : {
             owner: `${PORTAL_BASE}/admin`,
             admin: `${PORTAL_BASE}/admin`,
             editor: `${PORTAL_BASE}/editor`,
@@ -1700,10 +1717,30 @@
         });
 
         // ============================================
+        // DEMO MODE FUNCTIONS
+        // ============================================
+        function demoLogin(role) {
+            // Set demo user data in localStorage
+            localStorage.setItem('cb_email', 'demo@contentbug.io');
+            localStorage.setItem('cb_first_name', 'Demo');
+            localStorage.setItem('cb_name', 'Demo User');
+            localStorage.setItem('cb_role', role);
+            localStorage.setItem('cb_airtable_id', 'rec_demo_user');
+
+            // Navigate to appropriate dashboard
+            window.location.href = PORTAL_ROUTES[role] || PORTAL_ROUTES.client;
+        }
+
         // INITIALIZATION
         // ============================================
         document.addEventListener('DOMContentLoaded', async function() {
             setupOTPInputs();
+
+            // Show demo quick access in local mode
+            if (IS_LOCAL_DEMO) {
+                const demoPanel = document.getElementById('demoQuickAccess');
+                if (demoPanel) demoPanel.style.display = 'block';
+            }
 
             // Check for remembered email
             const rememberedEmail = localStorage.getItem('cb_remembered_email');
@@ -1711,15 +1748,16 @@
                 document.getElementById('loginEmail').value = rememberedEmail;
             }
 
-            // Check if already authenticated
-            const status = await checkAuthStatus();
-            if (status.authenticated) {
-                const portalUrl = PORTAL_ROUTES[status.user?.role] || PORTAL_ROUTES.client;
-                window.location.href = portalUrl;
+            // Check if already authenticated (skip in local demo for easy testing)
+            if (!IS_LOCAL_DEMO) {
+                const status = await checkAuthStatus();
+                if (status.authenticated) {
+                    const portalUrl = PORTAL_ROUTES[status.user?.role] || PORTAL_ROUTES.client;
+                    window.location.href = portalUrl;
+                }
             }
         });
     </script>
-    <!-- Shell Controller (handles logout cleanup) -->
-    <script src="../shared/_app.js" defer></script>
+    <!-- Shell controller inlined - no external dependencies -->
 </body>
 </html>

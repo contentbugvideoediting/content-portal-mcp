@@ -12,21 +12,29 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            /* Neutral Luxury Palette */
-            --bg-base: #0a0a0c;
-            --bg-elevated: #111114;
-            --bg-surface: #161619;
-            --bg-hover: #1c1c20;
-            --bg-active: #222226;
+            /* === BLUE SPECTRUM (Primary Brand Colors) === */
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
 
-            --border-subtle: rgba(255,255,255,0.06);
-            --border-default: rgba(255,255,255,0.1);
-            --border-strong: rgba(255,255,255,0.15);
+            /* === DARK THEME BACKGROUNDS (ContentBug Portal) === */
+            --bg-base: #050508;
+            --bg-elevated: #0a0a0f;
+            --bg-surface: #0f0f14;
+            --bg-hover: #151520;
+            --bg-active: #1a1a2e;
+
+            --border-subtle: rgba(59, 130, 246, 0.08);
+            --border-default: rgba(59, 130, 246, 0.12);
+            --border-strong: rgba(59, 130, 246, 0.2);
 
             --text-primary: #ffffff;
-            --text-secondary: #a1a1aa;
-            --text-muted: #71717a;
-            --text-faint: #52525b;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --text-faint: #475569;
 
             /* Accent Colors */
             --accent-blue: #3b82f6;
@@ -58,11 +66,11 @@
             --space-xl: 24px;
             --space-2xl: 32px;
 
-            /* Radius */
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 14px;
-            --radius-xl: 20px;
+            /* Radius (matching portal) */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
             --radius-full: 50%;
         }
 
@@ -88,9 +96,13 @@
             align-items: center;
             justify-content: space-between;
             padding: var(--space-md) var(--space-xl);
-            background: linear-gradient(180deg, rgba(10, 10, 12, 0.98) 0%, rgba(10, 10, 12, 0.85) 100%);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(8, 8, 12, 0.92) 100%);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+            box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(59, 130, 246, 0.08),
+                        inset 0 1px 0 rgba(147, 197, 253, 0.08);
             z-index: 100;
         }
 
@@ -478,7 +490,14 @@
             background: white;
         }
 
-        /* Audio Meter */
+        /* Audio Meter - Enhanced */
+        .audio-meter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-end;
+        }
+
         .audio-meter {
             display: flex;
             gap: 2px;
@@ -488,9 +507,463 @@
 
         .audio-bar {
             width: 4px;
-            background: var(--accent-green);
             border-radius: 2px;
-            transition: height 0.1s ease;
+            transition: height 0.08s ease, background 0.15s ease;
+        }
+
+        .audio-bar.level-good { background: var(--accent-green); }
+        .audio-bar.level-hot { background: var(--accent-orange); }
+        .audio-bar.level-clip { background: var(--accent-red); }
+
+        .audio-level-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .audio-level-label.good {
+            color: var(--accent-green);
+            background: var(--accent-green-soft);
+        }
+
+        .audio-level-label.hot {
+            color: var(--accent-orange);
+            background: var(--accent-orange-soft);
+        }
+
+        .audio-level-label.clip {
+            color: var(--accent-red);
+            background: var(--accent-red-soft);
+            animation: clipPulse 0.3s ease-in-out;
+        }
+
+        @keyframes clipPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Device Selector Dropdowns */
+        .device-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .device-select {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-active);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        .device-select:hover {
+            border-color: var(--border-default);
+            background-color: var(--bg-hover);
+        }
+
+        .device-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-soft);
+        }
+
+        .device-select option {
+            background: var(--bg-surface);
+            color: var(--text-primary);
+        }
+
+        .device-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Resolution Badge */
+        .resolution-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: var(--radius-md);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-green);
+            position: absolute;
+            top: var(--space-lg);
+            left: var(--space-lg);
+            z-index: 10;
+        }
+
+        .resolution-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: resolutionPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes resolutionPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .resolution-badge.recording {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: var(--accent-red);
+        }
+
+        .resolution-badge.recording::before {
+            background: var(--accent-red);
+        }
+
+        /* Camera Confidence Signal */
+        .camera-confidence {
+            position: absolute;
+            top: var(--space-lg);
+            right: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            z-index: 10;
+        }
+
+        .confidence-indicator {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .confidence-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--bg-active);
+            transition: background 0.3s ease;
+        }
+
+        .confidence-dot.active { background: var(--accent-green); }
+        .confidence-dot.warning { background: var(--accent-orange); }
+        .confidence-dot.error { background: var(--accent-red); }
+
+        .confidence-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Device Status Confirmations */
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .device-status.confirmed {
+            background: var(--accent-green-soft);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .device-status.error {
+            background: var(--accent-red-soft);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .device-status.checking {
+            background: var(--accent-orange-soft);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .device-status-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .device-status-icon svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .device-status.confirmed .device-status-icon {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .device-status.error .device-status-icon {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .device-status.checking .device-status-icon {
+            background: var(--accent-orange);
+            color: white;
+            animation: devicePulse 1s ease-in-out infinite;
+        }
+
+        @keyframes devicePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        .device-status-text {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .device-status.confirmed .device-status-text { color: var(--accent-green); }
+        .device-status.error .device-status-text { color: var(--accent-red); }
+        .device-status.checking .device-status-text { color: var(--accent-orange); }
+
+        /* Save Recording Modal */
+        .save-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            padding: var(--space-xl);
+        }
+
+        .save-modal.active { display: flex; }
+
+        .save-modal-content {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-surface) 100%);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .save-modal-header {
+            padding: var(--space-xl);
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .save-modal-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+        }
+
+        .save-modal-icon svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .save-modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: var(--space-sm);
+        }
+
+        .save-modal-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .save-modal-stats {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-2xl);
+            padding: var(--space-lg);
+            background: var(--bg-base);
+            margin: var(--space-lg) var(--space-xl) 0;
+            border-radius: var(--radius-md);
+        }
+
+        .save-stat {
+            text-align: center;
+        }
+
+        .save-stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent-blue);
+        }
+
+        .save-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .save-modal-body { padding: var(--space-xl); }
+
+        .save-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .save-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            background: var(--bg-surface);
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-option:hover {
+            border-color: var(--border-default);
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+        }
+
+        .save-option.selected {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-soft);
+        }
+
+        .save-option-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-active);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .save-option.selected .save-option-icon { background: var(--accent-blue); }
+
+        .save-option-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-secondary);
+        }
+
+        .save-option.selected .save-option-icon svg { color: white; }
+
+        .save-option-info { flex: 1; }
+
+        .save-option-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .save-option-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .save-option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-default);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .save-option.selected .save-option-radio {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue);
+        }
+
+        .save-option.selected .save-option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .save-modal-actions {
+            display: flex;
+            gap: var(--space-md);
+            padding: 0 var(--space-xl) var(--space-xl);
+        }
+
+        .save-btn {
+            flex: 1;
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn.secondary {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+        }
+
+        .save-btn.secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .save-btn.primary {
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .save-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
         }
 
         /* Recording Controls */
@@ -501,25 +974,32 @@
             gap: var(--space-sm);
             width: 100%;
             padding: var(--space-lg);
-            background: linear-gradient(135deg, var(--accent-red), #dc2626);
+            background: linear-gradient(135deg, var(--accent-red) 0%, #dc2626 50%, #b91c1c 100%);
+            background-size: 200% 200%;
             border: none;
             border-radius: var(--radius-md);
             font-size: 14px;
             font-weight: 700;
             color: white;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .record-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 12px 40px rgba(239, 68, 68, 0.5),
+                        0 0 60px -10px rgba(239, 68, 68, 0.4);
+            background-position: 100% 50%;
         }
 
         .record-btn.recording {
-            background: var(--bg-surface);
+            background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-active) 100%);
             border: 2px solid var(--accent-red);
             color: var(--accent-red);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.2),
+                        inset 0 0 20px rgba(239, 68, 68, 0.05);
         }
 
         .record-btn svg {
@@ -532,6 +1012,7 @@
             height: 12px;
             background: currentColor;
             border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
         }
 
         .record-btn.recording .record-dot {
@@ -560,14 +1041,27 @@
             width: 100%;
             max-width: 1200px;
             aspect-ratio: 16/9;
-            background: linear-gradient(135deg, #0f0f12 0%, #151518 100%);
+            background: linear-gradient(165deg, rgba(15, 15, 25, 0.98) 0%, rgba(8, 8, 15, 0.99) 100%);
             border-radius: var(--radius-xl);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid rgba(59, 130, 246, 0.1);
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1),
+                        0 25px 50px -12px rgba(0, 0, 0, 0.9),
+                        0 0 100px -20px rgba(59, 130, 246, 0.15);
+        }
+
+        .video-frame::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center,
+                rgba(30, 58, 138, 0.05) 0%,
+                transparent 70%);
+            pointer-events: none;
         }
 
         .video-placeholder {
@@ -673,7 +1167,7 @@
         .control-btn {
             width: 52px;
             height: 52px;
-            background: var(--bg-surface);
+            background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-elevated) 100%);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             display: flex;
@@ -681,24 +1175,31 @@
             justify-content: center;
             color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .control-btn:hover {
-            background: var(--bg-hover);
-            border-color: var(--border-default);
+            background: linear-gradient(180deg, var(--bg-hover) 0%, var(--bg-surface) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+                        0 0 20px rgba(59, 130, 246, 0.1);
         }
 
         .control-btn.active {
-            background: var(--accent-blue);
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
             border-color: var(--accent-blue);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .control-btn.muted {
-            background: var(--accent-red);
+            background: linear-gradient(135deg, #b91c1c 0%, var(--accent-red) 100%);
             border-color: var(--accent-red);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
         }
 
         .control-btn svg {
@@ -1479,29 +1980,63 @@
                 <div class="panel-section">
                     <div class="panel-title">Media</div>
                     <div class="media-controls">
-                        <div class="media-control">
-                            <div class="media-control-info">
-                                <div class="media-control-icon active" id="micIcon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        <div class="media-control" style="flex-direction: column; align-items: stretch;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div class="media-control-info">
+                                    <div class="media-control-icon active" id="micIcon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                                    </div>
+                                    <span class="media-control-label">Microphone</span>
                                 </div>
-                                <span class="media-control-label">Microphone</span>
+                                <div class="audio-meter-container">
+                                    <div class="audio-meter" id="audioMeter">
+                                        <div class="audio-bar level-good" style="height: 8px;"></div>
+                                        <div class="audio-bar level-good" style="height: 16px;"></div>
+                                        <div class="audio-bar level-good" style="height: 12px;"></div>
+                                        <div class="audio-bar level-good" style="height: 20px;"></div>
+                                        <div class="audio-bar level-good" style="height: 14px;"></div>
+                                        <div class="audio-bar level-good" style="height: 10px;"></div>
+                                        <div class="audio-bar level-good" style="height: 18px;"></div>
+                                        <div class="audio-bar level-good" style="height: 6px;"></div>
+                                    </div>
+                                    <span class="audio-level-label good" id="audioLevelLabel">Good</span>
+                                </div>
                             </div>
-                            <div class="audio-meter" id="audioMeter">
-                                <div class="audio-bar" style="height: 8px;"></div>
-                                <div class="audio-bar" style="height: 16px;"></div>
-                                <div class="audio-bar" style="height: 12px;"></div>
-                                <div class="audio-bar" style="height: 20px;"></div>
-                                <div class="audio-bar" style="height: 14px;"></div>
+                            <div class="device-selector">
+                                <span class="device-label">Input Device</span>
+                                <select class="device-select" id="micSelect" onchange="selectMicrophone(this.value)">
+                                    <option value="">Loading microphones...</option>
+                                </select>
+                                <div class="device-status checking" id="micStatus">
+                                    <div class="device-status-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg>
+                                    </div>
+                                    <span class="device-status-text">Checking audio...</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="media-control">
-                            <div class="media-control-info">
-                                <div class="media-control-icon active" id="camIcon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        <div class="media-control" style="flex-direction: column; align-items: stretch;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div class="media-control-info">
+                                    <div class="media-control-icon active" id="camIcon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                                    </div>
+                                    <span class="media-control-label">Camera</span>
                                 </div>
-                                <span class="media-control-label">Camera</span>
+                                <button class="media-toggle active" id="camToggle" onclick="toggleCamera()"></button>
                             </div>
-                            <button class="media-toggle active" id="camToggle" onclick="toggleCamera()"></button>
+                            <div class="device-selector">
+                                <span class="device-label">Video Device</span>
+                                <select class="device-select" id="camSelect" onchange="selectCamera(this.value)">
+                                    <option value="">Loading cameras...</option>
+                                </select>
+                                <div class="device-status checking" id="camStatus">
+                                    <div class="device-status-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg>
+                                    </div>
+                                    <span class="device-status-text">Checking video...</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="media-control">
                             <div class="media-control-info">
@@ -1529,10 +2064,25 @@
             <main class="video-panel">
                 <div class="video-main">
                     <div class="video-frame">
-                        <div class="video-placeholder">
+                        <!-- Resolution Badge -->
+                        <div class="resolution-badge" id="resolutionBadge">
+                            <span id="resolutionText">4K · 60fps</span>
+                        </div>
+                        <!-- Camera Confidence -->
+                        <div class="camera-confidence" id="cameraConfidence">
+                            <div class="confidence-indicator">
+                                <div class="confidence-dot active" id="confDot1"></div>
+                                <div class="confidence-dot active" id="confDot2"></div>
+                                <div class="confidence-dot active" id="confDot3"></div>
+                            </div>
+                            <span class="confidence-label" id="confidenceLabel">Excellent</span>
+                        </div>
+                        <!-- Video Element for actual camera feed -->
+                        <video id="localVideo" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+                        <div class="video-placeholder" id="videoPlaceholder">
                             <div class="video-placeholder-avatar">SC</div>
                             <div class="video-placeholder-name">Sean Conley</div>
-                            <div class="video-placeholder-status">Camera is on</div>
+                            <div class="video-placeholder-status" id="cameraStatus">Camera is on</div>
                         </div>
                     </div>
                     <div class="self-view">
@@ -1762,10 +2312,116 @@
         </div>
     </div>
 
+    <!-- Save Recording Modal -->
+    <div class="save-modal" id="saveModal">
+        <div class="save-modal-content">
+            <div class="save-modal-header">
+                <div class="save-modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2 class="save-modal-title">Recording Complete!</h2>
+                <p class="save-modal-subtitle">Where would you like to save this recording?</p>
+                <div class="save-modal-stats">
+                    <div class="save-stat">
+                        <div class="save-stat-value" id="saveModalDuration">0:00</div>
+                        <div class="save-stat-label">Duration</div>
+                    </div>
+                    <div class="save-stat">
+                        <div class="save-stat-value" id="saveModalSize">0 MB</div>
+                        <div class="save-stat-label">File Size</div>
+                    </div>
+                    <div class="save-stat">
+                        <div class="save-stat-value" id="saveModalQuality">1080p</div>
+                        <div class="save-stat-label">Quality</div>
+                    </div>
+                </div>
+            </div>
+            <div class="save-modal-body">
+                <div class="save-options">
+                    <div class="save-option selected" data-save="cloud" onclick="selectSaveOption(this)">
+                        <div class="save-option-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                        </div>
+                        <div class="save-option-info">
+                            <div class="save-option-title">Save to Live Sessions</div>
+                            <div class="save-option-desc">Store in your portal for use in project requests</div>
+                        </div>
+                        <div class="save-option-radio"></div>
+                    </div>
+                    <div class="save-option" data-save="local" onclick="selectSaveOption(this)">
+                        <div class="save-option-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <div class="save-option-info">
+                            <div class="save-option-title">Download Locally</div>
+                            <div class="save-option-desc">Save directly to your device</div>
+                        </div>
+                        <div class="save-option-radio"></div>
+                    </div>
+                    <div class="save-option" data-save="both" onclick="selectSaveOption(this)">
+                        <div class="save-option-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <div class="save-option-info">
+                            <div class="save-option-title">Both</div>
+                            <div class="save-option-desc">Save to Live Sessions and download</div>
+                        </div>
+                        <div class="save-option-radio"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="save-modal-actions">
+                <button class="save-btn secondary" onclick="closeSaveModal()">Cancel</button>
+                <button class="save-btn primary" onclick="confirmSave()">Save Recording</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ==================== HIGH-QUALITY MEDIA CONSTRAINTS ====================
+        const VIDEO_CONSTRAINTS = {
+            video: {
+                width: { ideal: 3840, min: 1920 },
+                height: { ideal: 2160, min: 1080 },
+                frameRate: { ideal: 60, max: 60, min: 30 },
+                facingMode: 'user',
+                aspectRatio: { ideal: 16/9 }
+            }
+        };
+
+        const AUDIO_CONSTRAINTS = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                sampleRate: 48000,
+                channelCount: { ideal: 2, min: 1 }
+            }
+        };
+
+        // Fallback constraints if high-quality fails
+        const FALLBACK_VIDEO = {
+            video: {
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+                frameRate: { ideal: 30 }
+            }
+        };
+
+        // ==================== GLOBAL STATE ====================
+        let localStream = null;
+        let audioContext = null;
+        let audioAnalyser = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let currentResolution = { width: 0, height: 0, fps: 0 };
+        let selectedMicId = localStorage.getItem('cb_selected_mic') || '';
+        let selectedCamId = localStorage.getItem('cb_selected_cam') || '';
+
         // ==================== SESSION TIMER ====================
         let sessionSeconds = 0;
         let timerInterval;
+        let recordingStartTime = null;
 
         function startTimer() {
             timerInterval = setInterval(() => {
@@ -1865,15 +2521,161 @@
             isRecording = !isRecording;
             const btn = document.getElementById('recordBtn');
             const badge = document.getElementById('recordingBadge');
+            const resBadge = document.getElementById('resolutionBadge');
 
             btn.classList.toggle('recording', isRecording);
             badge.classList.toggle('active', isRecording);
+            resBadge.classList.toggle('recording', isRecording);
 
             if (isRecording) {
                 btn.innerHTML = '<div class="record-dot"></div><span>Stop Recording</span>';
+                startRecording();
             } else {
                 btn.innerHTML = '<div class="record-dot"></div><span>Start Recording</span>';
+                stopRecording();
             }
+        }
+
+        function startRecording() {
+            if (!localStream) {
+                console.error('No media stream available');
+                return;
+            }
+
+            recordedChunks = [];
+            recordingStartTime = Date.now();
+
+            // Use high-quality codec options
+            const options = {
+                mimeType: 'video/webm;codecs=vp9,opus',
+                videoBitsPerSecond: 8000000, // 8 Mbps for high quality
+                audioBitsPerSecond: 256000   // 256 kbps audio
+            };
+
+            // Fallback if VP9 not supported
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options.mimeType = 'video/webm;codecs=vp8,opus';
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    options.mimeType = 'video/webm';
+                }
+            }
+
+            mediaRecorder = new MediaRecorder(localStream, options);
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = saveFilmedSession;
+
+            mediaRecorder.start(1000); // Collect data every second
+            console.log('Recording started with codec:', options.mimeType);
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                console.log('Recording stopped');
+            }
+        }
+
+        // Global variables for save modal
+        let pendingRecordingBlob = null;
+        let pendingSessionMetadata = null;
+        let selectedSaveOption = 'cloud';
+
+        function saveFilmedSession() {
+            pendingRecordingBlob = new Blob(recordedChunks, { type: 'video/webm' });
+            const recordingDuration = Math.floor((Date.now() - recordingStartTime) / 1000);
+
+            // Create session metadata
+            pendingSessionMetadata = {
+                id: `session_${Date.now()}`,
+                type: 'filmed_session',
+                recordedAt: new Date().toISOString(),
+                duration: recordingDuration,
+                durationFormatted: formatDuration(recordingDuration),
+                resolution: {
+                    width: currentResolution.width,
+                    height: currentResolution.height,
+                    fps: currentResolution.fps,
+                    label: document.getElementById('resolutionText').textContent
+                },
+                devices: {
+                    camera: document.getElementById('camSelect').selectedOptions[0]?.text || 'Unknown',
+                    microphone: document.getElementById('micSelect').selectedOptions[0]?.text || 'Unknown'
+                },
+                preset: document.querySelector('.preset-card.active')?.dataset.preset || 'custom',
+                timestamps: timestamps.map(t => ({ ...t })),
+                notes: document.querySelector('.notes-textarea')?.value || '',
+                participants: 2,
+                fileSize: pendingRecordingBlob.size,
+                fileSizeFormatted: formatFileSize(pendingRecordingBlob.size),
+                user: {
+                    name: localStorage.getItem('cb_name') || 'User',
+                    email: localStorage.getItem('cb_email') || ''
+                }
+            };
+
+            // Update and show save modal
+            document.getElementById('saveModalDuration').textContent = pendingSessionMetadata.durationFormatted;
+            document.getElementById('saveModalSize').textContent = pendingSessionMetadata.fileSizeFormatted;
+            document.getElementById('saveModalQuality').textContent = pendingSessionMetadata.resolution.label.split(' ')[0];
+            document.getElementById('saveModal').classList.add('active');
+        }
+
+        function selectSaveOption(element) {
+            document.querySelectorAll('.save-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedSaveOption = element.dataset.save;
+        }
+
+        function closeSaveModal() {
+            document.getElementById('saveModal').classList.remove('active');
+        }
+
+        function confirmSave() {
+            const url = URL.createObjectURL(pendingRecordingBlob);
+            pendingSessionMetadata.blobUrl = url;
+
+            // Save to Live Sessions (cloud storage simulation via localStorage)
+            if (selectedSaveOption === 'cloud' || selectedSaveOption === 'both') {
+                const filmedSessions = JSON.parse(localStorage.getItem('cb_live_sessions') || '[]');
+                filmedSessions.unshift(pendingSessionMetadata);
+                if (filmedSessions.length > 50) filmedSessions.pop();
+                localStorage.setItem('cb_live_sessions', JSON.stringify(filmedSessions));
+                localStorage.setItem('cb_last_recording', JSON.stringify({
+                    metadata: pendingSessionMetadata,
+                    blobUrl: url
+                }));
+                console.log('Recording saved to Live Sessions');
+            }
+
+            // Download locally
+            if (selectedSaveOption === 'local' || selectedSaveOption === 'both') {
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                a.download = `contentbug-session-${timestamp}.webm`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                console.log('Recording downloaded locally');
+            }
+
+            // Close save modal and update end session modal
+            closeSaveModal();
+            document.getElementById('summaryDuration').textContent = pendingSessionMetadata.durationFormatted;
+            document.getElementById('summaryTimestamps').textContent = timestamps.length;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
         }
 
         // ==================== TIMESTAMPS ====================
@@ -1898,17 +2700,304 @@
             switchTab('notes');
         }
 
-        // ==================== AUDIO METER ANIMATION ====================
-        function animateAudioMeter() {
-            if (!micOn) return;
-            const bars = document.querySelectorAll('.audio-bar');
-            bars.forEach(bar => {
-                const height = Math.random() * 20 + 4;
-                bar.style.height = `${height}px`;
-            });
+        // ==================== DEVICE ENUMERATION ====================
+        async function enumerateDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const micSelect = document.getElementById('micSelect');
+                const camSelect = document.getElementById('camSelect');
+
+                // Clear existing options
+                micSelect.innerHTML = '';
+                camSelect.innerHTML = '';
+
+                // Populate microphones
+                const audioInputs = devices.filter(d => d.kind === 'audioinput');
+                if (audioInputs.length === 0) {
+                    micSelect.innerHTML = '<option value="">No microphones found</option>';
+                } else {
+                    audioInputs.forEach((device, index) => {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Microphone ${index + 1}`;
+                        if (device.deviceId === selectedMicId) option.selected = true;
+                        micSelect.appendChild(option);
+                    });
+                }
+
+                // Populate cameras
+                const videoInputs = devices.filter(d => d.kind === 'videoinput');
+                if (videoInputs.length === 0) {
+                    camSelect.innerHTML = '<option value="">No cameras found</option>';
+                } else {
+                    videoInputs.forEach((device, index) => {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Camera ${index + 1}`;
+                        if (device.deviceId === selectedCamId) option.selected = true;
+                        camSelect.appendChild(option);
+                    });
+                }
+            } catch (err) {
+                console.error('Error enumerating devices:', err);
+            }
         }
 
-        setInterval(animateAudioMeter, 100);
+        async function selectMicrophone(deviceId) {
+            selectedMicId = deviceId;
+            localStorage.setItem('cb_selected_mic', deviceId);
+            await initializeMedia();
+        }
+
+        async function selectCamera(deviceId) {
+            selectedCamId = deviceId;
+            localStorage.setItem('cb_selected_cam', deviceId);
+            await initializeMedia();
+        }
+
+        // ==================== DEVICE STATUS HELPERS ====================
+        function updateDeviceStatus(type, status, message) {
+            const statusEl = document.getElementById(`${type}Status`);
+            if (!statusEl) return;
+
+            statusEl.className = `device-status ${status}`;
+            const iconEl = statusEl.querySelector('.device-status-icon');
+            const textEl = statusEl.querySelector('.device-status-text');
+
+            if (status === 'confirmed') {
+                iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+            } else if (status === 'error') {
+                iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+            } else {
+                iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg>';
+            }
+            textEl.textContent = message;
+        }
+
+        // ==================== MEDIA INITIALIZATION ====================
+        async function initializeMedia() {
+            // Set status to checking
+            updateDeviceStatus('mic', 'checking', 'Checking audio...');
+            updateDeviceStatus('cam', 'checking', 'Checking video...');
+
+            try {
+                // Stop existing streams
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                }
+
+                // Build constraints with selected devices
+                const constraints = {
+                    video: {
+                        ...VIDEO_CONSTRAINTS.video,
+                        ...(selectedCamId && { deviceId: { exact: selectedCamId } })
+                    },
+                    audio: {
+                        ...AUDIO_CONSTRAINTS.audio,
+                        ...(selectedMicId && { deviceId: { exact: selectedMicId } })
+                    }
+                };
+
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (err) {
+                    console.warn('High-quality failed, trying fallback:', err);
+                    // Fallback to lower quality
+                    const fallbackConstraints = {
+                        video: {
+                            ...FALLBACK_VIDEO.video,
+                            ...(selectedCamId && { deviceId: { exact: selectedCamId } })
+                        },
+                        audio: {
+                            ...AUDIO_CONSTRAINTS.audio,
+                            ...(selectedMicId && { deviceId: { exact: selectedMicId } })
+                        }
+                    };
+                    localStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                }
+
+                // Attach to video element
+                const videoEl = document.getElementById('localVideo');
+                const placeholder = document.getElementById('videoPlaceholder');
+                videoEl.srcObject = localStream;
+                videoEl.style.display = 'block';
+                placeholder.style.display = 'none';
+
+                // Get actual resolution and update video status
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    const settings = videoTrack.getSettings();
+                    currentResolution = {
+                        width: settings.width || 1920,
+                        height: settings.height || 1080,
+                        fps: settings.frameRate || 30
+                    };
+                    updateResolutionBadge();
+                    updateConfidenceIndicator();
+
+                    // Update camera status to confirmed
+                    const camLabel = settings.width >= 3840 ? '4K ready' :
+                                    settings.width >= 1920 ? '1080p ready' :
+                                    settings.width >= 1280 ? '720p ready' : 'Video ready';
+                    updateDeviceStatus('cam', 'confirmed', camLabel);
+                } else {
+                    updateDeviceStatus('cam', 'error', 'No video track');
+                }
+
+                // Setup audio metering and update audio status
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    setupAudioMeter();
+                    const audioSettings = audioTrack.getSettings();
+                    const sampleRate = audioSettings.sampleRate || 48000;
+                    const audioLabel = sampleRate >= 48000 ? '48kHz ready' :
+                                      sampleRate >= 44100 ? '44.1kHz ready' : 'Audio ready';
+                    updateDeviceStatus('mic', 'confirmed', audioLabel);
+                } else {
+                    updateDeviceStatus('mic', 'error', 'No audio track');
+                }
+
+                // Re-enumerate devices (now with labels)
+                await enumerateDevices();
+
+            } catch (err) {
+                console.error('Media initialization failed:', err);
+                document.getElementById('cameraStatus').textContent = 'Camera access denied';
+                updateConfidenceIndicator('error');
+                updateDeviceStatus('cam', 'error', 'Access denied');
+                updateDeviceStatus('mic', 'error', 'Access denied');
+            }
+        }
+
+        function updateResolutionBadge() {
+            const badge = document.getElementById('resolutionText');
+            const { width, height, fps } = currentResolution;
+
+            let resLabel = '';
+            if (width >= 3840) resLabel = '4K';
+            else if (width >= 2560) resLabel = '1440p';
+            else if (width >= 1920) resLabel = '1080p';
+            else if (width >= 1280) resLabel = '720p';
+            else resLabel = `${width}×${height}`;
+
+            badge.textContent = `${resLabel} · ${Math.round(fps)}fps`;
+        }
+
+        function updateConfidenceIndicator(status = 'auto') {
+            const dot1 = document.getElementById('confDot1');
+            const dot2 = document.getElementById('confDot2');
+            const dot3 = document.getElementById('confDot3');
+            const label = document.getElementById('confidenceLabel');
+
+            // Reset classes
+            [dot1, dot2, dot3].forEach(d => d.className = 'confidence-dot');
+
+            if (status === 'error') {
+                dot1.classList.add('error');
+                label.textContent = 'No Signal';
+                return;
+            }
+
+            // Auto-detect based on resolution
+            const { width, fps } = currentResolution;
+
+            if (width >= 3840 && fps >= 50) {
+                // Excellent - all green
+                [dot1, dot2, dot3].forEach(d => d.classList.add('active'));
+                label.textContent = 'Excellent';
+            } else if (width >= 1920 && fps >= 30) {
+                // Good - 2 green
+                [dot1, dot2].forEach(d => d.classList.add('active'));
+                label.textContent = 'Good';
+            } else if (width >= 1280) {
+                // Okay - 1 green, 1 warning
+                dot1.classList.add('active');
+                dot2.classList.add('warning');
+                label.textContent = 'Fair';
+            } else {
+                // Poor
+                dot1.classList.add('warning');
+                label.textContent = 'Low Quality';
+            }
+        }
+
+        // ==================== AUDIO METERING ====================
+        function setupAudioMeter() {
+            if (!localStream) return;
+
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (!audioTrack) return;
+
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaStreamSource(localStream);
+            audioAnalyser = audioContext.createAnalyser();
+            audioAnalyser.fftSize = 256;
+            audioAnalyser.smoothingTimeConstant = 0.5;
+            source.connect(audioAnalyser);
+
+            // Start audio metering loop
+            animateAudioMeter();
+        }
+
+        function animateAudioMeter() {
+            if (!micOn || !audioAnalyser) {
+                // Fallback animation when no analyser
+                const bars = document.querySelectorAll('.audio-bar');
+                bars.forEach(bar => {
+                    bar.style.height = '4px';
+                    bar.className = 'audio-bar level-good';
+                });
+                requestAnimationFrame(animateAudioMeter);
+                return;
+            }
+
+            const bufferLength = audioAnalyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            audioAnalyser.getByteFrequencyData(dataArray);
+
+            const bars = document.querySelectorAll('.audio-bar');
+            const label = document.getElementById('audioLevelLabel');
+
+            // Calculate average and peak levels
+            let sum = 0;
+            let peak = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                sum += dataArray[i];
+                if (dataArray[i] > peak) peak = dataArray[i];
+            }
+            const average = sum / bufferLength;
+
+            // Determine level state
+            let levelClass = 'level-good';
+            let labelClass = 'good';
+            let labelText = 'Good';
+
+            if (peak > 240) {
+                levelClass = 'level-clip';
+                labelClass = 'clip';
+                labelText = 'Clipping!';
+            } else if (peak > 200) {
+                levelClass = 'level-hot';
+                labelClass = 'hot';
+                labelText = 'Hot';
+            }
+
+            // Update bars
+            bars.forEach((bar, index) => {
+                // Distribute frequency data across bars
+                const dataIndex = Math.floor((index / bars.length) * bufferLength * 0.5);
+                const value = dataArray[dataIndex] || 0;
+                const height = Math.max(4, (value / 255) * 24);
+                bar.style.height = `${height}px`;
+                bar.className = `audio-bar ${levelClass}`;
+            });
+
+            // Update label
+            label.className = `audio-level-label ${labelClass}`;
+            label.textContent = labelText;
+
+            requestAnimationFrame(animateAudioMeter);
+        }
 
         // ==================== UI CONTROLS ====================
         function toggleFullscreen() {
@@ -1969,7 +3058,7 @@
             };
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             let userData = getUserData();
 
             // Allow local file testing
@@ -1990,6 +3079,17 @@
 
             // Start session timer
             startTimer();
+
+            // Initial device enumeration (before permission)
+            await enumerateDevices();
+
+            // Initialize media with high-quality settings
+            await initializeMedia();
+
+            // Listen for device changes
+            navigator.mediaDevices.addEventListener('devicechange', async () => {
+                await enumerateDevices();
+            });
         });
     </script>
     <!-- Shell Controller for persistence -->

@@ -240,7 +240,7 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.4.0',
+  version: 'production-2.5.0',
   auth: true,
   portal: true,
   drive: {
@@ -272,25 +272,27 @@ app.use('/shared', express.static(path.join(PORTAL_DIR, 'shared'), {
 }));
 
 // Portal route mappings
-// v2.4.0: UNIFIED PORTAL - One portal for all roles (client, editor, admin, owner)
+// v2.5.0: UNIFIED PORTAL - Clean flat file structure
 const portalRoutes = {
-  '/login': 'client/login.html',
-  '/portal': 'portal.html',           // UNIFIED portal for ALL roles
-  '/dashboard': 'portal.html',        // Dashboard redirects to unified portal
-  '/admin': 'portal.html',            // Admin now uses unified portal
-  '/editor': 'portal.html',           // Editor now uses unified portal
-  '/team': 'portal.html',             // Team management in unified portal
-  '/projects': 'portal.html',         // Projects view in unified portal
-  '/review': 'client/review.html',    // Dedicated review player still separate
-  '/chat': 'portal.html',             // Chat dock is now in unified portal
-  '/step-1-create-account': 'client/step-1.html',
-  '/step-2-style-blueprint': 'client/step-2.html',
-  '/blueprint-builder': 'client/step-2-builder.html',
-  '/step-3-submit-project': 'client/step-3.html',
-  '/account': 'client/account.html',
-  '/settings': 'client/account.html', // Settings now in account page
-  '/book-call': 'client/book-call.html',
-  '/onboarding-complete': 'client/onboarding-complete.html'
+  '/login': 'login.html',              // Client login
+  '/signup': 'signup.html',            // Client signup (free trial)
+  '/team-login': 'team-login.html',    // Team/editor login
+  '/team-signup': 'team-signup.html',  // Team/editor signup
+  '/portal': 'portal.html',            // UNIFIED portal for ALL roles
+  '/dashboard': 'portal.html',         // Dashboard = portal
+  '/admin': 'portal.html',             // Admin = portal
+  '/editor': 'portal.html',            // Editor = portal
+  '/team': 'portal.html',              // Team = portal
+  '/projects': 'portal.html',          // Projects = portal
+  '/chat': 'portal.html',              // Chat = portal
+  '/review': 'review.html',            // Video review player
+  '/record': 'record.html',            // Recording
+  '/style-blueprint': 'style-blueprint.html',  // Blueprint builder
+  '/blueprint-builder': 'style-blueprint.html',
+  '/submit-project': 'submit-project.html',    // Project submission
+  '/step-1-create-account': 'signup.html',
+  '/step-2-style-blueprint': 'style-blueprint.html',
+  '/step-3-submit-project': 'submit-project.html'
 };
 
 // Serve portal pages

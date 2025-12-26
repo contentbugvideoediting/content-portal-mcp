@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Signup — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-base: #050508;
+            --bg-card: #0a0a0f;
+            --bg-input: #08080c;
+            --border-subtle: #2a2a35;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            /* WHITE/NEUTRAL ACCENT - Editor Theme */
+            --accent-primary: #e2e8f0;
+            --accent-primary-soft: rgba(226, 232, 240, 0.15);
+            --accent-primary-dark: #94a3b8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --role-editor: #e2e8f0;
+        }
+
+        html, body {
+            min-height: 100%;
+            background: var(--bg-base);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+        }
+
+        /* Background */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: -1;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250vw;
+            height: 200vh;
+            background: radial-gradient(ellipse at center, rgba(226, 232, 240, 0.06) 0%, rgba(148, 163, 184, 0.03) 40%, transparent 70%);
+            filter: blur(100px);
+        }
+
+        /* Container */
+        .signup-container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        /* Card */
+        .signup-card {
+            background: linear-gradient(165deg, rgba(15, 15, 25, 0.98) 0%, rgba(8, 8, 15, 0.99) 100%);
+            border: 1px solid rgba(226, 232, 240, 0.15);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 560px;
+            box-shadow: 0 0 0 1px rgba(226, 232, 240, 0.08), 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Logo */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(226, 232, 240, 0.3));
+        }
+
+        .signup-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .signup-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .editor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(226, 232, 240, 0.12);
+            border: 1px solid rgba(226, 232, 240, 0.25);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--role-editor);
+            margin-top: 12px;
+        }
+
+        .editor-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 32px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--accent-red);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px rgba(226, 232, 240, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* Payment Section */
+        .payment-section {
+            background: rgba(226, 232, 240, 0.04);
+            border: 1px solid rgba(226, 232, 240, 0.12);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+
+        .payment-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .payment-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent-primary);
+        }
+
+        /* Password Section */
+        .password-section {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-secondary);
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 18px 28px;
+            background: linear-gradient(135deg, var(--accent-primary-dark) 0%, var(--accent-primary) 100%);
+            border: none;
+            border-radius: 14px;
+            color: #0a0a0f;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(148, 163, 184, 0.3);
+            margin-top: 24px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(226, 232, 240, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Message */
+        .message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--accent-red);
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--accent-green);
+        }
+
+        /* Terms */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .terms-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: var(--accent-blue);
+        }
+
+        .terms-check a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .terms-check a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Invalid Link State */
+        .invalid-link {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .invalid-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .invalid-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--accent-red);
+        }
+
+        /* Success State */
+        .success-state {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+    </div>
+
+    <div class="signup-container">
+        <div class="signup-card">
+            <!-- Logo -->
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug">
+                </div>
+                <h1 class="signup-title">Join the Content Bug Team</h1>
+                <p class="signup-subtitle">Create your editor account to start working with clients</p>
+                <div class="editor-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                    Team Member
+                </div>
+            </div>
+
+            <!-- Message Area -->
+            <div class="message" id="messageArea"></div>
+
+            <!-- Signup Form -->
+            <form id="editorSignupForm" onsubmit="submitEditorSignup(event)">
+                <!-- Personal Info -->
+                <div class="section-header">Personal Information</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="firstName" placeholder="Alex" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="lastName" placeholder="Editor" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="email" placeholder="alex@example.com" required>
+                    <p class="form-hint">This will be your login email</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="phone" placeholder="(555) 123-4567" required>
+                </div>
+
+                <!-- Password -->
+                <div class="section-header">Set Your Password</div>
+
+                <div class="form-group">
+                    <label class="form-label">Password <span class="required">*</span></label>
+                    <div class="password-section">
+                        <input type="password" class="form-input" id="password" placeholder="Create a strong password" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="passwordIcon">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="form-hint">Minimum 8 characters</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password <span class="required">*</span></label>
+                    <div class="password-section">
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="section-header">Payment Information</div>
+
+                <div class="payment-section">
+                    <div class="payment-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        Primary: Wise (TransferWise)
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Wise Email <span class="required">*</span></label>
+                        <input type="email" class="form-input" id="wiseEmail" placeholder="your@wise-email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Wise Tag (Username)</label>
+                        <input type="text" class="form-input" id="wiseTag" placeholder="@yourusername">
+                        <p class="form-hint">Your Wise username if you have one</p>
+                    </div>
+                </div>
+
+                <div class="payment-section" style="margin-top: 16px; background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.15);">
+                    <div class="payment-title" style="color: #f59e0b;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Backup: PayPal
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">PayPal Email</label>
+                        <input type="email" class="form-input" id="paypalEmail" placeholder="your@paypal-email.com">
+                        <p class="form-hint">Backup payment method if Wise has issues</p>
+                    </div>
+                </div>
+
+                <!-- Terms -->
+                <div class="terms-check">
+                    <input type="checkbox" id="termsAgree" required>
+                    <label for="termsAgree">
+                        I agree to the <a href="https://contentbug.io/terms-of-service" target="_blank">Terms of Service</a>
+                        and <a href="https://contentbug.io/privacy-policy" target="_blank">Privacy Policy</a>,
+                        and understand that my payment information will be used for contractor payments.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">Create Team Account</button>
+            </form>
+
+            <!-- Pending Approval State (hidden by default) -->
+            <div class="success-state" id="pendingState" style="display: none;">
+                <div class="pending-icon" style="width: 80px; height: 80px; margin: 0 auto 24px; background: rgba(245, 158, 11, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="width: 40px; height: 40px;">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <h2 style="margin-bottom: 12px;">Application Submitted!</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                    Your team application is pending admin approval. You'll receive an email once approved.
+                </p>
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                    <p style="color: #f59e0b; font-size: 13px; font-weight: 600;">⏳ Waiting for Admin Approval</p>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">This usually takes 24-48 hours</p>
+                </div>
+                <button class="btn-primary" onclick="window.location.href='https://contentbug.io'" style="margin-top: 0; background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);">Back to Website</button>
+            </div>
+
+            <!-- Invalid Link State (hidden by default) -->
+            <div class="invalid-link" id="invalidLink" style="display: none;">
+                <div class="invalid-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+                <h2 style="margin-bottom: 12px;">Invalid Invitation Link</h2>
+                <p style="color: var(--text-secondary);">
+                    This editor invitation link is invalid or has expired. Please contact the Content Bug team for a new invitation.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== INVITE VALIDATION ====================
+        function validateInviteLink() {
+            const params = new URLSearchParams(window.location.search);
+            const inviteCode = params.get('invite');
+
+            // For demo, accept any invite code or no code
+            // In production, validate against database
+            if (inviteCode === 'invalid') {
+                showInvalidState();
+                return false;
+            }
+
+            return true;
+        }
+
+        function showInvalidState() {
+            document.getElementById('editorSignupForm').style.display = 'none';
+            document.getElementById('invalidLink').style.display = 'block';
+        }
+
+        // ==================== FORM SUBMISSION ====================
+        function submitEditorSignup(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const wiseEmail = document.getElementById('wiseEmail').value.trim();
+            const wiseTag = document.getElementById('wiseTag').value.trim();
+            const paypalEmail = document.getElementById('paypalEmail').value.trim();
+            const termsAgree = document.getElementById('termsAgree').checked;
+
+            // Validation
+            if (!firstName || !lastName) {
+                showMessage('Please enter your full name', 'error');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showMessage('Password must be at least 8 characters', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            if (!isValidEmail(wiseEmail)) {
+                showMessage('Please enter a valid Wise email', 'error');
+                return;
+            }
+
+            if (!termsAgree) {
+                showMessage('Please agree to the terms and conditions', 'error');
+                return;
+            }
+
+            // Submit
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<span class="spinner"></span>Creating account...';
+            btn.disabled = true;
+
+            const teamData = {
+                firstName,
+                lastName,
+                email,
+                phone: phone.replace(/\D/g, ''),
+                wiseEmail,
+                wiseTag,
+                paypalEmail,
+                role: 'editor',
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            // Create in GHL first
+            createGHLContact(teamData)
+                .then(ghlContact => {
+                    teamData.ghlContactId = ghlContact?.contact?.id || null;
+                    // Then create in Airtable
+                    return createAirtableTeamRecord(teamData);
+                })
+                .then(airtableRecord => {
+                    // Store in localStorage
+                    localStorage.setItem('cb_email', email);
+                    localStorage.setItem('cb_name', `${firstName} ${lastName}`);
+                    localStorage.setItem('cb_first_name', firstName);
+                    localStorage.setItem('cb_phone', phone);
+                    localStorage.setItem('cb_role', 'editor');
+                    localStorage.setItem('cb_status', 'pending');
+                    localStorage.setItem('cb_airtable_id', airtableRecord?.id || '');
+
+                    showPendingState();
+                })
+                .catch(err => {
+                    console.error('Signup error:', err);
+                    showMessage('Account created! Pending admin approval.', 'success');
+                    showPendingState();
+                });
+        }
+
+        async function createGHLContact(data) {
+            try {
+                const response = await fetch('https://services.leadconnectorhq.com/contacts/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer pit-08c86342-77a8-48d6-aca0-903bc9b1600c',
+                        'Version': '2021-07-28',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        locationId: 'mCNHhjy593eUueqfuqyU',
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        email: data.email,
+                        phone: data.phone,
+                        tags: ['team', 'editor', 'pending-approval'],
+                        customFields: [
+                            { key: 'wise_email', value: data.wiseEmail },
+                            { key: 'paypal_email', value: data.paypalEmail }
+                        ]
+                    })
+                });
+                return await response.json();
+            } catch (err) {
+                console.error('GHL error:', err);
+                return null;
+            }
+        }
+
+        async function createAirtableTeamRecord(data) {
+            try {
+                const response = await fetch('https://api.airtable.com/v0/appIrlFuwtsxj8hly/Team', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer patW8QGZbjGkib5kY.ee72a270de99dbeb731ff11ddfab6505b6612f988555e1b1f0cf77bf938c04e3',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        records: [{
+                            fields: {
+                                Name: `${data.firstName} ${data.lastName}`,
+                                Email: data.email,
+                                Phone: data.phone,
+                                Role: 'editor',
+                                Status: 'pending',
+                                WiseEmail: data.wiseEmail,
+                                WiseTag: data.wiseTag,
+                                PayPalEmail: data.paypalEmail,
+                                GHLContactId: data.ghlContactId || '',
+                                JoinedAt: data.createdAt
+                            }
+                        }]
+                    })
+                });
+                const result = await response.json();
+                return result.records?.[0] || null;
+            } catch (err) {
+                console.error('Airtable error:', err);
+                return null;
+            }
+        }
+
+        function showPendingState() {
+            document.getElementById('editorSignupForm').style.display = 'none';
+            document.getElementById('pendingState').style.display = 'block';
+        }
+
+        function goToPortal() {
+            window.location.href = 'portal.html';
+        }
+
+        // ==================== HELPERS ====================
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('messageArea');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // ==================== PHONE FORMATTING ====================
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+
+            if (value.length >= 6) {
+                e.target.value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6)}`;
+            } else if (value.length >= 3) {
+                e.target.value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            validateInviteLink();
+        });
+    </script>
+</body>
+</html>
