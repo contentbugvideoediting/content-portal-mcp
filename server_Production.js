@@ -240,7 +240,7 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.5.0',
+  version: 'production-2.5.1',
   auth: true,
   portal: true,
   drive: {
