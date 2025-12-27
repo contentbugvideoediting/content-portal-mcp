@@ -214,7 +214,7 @@ const app = express();
 
 // CORS - allow portal frontend with credentials
 app.use(cors({
-  origin: ['https://app.contentbug.io', 'https://go.contentbug.io', 'https://contentbug.io', 'https://content-portal-mcp-production.up.railway.app', 'http://localhost:3000', 'http://127.0.0.1:5500'],
+  origin: ['https://app.contentbug.io', 'https://go.contentbug.io', 'https://portalv2.contentbug.io', 'https://contentbug.io', 'https://content-portal-mcp-production.up.railway.app', 'http://localhost:3000', 'http://127.0.0.1:5500'],
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-make-secret', 'x-ghl-secret']
