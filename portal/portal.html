@@ -1023,22 +1023,33 @@
             margin: 4px 0;
         }
 
-        /* Chat layout - two-column design */
+        /* Chat layout - simplified for quick chat (general only) */
         .chat-layout {
             flex: 1;
             display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
 
+        /* Channel sidebar hidden in quick chat, visible in full chat view */
         .channel-sidebar {
-            width: 140px;
-            min-width: 140px;
+            display: none; /* Hidden in quick chat panel */
+        }
+
+        /* Full chat view shows sidebar */
+        .chat-panel.full-view .channel-sidebar {
+            display: flex;
+            width: 160px;
+            min-width: 160px;
             overflow-y: auto;
             background: #0f1219;
             padding: 8px;
-            display: flex;
             flex-direction: column;
             border-right: 1px solid rgba(30, 58, 138, 0.15);
+        }
+
+        .chat-panel.full-view .chat-layout {
+            flex-direction: row;
         }
 
         /* Chat messages area */
@@ -1055,8 +1066,15 @@
             border-bottom: 1px solid rgba(30, 58, 138, 0.2);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 8px;
             background: #0f1219;
+        }
+
+        .chat-messages-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .chat-messages-header svg {
@@ -1068,6 +1086,37 @@
         .chat-messages-header-name {
             font-weight: 600;
             color: #ffffff;
+        }
+
+        .expand-chat-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: #93c5fd;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .expand-chat-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #fff;
+        }
+
+        .expand-chat-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Hide expand button in full chat view */
+        .chat-panel.full-view .expand-chat-btn {
+            display: none;
         }
 
         .chat-messages-list {
@@ -3186,6 +3235,219 @@
             color: #ef4444;
         }
 
+        /* ==================== FULL CHAT VIEW ==================== */
+        /* Full chat view replaces main canvas and hides quick chat panel */
+        .full-chat-active .main-canvas {
+            display: none;
+        }
+
+        .full-chat-active .chat-panel {
+            display: none;
+        }
+
+        .full-chat-container {
+            flex: 1;
+            display: none;
+            background: #0a0d14;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        .full-chat-active .full-chat-container {
+            display: flex;
+        }
+
+        .full-chat-sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: #0f1219;
+            border-right: 1px solid rgba(30, 58, 138, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .full-chat-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(30, 58, 138, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .full-chat-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .close-full-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            color: #93c5fd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-full-chat-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #fff;
+        }
+
+        .close-full-chat-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .full-chat-channels {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .full-chat-channel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 4px;
+        }
+
+        .full-chat-channel:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #e2e8f0;
+        }
+
+        .full-chat-channel.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #fff;
+        }
+
+        .full-chat-channel svg {
+            width: 18px;
+            height: 18px;
+            color: #64748b;
+        }
+
+        .full-chat-channel.active svg,
+        .full-chat-channel:hover svg {
+            color: #93c5fd;
+        }
+
+        .full-chat-channel-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .full-chat-channel-badge {
+            background: var(--accent-red);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .full-chat-messages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0d14;
+            overflow: hidden;
+        }
+
+        .full-chat-messages-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(30, 58, 138, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f1219;
+        }
+
+        .full-chat-messages-header svg {
+            width: 22px;
+            height: 22px;
+            color: #64748b;
+        }
+
+        .full-chat-messages-header-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .full-chat-messages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .full-chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(30, 58, 138, 0.2);
+            background: #0f1219;
+        }
+
+        .full-chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #0a0d14;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .full-chat-input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .full-chat-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .full-chat-input::placeholder {
+            color: #64748b;
+        }
+
+        .full-chat-send-btn {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .full-chat-send-btn:hover {
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+        }
+
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 1200px) {
             .chat-panel { display: none; }
@@ -3378,6 +3640,13 @@
                                 <line x1="1" y1="10" x2="23" y2="10"/>
                             </svg>
                             Billing & Slots
+                        </div>
+                        <div class="nav-item" data-page="chat" onclick="openFullChat()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            Team Chat
+                            <span class="nav-item-badge" id="unreadChatBadge" style="display: none;">0</span>
                         </div>
                         <div class="nav-item" data-page="settings">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3781,11 +4050,22 @@
                         </div>
                     </div>
 
-                    <!-- Chat messages area -->
+                    <!-- Chat messages area (quick chat shows only #general) -->
                     <div class="chat-messages-area" id="chatMessagesArea">
                         <div class="chat-messages-header">
-                            <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                            <span class="chat-messages-header-name" id="currentChannelName">general</span>
+                            <div class="chat-messages-header-left">
+                                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                                <span class="chat-messages-header-name" id="currentChannelName">general</span>
+                            </div>
+                            <button class="expand-chat-btn" onclick="openFullChat()" title="Open full chat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="15 3 21 3 21 9"/>
+                                    <polyline points="9 21 3 21 3 15"/>
+                                    <line x1="21" y1="3" x2="14" y2="10"/>
+                                    <line x1="3" y1="21" x2="10" y2="14"/>
+                                </svg>
+                                All Channels
+                            </button>
                         </div>
                         <div class="chat-messages-list" id="chatMessagesList">
                             <!-- Messages will be rendered here -->
@@ -3828,6 +4108,50 @@
                     </div>
                 </div>
             </aside>
+
+            <!-- ==================== FULL CHAT VIEW ==================== -->
+            <div class="full-chat-container" id="fullChatContainer">
+                <div class="full-chat-sidebar">
+                    <div class="full-chat-header">
+                        <span class="full-chat-title">Team Chat</span>
+                        <button class="close-full-chat-btn" onclick="closeFullChat()" title="Back to dashboard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="full-chat-channels" id="fullChatChannels">
+                        <div class="full-chat-channel active" data-channel="general" onclick="selectFullChatChannel('general')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                            <span class="full-chat-channel-name">general</span>
+                        </div>
+                        <div class="full-chat-channel" data-channel="project-updates" onclick="selectFullChatChannel('project-updates')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                            <span class="full-chat-channel-name">project-updates</span>
+                        </div>
+                        <div class="full-chat-channel" data-channel="feedback" onclick="selectFullChatChannel('feedback')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                            <span class="full-chat-channel-name">feedback</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="full-chat-messages">
+                    <div class="full-chat-messages-header">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                        <span class="full-chat-messages-header-name" id="fullChatChannelName">general</span>
+                    </div>
+                    <div class="full-chat-messages-list" id="fullChatMessagesList">
+                        <!-- Messages rendered here -->
+                    </div>
+                    <div class="full-chat-input-area">
+                        <div class="full-chat-input-wrapper">
+                            <input type="text" class="full-chat-input" id="fullChatInput" placeholder="Message #general" onkeypress="handleFullChatKeypress(event)">
+                            <button class="full-chat-send-btn" onclick="sendFullChatMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -5340,6 +5664,178 @@
         window.handleChatKeypress = handleChatKeypress;
         window.sendChatMessage = sendChatMessage;
         window.createNewChannel = createNewChannel;
+
+        // ==================== FULL CHAT VIEW FUNCTIONS ====================
+        let fullChatChannel = 'general';
+
+        // Open full chat view
+        function openFullChat() {
+            console.log('[Chat] Opening full chat view');
+            document.querySelector('.app-body').classList.add('full-chat-active');
+
+            // Update nav item
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            const chatNavItem = document.querySelector('.nav-item[data-page="chat"]');
+            if (chatNavItem) chatNavItem.classList.add('active');
+
+            // Load messages for current channel
+            loadFullChatMessages(fullChatChannel);
+        }
+
+        // Close full chat view
+        function closeFullChat() {
+            console.log('[Chat] Closing full chat view');
+            document.querySelector('.app-body').classList.remove('full-chat-active');
+
+            // Switch nav back to dashboard
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            const dashNavItem = document.querySelector('.nav-item[data-page="dashboard"]');
+            if (dashNavItem) dashNavItem.classList.add('active');
+        }
+
+        // Select a channel in full chat view
+        function selectFullChatChannel(channelId) {
+            console.log('[Chat] Full chat selecting channel:', channelId);
+            fullChatChannel = channelId;
+
+            // Update active state
+            document.querySelectorAll('.full-chat-channel').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.channel === channelId) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Update header
+            document.getElementById('fullChatChannelName').textContent = channelId;
+            document.getElementById('fullChatInput').placeholder = `Message #${channelId}`;
+
+            // Load messages
+            loadFullChatMessages(channelId);
+        }
+
+        // Load messages for full chat view
+        async function loadFullChatMessages(channelId) {
+            const listEl = document.getElementById('fullChatMessagesList');
+            listEl.innerHTML = `<div class="chat-loading"><div class="chat-loading-spinner"></div>Loading messages...</div>`;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat/channels/${channelId}/messages`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderFullChatMessages(data.messages || []);
+                } else {
+                    renderFullChatMessages(DEMO_MESSAGES[channelId] || []);
+                }
+            } catch (err) {
+                renderFullChatMessages(DEMO_MESSAGES[channelId] || []);
+            }
+        }
+
+        // Render messages in full chat view
+        function renderFullChatMessages(messages) {
+            const listEl = document.getElementById('fullChatMessagesList');
+
+            if (!messages || messages.length === 0) {
+                listEl.innerHTML = `
+                    <div class="chat-empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <div>Welcome to <strong>#${fullChatChannel}</strong></div>
+                        <div style="font-size: 13px; margin-top: 4px;">This is the start of the channel</div>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = messages.map(msg => {
+                const initials = msg.senderName ? msg.senderName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+                const role = msg.senderRole || 'client';
+                const avatarStyle = msg.senderAvatar
+                    ? `background-image: url('${msg.senderAvatar}'); background-size: cover;`
+                    : `background: var(--role-${role});`;
+
+                return `
+                    <div class="chat-message ${msg.isSystem ? 'system' : ''}">
+                        <div class="chat-message-avatar" style="${avatarStyle}">${msg.senderAvatar ? '' : initials}</div>
+                        <div class="chat-message-content">
+                            <div class="chat-message-header">
+                                <span class="chat-message-author">${escapeHtml(msg.senderName || 'Unknown')}</span>
+                                <span class="chat-message-role ${role}">${role}</span>
+                                <span class="chat-message-time">${formatMessageTime(msg.createdAt)}</span>
+                            </div>
+                            <div class="chat-message-text">${escapeHtml(msg.content)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            listEl.scrollTop = listEl.scrollHeight;
+        }
+
+        // Handle keypress in full chat input
+        function handleFullChatKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendFullChatMessage();
+            }
+        }
+
+        // Send message from full chat view
+        async function sendFullChatMessage() {
+            const input = document.getElementById('fullChatInput');
+            const content = input.value.trim();
+            if (!content) return;
+
+            input.value = '';
+
+            // Add message locally first for instant feedback
+            const newMsg = {
+                id: Date.now(),
+                senderName: currentUser.name,
+                senderRole: viewAsRole || currentUser.role,
+                content: content,
+                createdAt: new Date().toISOString(),
+                senderAvatar: currentUser.profilePic
+            };
+
+            // Re-render with new message
+            const existingMessages = DEMO_MESSAGES[fullChatChannel] || [];
+            existingMessages.push(newMsg);
+            DEMO_MESSAGES[fullChatChannel] = existingMessages;
+            renderFullChatMessages(existingMessages);
+
+            // Also update quick chat if on same channel
+            if (currentChannel === fullChatChannel) {
+                chatMessages = existingMessages;
+                renderMessages(existingMessages);
+            }
+
+            // Try to send to API
+            try {
+                await fetch(`${API_BASE}/api/chat/channels/${fullChatChannel}/messages`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content, channelId: fullChatChannel })
+                });
+            } catch (err) {
+                console.log('[Chat] API send failed, message kept locally');
+            }
+        }
+
+        // Expose full chat functions
+        window.openFullChat = openFullChat;
+        window.closeFullChat = closeFullChat;
+        window.selectFullChatChannel = selectFullChatChannel;
+        window.handleFullChatKeypress = handleFullChatKeypress;
+        window.sendFullChatMessage = sendFullChatMessage;
 
         // Initialize chat when DOM is ready
         if (document.readyState === 'loading') {
