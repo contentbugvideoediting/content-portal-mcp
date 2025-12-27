@@ -4557,6 +4557,92 @@ app.get('/api/team/stats', requireAuth(['admin', 'owner']), async (req, res) => 
 });
 
 // ============================================
+// ZOOM MEETING SDK INTEGRATION
+// ============================================
+const ZOOM_CLIENT_ID = process.env.ZOOM_CLIENT_ID || 'neGOqCPSRUe9Z2taRkRU3A';
+const ZOOM_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET || 'IOCtmZ37Td7sMyIXxr0wWYWTL6q8133b';
+
+// Generate Zoom Meeting SDK signature for joining meetings
+// Reference: https://developers.zoom.us/docs/meeting-sdk/auth/
+function generateZoomSignature(meetingNumber, role) {
+  const iat = Math.floor(Date.now() / 1000) - 30;
+  const exp = iat + 60 * 60 * 2; // 2 hours expiration
+
+  const oHeader = { alg: 'HS256', typ: 'JWT' };
+  const oPayload = {
+    sdkKey: ZOOM_CLIENT_ID,
+    appKey: ZOOM_CLIENT_ID,
+    mn: String(meetingNumber).replace(/\s/g, ''),
+    role: role, // 0 = attendee, 1 = host
+    iat: iat,
+    exp: exp,
+    tokenExp: exp
+  };
+
+  // Base64url encode header and payload
+  const base64Header = Buffer.from(JSON.stringify(oHeader)).toString('base64url');
+  const base64Payload = Buffer.from(JSON.stringify(oPayload)).toString('base64url');
+
+  // Create signature
+  const message = `${base64Header}.${base64Payload}`;
+  const signature = crypto
+    .createHmac('sha256', ZOOM_CLIENT_SECRET)
+    .update(message)
+    .digest('base64url');
+
+  return `${message}.${signature}`;
+}
+
+// POST /api/zoom/signature - Generate SDK signature for joining a meeting
+app.post('/api/zoom/signature', requireAuth(), async (req, res) => {
+  try {
+    const { meetingNumber, role = 0 } = req.body;
+
+    if (!meetingNumber) {
+      return res.status(400).json({ error: 'meeting_number_required', message: 'Meeting number is required' });
+    }
+
+    // Validate role (0 = attendee, 1 = host)
+    const meetingRole = [0, 1].includes(Number(role)) ? Number(role) : 0;
+
+    // Generate the signature
+    const signature = generateZoomSignature(meetingNumber, meetingRole);
+
+    console.log(`[Zoom] Generated signature for meeting ${meetingNumber} (role: ${meetingRole}) by ${req.user.email}`);
+
+    return res.json({
+      success: true,
+      signature,
+      sdkKey: ZOOM_CLIENT_ID,
+      meetingNumber: String(meetingNumber).replace(/\s/g, '')
+    });
+  } catch (err) {
+    console.error('[Zoom] Signature generation error:', err);
+    return res.status(500).json({ error: 'signature_failed', message: err.message });
+  }
+});
+
+// GET /api/zoom/status - Check Zoom integration status
+app.get('/api/zoom/status', (req, res) => {
+  res.json({
+    enabled: !!(ZOOM_CLIENT_ID && ZOOM_CLIENT_SECRET),
+    sdkKey: ZOOM_CLIENT_ID ? ZOOM_CLIENT_ID.substring(0, 8) + '...' : null
+  });
+});
+
+// POST /api/zoom/create-meeting - Create a new Zoom meeting (requires OAuth - placeholder)
+// Note: Creating meetings requires OAuth flow, not just SDK credentials
+// For now, meetings should be created in Zoom and join link shared
+app.post('/api/zoom/create-meeting', requireAuth(['admin', 'owner']), async (req, res) => {
+  // This would require OAuth access token flow
+  // For MVP, admins create meetings in Zoom and share the meeting number
+  return res.status(501).json({
+    error: 'not_implemented',
+    message: 'Meeting creation requires Zoom OAuth integration. For now, create meetings in Zoom and enter the meeting number to join.'
+  });
+});
+
+// ============================================
 // START SERVER
 // ============================================
 
