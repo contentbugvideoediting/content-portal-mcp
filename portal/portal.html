@@ -2958,43 +2958,6 @@
             color: #ef4444;
         }
 
-        /* Quick Start Meeting Button */
-        .quick-meeting-btn {
-            position: fixed;
-            bottom: 24px;
-            right: 360px;
-            padding: 14px 24px;
-            background: linear-gradient(135deg, var(--accent-blue) 0%, #2563eb 100%);
-            border: none;
-            border-radius: 50px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 8px 24px rgba(59,130,246,0.4);
-            transition: all 0.3s ease;
-            z-index: 100;
-        }
-
-        .quick-meeting-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(59,130,246,0.5);
-        }
-
-        .quick-meeting-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        @media (max-width: 1200px) {
-            .quick-meeting-btn {
-                right: 24px;
-            }
-        }
-
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 1200px) {
             .chat-panel { display: none; }
@@ -3634,15 +3597,6 @@
             </aside>
         </div>
     </div>
-
-    <!-- Quick Meeting Button (Floating) -->
-    <button class="quick-meeting-btn" onclick="openMeetingModal()" title="Start or Schedule Meeting">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="23 7 16 12 23 17 23 7"/>
-            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-        </svg>
-        Quick Meeting
-    </button>
 
     <!-- Chat Settings Modal -->
     <div class="chat-settings-modal" id="chatSettingsModal">
