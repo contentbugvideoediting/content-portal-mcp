@@ -776,6 +776,12 @@
             font-size: 13px;
         }
 
+        /* Projects nested - always visible */
+        #projectsNested {
+            max-height: 300px;
+            opacity: 1;
+        }
+
         /* Storage nested - collapsed by default, expand on click */
         #storageNested {
             max-height: 0;
@@ -2581,6 +2587,39 @@
             padding: 32px 0;
         }
 
+        .page-panel-header {
+            margin-bottom: 32px;
+        }
+
+        .page-panel-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 8px 0;
+        }
+
+        .page-panel-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .page-panel-content {
+            padding: 0;
+        }
+
+        .settings-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 32px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            text-align: center;
+        }
+
         .page-header {
             margin-bottom: 32px;
         }
@@ -4293,6 +4332,76 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ==================== SETTINGS PAGE ==================== -->
+                <div class="page-panel" id="settingsPage" style="display: none;">
+                    <div class="page-panel-header">
+                        <h2>System Settings</h2>
+                        <p>Configure your portal preferences</p>
+                    </div>
+                    <div class="page-panel-content">
+                        <div class="settings-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; color: var(--text-muted); margin-bottom: 16px;">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            <p style="color: var(--text-muted); font-size: 15px;">Settings coming soon</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== BILLING PAGE ==================== -->
+                <div class="page-panel" id="billingPage" style="display: none;">
+                    <div class="page-panel-header">
+                        <h2>Billing & Slots</h2>
+                        <p>Manage your subscription and edit slots</p>
+                    </div>
+                    <div class="page-panel-content">
+                        <div class="settings-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; color: var(--text-muted); margin-bottom: 16px;">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            <p style="color: var(--text-muted); font-size: 15px;">Billing management coming soon</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== EDITORS PAGE ==================== -->
+                <div class="page-panel" id="editorsPage" style="display: none;">
+                    <div class="page-panel-header">
+                        <h2>Editors</h2>
+                        <p>Manage your editing team</p>
+                    </div>
+                    <div class="page-panel-content">
+                        <div class="settings-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; color: var(--text-muted); margin-bottom: 16px;">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            <p style="color: var(--text-muted); font-size: 15px;">Editor management coming soon</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== STUDIO PAGE ==================== -->
+                <div class="page-panel" id="studioPage" style="display: none;">
+                    <div class="page-panel-header">
+                        <h2>Studio</h2>
+                        <p>Your creative workspace</p>
+                    </div>
+                    <div class="page-panel-content">
+                        <div class="settings-placeholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; color: var(--text-muted); margin-bottom: 16px;">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            <p style="color: var(--text-muted); font-size: 15px;">Studio features coming soon</p>
+                        </div>
+                    </div>
+                </div>
             </main>
 
             <!-- ==================== RIGHT CHAT PANEL ==================== -->
@@ -5315,18 +5424,36 @@
         }
 
         function showPage(page) {
+            console.log('[showPage] Showing:', page);
+
             // Hide all page panels
             document.querySelectorAll('.page-panel').forEach(p => p.style.display = 'none');
 
-            // Hide main dashboard content when showing other pages
+            // Main dashboard elements
             const dashboardContent = document.querySelector('.welcome-header');
             const dashboardAnnouncement = document.querySelector('.dashboard-announcement');
             const projectBoard = document.querySelector('.project-board');
 
-            // Storage sub-pages (show brand assets page for all storage items for now)
+            // Storage sub-pages
             const storagePages = ['storage', 'style-blueprints', 'thumbnail-blueprints', 'brand-assets'];
 
-            if (storagePages.includes(page)) {
+            // Hide floating save button by default
+            hideFloatingSaveBtn();
+
+            if (page === 'dashboard') {
+                // Dashboard view
+                dashboardContent.style.display = 'block';
+                if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'flex';
+                projectBoard.style.display = 'block';
+
+            } else if (page === 'projects' || page === 'queue' || page === 'active' || page === 'review' || page === 'revisions' || page === 'approved') {
+                // Projects view - show board, hide dashboard welcome
+                dashboardContent.style.display = 'none';
+                if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'none';
+                projectBoard.style.display = 'block';
+
+            } else if (storagePages.includes(page)) {
+                // Storage pages
                 dashboardContent.style.display = 'none';
                 if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'none';
                 projectBoard.style.display = 'none';
@@ -5344,13 +5471,45 @@
 
                 // Show floating save button when in storage area
                 showFloatingSaveBtn();
+
+            } else if (page === 'studio') {
+                // Studio page
+                dashboardContent.style.display = 'none';
+                if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'none';
+                projectBoard.style.display = 'none';
+                // Show studio panel if exists
+                const studioPage = document.getElementById('studioPage');
+                if (studioPage) studioPage.style.display = 'block';
+
+            } else if (page === 'settings') {
+                // Settings page
+                dashboardContent.style.display = 'none';
+                if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'none';
+                projectBoard.style.display = 'none';
+                const settingsPage = document.getElementById('settingsPage');
+                if (settingsPage) settingsPage.style.display = 'block';
+
+            } else if (page === 'billing') {
+                // Billing page
+                dashboardContent.style.display = 'none';
+                if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'none';
+                projectBoard.style.display = 'none';
+                const billingPage = document.getElementById('billingPage');
+                if (billingPage) billingPage.style.display = 'block';
+
+            } else if (page === 'editors') {
+                // Editors page
+                dashboardContent.style.display = 'none';
+                if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'none';
+                projectBoard.style.display = 'none';
+                const editorsPage = document.getElementById('editorsPage');
+                if (editorsPage) editorsPage.style.display = 'block';
+
             } else {
+                // Default - show dashboard
                 dashboardContent.style.display = 'block';
                 if (dashboardAnnouncement) dashboardAnnouncement.style.display = 'flex';
                 projectBoard.style.display = 'block';
-
-                // Hide floating save button when leaving storage area
-                hideFloatingSaveBtn();
             }
         }
 
@@ -5593,14 +5752,65 @@
 
         // ==================== NAVIGATION ====================
         function initNavigation() {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
+            // Main sub-nav items
+            document.querySelectorAll('.sub-nav > .nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    const page = this.dataset.page;
+
+                    // Skip storage - it has its own toggle handler
+                    if (page === 'storage') return;
+
+                    // Skip nested items - they have their own handlers
+                    if (this.closest('.nav-nested')) return;
+
+                    // Skip items with onclick attributes (meetings, chat, request)
+                    if (this.hasAttribute('onclick')) return;
+
                     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
 
-                    const page = this.dataset.page;
                     console.log('Navigate to:', page);
-                    // Would load page content
+                    showPage(page);
+                });
+            });
+
+            // Team section items (editors, billing, settings)
+            document.querySelectorAll('.team-section .nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    const page = this.dataset.page;
+
+                    // Skip items with onclick attributes (chat)
+                    if (this.hasAttribute('onclick')) return;
+
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    console.log('Navigate to team page:', page);
+                    showPage(page);
+                });
+            });
+
+            // Projects nav item - toggle nested visibility
+            const projectsNav = document.querySelector('.nav-item[data-page="projects"]');
+            if (projectsNav) {
+                projectsNav.addEventListener('click', function() {
+                    const nested = document.getElementById('projectsNested');
+                    if (nested) {
+                        nested.classList.toggle('expanded');
+                        this.classList.toggle('expanded');
+                    }
+                });
+            }
+
+            // Projects nested items
+            document.querySelectorAll('#projectsNested .nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log('Navigate to project status:', this.dataset.page);
+                    // Show projects board and filter by status
+                    showPage('projects');
                 });
             });
         }
