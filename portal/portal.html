@@ -928,11 +928,11 @@
         .project-card-tag.short { background: var(--accent-green-soft); color: var(--accent-green); }
         .project-card-tag.long { background: var(--accent-purple-soft); color: var(--accent-purple); }
 
-        /* ==================== RIGHT CHAT PANEL (DISCORD STYLE) ==================== */
+        /* ==================== RIGHT CHAT PANEL (CONTENT BUG DARK THEME) ==================== */
         .chat-panel {
             width: var(--chat-width);
-            background: #1e1f22;
-            border-left: 1px solid var(--border-subtle);
+            background: #0a0d14;
+            border-left: 1px solid rgba(30, 58, 138, 0.2);
             display: flex;
             flex-direction: column;
         }
@@ -943,27 +943,27 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #2b2d31;
-            border-bottom: 1px solid #1e1f22;
+            background: #0f1219;
+            border-bottom: 1px solid rgba(30, 58, 138, 0.2);
             cursor: pointer;
             transition: background 0.15s ease;
             position: relative;
         }
 
         .server-header:hover {
-            background: #35373c;
+            background: #141822;
         }
 
         .server-name {
             font-size: 15px;
             font-weight: 600;
-            color: #fff;
+            color: #ffffff;
         }
 
         .server-dropdown-icon {
             width: 18px;
             height: 18px;
-            color: var(--text-muted);
+            color: #94a3b8;
             transition: transform 0.2s ease;
         }
 
@@ -976,11 +976,12 @@
             top: 48px;
             left: 0;
             right: 0;
-            background: #111214;
-            border-radius: 4px;
+            background: #0a0d14;
+            border-radius: 8px;
             margin: 8px;
             padding: 6px 8px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.24);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border: 1px solid rgba(30, 58, 138, 0.2);
             opacity: 0;
             visibility: hidden;
             transform: translateY(-8px);
@@ -999,9 +1000,9 @@
             align-items: center;
             justify-content: space-between;
             padding: 8px 10px;
-            border-radius: 3px;
+            border-radius: 6px;
             font-size: 14px;
-            color: #b5bac1;
+            color: #e2e8f0;
             cursor: pointer;
             transition: all 0.1s ease;
         }
@@ -1018,19 +1019,255 @@
 
         .server-dropdown-divider {
             height: 1px;
-            background: #3f4147;
+            background: rgba(30, 58, 138, 0.2);
             margin: 4px 0;
         }
 
+        /* Chat layout - two-column design */
+        .chat-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
         .channel-sidebar {
+            width: 140px;
+            min-width: 140px;
+            overflow-y: auto;
+            background: #0f1219;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(30, 58, 138, 0.15);
+        }
+
+        /* Chat messages area */
+        .chat-messages-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0d14;
+            overflow: hidden;
+        }
+
+        .chat-messages-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(30, 58, 138, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0f1219;
+        }
+
+        .chat-messages-header svg {
+            width: 20px;
+            height: 20px;
+            color: #64748b;
+        }
+
+        .chat-messages-header-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chat-messages-list {
             flex: 1;
             overflow-y: auto;
-            background: #2b2d31;
-            padding: 0 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #0a0d14;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .chat-message-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .chat-message-author {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chat-message-role {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-message-role.owner { background: var(--role-owner); color: #000; }
+        .chat-message-role.admin { background: var(--role-admin); color: #fff; }
+        .chat-message-role.editor { background: var(--role-editor); color: #fff; }
+        .chat-message-role.client { background: var(--role-client); color: #fff; }
+        .chat-message-role.system { background: #475569; color: #fff; }
+
+        .chat-message-time {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .chat-message-text {
+            color: #e2e8f0;
+            line-height: 1.5;
+            word-break: break-word;
+            font-size: 14px;
+        }
+
+        .chat-message.system {
+            opacity: 0.7;
+        }
+
+        .chat-message.system .chat-message-text {
+            font-style: italic;
+            color: #94a3b8;
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(30, 58, 138, 0.2);
+            background: #0f1219;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0a0d14;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: #64748b;
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-send-btn:hover {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .chat-empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .chat-empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+            color: #3b82f6;
+        }
+
+        .chat-empty-state strong {
+            color: #ffffff;
+        }
+
+        .chat-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #94a3b8;
+        }
+
+        .chat-loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .channel-category {
-            margin-top: 16px;
+            margin-top: 8px;
+        }
+
+        .channel-category:first-child {
+            margin-top: 0;
         }
 
         .channel-category-header {
@@ -1046,16 +1283,16 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
-            color: #949ba4;
+            color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.05em;
         }
 
         .channel-category-title svg {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             transition: transform 0.2s ease;
         }
 
@@ -1064,12 +1301,12 @@
         }
 
         .channel-category-add {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #949ba4;
+            color: #64748b;
             cursor: pointer;
             border-radius: 3px;
             opacity: 0;
@@ -1081,13 +1318,13 @@
         }
 
         .channel-category-add:hover {
-            color: #dbdee1;
-            background: rgba(255,255,255,0.06);
+            color: #94a3b8;
+            background: rgba(59, 130, 246, 0.1);
         }
 
         .channel-category-add svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
 
         .channel-category-add.hidden {
@@ -1107,8 +1344,8 @@
         .channel-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 6px 8px;
+            gap: 4px;
+            padding: 5px 6px;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -1116,40 +1353,40 @@
         }
 
         .channel-item:hover {
-            background: rgba(255,255,255,0.04);
+            background: rgba(59, 130, 246, 0.1);
         }
 
         .channel-item.active {
-            background: rgba(255,255,255,0.06);
+            background: rgba(59, 130, 246, 0.15);
         }
 
         .channel-item.active .channel-name {
-            color: #fff;
+            color: #ffffff;
         }
 
         .channel-icon {
-            width: 20px;
-            height: 20px;
-            color: #80848e;
+            width: 16px;
+            height: 16px;
+            color: #64748b;
             flex-shrink: 0;
         }
 
         .channel-item.active .channel-icon,
         .channel-item:hover .channel-icon {
-            color: #b5bac1;
+            color: #94a3b8;
         }
 
         .channel-name {
             flex: 1;
-            font-size: 15px;
-            color: #80848e;
+            font-size: 13px;
+            color: #94a3b8;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .channel-item:hover .channel-name {
-            color: #dbdee1;
+            color: #e2e8f0;
         }
 
         .channel-item.unread::before {
@@ -1160,22 +1397,22 @@
             transform: translateY(-50%);
             width: 4px;
             height: 8px;
-            background: #fff;
+            background: #3b82f6;
             border-radius: 0 4px 4px 0;
         }
 
         .channel-item.unread .channel-name {
-            color: #f2f3f5;
+            color: #ffffff;
             font-weight: 500;
         }
 
         .channel-badge {
-            min-width: 16px;
-            height: 16px;
+            min-width: 14px;
+            height: 14px;
             padding: 0 4px;
-            background: #f23f43;
-            border-radius: 8px;
-            font-size: 12px;
+            background: #ef4444;
+            border-radius: 7px;
+            font-size: 10px;
             font-weight: 700;
             color: #fff;
             display: flex;
@@ -1187,9 +1424,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 0 8px;
+            padding: 0 12px;
             height: 52px;
-            background: #232428;
+            background: #0a0d14;
+            border-top: 1px solid rgba(30, 58, 138, 0.2);
         }
 
         .user-panel-avatar {
@@ -1201,18 +1439,27 @@
             justify-content: center;
             font-size: 12px;
             font-weight: 700;
-            color: #fff;
+            color: #ffffff;
             position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .user-panel-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .user-panel-avatar .status-indicator {
             position: absolute;
             bottom: -2px;
             right: -2px;
-            width: 14px;
-            height: 14px;
-            background: #23a559;
-            border: 3px solid #232428;
+            width: 12px;
+            height: 12px;
+            background: #22c55e;
+            border: 2px solid #0a0d14;
             border-radius: 50%;
         }
 
@@ -1222,18 +1469,34 @@
         }
 
         .user-panel-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #f2f3f5;
+            color: #ffffff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .user-panel-status {
-            font-size: 12px;
-            color: #949ba4;
+            font-size: 11px;
+            color: #64748b;
         }
+
+        .user-panel-role {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            display: inline-block;
+        }
+
+        .user-panel-role.owner { background: var(--role-owner); color: #000; }
+        .user-panel-role.admin { background: var(--role-admin); color: #fff; }
+        .user-panel-role.editor { background: var(--role-editor); color: #fff; }
+        .user-panel-role.client { background: var(--role-client); color: #fff; }
 
         .user-panel-actions {
             display: flex;
@@ -1241,8 +1504,8 @@
         }
 
         .user-panel-btn {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             background: transparent;
             border: none;
             border-radius: 4px;
@@ -1250,23 +1513,27 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: all 0.15s ease;
         }
 
         .user-panel-btn:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(59, 130, 246, 0.15);
         }
 
         .user-panel-btn svg {
-            width: 20px;
-            height: 20px;
-            color: #b5bac1;
+            width: 18px;
+            height: 18px;
+            color: #64748b;
+        }
+
+        .user-panel-btn:hover svg {
+            color: #94a3b8;
         }
 
         /* Project Cards in Chat (for clients) */
         .project-cards-section {
             padding: 8px;
-            background: #2b2d31;
+            background: #0f1219;
         }
 
         .project-cards-section.hidden {
@@ -3483,34 +3750,60 @@
                     </div>
                 </div>
 
-                <div class="channel-sidebar">
-                    <div class="channel-category" id="textChannels">
-                        <div class="channel-category-header">
-                            <div class="channel-category-title" onclick="toggleCategory('textChannels')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                                Text Channels
+                <!-- Chat layout: channels on left, messages on right -->
+                <div class="chat-layout">
+                    <!-- Channel list sidebar -->
+                    <div class="channel-sidebar">
+                        <div class="channel-category" id="textChannels">
+                            <div class="channel-category-header">
+                                <div class="channel-category-title" onclick="toggleCategory('textChannels')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                                    Text Channels
+                                </div>
+                                <div class="channel-category-add admin-only hidden" onclick="createNewChannel()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                </div>
                             </div>
-                            <div class="channel-category-add admin-only hidden">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            </div>
-                        </div>
-                        <div class="channel-list">
-                            <div class="channel-item active">
-                                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                <span class="channel-name">general</span>
-                            </div>
-                            <div class="channel-item unread">
-                                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                <span class="channel-name">project-updates</span>
-                                <span class="channel-badge">2</span>
-                            </div>
-                            <div class="channel-item">
-                                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                <span class="channel-name">feedback</span>
+                            <div class="channel-list" id="channelList">
+                                <div class="channel-item active" data-channel="general" onclick="selectChannel('general')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                                    <span class="channel-name">general</span>
+                                </div>
+                                <div class="channel-item" data-channel="project-updates" onclick="selectChannel('project-updates')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                                    <span class="channel-name">project-updates</span>
+                                </div>
+                                <div class="channel-item" data-channel="feedback" onclick="selectChannel('feedback')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                                    <span class="channel-name">feedback</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Chat messages area -->
+                    <div class="chat-messages-area" id="chatMessagesArea">
+                        <div class="chat-messages-header">
+                            <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                            <span class="chat-messages-header-name" id="currentChannelName">general</span>
+                        </div>
+                        <div class="chat-messages-list" id="chatMessagesList">
+                            <!-- Messages will be rendered here -->
+                            <div class="chat-empty-state" id="chatEmptyState">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <div>Welcome to <strong>#general</strong></div>
+                                <div style="font-size: 13px; margin-top: 4px;">This is the start of the channel</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <div class="chat-input-wrapper">
+                                <input type="text" class="chat-input" id="chatInput" placeholder="Message #general" onkeypress="handleChatKeypress(event)">
+                                <button class="chat-send-btn" onclick="sendChatMessage()">Send</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="user-panel">
@@ -3520,7 +3813,7 @@
                     </div>
                     <div class="user-panel-info">
                         <div class="user-panel-name" id="chatUserName">Loading...</div>
-                        <div class="user-panel-status">Online</div>
+                        <span class="user-panel-role client" id="chatUserRole">Client</span>
                     </div>
                     <div class="user-panel-actions">
                         <button class="user-panel-btn" title="Mute">
@@ -4049,10 +4342,22 @@
             document.getElementById('userRoleLabel').textContent = role.charAt(0).toUpperCase() + role.slice(1);
             document.getElementById('userRoleLabel').className = `user-role-label ${role}`;
 
-            // Chat panel
+            // Chat panel user info
             document.getElementById('chatUserName').textContent = name;
-            document.getElementById('chatUserAvatar').textContent = initials;
-            document.getElementById('chatUserAvatar').style.background = `var(--role-${role})`;
+            const chatAvatarEl = document.getElementById('chatUserAvatar');
+
+            // Check for profile picture
+            if (currentUser.profilePic) {
+                chatAvatarEl.innerHTML = `<img src="${currentUser.profilePic}" alt="${name}"><span class="status-indicator"></span>`;
+            } else {
+                chatAvatarEl.innerHTML = `${initials}<span class="status-indicator"></span>`;
+                chatAvatarEl.style.background = `var(--role-${role})`;
+            }
+
+            // Update role badge
+            const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
+            document.getElementById('chatUserRole').textContent = roleLabel;
+            document.getElementById('chatUserRole').className = `user-panel-role ${role}`;
 
             // Welcome
             document.getElementById('welcomeTitle').textContent = `Welcome back, ${currentUser.firstName}!`;
@@ -4748,6 +5053,302 @@
         window.openProject = openProject;
         window.openClientPage = openClientPage;
         window.openProjectFromChat = openProjectFromChat;
+
+        // ==================== CHAT FUNCTIONALITY ====================
+        const API_BASE = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+            ? 'https://portalv2.contentbug.io'
+            : '';
+
+        let currentChannel = 'general';
+        let chatMessages = [];
+        let chatPollingInterval = null;
+
+        // Default channels (fallback when API not available)
+        const DEFAULT_CHANNELS = [
+            { channelId: 'general', name: 'general', type: 'text', unreadCount: 0 },
+            { channelId: 'project-updates', name: 'project-updates', type: 'text', unreadCount: 0 },
+            { channelId: 'feedback', name: 'feedback', type: 'text', unreadCount: 0 }
+        ];
+
+        // Demo messages for local testing
+        const DEMO_MESSAGES = {
+            'general': [
+                { id: 1, senderName: 'Sean Conley', senderRole: 'owner', content: 'Welcome to the Content Bug team chat! 🎉', createdAt: new Date(Date.now() - 3600000).toISOString(), senderAvatar: null },
+                { id: 2, senderName: 'Alex Editor', senderRole: 'editor', content: 'Hey everyone! Ready to crush some edits today.', createdAt: new Date(Date.now() - 1800000).toISOString(), senderAvatar: null },
+                { id: 3, senderName: 'System', senderRole: 'system', content: 'New team member Jake Martinez has joined the portal.', createdAt: new Date(Date.now() - 900000).toISOString(), senderAvatar: null }
+            ],
+            'project-updates': [
+                { id: 4, senderName: 'Alex Editor', senderRole: 'editor', content: 'Just finished the Product Launch Video for Jake - ready for review!', createdAt: new Date(Date.now() - 7200000).toISOString(), senderAvatar: null },
+                { id: 5, senderName: 'Mike Chen', senderRole: 'editor', content: 'Course Promo for Sarah is approved and delivered. Great feedback!', createdAt: new Date(Date.now() - 3600000).toISOString(), senderAvatar: null }
+            ],
+            'feedback': [
+                { id: 6, senderName: 'Jake Martinez', senderRole: 'client', content: 'The last edit was amazing! Love the transitions.', createdAt: new Date(Date.now() - 86400000).toISOString(), senderAvatar: null }
+            ]
+        };
+
+        // Select a channel
+        function selectChannel(channelId) {
+            console.log('[Chat] Selecting channel:', channelId);
+            currentChannel = channelId;
+
+            // Update active state in UI
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.channel === channelId) {
+                    item.classList.add('active');
+                    item.classList.remove('unread');
+                    // Remove badge if exists
+                    const badge = item.querySelector('.channel-badge');
+                    if (badge) badge.remove();
+                }
+            });
+
+            // Update header
+            document.getElementById('currentChannelName').textContent = channelId;
+            document.getElementById('chatInput').placeholder = `Message #${channelId}`;
+
+            // Update empty state channel name
+            const emptyState = document.getElementById('chatEmptyState');
+            if (emptyState) {
+                emptyState.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <div>Welcome to <strong>#${channelId}</strong></div>
+                    <div style="font-size: 13px; margin-top: 4px;">This is the start of the channel</div>
+                `;
+            }
+
+            // Load messages
+            loadChannelMessages(channelId);
+        }
+
+        // Load messages for a channel
+        async function loadChannelMessages(channelId) {
+            const listEl = document.getElementById('chatMessagesList');
+            const emptyEl = document.getElementById('chatEmptyState');
+
+            // Show loading state
+            listEl.innerHTML = `
+                <div class="chat-loading">
+                    <div class="chat-loading-spinner"></div>
+                    Loading messages...
+                </div>
+            `;
+
+            try {
+                // Try to fetch from API
+                const response = await fetch(`${API_BASE}/api/chat/channels/${channelId}/messages`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    chatMessages = data.messages || [];
+                    renderMessages(chatMessages);
+                } else {
+                    // Fallback to demo messages
+                    console.log('[Chat] API not available, using demo messages');
+                    chatMessages = DEMO_MESSAGES[channelId] || [];
+                    renderMessages(chatMessages);
+                }
+            } catch (err) {
+                console.log('[Chat] Error loading messages, using demo:', err);
+                chatMessages = DEMO_MESSAGES[channelId] || [];
+                renderMessages(chatMessages);
+            }
+        }
+
+        // Render messages to the chat list
+        function renderMessages(messages) {
+            const listEl = document.getElementById('chatMessagesList');
+
+            if (!messages || messages.length === 0) {
+                listEl.innerHTML = `
+                    <div class="chat-empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <div>Welcome to <strong>#${currentChannel}</strong></div>
+                        <div style="font-size: 13px; margin-top: 4px;">This is the start of the channel</div>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = messages.map(msg => {
+                const initials = msg.senderName ? msg.senderName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+                const role = msg.senderRole || 'client';
+                const time = formatMessageTime(msg.createdAt);
+                const isSystem = role === 'system';
+
+                const avatarContent = msg.senderAvatar
+                    ? `<img src="${msg.senderAvatar}" alt="${msg.senderName}">`
+                    : initials;
+
+                return `
+                    <div class="chat-message ${isSystem ? 'system' : ''}">
+                        <div class="chat-message-avatar" style="background: var(--role-${role})">
+                            ${avatarContent}
+                        </div>
+                        <div class="chat-message-content">
+                            <div class="chat-message-header">
+                                <span class="chat-message-author">${msg.senderName || 'Unknown'}</span>
+                                <span class="chat-message-role ${role}">${role}</span>
+                                <span class="chat-message-time">${time}</span>
+                            </div>
+                            <div class="chat-message-text">${escapeHtml(msg.content)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Scroll to bottom
+            listEl.scrollTop = listEl.scrollHeight;
+        }
+
+        // Format message time
+        function formatMessageTime(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Handle Enter key in chat input
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        // Send a chat message
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+
+            if (!content) return;
+
+            const sendBtn = document.querySelector('.chat-send-btn');
+            sendBtn.disabled = true;
+
+            try {
+                // Try to send via API
+                const response = await fetch(`${API_BASE}/api/chat/channels/${currentChannel}/messages`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (response.ok) {
+                    input.value = '';
+                    // Reload messages to show the new one
+                    loadChannelMessages(currentChannel);
+                } else {
+                    // Fallback: Add message locally
+                    addLocalMessage(content);
+                    input.value = '';
+                }
+            } catch (err) {
+                console.log('[Chat] Error sending message, adding locally:', err);
+                addLocalMessage(content);
+                input.value = '';
+            }
+
+            sendBtn.disabled = false;
+            input.focus();
+        }
+
+        // Add message locally (for demo/offline mode)
+        function addLocalMessage(content) {
+            const newMessage = {
+                id: Date.now(),
+                senderName: currentUser.name,
+                senderRole: currentUser.role,
+                senderAvatar: currentUser.profilePic,
+                content: content,
+                createdAt: new Date().toISOString()
+            };
+
+            chatMessages.push(newMessage);
+            renderMessages(chatMessages);
+
+            // Also update demo messages for persistence in session
+            if (!DEMO_MESSAGES[currentChannel]) {
+                DEMO_MESSAGES[currentChannel] = [];
+            }
+            DEMO_MESSAGES[currentChannel].push(newMessage);
+        }
+
+        // Create a new channel (admin only)
+        function createNewChannel() {
+            const name = prompt('Enter channel name:');
+            if (!name) return;
+
+            const channelId = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+            // Add to channel list
+            const channelList = document.getElementById('channelList');
+            const newChannelHtml = `
+                <div class="channel-item" data-channel="${channelId}" onclick="selectChannel('${channelId}')">
+                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
+                    <span class="channel-name">${name}</span>
+                </div>
+            `;
+            channelList.insertAdjacentHTML('beforeend', newChannelHtml);
+
+            // Initialize empty messages for the channel
+            DEMO_MESSAGES[channelId] = [];
+
+            // Select the new channel
+            selectChannel(channelId);
+        }
+
+        // Initialize chat on page load
+        function initChat() {
+            // Select default channel
+            selectChannel('general');
+        }
+
+        // Expose chat functions
+        window.selectChannel = selectChannel;
+        window.handleChatKeypress = handleChatKeypress;
+        window.sendChatMessage = sendChatMessage;
+        window.createNewChannel = createNewChannel;
+
+        // Initialize chat when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initChat);
+        } else {
+            // DOM already loaded, init immediately
+            setTimeout(initChat, 100);
+        }
+
         // ==================== PROFILE SETTINGS ====================
         function openProfileSettings() {
             const modal = document.getElementById('profileModal');
