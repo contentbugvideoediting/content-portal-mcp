@@ -615,8 +615,7 @@ app.post('/auth/request-code', authRequestLimiter, authEmailLimiter, async (req,
       ExpiresAt: expiresAt,
       Attempts: 0,
       Used: false,
-      UserType: userType,
-      UserRecordID: userRecordId,
+      UserRecordID: userRecordId || '',
       CreatedAt: new Date().toISOString()
     });
 
