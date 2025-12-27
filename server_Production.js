@@ -680,9 +680,18 @@ app.post('/auth/request-code', authRequestLimiter, authEmailLimiter, async (req,
             {
               type: 'Email',
               contactId: contactId,
-              message: `Your secure Content Bug login code is: <strong>${otp}</strong>\n\nThis code expires in 10 minutes.\n\nIf you didn't request this code, please ignore this email.`,
-              subject: 'Your Content Bug Login Code',
-              emailFrom: 'Content Bug <noreply@contentbug.io>'
+              html: `<div style="font-family: Inter, -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                  <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="Content Bug" style="height: 50px;">
+                </div>
+                <h2 style="color: #ffffff; text-align: center; margin-bottom: 20px;">Your Login Code</h2>
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); border-radius: 12px; padding: 30px; text-align: center; margin: 20px 0;">
+                  <span style="font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: 8px;">${otp}</span>
+                </div>
+                <p style="color: #94a3b8; text-align: center; font-size: 14px; margin-top: 20px;">This code expires in 10 minutes.</p>
+                <p style="color: #64748b; text-align: center; font-size: 12px; margin-top: 30px;">If you didn't request this code, please ignore this email.</p>
+              </div>`,
+              subject: 'Your Content Bug Login Code'
             },
             {
               headers: {
@@ -696,6 +705,43 @@ app.post('/auth/request-code', authRequestLimiter, authEmailLimiter, async (req,
           emailSent = true;
           deliveryMethod = 'ghl_api';
           console.log(`[OTP] Email sent via GHL API to ${normalizedEmail}`);
+
+          // Also try to send SMS if contact has phone number
+          try {
+            const contactRes = await axios.get(
+              `${GHL_API_URL}/contacts/${contactId}`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${GHL_API_KEY}`,
+                  'Version': '2021-07-28'
+                },
+                timeout: 10000
+              }
+            );
+
+            if (contactRes?.data?.contact?.phone) {
+              await axios.post(
+                `${GHL_API_URL}/conversations/messages`,
+                {
+                  type: 'SMS',
+                  contactId: contactId,
+                  message: `Your Content Bug login code is: ${otp}\n\nThis code expires in 10 minutes.`
+                },
+                {
+                  headers: {
+                    'Authorization': `Bearer ${GHL_API_KEY}`,
+                    'Version': '2021-07-28',
+                    'Content-Type': 'application/json'
+                  },
+                  timeout: 15000
+                }
+              );
+              deliveryMethod = 'ghl_api_email_sms';
+              console.log(`[OTP] SMS also sent via GHL API to contact ${contactId}`);
+            }
+          } catch (smsErr) {
+            console.warn('[OTP] SMS send failed (email still sent):', smsErr.response?.data?.message || smsErr.message);
+          }
         }
       } catch (e) {
         console.warn('[OTP] GHL API email failed:', e.response?.data || e.message);
