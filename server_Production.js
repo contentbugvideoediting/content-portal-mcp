@@ -4857,6 +4857,160 @@ app.delete('/api/zoom/meeting/:id', requireAuth(['admin', 'owner']), async (req,
   }
 });
 
+// Zoom Webhook Secret Token (for validating incoming webhooks)
+const ZOOM_WEBHOOK_SECRET_TOKEN = process.env.ZOOM_WEBHOOK_SECRET_TOKEN || '';
+
+// POST /api/zoom/webhook - Handle Zoom webhook events
+app.post('/api/zoom/webhook', async (req, res) => {
+  try {
+    const event = req.body;
+
+    console.log('[Zoom Webhook] Received event:', event.event || 'validation');
+
+    // Handle endpoint validation (CRC challenge)
+    if (event.event === 'endpoint.url_validation') {
+      const hashForValidate = crypto
+        .createHmac('sha256', ZOOM_WEBHOOK_SECRET_TOKEN)
+        .update(event.payload.plainToken)
+        .digest('hex');
+
+      console.log('[Zoom Webhook] Responding to validation challenge');
+
+      return res.json({
+        plainToken: event.payload.plainToken,
+        encryptedToken: hashForValidate
+      });
+    }
+
+    // Verify webhook signature for real events
+    const signature = req.headers['x-zm-signature'];
+    const timestamp = req.headers['x-zm-request-timestamp'];
+
+    if (signature && timestamp && ZOOM_WEBHOOK_SECRET_TOKEN) {
+      const message = `v0:${timestamp}:${JSON.stringify(req.body)}`;
+      const expectedSig = 'v0=' + crypto
+        .createHmac('sha256', ZOOM_WEBHOOK_SECRET_TOKEN)
+        .update(message)
+        .digest('hex');
+
+      if (signature !== expectedSig) {
+        console.warn('[Zoom Webhook] Invalid signature');
+        return res.status(401).json({ error: 'invalid_signature' });
+      }
+    }
+
+    // Handle different event types
+    const eventType = event.event;
+    const payload = event.payload?.object || {};
+
+    switch (eventType) {
+      case 'meeting.started':
+        console.log(`[Zoom Webhook] Meeting started: ${payload.topic} (ID: ${payload.id})`);
+        // Log to Airtable
+        try {
+          await airtableCreate('MeetingEvents', {
+            'EventType': 'started',
+            'MeetingId': String(payload.id),
+            'Topic': payload.topic || '',
+            'HostEmail': payload.host_id || '',
+            'StartTime': payload.start_time || new Date().toISOString(),
+            'Timezone': payload.timezone || 'UTC'
+          });
+        } catch (e) { console.warn('[Zoom Webhook] Airtable log failed:', e.message); }
+        break;
+
+      case 'meeting.ended':
+        console.log(`[Zoom Webhook] Meeting ended: ${payload.topic} (ID: ${payload.id})`);
+        // Log to Airtable with duration
+        try {
+          await airtableCreate('MeetingEvents', {
+            'EventType': 'ended',
+            'MeetingId': String(payload.id),
+            'Topic': payload.topic || '',
+            'Duration': payload.duration || 0,
+            'EndTime': new Date().toISOString(),
+            'ParticipantCount': payload.participant_count || 0
+          });
+        } catch (e) { console.warn('[Zoom Webhook] Airtable log failed:', e.message); }
+
+        // Trigger GHL follow-up workflow
+        if (GHL_WEBHOOK_URL) {
+          try {
+            await axios.post(GHL_WEBHOOK_URL, {
+              type: 'zoom_meeting_ended',
+              meetingId: payload.id,
+              topic: payload.topic,
+              duration: payload.duration,
+              participantCount: payload.participant_count
+            });
+          } catch (e) { console.warn('[Zoom Webhook] GHL trigger failed:', e.message); }
+        }
+        break;
+
+      case 'meeting.participant_joined':
+        console.log(`[Zoom Webhook] Participant joined: ${payload.participant?.user_name} -> ${payload.topic}`);
+        try {
+          await airtableCreate('MeetingEvents', {
+            'EventType': 'participant_joined',
+            'MeetingId': String(payload.id),
+            'ParticipantName': payload.participant?.user_name || '',
+            'ParticipantEmail': payload.participant?.email || '',
+            'JoinTime': new Date().toISOString()
+          });
+        } catch (e) { console.warn('[Zoom Webhook] Airtable log failed:', e.message); }
+        break;
+
+      case 'meeting.participant_left':
+        console.log(`[Zoom Webhook] Participant left: ${payload.participant?.user_name}`);
+        try {
+          await airtableCreate('MeetingEvents', {
+            'EventType': 'participant_left',
+            'MeetingId': String(payload.id),
+            'ParticipantName': payload.participant?.user_name || '',
+            'ParticipantEmail': payload.participant?.email || '',
+            'LeaveTime': new Date().toISOString()
+          });
+        } catch (e) { console.warn('[Zoom Webhook] Airtable log failed:', e.message); }
+        break;
+
+      case 'recording.completed':
+        console.log(`[Zoom Webhook] Recording completed: ${payload.topic} (ID: ${payload.id})`);
+        // Log recording info
+        try {
+          const recordings = payload.recording_files || [];
+          for (const rec of recordings) {
+            await airtableCreate('MeetingRecordings', {
+              'MeetingId': String(payload.id),
+              'Topic': payload.topic || '',
+              'RecordingType': rec.recording_type || '',
+              'FileType': rec.file_type || '',
+              'FileSize': rec.file_size || 0,
+              'DownloadUrl': rec.download_url || '',
+              'PlayUrl': rec.play_url || '',
+              'RecordingStart': rec.recording_start || '',
+              'RecordingEnd': rec.recording_end || ''
+            });
+          }
+        } catch (e) { console.warn('[Zoom Webhook] Recording log failed:', e.message); }
+        break;
+
+      case 'recording.transcript_completed':
+        console.log(`[Zoom Webhook] Transcript completed for meeting ${payload.id}`);
+        break;
+
+      default:
+        console.log(`[Zoom Webhook] Unhandled event type: ${eventType}`);
+    }
+
+    // Always respond 200 to acknowledge receipt
+    return res.json({ received: true });
+
+  } catch (err) {
+    console.error('[Zoom Webhook] Error:', err);
+    return res.status(500).json({ error: 'webhook_error', message: err.message });
+  }
+});
+
 // ============================================
 // START SERVER
 // ============================================
