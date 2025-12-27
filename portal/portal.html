@@ -5258,65 +5258,188 @@
             }
         }
 
-        // Show join meeting form
-        function showJoinMeetingForm() {
+        // Meeting room state
+        let upcomingMeetings = [];
+        let isCreatingMeeting = false;
+
+        // Show meetings dashboard (no manual ID entry!)
+        function showMeetingsDashboard() {
             const mainVideo = document.getElementById('mainVideo');
+            const isAdmin = ['admin', 'owner', 'editor'].includes(currentUser?.role);
+
             if (mainVideo) {
                 mainVideo.innerHTML = `
-                    <div class="video-placeholder" style="max-width: 400px;">
+                    <div class="video-placeholder" style="max-width: 600px; text-align: center;">
                         <div class="video-avatar">
                             <svg viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
                                 <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z"/>
                                 <rect x="3" y="6" width="12" height="12" rx="2"/>
                             </svg>
                         </div>
-                        <div class="video-name">Join Zoom Meeting</div>
-                        <div class="video-status" style="margin-bottom: 20px;">Enter your meeting details below</div>
+                        <div class="video-name">Content Bug Meetings</div>
 
-                        <div style="width: 100%; text-align: left;">
-                            <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px;">Meeting ID *</label>
-                            <input type="text" id="zoomMeetingId" placeholder="123 456 7890"
-                                style="width: 100%; padding: 12px 14px; background: var(--bg-base); border: 1px solid var(--border-default); border-radius: 8px; color: var(--text-primary); font-size: 15px; margin-bottom: 16px;"
-                            />
-
-                            <label style="display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px;">Password (if required)</label>
-                            <input type="text" id="zoomMeetingPassword" placeholder="Optional"
-                                style="width: 100%; padding: 12px 14px; background: var(--bg-base); border: 1px solid var(--border-default); border-radius: 8px; color: var(--text-primary); font-size: 15px; margin-bottom: 20px;"
-                            />
-
-                            <button onclick="handleJoinMeeting()"
-                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                                Join Meeting
+                        ${isAdmin ? `
+                        <div style="margin: 24px 0;">
+                            <button onclick="startInstantMeeting()" id="instantMeetingBtn"
+                                style="padding: 16px 32px; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                    <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z"/>
+                                    <rect x="3" y="6" width="12" height="12" rx="2"/>
+                                </svg>
+                                Start Instant Meeting
                             </button>
+                        </div>
+                        ` : ''}
+
+                        <div id="upcomingMeetingsSection" style="margin-top: 24px; text-align: left;">
+                            <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                                Upcoming Meetings
+                            </div>
+                            <div id="meetingsList" style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="color: var(--text-muted); padding: 16px; text-align: center;">Loading...</div>
+                            </div>
                         </div>
                     </div>
                 `;
 
-                // Focus on meeting ID input
-                setTimeout(() => {
-                    document.getElementById('zoomMeetingId')?.focus();
-                }, 100);
+                // Load upcoming meetings
+                loadUpcomingMeetings();
             }
         }
 
-        // Handle join meeting button click
-        function handleJoinMeeting() {
-            const meetingId = document.getElementById('zoomMeetingId')?.value?.replace(/\s/g, '');
-            const password = document.getElementById('zoomMeetingPassword')?.value || '';
+        // Load upcoming meetings from API
+        async function loadUpcomingMeetings() {
+            const meetingsList = document.getElementById('meetingsList');
+            if (!meetingsList) return;
 
-            if (!meetingId) {
-                alert('Please enter a meeting ID');
-                return;
+            try {
+                const response = await fetch(\`\${API_BASE}/api/zoom/meetings\`, {
+                    headers: {
+                        'Authorization': \`Bearer \${localStorage.getItem('cb_auth_token')}\`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load meetings');
+
+                const data = await response.json();
+                upcomingMeetings = data.meetings || [];
+
+                if (upcomingMeetings.length === 0) {
+                    meetingsList.innerHTML = \`
+                        <div style="color: var(--text-muted); padding: 24px; text-align: center; background: var(--bg-surface); border-radius: 12px; border: 1px solid var(--border-subtle);">
+                            No upcoming meetings scheduled
+                        </div>
+                    \`;
+                    return;
+                }
+
+                meetingsList.innerHTML = upcomingMeetings.map(m => \`
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--bg-surface); border-radius: 12px; border: 1px solid var(--border-subtle);">
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary);">\${m.topic}</div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                                \${m.startTime ? new Date(m.startTime).toLocaleString() : 'Instant Meeting'} • \${m.duration} min
+                            </div>
+                        </div>
+                        <button onclick="joinMeetingById('\${m.id}')"
+                            style="padding: 10px 20px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            Join
+                        </button>
+                    </div>
+                \`).join('');
+
+            } catch (err) {
+                console.error('[Meetings] Load error:', err);
+                meetingsList.innerHTML = \`
+                    <div style="color: var(--text-muted); padding: 24px; text-align: center; background: var(--bg-surface); border-radius: 12px;">
+                        No meetings available
+                    </div>
+                \`;
+            }
+        }
+
+        // Start an instant meeting (one click!)
+        async function startInstantMeeting() {
+            if (isCreatingMeeting) return;
+            isCreatingMeeting = true;
+
+            const btn = document.getElementById('instantMeetingBtn');
+            if (btn) {
+                btn.innerHTML = \`
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" class="spin">
+                        <circle cx="12" cy="12" r="10" opacity="0.3"/>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                    </svg>
+                    Creating Meeting...
+                \`;
+                btn.disabled = true;
             }
 
-            joinZoomMeeting(meetingId, password);
+            try {
+                const response = await fetch(\`\${API_BASE}/api/zoom/create-meeting\`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': \`Bearer \${localStorage.getItem('cb_auth_token')}\`
+                    },
+                    body: JSON.stringify({
+                        topic: \`Content Bug Meeting - \${new Date().toLocaleDateString()}\`
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to create meeting');
+
+                const data = await response.json();
+                console.log('[Meetings] Created:', data.meeting);
+
+                // Join the meeting immediately
+                joinZoomMeeting(data.meeting.id, data.meeting.password);
+
+            } catch (err) {
+                console.error('[Meetings] Create error:', err);
+                alert('Failed to create meeting: ' + err.message);
+
+                if (btn) {
+                    btn.innerHTML = \`
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z"/>
+                            <rect x="3" y="6" width="12" height="12" rx="2"/>
+                        </svg>
+                        Start Instant Meeting
+                    \`;
+                    btn.disabled = false;
+                }
+            }
+
+            isCreatingMeeting = false;
+        }
+
+        // Join meeting by ID (used for scheduled meetings)
+        async function joinMeetingById(meetingId) {
+            try {
+                // Get meeting details to get password
+                const response = await fetch(\`\${API_BASE}/api/zoom/meeting/\${meetingId}\`, {
+                    headers: {
+                        'Authorization': \`Bearer \${localStorage.getItem('cb_auth_token')}\`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    joinZoomMeeting(meetingId, data.meeting?.password || '');
+                } else {
+                    joinZoomMeeting(meetingId, '');
+                }
+            } catch (err) {
+                joinZoomMeeting(meetingId, '');
+            }
         }
 
         // Override the existing openMeetingModal function
         const originalOpenMeetingModal = openMeetingModal;
         openMeetingModal = function() {
             document.getElementById('meetingModal').classList.add('visible');
-            showJoinMeetingForm();
+            showMeetingsDashboard();
         };
 
         // Override closeMeetingModal to also leave Zoom
@@ -5389,8 +5512,10 @@
         // Expose functions
         window.joinZoomMeeting = joinZoomMeeting;
         window.leaveZoomMeeting = leaveZoomMeeting;
-        window.showJoinMeetingForm = showJoinMeetingForm;
-        window.handleJoinMeeting = handleJoinMeeting;
+        window.showMeetingsDashboard = showMeetingsDashboard;
+        window.startInstantMeeting = startInstantMeeting;
+        window.joinMeetingById = joinMeetingById;
+        window.loadUpcomingMeetings = loadUpcomingMeetings;
     </script>
 </body>
 </html>
