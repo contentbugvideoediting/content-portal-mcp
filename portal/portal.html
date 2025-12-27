@@ -1693,14 +1693,14 @@
             50% { opacity: 0.5; transform: translateY(-50%) scale(1.2); }
         }
 
-        /* ==================== MEETING MODAL (ZOOM-STYLE) ==================== */
+        /* ==================== MEETING ROOM (ZOOM-STYLE) ==================== */
         .meeting-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: #0a0a0f;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            align-items: stretch;
+            justify-content: stretch;
             z-index: 2000;
             opacity: 0;
             visibility: hidden;
@@ -1712,188 +1712,357 @@
             visibility: visible;
         }
 
-        .meeting-container {
-            background: #1a1a1a;
-            border-radius: 16px;
-            width: 95%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow: hidden;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+        .meeting-room {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a0f;
         }
 
-        .meeting-header {
+        .meeting-room-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: #242424;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 24px;
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(8, 8, 12, 0.92) 100%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
         }
 
-        .meeting-title {
-            font-size: 16px;
+        .meeting-room-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .meeting-room-title {
+            font-size: 15px;
             font-weight: 600;
             color: #fff;
         }
 
-        .meeting-status {
+        .meeting-room-timer {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 13px;
-            color: #949ba4;
-        }
-
-        .meeting-status-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
-            border-radius: 50%;
-        }
-
-        .meeting-close {
-            width: 36px;
-            height: 36px;
-            background: rgba(255,255,255,0.1);
-            border: none;
+            padding: 6px 12px;
+            background: rgba(34, 197, 94, 0.15);
             border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #22c55e;
+        }
+
+        .meeting-room-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meeting-quality {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .quality-bars {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+        }
+
+        .quality-bars span {
+            width: 3px;
+            background: #22c55e;
+            border-radius: 1px;
+        }
+
+        .quality-bars span:nth-child(1) { height: 4px; }
+        .quality-bars span:nth-child(2) { height: 7px; }
+        .quality-bars span:nth-child(3) { height: 10px; }
+        .quality-bars span:nth-child(4) { height: 13px; }
+
+        .meeting-room-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
             color: #fff;
-            transition: all 0.15s ease;
-        }
-
-        .meeting-close:hover {
-            background: rgba(239,68,68,0.3);
-        }
-
-        .meeting-close svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .meeting-body {
-            padding: 32px;
-        }
-
-        .meeting-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .meeting-option {
-            background: #242424;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 24px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
+        }
+
+        .meeting-room-btn:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .meeting-room-btn.end-call {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .meeting-room-btn.end-call:hover {
+            background: #dc2626;
+        }
+
+        .meeting-room-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Video Grid */
+        .meeting-video-grid {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 16px;
+            position: relative;
+        }
+
+        .meeting-video-main {
+            flex: 1;
+            background: #111118;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .video-placeholder {
             text-align: center;
         }
 
-        .meeting-option:hover {
-            background: #2a2a2a;
-            border-color: var(--accent-blue);
-        }
-
-        .meeting-option.selected {
-            border-color: var(--accent-blue);
-            background: rgba(59,130,246,0.1);
-        }
-
-        .meeting-option-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 16px;
-            background: var(--accent-blue-soft);
-            border-radius: 12px;
+        .video-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 42px;
+            font-weight: 700;
+            color: #fff;
         }
 
-        .meeting-option-icon svg {
-            width: 24px;
-            height: 24px;
-            color: var(--accent-blue);
+        .video-avatar.small {
+            width: 60px;
+            height: 60px;
+            font-size: 18px;
+            margin: 0;
         }
 
-        .meeting-option-title {
-            font-size: 16px;
+        .video-name {
+            font-size: 18px;
             font-weight: 600;
             color: #fff;
             margin-bottom: 8px;
         }
 
-        .meeting-option-desc {
-            font-size: 13px;
-            color: #949ba4;
-            line-height: 1.5;
+        .video-status {
+            font-size: 14px;
+            color: #64748b;
         }
 
-        .meeting-calendar-embed {
-            background: #242424;
-            border-radius: 12px;
-            padding: 24px;
-            min-height: 400px;
+        .video-controls-overlay {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
         }
 
-        .meeting-calendar-embed iframe {
-            width: 100%;
-            height: 400px;
-            border: none;
+        .speaker-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(34, 197, 94, 0.2);
             border-radius: 8px;
+            color: #22c55e;
         }
 
-        .meeting-actions {
+        /* Self Video */
+        .meeting-video-self {
+            position: absolute;
+            top: 36px;
+            right: 36px;
+            width: 180px;
+            height: 120px;
+            background: #1a1a24;
+            border-radius: 12px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .self-video-label {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(0,0,0,0.6);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .self-video-muted {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: #ef4444;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        /* Participants Strip */
+        .meeting-participants-strip {
             display: flex;
             gap: 12px;
-            justify-content: center;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 0;
         }
 
-        .meeting-btn {
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
+        .participant-thumb {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
+        }
+
+        .participant-thumb:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+        }
+
+        .participant-thumb span {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Meeting Controls Bar */
+        .meeting-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background: #111118;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .meeting-controls-left,
+        .meeting-controls-center,
+        .meeting-controls-right {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .meeting-btn.primary {
-            background: var(--accent-blue);
-            border: none;
+        .meeting-control-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .meeting-control-btn:hover {
+            background: rgba(255,255,255,0.1);
             color: #fff;
         }
 
-        .meeting-btn.primary:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
+        .meeting-control-btn.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
         }
 
-        .meeting-btn.secondary {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
+        .meeting-control-btn.muted {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #ef4444;
         }
 
-        .meeting-btn.secondary:hover {
-            background: rgba(255,255,255,0.05);
+        .meeting-control-btn svg {
+            width: 22px;
+            height: 22px;
         }
 
-        .meeting-btn svg {
-            width: 18px;
+        .control-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            min-width: 18px;
             height: 18px;
+            background: var(--accent-blue);
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .end-call-btn {
+            background: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: #fff !important;
+        }
+
+        .end-call-btn:hover {
+            background: #dc2626 !important;
         }
 
         /* ==================== ROLE SWITCHER ==================== */
@@ -3051,63 +3220,169 @@
         </div>
     </div>
 
-    <!-- Meeting Modal (Zoom-Style) -->
+    <!-- Meeting Modal (Zoom-Style Video Call Interface) -->
     <div class="meeting-modal" id="meetingModal">
-        <div class="meeting-container">
-            <div class="meeting-header">
-                <div class="meeting-title">Schedule a Meeting</div>
-                <div class="meeting-status">
-                    <span class="meeting-status-dot"></span>
-                    Connected
-                </div>
-                <button class="meeting-close" onclick="closeMeetingModal()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="meeting-body">
-                <!-- Meeting Options -->
-                <div class="meeting-options">
-                    <div class="meeting-option selected" onclick="selectMeetingType('schedule')">
-                        <div class="meeting-option-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                <line x1="16" y1="2" x2="16" y2="6"/>
-                                <line x1="8" y1="2" x2="8" y2="6"/>
-                                <line x1="3" y1="10" x2="21" y2="10"/>
-                            </svg>
-                        </div>
-                        <div class="meeting-option-title">Schedule Meeting</div>
-                        <div class="meeting-option-desc">Pick a time from the calendar to book a call with the team</div>
-                    </div>
-                    <div class="meeting-option" onclick="selectMeetingType('instant')">
-                        <div class="meeting-option-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                            </svg>
-                        </div>
-                        <div class="meeting-option-title">Start Instant Call</div>
-                        <div class="meeting-option-desc">Jump into a video call right now with available team members</div>
+        <div class="meeting-room">
+            <!-- Meeting Header -->
+            <div class="meeting-room-header">
+                <div class="meeting-room-info">
+                    <div class="meeting-room-title">Content Bug Meeting Room</div>
+                    <div class="meeting-room-timer" id="meetingTimer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span id="meetingTimerDisplay">00:00</span>
                     </div>
                 </div>
-
-                <!-- GHL Calendar Embed -->
-                <div class="meeting-calendar-embed" id="meetingCalendarEmbed">
-                    <iframe src="https://links.contentbug.io/widget/booking/jMEjaEOpcdbZDvcQFXGY" scrolling="no" id="calendarFrame"></iframe>
-                </div>
-
-                <!-- Meeting Actions -->
-                <div class="meeting-actions">
-                    <button class="meeting-btn secondary" onclick="closeMeetingModal()">Cancel</button>
-                    <button class="meeting-btn primary" onclick="confirmMeeting()">
+                <div class="meeting-room-actions">
+                    <div class="meeting-quality">
+                        <div class="quality-bars">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                        <span>HD</span>
+                    </div>
+                    <button class="meeting-room-btn" onclick="toggleMeetingFullscreen()" title="Fullscreen">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                            <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                        </svg>
+                    </button>
+                    <button class="meeting-room-btn end-call" onclick="closeMeetingModal()" title="Leave Meeting">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                        Leave
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Grid -->
+            <div class="meeting-video-grid">
+                <!-- Main Video (Active Speaker) -->
+                <div class="meeting-video-main" id="mainVideo">
+                    <div class="video-placeholder">
+                        <div class="video-avatar">
+                            <span>CB</span>
+                        </div>
+                        <div class="video-name">Content Bug Team</div>
+                        <div class="video-status">Waiting for participants...</div>
+                    </div>
+                    <div class="video-controls-overlay">
+                        <div class="speaker-indicator">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Self View (Small) -->
+                <div class="meeting-video-self" id="selfVideo">
+                    <div class="video-placeholder self">
+                        <div class="video-avatar small">
+                            <span id="selfVideoInitials">You</span>
+                        </div>
+                    </div>
+                    <div class="self-video-label">You</div>
+                    <div class="self-video-muted" id="selfMutedIndicator" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                            <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V5a3 3 0 0 0-5.94-.6"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Participants Strip -->
+                <div class="meeting-participants-strip" id="participantsStrip">
+                    <div class="participant-thumb waiting">
+                        <div class="participant-avatar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <span>Invite Others</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meeting Controls Bar -->
+            <div class="meeting-controls-bar">
+                <div class="meeting-controls-left">
+                    <button class="meeting-control-btn" id="btnMic" onclick="toggleMeetingMic()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="micIcon">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                        <span>Mute</span>
+                    </button>
+                    <button class="meeting-control-btn" id="btnVideo" onclick="toggleMeetingVideo()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="videoIcon">
                             <polygon points="23 7 16 12 23 17 23 7"/>
                             <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
                         </svg>
-                        Continue
+                        <span>Video</span>
+                    </button>
+                    <button class="meeting-control-btn" onclick="toggleMeetingScreen()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                        <span>Share</span>
+                    </button>
+                </div>
+
+                <div class="meeting-controls-center">
+                    <button class="meeting-control-btn active" onclick="toggleMeetingChat()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>Chat</span>
+                        <span class="control-badge">2</span>
+                    </button>
+                    <button class="meeting-control-btn" onclick="toggleMeetingParticipants()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        <span>People</span>
+                        <span class="control-badge">1</span>
+                    </button>
+                    <button class="meeting-control-btn" onclick="toggleMeetingReactions()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                        <span>React</span>
+                    </button>
+                </div>
+
+                <div class="meeting-controls-right">
+                    <button class="meeting-control-btn" onclick="openMeetingSettings()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        <span>Settings</span>
+                    </button>
+                    <button class="meeting-control-btn end-call-btn" onclick="closeMeetingModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                        <span>End</span>
                     </button>
                 </div>
             </div>
@@ -3655,46 +3930,108 @@
             }, 2000);
         }
 
-        // ==================== MEETING MODAL ====================
-        let selectedMeetingType = 'schedule';
+        // ==================== MEETING ROOM (ZOOM-STYLE) ====================
+        let meetingTimerInterval = null;
+        let meetingSeconds = 0;
+        let isMicMuted = false;
+        let isVideoOff = false;
 
         function openMeetingModal() {
             document.getElementById('meetingModal').classList.add('visible');
+            startMeetingTimer();
         }
 
         function closeMeetingModal() {
             document.getElementById('meetingModal').classList.remove('visible');
+            stopMeetingTimer();
         }
 
-        function selectMeetingType(type) {
-            selectedMeetingType = type;
+        function startMeetingTimer() {
+            meetingSeconds = 0;
+            updateMeetingTimerDisplay();
+            meetingTimerInterval = setInterval(() => {
+                meetingSeconds++;
+                updateMeetingTimerDisplay();
+            }, 1000);
+        }
 
-            // Update UI
-            document.querySelectorAll('.meeting-option').forEach(opt => opt.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+        function stopMeetingTimer() {
+            if (meetingTimerInterval) {
+                clearInterval(meetingTimerInterval);
+                meetingTimerInterval = null;
+            }
+            meetingSeconds = 0;
+        }
 
-            // Show/hide calendar based on type
-            const calendarEmbed = document.getElementById('meetingCalendarEmbed');
-            if (type === 'schedule') {
-                calendarEmbed.style.display = 'block';
-                document.querySelector('.meeting-title').textContent = 'Schedule a Meeting';
+        function updateMeetingTimerDisplay() {
+            const mins = Math.floor(meetingSeconds / 60).toString().padStart(2, '0');
+            const secs = (meetingSeconds % 60).toString().padStart(2, '0');
+            const display = document.getElementById('meetingTimerDisplay');
+            if (display) display.textContent = `${mins}:${secs}`;
+        }
+
+        function toggleMeetingMic() {
+            isMicMuted = !isMicMuted;
+            const btn = document.getElementById('btnMic');
+            const indicator = document.getElementById('selfMutedIndicator');
+            if (isMicMuted) {
+                btn.classList.add('muted');
+                btn.querySelector('span').textContent = 'Unmute';
+                if (indicator) indicator.style.display = 'flex';
             } else {
-                calendarEmbed.style.display = 'none';
-                document.querySelector('.meeting-title').textContent = 'Start Instant Call';
+                btn.classList.remove('muted');
+                btn.querySelector('span').textContent = 'Mute';
+                if (indicator) indicator.style.display = 'none';
             }
         }
 
-        function confirmMeeting() {
-            if (selectedMeetingType === 'instant') {
-                // Start instant call - would integrate with GHL or video service
-                console.log('Starting instant call...');
-                alert('Starting video call... (Would open video interface)');
-                closeMeetingModal();
+        function toggleMeetingVideo() {
+            isVideoOff = !isVideoOff;
+            const btn = document.getElementById('btnVideo');
+            if (isVideoOff) {
+                btn.classList.add('muted');
+                btn.querySelector('span').textContent = 'Start Video';
             } else {
-                // Schedule - calendar handles this
-                console.log('Meeting scheduled via calendar embed');
+                btn.classList.remove('muted');
+                btn.querySelector('span').textContent = 'Video';
             }
         }
+
+        function toggleMeetingScreen() {
+            console.log('Screen share toggled');
+            // Would integrate with screen share API
+        }
+
+        function toggleMeetingChat() {
+            const btn = event.currentTarget;
+            btn.classList.toggle('active');
+        }
+
+        function toggleMeetingParticipants() {
+            const btn = event.currentTarget;
+            btn.classList.toggle('active');
+        }
+
+        function toggleMeetingReactions() {
+            console.log('Reactions panel toggled');
+        }
+
+        function openMeetingSettings() {
+            console.log('Meeting settings opened');
+        }
+
+        function toggleMeetingFullscreen() {
+            const modal = document.getElementById('meetingModal');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                modal.requestFullscreen();
+            }
+        }
+
+        // Legacy function stubs for compatibility
+        function selectMeetingType(type) {}
+        function confirmMeeting() {}
 
         // Hook up the settings button in chat panel to open settings
         document.querySelector('.user-panel-btn[title="Settings"]')?.addEventListener('click', openChatSettings);
@@ -3884,8 +4221,14 @@
         window.copyInviteLink = copyInviteLink;
         window.openMeetingModal = openMeetingModal;
         window.closeMeetingModal = closeMeetingModal;
-        window.selectMeetingType = selectMeetingType;
-        window.confirmMeeting = confirmMeeting;
+        window.toggleMeetingMic = toggleMeetingMic;
+        window.toggleMeetingVideo = toggleMeetingVideo;
+        window.toggleMeetingScreen = toggleMeetingScreen;
+        window.toggleMeetingChat = toggleMeetingChat;
+        window.toggleMeetingParticipants = toggleMeetingParticipants;
+        window.toggleMeetingReactions = toggleMeetingReactions;
+        window.openMeetingSettings = openMeetingSettings;
+        window.toggleMeetingFullscreen = toggleMeetingFullscreen;
         window.openProfileSettings = openProfileSettings;
         window.closeProfileSettings = closeProfileSettings;
         window.changeProfilePic = changeProfilePic;
