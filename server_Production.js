@@ -4557,36 +4557,96 @@ app.get('/api/team/stats', requireAuth(['admin', 'owner']), async (req, res) => 
 });
 
 // ============================================
-// ZOOM MEETING SDK INTEGRATION
+// ZOOM INTEGRATION (SDK + Server-to-Server API)
 // ============================================
-const ZOOM_CLIENT_ID = process.env.ZOOM_CLIENT_ID || 'neGOqCPSRUe9Z2taRkRU3A';
-const ZOOM_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET || 'IOCtmZ37Td7sMyIXxr0wWYWTL6q8133b';
+
+// Meeting SDK credentials (for embedding meetings in portal)
+const ZOOM_SDK_CLIENT_ID = process.env.ZOOM_SDK_CLIENT_ID || 'neGOqCPSRUe9Z2taRkRU3A';
+const ZOOM_SDK_CLIENT_SECRET = process.env.ZOOM_SDK_CLIENT_SECRET || 'IOCtmZ37Td7sMyIXxr0wWYWTL6q8133b';
+
+// Server-to-Server OAuth credentials (for API access - create meetings, recordings, etc.)
+const ZOOM_S2S_ACCOUNT_ID = process.env.ZOOM_S2S_ACCOUNT_ID || 'грRxnFg8QnKOzхCrF_хP7w';
+const ZOOM_S2S_CLIENT_ID = process.env.ZOOM_S2S_CLIENT_ID || 'Da0ubYM3QrSpY1ZHjSOtlg';
+const ZOOM_S2S_CLIENT_SECRET = process.env.ZOOM_S2S_CLIENT_SECRET || 'хуJfh9Vgb6401Qqc3hmВuS00naIHZs7j';
+
+// Cache for S2S access token
+let zoomS2SToken = null;
+let zoomS2STokenExpiry = 0;
+
+// Get Server-to-Server OAuth access token
+async function getZoomS2SToken() {
+  // Return cached token if still valid (with 5 min buffer)
+  if (zoomS2SToken && Date.now() < zoomS2STokenExpiry - 300000) {
+    return zoomS2SToken;
+  }
+
+  try {
+    const credentials = Buffer.from(`${ZOOM_S2S_CLIENT_ID}:${ZOOM_S2S_CLIENT_SECRET}`).toString('base64');
+
+    const response = await axios.post(
+      'https://zoom.us/oauth/token',
+      `grant_type=account_credentials&account_id=${ZOOM_S2S_ACCOUNT_ID}`,
+      {
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+    );
+
+    zoomS2SToken = response.data.access_token;
+    zoomS2STokenExpiry = Date.now() + (response.data.expires_in * 1000);
+
+    console.log('[Zoom] S2S token obtained, expires in', response.data.expires_in, 'seconds');
+    return zoomS2SToken;
+  } catch (err) {
+    console.error('[Zoom] S2S token error:', err.response?.data || err.message);
+    throw new Error('Failed to get Zoom access token');
+  }
+}
+
+// Make authenticated Zoom API request
+async function zoomApiRequest(method, endpoint, data = null) {
+  const token = await getZoomS2SToken();
+
+  const config = {
+    method,
+    url: `https://api.zoom.us/v2${endpoint}`,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  if (data) {
+    config.data = data;
+  }
+
+  const response = await axios(config);
+  return response.data;
+}
 
 // Generate Zoom Meeting SDK signature for joining meetings
-// Reference: https://developers.zoom.us/docs/meeting-sdk/auth/
 function generateZoomSignature(meetingNumber, role) {
   const iat = Math.floor(Date.now() / 1000) - 30;
   const exp = iat + 60 * 60 * 2; // 2 hours expiration
 
   const oHeader = { alg: 'HS256', typ: 'JWT' };
   const oPayload = {
-    sdkKey: ZOOM_CLIENT_ID,
-    appKey: ZOOM_CLIENT_ID,
+    sdkKey: ZOOM_SDK_CLIENT_ID,
+    appKey: ZOOM_SDK_CLIENT_ID,
     mn: String(meetingNumber).replace(/\s/g, ''),
-    role: role, // 0 = attendee, 1 = host
+    role: role,
     iat: iat,
     exp: exp,
     tokenExp: exp
   };
 
-  // Base64url encode header and payload
   const base64Header = Buffer.from(JSON.stringify(oHeader)).toString('base64url');
   const base64Payload = Buffer.from(JSON.stringify(oPayload)).toString('base64url');
-
-  // Create signature
   const message = `${base64Header}.${base64Payload}`;
   const signature = crypto
-    .createHmac('sha256', ZOOM_CLIENT_SECRET)
+    .createHmac('sha256', ZOOM_SDK_CLIENT_SECRET)
     .update(message)
     .digest('base64url');
 
@@ -4602,10 +4662,7 @@ app.post('/api/zoom/signature', requireAuth(), async (req, res) => {
       return res.status(400).json({ error: 'meeting_number_required', message: 'Meeting number is required' });
     }
 
-    // Validate role (0 = attendee, 1 = host)
     const meetingRole = [0, 1].includes(Number(role)) ? Number(role) : 0;
-
-    // Generate the signature
     const signature = generateZoomSignature(meetingNumber, meetingRole);
 
     console.log(`[Zoom] Generated signature for meeting ${meetingNumber} (role: ${meetingRole}) by ${req.user.email}`);
@@ -4613,7 +4670,7 @@ app.post('/api/zoom/signature', requireAuth(), async (req, res) => {
     return res.json({
       success: true,
       signature,
-      sdkKey: ZOOM_CLIENT_ID,
+      sdkKey: ZOOM_SDK_CLIENT_ID,
       meetingNumber: String(meetingNumber).replace(/\s/g, '')
     });
   } catch (err) {
@@ -4625,21 +4682,179 @@ app.post('/api/zoom/signature', requireAuth(), async (req, res) => {
 // GET /api/zoom/status - Check Zoom integration status
 app.get('/api/zoom/status', (req, res) => {
   res.json({
-    enabled: !!(ZOOM_CLIENT_ID && ZOOM_CLIENT_SECRET),
-    sdkKey: ZOOM_CLIENT_ID ? ZOOM_CLIENT_ID.substring(0, 8) + '...' : null
+    sdkEnabled: !!(ZOOM_SDK_CLIENT_ID && ZOOM_SDK_CLIENT_SECRET),
+    apiEnabled: !!(ZOOM_S2S_ACCOUNT_ID && ZOOM_S2S_CLIENT_ID && ZOOM_S2S_CLIENT_SECRET),
+    sdkKey: ZOOM_SDK_CLIENT_ID ? ZOOM_SDK_CLIENT_ID.substring(0, 8) + '...' : null
   });
 });
 
-// POST /api/zoom/create-meeting - Create a new Zoom meeting (requires OAuth - placeholder)
-// Note: Creating meetings requires OAuth flow, not just SDK credentials
-// For now, meetings should be created in Zoom and join link shared
-app.post('/api/zoom/create-meeting', requireAuth(['admin', 'owner']), async (req, res) => {
-  // This would require OAuth access token flow
-  // For MVP, admins create meetings in Zoom and share the meeting number
-  return res.status(501).json({
-    error: 'not_implemented',
-    message: 'Meeting creation requires Zoom OAuth integration. For now, create meetings in Zoom and enter the meeting number to join.'
-  });
+// POST /api/zoom/create-meeting - Create a new Zoom meeting
+app.post('/api/zoom/create-meeting', requireAuth(['admin', 'owner', 'editor']), async (req, res) => {
+  try {
+    const {
+      topic = 'Content Bug Meeting',
+      duration = 60,
+      startTime = null, // ISO string, null = instant meeting
+      agenda = '',
+      clientId = null,
+      projectId = null
+    } = req.body;
+
+    // Build meeting settings
+    const meetingData = {
+      topic,
+      type: startTime ? 2 : 1, // 1 = instant, 2 = scheduled
+      duration,
+      agenda,
+      settings: {
+        host_video: true,
+        participant_video: true,
+        join_before_host: false,
+        mute_upon_entry: true,
+        waiting_room: true,
+        audio: 'both',
+        auto_recording: 'cloud'
+      }
+    };
+
+    if (startTime) {
+      meetingData.start_time = startTime;
+      meetingData.timezone = 'America/Denver'; // Content Bug timezone
+    }
+
+    // Create meeting via Zoom API
+    const meeting = await zoomApiRequest('POST', '/users/me/meetings', meetingData);
+
+    console.log(`[Zoom] Created meeting ${meeting.id} by ${req.user.email}`);
+
+    // Log to Airtable if we have client/project context
+    if (clientId || projectId) {
+      try {
+        await airtableCreate('Meetings', {
+          'MeetingId': String(meeting.id),
+          'Topic': topic,
+          'JoinUrl': meeting.join_url,
+          'StartUrl': meeting.start_url,
+          'Password': meeting.password,
+          'Duration': duration,
+          'ScheduledAt': startTime || new Date().toISOString(),
+          'CreatedBy': req.user.email,
+          'ClientId': clientId || '',
+          'ProjectId': projectId || '',
+          'Status': 'scheduled'
+        });
+      } catch (airtableErr) {
+        console.warn('[Zoom] Failed to log meeting to Airtable:', airtableErr.message);
+      }
+    }
+
+    return res.json({
+      success: true,
+      meeting: {
+        id: meeting.id,
+        topic: meeting.topic,
+        joinUrl: meeting.join_url,
+        startUrl: meeting.start_url,
+        password: meeting.password,
+        duration: meeting.duration
+      }
+    });
+  } catch (err) {
+    console.error('[Zoom] Create meeting error:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'create_failed', message: err.response?.data?.message || err.message });
+  }
+});
+
+// GET /api/zoom/meetings - List upcoming meetings
+app.get('/api/zoom/meetings', requireAuth(['admin', 'owner', 'editor']), async (req, res) => {
+  try {
+    const meetings = await zoomApiRequest('GET', '/users/me/meetings?type=upcoming&page_size=30');
+
+    return res.json({
+      success: true,
+      meetings: meetings.meetings.map(m => ({
+        id: m.id,
+        topic: m.topic,
+        startTime: m.start_time,
+        duration: m.duration,
+        joinUrl: m.join_url,
+        timezone: m.timezone
+      }))
+    });
+  } catch (err) {
+    console.error('[Zoom] List meetings error:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'list_failed', message: err.message });
+  }
+});
+
+// GET /api/zoom/recordings - Get cloud recordings
+app.get('/api/zoom/recordings', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const fromDate = from || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const toDate = to || new Date().toISOString().split('T')[0];
+
+    const recordings = await zoomApiRequest('GET', `/users/me/recordings?from=${fromDate}&to=${toDate}`);
+
+    return res.json({
+      success: true,
+      recordings: recordings.meetings?.map(m => ({
+        id: m.id,
+        topic: m.topic,
+        startTime: m.start_time,
+        duration: m.duration,
+        recordingFiles: m.recording_files?.map(f => ({
+          id: f.id,
+          type: f.recording_type,
+          fileType: f.file_type,
+          fileSize: f.file_size,
+          downloadUrl: f.download_url,
+          playUrl: f.play_url
+        })) || []
+      })) || []
+    });
+  } catch (err) {
+    console.error('[Zoom] Get recordings error:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'recordings_failed', message: err.message });
+  }
+});
+
+// GET /api/zoom/meeting/:id - Get meeting details
+app.get('/api/zoom/meeting/:id', requireAuth(), async (req, res) => {
+  try {
+    const meeting = await zoomApiRequest('GET', `/meetings/${req.params.id}`);
+
+    return res.json({
+      success: true,
+      meeting: {
+        id: meeting.id,
+        topic: meeting.topic,
+        status: meeting.status,
+        startTime: meeting.start_time,
+        duration: meeting.duration,
+        joinUrl: meeting.join_url,
+        password: meeting.password,
+        hostEmail: meeting.host_email
+      }
+    });
+  } catch (err) {
+    console.error('[Zoom] Get meeting error:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'get_failed', message: err.message });
+  }
+});
+
+// DELETE /api/zoom/meeting/:id - Delete a meeting
+app.delete('/api/zoom/meeting/:id', requireAuth(['admin', 'owner']), async (req, res) => {
+  try {
+    await zoomApiRequest('DELETE', `/meetings/${req.params.id}`);
+
+    console.log(`[Zoom] Deleted meeting ${req.params.id} by ${req.user.email}`);
+
+    return res.json({ success: true, message: 'Meeting deleted' });
+  } catch (err) {
+    console.error('[Zoom] Delete meeting error:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'delete_failed', message: err.message });
+  }
 });
 
 // ============================================
