@@ -784,6 +784,363 @@
         .stat-change.positive { color: var(--accent-green); }
         .stat-change.negative { color: var(--accent-red); }
 
+        /* ==================== DASHBOARD CARDS GRID ==================== */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        /* Announcements Card */
+        .announcement-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .announcement-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);
+        }
+
+        .announcement-card-header svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-orange);
+        }
+
+        .announcement-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .announcement-list {
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .announcement-item {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: background 0.15s ease;
+        }
+
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+
+        .announcement-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .announcement-item.pinned {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .announcement-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .announcement-pin {
+            color: var(--accent-orange);
+        }
+
+        .announcement-pin svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .announcement-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .announcement-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .announcement-text a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .announcement-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Recent Updates Card */
+        .updates-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .updates-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+        }
+
+        .updates-card-header svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-blue);
+        }
+
+        .updates-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .updates-list {
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .update-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .update-item:last-child {
+            border-bottom: none;
+        }
+
+        .update-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .update-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .update-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .update-icon.review {
+            background: var(--accent-purple-soft);
+            color: var(--accent-purple);
+        }
+
+        .update-icon.approved {
+            background: var(--accent-green-soft);
+            color: var(--accent-green);
+        }
+
+        .update-icon.active {
+            background: var(--accent-blue-soft);
+            color: var(--accent-blue);
+        }
+
+        .update-icon.revision {
+            background: var(--accent-orange-soft);
+            color: var(--accent-orange);
+        }
+
+        .update-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .update-project {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .update-message {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .update-time {
+            font-size: 11px;
+            color: var(--text-faint);
+            flex-shrink: 0;
+        }
+
+        /* Mini Pipeline Card */
+        .pipeline-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pipeline-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+
+        .pipeline-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, transparent 100%);
+        }
+
+        .pipeline-card-header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .pipeline-card-header svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-green);
+        }
+
+        .pipeline-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .pipeline-expand-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pipeline-expand-hint svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .pipeline-mini-columns {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            padding: var(--space-md);
+            background: var(--bg-base);
+        }
+
+        .pipeline-mini-column {
+            background: var(--bg-surface);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            min-height: 120px;
+        }
+
+        .pipeline-mini-header {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pipeline-mini-count {
+            background: var(--bg-hover);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 9px;
+        }
+
+        .pipeline-mini-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: var(--space-sm);
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .pipeline-mini-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+
+        .pipeline-mini-card-name {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pipeline-mini-card-client {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .pipeline-mini-empty {
+            font-size: 10px;
+            color: var(--text-faint);
+            text-align: center;
+            padding: var(--space-md);
+        }
+
+        /* Responsive dashboard cards */
+        @media (max-width: 1200px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            .pipeline-card {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            .pipeline-card {
+                grid-column: span 1;
+            }
+            .pipeline-mini-columns {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
         /* Project Board */
         .project-board {
             background: var(--bg-elevated);
@@ -3692,6 +4049,60 @@
                         </div>
                     </div>
 
+                    <!-- Dashboard Cards: Announcements, Updates, Mini Pipeline -->
+                    <div class="dashboard-cards">
+                        <!-- Announcements Card -->
+                        <div class="announcement-card">
+                            <div class="announcement-card-header">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                                <span class="announcement-card-title">Announcements</span>
+                            </div>
+                            <div class="announcement-list" id="announcementList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Updates Card -->
+                        <div class="updates-card">
+                            <div class="updates-card-header">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span class="updates-card-title">Recent Updates</span>
+                            </div>
+                            <div class="updates-list" id="updatesList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Mini Pipeline Preview -->
+                        <div class="pipeline-card" onclick="openProjectsSection()">
+                            <div class="pipeline-card-header">
+                                <div class="pipeline-card-header-left">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                    </svg>
+                                    <span class="pipeline-card-title">Project Pipeline</span>
+                                </div>
+                                <div class="pipeline-expand-hint">
+                                    Click to expand
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="pipeline-mini-columns" id="miniPipelineColumns">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Project Board -->
                     <div class="project-board">
                         <div class="board-header">
@@ -4655,7 +5066,260 @@
             initNavigation();
             initRoleSwitcher();
             renderProjectCards();
+            renderDashboardCards(); // New dashboard cards
         }
+
+        // ==================== DASHBOARD CARDS ====================
+
+        // Utility: escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Demo announcements data
+        const DEMO_ANNOUNCEMENTS = [
+            {
+                id: 1,
+                pinned: true,
+                date: new Date(Date.now() - 86400000).toISOString(),
+                text: '🎄 Holiday hours: Our team will be available Dec 26-30 with limited capacity. <a href="#">Learn more</a>'
+            },
+            {
+                id: 2,
+                pinned: false,
+                date: new Date(Date.now() - 172800000).toISOString(),
+                text: 'New feature: You can now leave timestamped comments directly on your videos during review!'
+            },
+            {
+                id: 3,
+                pinned: false,
+                date: new Date(Date.now() - 604800000).toISOString(),
+                text: 'Turnaround times are back to normal. Thank you for your patience during our busy season.'
+            }
+        ];
+
+        // Demo recent updates data
+        const DEMO_UPDATES = [
+            {
+                id: 1,
+                projectId: 101,
+                projectName: 'Product Launch Video',
+                status: 'review',
+                message: 'Ready for your review',
+                time: new Date(Date.now() - 1800000).toISOString()
+            },
+            {
+                id: 2,
+                projectId: 102,
+                projectName: 'Instagram Reel #12',
+                status: 'active',
+                message: 'Editor started working',
+                time: new Date(Date.now() - 7200000).toISOString()
+            },
+            {
+                id: 3,
+                projectId: 105,
+                projectName: 'YouTube Intro',
+                status: 'approved',
+                message: 'Approved and ready to download',
+                time: new Date(Date.now() - 14400000).toISOString()
+            },
+            {
+                id: 4,
+                projectId: 106,
+                projectName: 'TikTok Series Ep. 3',
+                status: 'revision',
+                message: 'Revision submitted',
+                time: new Date(Date.now() - 28800000).toISOString()
+            }
+        ];
+
+        function renderDashboardCards() {
+            renderAnnouncements();
+            renderRecentUpdates();
+            renderMiniPipeline();
+        }
+
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementList');
+            if (!container) return;
+
+            if (DEMO_ANNOUNCEMENTS.length === 0) {
+                container.innerHTML = '<div class="pipeline-mini-empty">No announcements</div>';
+                return;
+            }
+
+            container.innerHTML = DEMO_ANNOUNCEMENTS.map(ann => `
+                <div class="announcement-item ${ann.pinned ? 'pinned' : ''}">
+                    <div class="announcement-meta">
+                        ${ann.pinned ? '<span class="announcement-pin"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></span>' : ''}
+                        <span class="announcement-date">${formatRelativeTime(ann.date)}</span>
+                    </div>
+                    <div class="announcement-text">${ann.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderRecentUpdates() {
+            const container = document.getElementById('updatesList');
+            if (!container) return;
+
+            if (DEMO_UPDATES.length === 0) {
+                container.innerHTML = '<div class="pipeline-mini-empty">No recent updates</div>';
+                return;
+            }
+
+            const icons = {
+                review: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+                active: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>',
+                approved: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                revision: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+            };
+
+            container.innerHTML = DEMO_UPDATES.map(update => `
+                <div class="update-item" onclick="openProjectFromUpdate(${update.projectId}, '${update.status}')">
+                    <div class="update-icon ${update.status}">
+                        ${icons[update.status] || icons.active}
+                    </div>
+                    <div class="update-content">
+                        <div class="update-project">${escapeHtml(update.projectName)}</div>
+                        <div class="update-message">${escapeHtml(update.message)}</div>
+                    </div>
+                    <div class="update-time">${formatRelativeTime(update.time)}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderMiniPipeline() {
+            const container = document.getElementById('miniPipelineColumns');
+            if (!container) return;
+
+            // Get projects from demo data (or API in future)
+            const allProjects = [];
+            DEMO_CLIENTS.forEach(client => {
+                if (client.projects) {
+                    client.projects.forEach(p => {
+                        allProjects.push({
+                            ...p,
+                            clientName: client.name,
+                            clientInitials: client.initials
+                        });
+                    });
+                }
+            });
+
+            const columns = [
+                { key: 'queue', label: 'Queue' },
+                { key: 'active', label: 'Active' },
+                { key: 'review', label: 'Review' },
+                { key: 'revisions', label: 'Revisions' },
+                { key: 'approved', label: 'Done' }
+            ];
+
+            container.innerHTML = columns.map(col => {
+                const projects = allProjects.filter(p => p.status === col.key).slice(0, 3); // Max 3 per column
+                const count = allProjects.filter(p => p.status === col.key).length;
+
+                return `
+                    <div class="pipeline-mini-column">
+                        <div class="pipeline-mini-header">
+                            ${col.label}
+                            <span class="pipeline-mini-count">${count}</span>
+                        </div>
+                        ${projects.length > 0 ? projects.map(p => `
+                            <div class="pipeline-mini-card" onclick="event.stopPropagation(); openProjectFromPipeline(${p.id}, '${p.status}')">
+                                <div class="pipeline-mini-card-name">${escapeHtml(p.name)}</div>
+                                <div class="pipeline-mini-card-client">${escapeHtml(p.clientName)}</div>
+                            </div>
+                        `).join('') : '<div class="pipeline-mini-empty">Empty</div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatRelativeTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = now - date;
+
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        function openProjectsSection() {
+            // Navigate to projects section in sidebar
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            const projectsNav = document.querySelector('.nav-item[data-page="projects"]');
+            if (projectsNav) {
+                projectsNav.classList.add('active');
+                projectsNav.click();
+            }
+            // Scroll to project board
+            document.querySelector('.project-board')?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openProjectFromUpdate(projectId, status) {
+            console.log('[Dashboard] Opening project from update:', projectId, status);
+
+            if (status === 'review') {
+                // Open in review mode (Frame.io style)
+                openProjectReview(projectId);
+            } else if (status === 'approved') {
+                // Go to approved section
+                document.querySelector('.nav-item[data-page="approved"]')?.click();
+            } else if (status === 'revision') {
+                // Go to revisions section
+                document.querySelector('.nav-item[data-page="revisions"]')?.click();
+            } else {
+                // Go to projects section and scroll to card
+                openProjectsSection();
+            }
+        }
+
+        function openProjectFromPipeline(projectId, status) {
+            console.log('[Dashboard] Opening project from mini pipeline:', projectId, status);
+            openProjectFromUpdate(projectId, status);
+        }
+
+        function openProjectReview(projectId) {
+            // Find the project
+            let project = null;
+            DEMO_CLIENTS.forEach(client => {
+                if (client.projects) {
+                    const found = client.projects.find(p => p.id === projectId);
+                    if (found) project = { ...found, clientName: client.name };
+                }
+            });
+
+            if (!project) {
+                console.warn('[Dashboard] Project not found:', projectId);
+                return;
+            }
+
+            // Open review modal (reusing existing review system)
+            if (typeof openReviewModal === 'function') {
+                openReviewModal(project);
+            } else {
+                // Fallback: navigate to review section
+                document.querySelector('.nav-item[data-page="review"]')?.click();
+            }
+        }
+
+        // Expose functions
+        window.openProjectsSection = openProjectsSection;
+        window.openProjectFromUpdate = openProjectFromUpdate;
+        window.openProjectFromPipeline = openProjectFromPipeline;
+        window.openProjectReview = openProjectReview;
 
         // ==================== USER DISPLAY ====================
         function updateUserDisplay() {
