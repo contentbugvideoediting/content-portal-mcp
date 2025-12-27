@@ -4858,7 +4858,7 @@ app.delete('/api/zoom/meeting/:id', requireAuth(['admin', 'owner']), async (req,
 });
 
 // Zoom Webhook Secret Token (for validating incoming webhooks)
-const ZOOM_WEBHOOK_SECRET_TOKEN = process.env.ZOOM_WEBHOOK_SECRET_TOKEN || '';
+const ZOOM_WEBHOOK_SECRET_TOKEN = process.env.ZOOM_WEBHOOK_SECRET_TOKEN || '2W9_jl6oT36Gaisjq3F9ZQ';
 
 // POST /api/zoom/webhook - Handle Zoom webhook events
 app.post('/api/zoom/webhook', async (req, res) => {
