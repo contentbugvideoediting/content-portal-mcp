@@ -608,7 +608,7 @@
 <body>
     <!-- Portal Navigation -->
     <nav class="portal-nav">
-        <a href="https://go.contentbug.io/dashboard" class="back-link">
+        <a href="https://portalv2.contentbug.io/dashboard" class="back-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back to Dashboard
         </a>
@@ -2135,7 +2135,7 @@
                 const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 const nextStepUrl = IS_LOCAL_DEMO
                     ? 'step-3.html?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName)
-                    : 'https://go.contentbug.io/submit-project?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName);
+                    : 'https://portalv2.contentbug.io/submit-project?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName);
 
                 setTimeout(() => {
                     window.location.href = nextStepUrl;

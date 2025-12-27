@@ -2470,7 +2470,7 @@
         <!-- ==================== TOP BAR ==================== -->
         <header class="top-bar">
             <div class="top-bar-left">
-                <a href="https://go.contentbug.io/portal" class="logo-link">
+                <a href="https://portalv2.contentbug.io/portal" class="logo-link">
                     <div class="logo-icon">
                         <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug">
                     </div>
@@ -2913,7 +2913,7 @@
                         </div>
                         <div class="invite-divider">or share link</div>
                         <div class="invite-link-box">
-                            <input type="text" class="invite-link-input" id="inviteLinkInput" readonly value="https://go.contentbug.io/join/abc123xyz">
+                            <input type="text" class="invite-link-input" id="inviteLinkInput" readonly value="https://portalv2.contentbug.io/join/abc123xyz">
                             <button class="copy-link-btn" onclick="copyInviteLink()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -3198,7 +3198,7 @@
 
             // Redirect to login if no user
             if (!currentUser.email && window.location.protocol !== 'file:') {
-                window.location.href = 'https://go.contentbug.io/login';
+                window.location.href = 'https://portalv2.contentbug.io/login';
                 return;
             }
         }
@@ -3526,7 +3526,7 @@
             localStorage.removeItem('cb_first_name');
             localStorage.removeItem('cb_role');
             localStorage.removeItem('cb_airtable_id');
-            window.location.href = 'https://go.contentbug.io/login';
+            window.location.href = 'https://portalv2.contentbug.io/login';
         }
 
         // ==================== PROJECT CARDS (ROLE-BASED VISIBILITY) ====================
@@ -3600,7 +3600,7 @@
             // Navigate to appropriate page based on status
             if (status === 'review') {
                 // Go to review page
-                window.location.href = `https://go.contentbug.io/review?project=${projectId}`;
+                window.location.href = `https://portalv2.contentbug.io/review?project=${projectId}`;
             } else if (status === 'approved') {
                 // Go to download/approved section
                 document.querySelector('.nav-item[data-page="approved"]')?.click();
@@ -3832,7 +3832,7 @@
 
             // Generate invite link
             const inviteCode = Math.random().toString(36).substring(2, 10);
-            const inviteLink = `https://go.contentbug.io/editor-signup?invite=${inviteCode}`;
+            const inviteLink = `https://portalv2.contentbug.io/editor-signup?invite=${inviteCode}`;
 
             console.log('Sending editor invite to:', email);
             console.log('Invite link:', inviteLink);
