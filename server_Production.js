@@ -705,43 +705,6 @@ app.post('/auth/request-code', authRequestLimiter, authEmailLimiter, async (req,
           emailSent = true;
           deliveryMethod = 'ghl_api';
           console.log(`[OTP] Email sent via GHL API to ${normalizedEmail}`);
-
-          // Also try to send SMS if contact has phone number
-          try {
-            const contactRes = await axios.get(
-              `${GHL_API_URL}/contacts/${contactId}`,
-              {
-                headers: {
-                  'Authorization': `Bearer ${GHL_API_KEY}`,
-                  'Version': '2021-07-28'
-                },
-                timeout: 10000
-              }
-            );
-
-            if (contactRes?.data?.contact?.phone) {
-              await axios.post(
-                `${GHL_API_URL}/conversations/messages`,
-                {
-                  type: 'SMS',
-                  contactId: contactId,
-                  message: `Your Content Bug login code is: ${otp}\n\nThis code expires in 10 minutes.`
-                },
-                {
-                  headers: {
-                    'Authorization': `Bearer ${GHL_API_KEY}`,
-                    'Version': '2021-07-28',
-                    'Content-Type': 'application/json'
-                  },
-                  timeout: 15000
-                }
-              );
-              deliveryMethod = 'ghl_api_email_sms';
-              console.log(`[OTP] SMS also sent via GHL API to contact ${contactId}`);
-            }
-          } catch (smsErr) {
-            console.warn('[OTP] SMS send failed (email still sent):', smsErr.response?.data?.message || smsErr.message);
-          }
         }
       } catch (e) {
         console.warn('[OTP] GHL API email failed:', e.response?.data || e.message);
