@@ -6111,6 +6111,22 @@
         });
 
         function loadUser() {
+            // Check for URL param override (for testing): ?user=sean or ?user=stockton
+            const urlParams = new URLSearchParams(window.location.search);
+            const userOverride = urlParams.get('user');
+
+            if (userOverride === 'sean') {
+                localStorage.setItem('cb_email', 'sean@contentbug.io');
+                localStorage.setItem('cb_name', 'Sean Conley');
+                localStorage.setItem('cb_first_name', 'Sean');
+                localStorage.setItem('cb_role', 'owner');
+            } else if (userOverride === 'stockton') {
+                localStorage.setItem('cb_email', 'stockton@contentbug.io');
+                localStorage.setItem('cb_name', 'Stockton Walbeck');
+                localStorage.setItem('cb_first_name', 'Stockton');
+                localStorage.setItem('cb_role', 'owner');
+            }
+
             // Get user from localStorage (set by login)
             const storedEmail = (localStorage.getItem('cb_email') || '').toLowerCase();
 
