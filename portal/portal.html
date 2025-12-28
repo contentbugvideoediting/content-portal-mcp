@@ -700,6 +700,188 @@
             height: 14px;
         }
 
+        /* ==================== DISCORD-STYLE CHANNEL NAVIGATION ==================== */
+        .discord-server-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .discord-server-header:hover {
+            background: var(--bg-hover);
+        }
+
+        .server-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .server-dropdown-arrow {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .discord-server-header.open .server-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .discord-channels {
+            padding: 8px 8px 16px 8px;
+        }
+
+        .channel-category {
+            margin-bottom: 4px;
+        }
+
+        .channel-category-header {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 8px 4px 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .channel-category-header:hover {
+            color: var(--text-primary);
+        }
+
+        .channel-category-header span {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .category-arrow {
+            width: 12px;
+            height: 12px;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .channel-category.collapsed .category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .channel-category.collapsed .channel-category-items {
+            display: none;
+        }
+
+        .channel-category-items {
+            padding-left: 0;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            margin: 1px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: var(--text-muted);
+        }
+
+        .channel-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .channel-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--text-primary);
+        }
+
+        .channel-item.active .channel-icon {
+            color: var(--accent-blue);
+        }
+
+        .channel-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            color: var(--text-muted);
+        }
+
+        .channel-name {
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .channel-badge {
+            background: var(--accent-red);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .channel-item.submit-project-btn {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(37, 99, 235, 0.3) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .channel-item.submit-project-btn:hover {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.5) 0%, rgba(37, 99, 235, 0.5) 100%);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #fff;
+        }
+
+        .channel-item.submit-project-btn .channel-icon {
+            color: var(--accent-blue);
+        }
+
+        .channel-item.coming-soon {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .channel-item.coming-soon:hover {
+            background: transparent;
+        }
+
+        .coming-soon-tag {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(100, 116, 139, 0.3);
+            color: var(--text-muted);
+        }
+
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: livePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
         /* Sub Navigation (expands under selected client OR shows for clients) */
         .sub-nav {
             margin-bottom: var(--space-xl);
@@ -1046,6 +1228,108 @@
 
         .project-card-tag.short { background: var(--accent-green-soft); color: var(--accent-green); }
         .project-card-tag.long { background: var(--accent-purple-soft); color: var(--accent-purple); }
+
+        /* ==================== APPROVED COLUMN & DOWNLOAD OPTIONS ==================== */
+        .approved-column {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, var(--bg-base) 100%);
+        }
+
+        .approved-expiry-note {
+            font-size: 10px;
+            color: var(--text-muted);
+            padding: 2px 6px;
+            background: rgba(100, 116, 139, 0.2);
+            border-radius: 4px;
+        }
+
+        .approved-card {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .project-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-xs);
+        }
+
+        .project-card-expiry {
+            font-size: 10px;
+            color: var(--accent-green);
+            padding: 2px 6px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 4px;
+        }
+
+        .project-card-client {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-md);
+        }
+
+        .project-card-download-options {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+        }
+
+        .download-btn:hover {
+            border-color: var(--border-default);
+            color: var(--text-primary);
+        }
+
+        .download-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .download-btn.local {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--accent-blue);
+        }
+
+        .download-btn.local:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .download-btn.dropbox {
+            background: rgba(0, 97, 254, 0.1);
+            border-color: rgba(0, 97, 254, 0.3);
+            color: #0061FE;
+        }
+
+        .download-btn.dropbox:hover {
+            background: rgba(0, 97, 254, 0.2);
+            border-color: rgba(0, 97, 254, 0.5);
+        }
+
+        .download-btn.gdrive {
+            background: rgba(66, 133, 244, 0.1);
+            border-color: rgba(66, 133, 244, 0.3);
+            color: #4285F4;
+        }
+
+        .download-btn.gdrive:hover {
+            background: rgba(66, 133, 244, 0.2);
+            border-color: rgba(66, 133, 244, 0.5);
+        }
 
         /* ==================== RIGHT CHAT PANEL (CONTENT BUG DARK THEME) ==================== */
         .chat-panel {
@@ -3896,9 +4180,17 @@
 
         <!-- ==================== MAIN BODY ==================== -->
         <div class="app-body">
-            <!-- ==================== LEFT SIDEBAR ==================== -->
+            <!-- ==================== LEFT SIDEBAR (Discord-Style) ==================== -->
             <aside class="sidebar" id="mainSidebar">
                 <div class="sidebar-scroll">
+                    <!-- Discord-Style Server Header -->
+                    <div class="discord-server-header" id="serverHeader">
+                        <span class="server-name" id="serverNameDisplay">Content Portal</span>
+                        <svg class="server-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+
                     <!-- Client List (Team Portal Only) -->
                     <div class="client-list hidden" id="clientList">
                         <div class="section-label">
@@ -3910,103 +4202,205 @@
                         </div>
                     </div>
 
-                    <!-- Sub Navigation (for Clients - their own nav) -->
-                    <div class="sub-nav" id="subNav">
-                        <!-- NEW REQUEST - Super prominent at top -->
-                        <div class="nav-item request-btn" data-page="request" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); border: none; color: #fff; margin-bottom: 12px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            <span>Submit Project</span>
+                    <!-- Discord-Style Channel Navigation -->
+                    <div class="discord-channels" id="discordChannels">
+
+                        <!-- CHAT Section -->
+                        <div class="channel-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('chatChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>CHAT</span>
+                            </div>
+                            <div class="channel-category-items" id="chatChannels">
+                                <div class="channel-item active" data-channel="general" onclick="selectDiscordChannel('general', 'chat')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/>
+                                    </svg>
+                                    <span class="channel-name" id="generalChannelName">general</span>
+                                </div>
+                                <div class="channel-item" data-channel="project-updates" onclick="selectDiscordChannel('project-updates', 'chat')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/>
+                                    </svg>
+                                    <span class="channel-name">project-updates</span>
+                                    <span class="channel-badge" id="projectUpdatesBadge" style="display: none;">0</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="nav-item active" data-page="dashboard">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            </svg>
-                            <span>Dashboard</span>
+                        <!-- PROJECTS Section -->
+                        <div class="channel-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('projectChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>PROJECTS</span>
+                            </div>
+                            <div class="channel-category-items" id="projectChannels">
+                                <div class="channel-item" data-channel="dashboard" onclick="selectDiscordChannel('dashboard', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    </svg>
+                                    <span class="channel-name">dashboard</span>
+                                </div>
+                                <div class="channel-item" data-channel="pipeline" onclick="selectDiscordChannel('pipeline', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <span class="channel-name">pipeline</span>
+                                    <span class="channel-badge" id="pipelineBadge">0</span>
+                                </div>
+                                <div class="channel-item submit-project-btn" data-channel="submit" onclick="selectDiscordChannel('submit', 'modal')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    <span class="channel-name">submit-project</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="nav-item" data-page="projects">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                            </svg>
-                            <span>Projects</span>
-                            <span class="nav-item-badge" id="projectCount">0</span>
+
+                        <!-- CREATE Section -->
+                        <div class="channel-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('createChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>CREATE</span>
+                            </div>
+                            <div class="channel-category-items" id="createChannels">
+                                <div class="channel-item" data-channel="style-blueprint" onclick="selectDiscordChannel('style-blueprint', 'create')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14 2 14 8 20 8"/>
+                                    </svg>
+                                    <span class="channel-name">style-blueprint</span>
+                                </div>
+                                <div class="channel-item" data-channel="thumbnail-blueprint" onclick="selectDiscordChannel('thumbnail-blueprint', 'create')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21 15 16 10 5 21"/>
+                                    </svg>
+                                    <span class="channel-name">thumbnail-blueprint</span>
+                                </div>
+                                <div class="channel-item coming-soon" data-channel="script-blueprint">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <line x1="16" y1="13" x2="8" y2="13"/>
+                                        <line x1="16" y1="17" x2="8" y2="17"/>
+                                    </svg>
+                                    <span class="channel-name">script-blueprint</span>
+                                    <span class="coming-soon-tag">Soon</span>
+                                </div>
+                                <div class="channel-item coming-soon" data-channel="post-blueprint">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                                    </svg>
+                                    <span class="channel-name">post-blueprint</span>
+                                    <span class="coming-soon-tag">Soon</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="nav-nested" id="projectsNested">
-                            <div class="nav-item" data-page="queue"><span>Queue</span> <span class="nav-item-badge">0</span></div>
-                            <div class="nav-item" data-page="active"><span>Active</span> <span class="nav-item-badge">0</span></div>
-                            <div class="nav-item" data-page="review"><span>Review</span> <span class="nav-item-badge urgent">0</span></div>
-                            <div class="nav-item" data-page="revisions"><span>Revisions</span></div>
-                            <div class="nav-item" data-page="approved"><span>Approved</span></div>
+
+                        <!-- STUDIO Section -->
+                        <div class="channel-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('studioChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>STUDIO</span>
+                            </div>
+                            <div class="channel-category-items" id="studioChannels">
+                                <div class="channel-item" data-channel="recording" onclick="selectDiscordChannel('recording', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                    <span class="channel-name">recording-studio</span>
+                                </div>
+                                <div class="channel-item" data-channel="meetings" onclick="openMeetingModal()">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    <span class="channel-name">meetings</span>
+                                    <span class="live-indicator"></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="nav-item" data-page="studio">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                            </svg>
-                            <span>Studio</span>
+
+                        <!-- STORAGE Section -->
+                        <div class="channel-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('storageChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>STORAGE</span>
+                            </div>
+                            <div class="channel-category-items" id="storageChannels">
+                                <div class="channel-item" data-channel="brand-assets" onclick="selectDiscordChannel('brand-assets', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <span class="channel-name">brand-assets</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="nav-item" data-page="storage">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                                <line x1="12" y1="11" x2="12" y2="17"/>
-                                <line x1="9" y1="14" x2="15" y2="14"/>
-                            </svg>
-                            <span>Storage</span>
-                        </div>
-                        <div class="nav-nested" id="storageNested">
-                            <div class="nav-item" data-page="style-blueprints"><span>Style Blueprints</span></div>
-                            <div class="nav-item" data-page="thumbnail-blueprints"><span>Thumbnail Blueprints</span></div>
-                            <div class="nav-item" data-page="brand-assets"><span>Brand Assets</span></div>
-                        </div>
-                        <div class="nav-item meeting-nav-item" data-page="meetings" onclick="openMeetingModal()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                            </svg>
-                            <span>Meetings</span>
-                            <span class="quick-meeting-dot"></span>
-                        </div>
+
                     </div>
 
                     <!-- Team Section (Admin/Owner Only) -->
                     <div class="team-section hidden" id="teamSection">
-                        <div class="section-label">Team</div>
-                        <div class="nav-item" data-page="editors">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                            Editors
-                            <span class="nav-item-badge">8</span>
-                        </div>
-                        <div class="nav-item" data-page="billing">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                                <line x1="1" y1="10" x2="23" y2="10"/>
-                            </svg>
-                            Billing & Slots
-                        </div>
-                        <div class="nav-item" data-page="chat" onclick="openFullChat()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
-                            Team Chat
-                            <span class="nav-item-badge" id="unreadChatBadge" style="display: none;">0</span>
-                        </div>
-                        <div class="nav-item" data-page="settings">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                            </svg>
-                            System Settings
+                        <div class="channel-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('teamChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>TEAM</span>
+                            </div>
+                            <div class="channel-category-items" id="teamChannels">
+                                <div class="channel-item" data-channel="editors" onclick="selectDiscordChannel('editors', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    <span class="channel-name">editors</span>
+                                    <span class="channel-badge">8</span>
+                                </div>
+                                <div class="channel-item" data-channel="billing" onclick="selectDiscordChannel('billing', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                        <line x1="1" y1="10" x2="23" y2="10"/>
+                                    </svg>
+                                    <span class="channel-name">billing</span>
+                                </div>
+                                <div class="channel-item" data-channel="team-chat" onclick="openFullChat()">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <span class="channel-name">team-chat</span>
+                                    <span class="channel-badge" id="unreadChatBadge" style="display: none;">0</span>
+                                </div>
+                                <div class="channel-item" data-channel="settings" onclick="selectDiscordChannel('settings', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                    </svg>
+                                    <span class="channel-name">settings</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -4094,14 +4488,46 @@
                                 </div>
                                 <div id="columnRevisions"></div>
                             </div>
-                            <div class="board-column">
+                            <div class="board-column approved-column">
                                 <div class="column-header">
                                     <div class="column-title">
                                         <span class="column-count">0</span>
                                         Approved
                                     </div>
+                                    <span class="approved-expiry-note">30-day retention</span>
                                 </div>
-                                <div id="columnApproved"></div>
+                                <div id="columnApproved">
+                                    <!-- Demo approved project with download options -->
+                                    <div class="project-card approved-card" data-project-id="201">
+                                        <div class="project-card-header">
+                                            <span class="project-card-title">Course Promo</span>
+                                            <span class="project-card-expiry">Expires in 28 days</span>
+                                        </div>
+                                        <div class="project-card-client">Sarah Chen</div>
+                                        <div class="project-card-download-options">
+                                            <button class="download-btn local" onclick="downloadProject(201, 'local')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                    <polyline points="7 10 12 15 17 10"/>
+                                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                                </svg>
+                                                Download
+                                            </button>
+                                            <button class="download-btn dropbox" onclick="downloadProject(201, 'dropbox')">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 6.5L6 10.25L12 14L6 17.75L0 14L6 10.25L0 6.5L6 2.75L12 6.5ZM6 19.25L12 15.5L18 19.25L12 23L6 19.25ZM12 14L18 10.25L12 6.5L18 2.75L24 6.5L18 10.25L24 14L18 17.75L12 14Z"/>
+                                                </svg>
+                                                Dropbox
+                                            </button>
+                                            <button class="download-btn gdrive" onclick="downloadProject(201, 'gdrive')">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M7.71 3.5L1.15 15L4.58 21L11.13 9.5L7.71 3.5ZM8.29 3.5L15.5 15.5H22.85L15.65 3.5H8.29ZM16.29 16.5H1.15L4.58 21H19.71L16.29 16.5Z"/>
+                                                </svg>
+                                                Drive
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5155,6 +5581,98 @@
         window.toggleSidebar = toggleSidebar;
         window.toggleChatPanel = toggleChatPanel;
 
+        // ==================== DISCORD-STYLE CHANNEL NAVIGATION ====================
+        let currentDiscordChannel = 'general';
+
+        function toggleChannelCategory(categoryId) {
+            const category = document.getElementById(categoryId);
+            if (category) {
+                const parent = category.closest('.channel-category');
+                if (parent) {
+                    parent.classList.toggle('collapsed');
+                }
+            }
+        }
+
+        function selectDiscordChannel(channelId, type) {
+            console.log('[Discord Nav] Selecting channel:', channelId, 'Type:', type);
+            currentDiscordChannel = channelId;
+
+            // Update active state
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.channel === channelId) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Handle different channel types
+            switch(type) {
+                case 'chat':
+                    // Open the chat in the right panel and switch channel
+                    selectChannel(channelId);
+                    // Also update the full chat if visible
+                    if (document.querySelector('.app-body').classList.contains('full-chat-active')) {
+                        selectFullChatChannel(channelId);
+                    }
+                    break;
+
+                case 'page':
+                    // Navigate to the appropriate page
+                    if (channelId === 'dashboard') {
+                        showPage('dashboard');
+                    } else if (channelId === 'pipeline') {
+                        showPage('projects');
+                    } else if (channelId === 'recording') {
+                        showPage('studio');
+                    } else if (channelId === 'brand-assets') {
+                        showPage('brand-assets');
+                    } else if (channelId === 'editors') {
+                        showPage('editors');
+                        openEditorMgmt();
+                    } else if (channelId === 'billing') {
+                        showPage('billing');
+                    } else if (channelId === 'settings') {
+                        showPage('settings');
+                    }
+                    break;
+
+                case 'create':
+                    // Open the create/blueprint pages
+                    if (channelId === 'style-blueprint') {
+                        showPage('style-blueprints');
+                    } else if (channelId === 'thumbnail-blueprint') {
+                        showPage('thumbnail-blueprints');
+                    }
+                    break;
+
+                case 'modal':
+                    // Open modal (e.g., submit project)
+                    if (channelId === 'submit') {
+                        // Would open project submission modal
+                        console.log('[Discord Nav] Opening project submission...');
+                        alert('Project submission modal coming soon!');
+                    }
+                    break;
+
+                default:
+                    console.log('[Discord Nav] Unknown type:', type);
+            }
+        }
+
+        // Update the general channel name based on client name (for personalization)
+        function updateGeneralChannelName(clientName) {
+            const generalChannel = document.getElementById('generalChannelName');
+            if (generalChannel && clientName) {
+                generalChannel.textContent = clientName.toLowerCase().replace(/\s+/g, '-');
+            }
+        }
+
+        // Expose Discord navigation functions
+        window.toggleChannelCategory = toggleChannelCategory;
+        window.selectDiscordChannel = selectDiscordChannel;
+        window.updateGeneralChannelName = updateGeneralChannelName;
+
         // ==================== CUSTOMIZE SECTION (formerly Storage) ====================
 
         let hasUnsavedCustomizeChanges = false;
@@ -5280,13 +5798,16 @@
                 renderClientList();
             }
 
-            // Sub-nav visibility
-            // - Clients: See full sub-nav (their own navigation)
-            // - Editors: Hide sub-nav (use client dropdown navigation instead)
-            // - Admin/Owner: See full sub-nav
+            // Discord channels are now the primary navigation
+            // Hide the old sub-nav completely since we use Discord channels now
             const subNav = document.getElementById('subNav');
-            if (isEditor) {
+            if (subNav) {
                 subNav.classList.add('hidden');
+            }
+
+            // Update general channel name with client name (for clients)
+            if (isClient && currentUser.name) {
+                updateGeneralChannelName(currentUser.name);
             }
 
             // Team section (admin/owner only)
@@ -6698,6 +7219,39 @@
         document.getElementById('editorMgmtModal')?.addEventListener('click', function(e) {
             if (e.target === this) closeEditorMgmt();
         });
+
+        // ==================== PROJECT DOWNLOAD FUNCTIONS ====================
+        function downloadProject(projectId, destination) {
+            console.log('[Download] Project:', projectId, 'Destination:', destination);
+
+            switch(destination) {
+                case 'local':
+                    // Trigger browser download
+                    alert(`Downloading project #${projectId} to your device...\n\nIn production, this would download the video file.`);
+                    break;
+
+                case 'dropbox':
+                    // Open Dropbox chooser or OAuth flow
+                    if (typeof Dropbox !== 'undefined' && Dropbox.isBrowserSupported()) {
+                        // Would use Dropbox Chooser API
+                        alert(`Connecting to Dropbox...\n\nIn production, this would open Dropbox OAuth and save to your Dropbox.`);
+                    } else {
+                        alert('Dropbox integration coming soon!\n\nLink your Dropbox account in Settings to enable this feature.');
+                    }
+                    break;
+
+                case 'gdrive':
+                    // Open Google Drive picker or OAuth flow
+                    alert(`Connecting to Google Drive...\n\nIn production, this would open Google Drive OAuth and save to your Drive.`);
+                    break;
+
+                default:
+                    console.warn('[Download] Unknown destination:', destination);
+            }
+        }
+
+        // Expose download function
+        window.downloadProject = downloadProject;
 
         // Expose functions
         window.selectClient = selectClient;
