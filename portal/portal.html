@@ -5386,6 +5386,12 @@
             OWNER: 'owner'
         };
 
+        // Emails that can access the role switcher (founders only)
+        const OWNER_EMAILS = [
+            'sean@contentbug.io',
+            'stockton@contentbug.io'
+        ];
+
         // Demo clients data (replace with API)
         const DEMO_CLIENTS = [
             {
@@ -5466,11 +5472,18 @@
             }
         }
 
-        // ==================== ROLE SWITCHER (OWNER ONLY) ====================
+        // ==================== ROLE SWITCHER (FOUNDERS ONLY) ====================
         let viewAsRole = null; // null = viewing as own role
+        let originalUserData = null; // Store original user data for switching back
 
         function initRoleSwitcher() {
-            if (currentUser.role !== ROLES.OWNER) return;
+            // Only show role switcher for founder emails (Sean & Stockton)
+            const userEmail = (currentUser.email || '').toLowerCase();
+            if (!OWNER_EMAILS.includes(userEmail)) return;
+
+            // Store original user data for clean switching
+            originalUserData = { ...currentUser };
+
             const switcher = document.getElementById('roleSwitcher');
             if (switcher) switcher.classList.remove('hidden');
         }
@@ -5484,36 +5497,43 @@
                 if (btn.dataset.role === role) btn.classList.add('active');
             });
 
-            // Temporarily switch role for UI
-            const savedRole = currentUser.role;
-            currentUser.role = viewAsRole || 'owner';
-
-            // Simulate different users
+            // Switch to viewing as different role
             if (viewAsRole === ROLES.CLIENT) {
-                currentUser.name = 'Jake Martinez';
-                currentUser.firstName = 'Jake';
+                // Simulate client view
+                currentUser.role = ROLES.CLIENT;
+                currentUser.name = 'Demo Client';
+                currentUser.firstName = 'Demo';
                 currentUser.clientId = 1;
                 currentUser.plan = 'creator';
                 currentUser.activeSlots = 2;
             } else if (viewAsRole === ROLES.EDITOR) {
-                currentUser.name = 'Alex Editor';
-                currentUser.firstName = 'Alex';
-                currentUser.email = 'alex@contentbug.io';
+                // Simulate editor view
+                currentUser.role = ROLES.EDITOR;
+                currentUser.name = 'Demo Editor';
+                currentUser.firstName = 'Demo';
             } else if (viewAsRole === ROLES.ADMIN) {
-                currentUser.name = 'Admin Manager';
-                currentUser.firstName = 'Admin';
+                // Simulate admin view
+                currentUser.role = ROLES.ADMIN;
+                currentUser.name = 'Demo Admin';
+                currentUser.firstName = 'Demo';
             } else {
-                currentUser.name = 'Sean Conley';
-                currentUser.firstName = 'Sean';
-                currentUser.email = 'sean@contentbug.io';
+                // Restore original owner data
+                if (originalUserData) {
+                    currentUser.role = originalUserData.role;
+                    currentUser.name = originalUserData.name;
+                    currentUser.firstName = originalUserData.firstName;
+                    currentUser.email = originalUserData.email;
+                    currentUser.phone = originalUserData.phone;
+                    currentUser.clientId = originalUserData.clientId;
+                    currentUser.plan = originalUserData.plan;
+                    currentUser.activeSlots = originalUserData.activeSlots;
+                }
             }
 
+            // Update the UI to reflect the new role
             updateUserDisplay();
             initRoleBasedUI();
             renderProjectCards();
-
-            // Restore owner role for switcher
-            currentUser.role = savedRole;
         }
 
         function initUI() {
