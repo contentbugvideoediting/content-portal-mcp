@@ -6224,8 +6224,8 @@
                 localStorage.setItem('cb_role', 'owner');
             }
 
-            // Demo mode for local testing - DEFAULT TO OWNER for full visibility
-            if (window.location.protocol === 'file:' && !currentUser.email) {
+            // Demo mode - DEFAULT TO OWNER for full visibility if no user logged in
+            if (!currentUser.email) {
                 currentUser = {
                     role: 'owner',
                     name: 'Sean Conley',
@@ -6237,12 +6237,11 @@
                     activeSlots: 999,
                     profilePic: null
                 };
-            }
-
-            // Redirect to login if no user
-            if (!currentUser.email && window.location.protocol !== 'file:') {
-                window.location.href = 'login.html';
-                return;
+                // Store demo user in localStorage
+                localStorage.setItem('cb_email', currentUser.email);
+                localStorage.setItem('cb_name', currentUser.name);
+                localStorage.setItem('cb_first_name', currentUser.firstName);
+                localStorage.setItem('cb_role', currentUser.role);
             }
         }
 
@@ -7766,7 +7765,7 @@
             localStorage.removeItem('cb_first_name');
             localStorage.removeItem('cb_role');
             localStorage.removeItem('cb_airtable_id');
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         }
 
         // ==================== PROJECT CARDS (ROLE-BASED VISIBILITY) ====================
