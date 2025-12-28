@@ -6100,8 +6100,14 @@
 
         // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Portal] Initializing...');
+            console.log('[Portal] localStorage cb_email:', localStorage.getItem('cb_email'));
+            console.log('[Portal] localStorage cb_role:', localStorage.getItem('cb_role'));
             loadUser();
+            console.log('[Portal] User loaded:', currentUser);
+            console.log('[Portal] Is owner email?', OWNER_EMAILS.includes(currentUser.email));
             initUI();
+            console.log('[Portal] UI initialized');
         });
 
         function loadUser() {
@@ -6143,13 +6149,26 @@
         function initRoleSwitcher() {
             // Only show role switcher for founder emails (Sean & Stockton)
             const userEmail = (currentUser.email || '').toLowerCase();
-            if (!OWNER_EMAILS.includes(userEmail)) return;
+            console.log('[RoleSwitcher] Checking email:', userEmail);
+            console.log('[RoleSwitcher] OWNER_EMAILS:', OWNER_EMAILS);
+            console.log('[RoleSwitcher] Is owner?', OWNER_EMAILS.includes(userEmail));
+
+            if (!OWNER_EMAILS.includes(userEmail)) {
+                console.log('[RoleSwitcher] Not an owner, hiding switcher');
+                return;
+            }
 
             // Store original user data for clean switching
             originalUserData = { ...currentUser };
 
             const switcher = document.getElementById('roleSwitcher');
-            if (switcher) switcher.classList.remove('hidden');
+            console.log('[RoleSwitcher] Switcher element:', switcher);
+            if (switcher) {
+                switcher.classList.remove('hidden');
+                console.log('[RoleSwitcher] Switcher is now visible');
+            } else {
+                console.error('[RoleSwitcher] Could not find roleSwitcher element!');
+            }
         }
 
         function switchViewRole(role) {
@@ -6249,6 +6268,26 @@
             const canceledClients = clientsToShow.filter(c => c.status === 'canceled');
 
             let html = '';
+
+            // If no clients at all, show empty state
+            if (clientsToShow.length === 0) {
+                html = `
+                    <div class="empty-clients-state" style="padding: 24px 16px; text-align: center;">
+                        <div style="color: var(--text-muted); margin-bottom: 16px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; opacity: 0.5; margin: 0 auto;">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 14px; font-weight: 500; margin-bottom: 8px;">No clients yet</p>
+                        <p style="color: var(--text-muted); font-size: 12px;">Clients will appear here once they sign up</p>
+                    </div>
+                `;
+                container.innerHTML = html;
+                return;
+            }
 
             // FREE TRIAL category
             if (freeTrialClients.length > 0) {
