@@ -732,6 +732,208 @@
             transform: rotate(180deg);
         }
 
+        /* Server Banner (Discord-style) */
+        .server-banner {
+            height: 100px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%);
+        }
+
+        .banner-logo {
+            width: 64px;
+            height: 64px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Announcement Channel */
+        .announcement-channel {
+            margin: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+        }
+
+        .announcement-channel:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        /* Client Categories */
+        .client-categories {
+            padding: 8px;
+        }
+
+        .client-categories.hidden {
+            display: none;
+        }
+
+        .client-category {
+            margin-bottom: 4px;
+        }
+
+        .client-category-header {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 8px;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 4px;
+        }
+
+        .client-category-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .client-category-arrow {
+            width: 10px;
+            height: 10px;
+            color: var(--text-muted);
+            transition: transform 0.15s ease;
+        }
+
+        .client-category.collapsed .client-category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .client-category-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .client-category-icon.free-trial { color: #f59e0b; }
+        .client-category-icon.active { color: #22c55e; }
+        .client-category-icon.paused { color: #71717a; }
+
+        .client-category-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1;
+        }
+
+        .client-category-count {
+            font-size: 10px;
+            color: var(--text-faint);
+        }
+
+        .client-category-add {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+            opacity: 0;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+        }
+
+        .client-category-header:hover .client-category-add {
+            opacity: 1;
+        }
+
+        .client-category-clients {
+            padding-left: 8px;
+        }
+
+        .client-category.collapsed .client-category-clients {
+            display: none;
+        }
+
+        /* Client Channel Item */
+        .client-channel-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            position: relative;
+        }
+
+        .client-channel-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .client-channel-item.active {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .client-channel-item.has-updates::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .client-channel-hash {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .client-channel-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .client-channel-item:hover .client-channel-name,
+        .client-channel-item.active .client-channel-name {
+            color: var(--text-primary);
+        }
+
+        .client-channel-item.has-updates .client-channel-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .client-new-tag {
+            font-size: 9px;
+            font-weight: 700;
+            color: #f59e0b;
+            text-transform: uppercase;
+        }
+
+        .client-verified {
+            color: #22c55e;
+            font-size: 12px;
+        }
+
+        .client-unread-badge {
+            min-width: 16px;
+            height: 16px;
+            padding: 0 5px;
+            background: #ef4444;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .discord-channels {
             padding: 8px 8px 16px 8px;
         }
@@ -993,7 +1195,7 @@
             transform: rotate(-135deg);
         }
 
-        /* Team Section (Admin/Owner Only) */
+        /* Team Section (Team Members) */
         .team-section {
             margin-top: auto;
             padding-top: var(--space-lg);
@@ -1001,6 +1203,10 @@
         }
 
         .team-section.hidden {
+            display: none;
+        }
+
+        .management-category.hidden {
             display: none;
         }
 
@@ -4183,7 +4389,7 @@
             <!-- ==================== LEFT SIDEBAR (Discord-Style) ==================== -->
             <aside class="sidebar" id="mainSidebar">
                 <div class="sidebar-scroll">
-                    <!-- Discord-Style Server Header -->
+                    <!-- Discord-Style Server Header with Banner -->
                     <div class="discord-server-header" id="serverHeader">
                         <span class="server-name" id="serverNameDisplay">Content Portal</span>
                         <svg class="server-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -4191,15 +4397,22 @@
                         </svg>
                     </div>
 
-                    <!-- Client List (Team Portal Only) -->
-                    <div class="client-list hidden" id="clientList">
-                        <div class="section-label">
-                            Clients
-                            <span class="section-badge" id="clientCount">0</span>
-                        </div>
-                        <div id="clientListItems">
-                            <!-- Populated by JS -->
-                        </div>
+                    <!-- Server Banner (Discord-style) -->
+                    <div class="server-banner" id="serverBanner">
+                        <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" class="banner-logo">
+                    </div>
+
+                    <!-- Announcements Channel (always visible) -->
+                    <div class="channel-item announcement-channel" data-channel="announcements" onclick="selectDiscordChannel('announcements', 'chat')">
+                        <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="channel-name">announcements</span>
+                    </div>
+
+                    <!-- Client Categories (Team Only - Admin/Owner/Editor) -->
+                    <div class="client-categories" id="clientCategories">
+                        <!-- Populated by JS based on role -->
                     </div>
 
                     <!-- Discord-Style Channel Navigation -->
@@ -4359,25 +4572,25 @@
 
                     </div>
 
-                    <!-- Team Section (Admin/Owner Only) -->
+                    <!-- Team Sections (Admin/Owner/Editor Only) -->
                     <div class="team-section hidden" id="teamSection">
-                        <div class="channel-category">
-                            <div class="channel-category-header" onclick="toggleChannelCategory('teamChannels')">
+                        <!-- MANAGEMENT Section (Admin/Owner Only) -->
+                        <div class="channel-category management-category" id="managementCategory">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('managementChannels')">
                                 <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="6 9 12 15 18 9"/>
                                 </svg>
-                                <span>TEAM</span>
+                                <span>MANAGEMENT</span>
                             </div>
-                            <div class="channel-category-items" id="teamChannels">
-                                <div class="channel-item" data-channel="editors" onclick="selectDiscordChannel('editors', 'page')">
+                            <div class="channel-category-items" id="managementChannels">
+                                <div class="channel-item" data-channel="overview" onclick="selectDiscordChannel('overview', 'page')">
                                     <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="9" cy="7" r="4"/>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                        <rect x="3" y="14" width="7" height="7" rx="1"/>
                                     </svg>
-                                    <span class="channel-name">editors</span>
-                                    <span class="channel-badge">8</span>
+                                    <span class="channel-name">overview</span>
                                 </div>
                                 <div class="channel-item" data-channel="billing" onclick="selectDiscordChannel('billing', 'page')">
                                     <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -4386,12 +4599,13 @@
                                     </svg>
                                     <span class="channel-name">billing</span>
                                 </div>
-                                <div class="channel-item" data-channel="team-chat" onclick="openFullChat()">
+                                <div class="channel-item" data-channel="analytics" onclick="selectDiscordChannel('analytics', 'page')">
                                     <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                        <line x1="18" y1="20" x2="18" y2="10"/>
+                                        <line x1="12" y1="20" x2="12" y2="4"/>
+                                        <line x1="6" y1="20" x2="6" y2="14"/>
                                     </svg>
-                                    <span class="channel-name">team-chat</span>
-                                    <span class="channel-badge" id="unreadChatBadge" style="display: none;">0</span>
+                                    <span class="channel-name">analytics</span>
                                 </div>
                                 <div class="channel-item" data-channel="settings" onclick="selectDiscordChannel('settings', 'page')">
                                     <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -4399,6 +4613,48 @@
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                                     </svg>
                                     <span class="channel-name">settings</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EDITORS Section (Team Chat - Admin/Owner/Editor) -->
+                        <div class="channel-category editors-category">
+                            <div class="channel-category-header" onclick="toggleChannelCategory('editorsChannels')">
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                                <span>EDITORS</span>
+                            </div>
+                            <div class="channel-category-items" id="editorsChannels">
+                                <div class="channel-item" data-channel="team-chat" onclick="openFullChat()">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <span class="channel-name">team-chat</span>
+                                    <span class="channel-badge" id="unreadChatBadge" style="display: none;">0</span>
+                                </div>
+                                <div class="channel-item" data-channel="editor-roster" onclick="selectDiscordChannel('editor-roster', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                    </svg>
+                                    <span class="channel-name">editor-roster</span>
+                                    <span class="channel-badge">8</span>
+                                </div>
+                                <div class="channel-item" data-channel="workload" onclick="selectDiscordChannel('workload', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <span class="channel-name">workload</span>
+                                </div>
+                                <div class="channel-item" data-channel="resources" onclick="selectDiscordChannel('resources', 'page')">
+                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                    </svg>
+                                    <span class="channel-name">resources</span>
                                 </div>
                             </div>
                         </div>
@@ -5395,7 +5651,9 @@
         // Demo clients data (replace with API)
         const DEMO_CLIENTS = [
             {
-                id: 1, name: 'Jake Martinez', tier: 'creator', initials: 'JM', online: true, urgent: true,
+                id: 1, name: 'Jake Martinez', tier: 'creator', initials: 'JM',
+                status: 'active', online: true, hasUpdates: true, unreadCount: 3,
+                verified: true, assignedEditor: 'alex@contentbug.io',
                 projects: [
                     { id: 101, name: 'Product Launch Video', status: 'review' },
                     { id: 102, name: 'Instagram Reel #12', status: 'active' },
@@ -5403,25 +5661,51 @@
                 ]
             },
             {
-                id: 2, name: 'Sarah Chen', tier: 'pro', initials: 'SC', online: true, urgent: false,
+                id: 2, name: 'Sarah Chen', tier: 'pro', initials: 'SC',
+                status: 'active', online: true, hasUpdates: false, unreadCount: 0,
+                verified: true, assignedEditor: 'alex@contentbug.io',
                 projects: [
                     { id: 201, name: 'Course Promo', status: 'approved' },
                     { id: 202, name: 'TikTok Series Ep.3', status: 'active' }
                 ]
             },
             {
-                id: 3, name: 'Mike Roberts', tier: 'basic', initials: 'MR', online: false, urgent: false,
+                id: 3, name: 'Mike Roberts', tier: 'basic', initials: 'MR',
+                status: 'free-trial', online: false, hasUpdates: true, unreadCount: 1,
+                verified: false, assignedEditor: null,
                 projects: [
                     { id: 301, name: 'Podcast Clip', status: 'revisions' }
                 ]
             },
             {
-                id: 4, name: 'Emma Davis', tier: 'growth', initials: 'ED', online: false, urgent: true,
+                id: 4, name: 'Emma Davis', tier: 'growth', initials: 'ED',
+                status: 'active', online: false, hasUpdates: true, unreadCount: 5,
+                verified: true, assignedEditor: 'alex@contentbug.io',
                 projects: [
                     { id: 401, name: 'Brand Story', status: 'review' },
                     { id: 402, name: 'Ad Campaign V1', status: 'queue' },
                     { id: 403, name: 'Short Form Pack', status: 'active' },
                     { id: 404, name: 'Event Highlight', status: 'approved' }
+                ]
+            },
+            {
+                id: 5, name: 'Mark Brodinsky', tier: 'basic', initials: 'MB',
+                status: 'free-trial', online: false, hasUpdates: false, unreadCount: 0,
+                verified: false, assignedEditor: null, isNew: true,
+                projects: []
+            },
+            {
+                id: 6, name: 'Chris Rasmussen', tier: 'creator', initials: 'CR',
+                status: 'free-trial', online: true, hasUpdates: true, unreadCount: 2,
+                verified: false, assignedEditor: null, isNew: true,
+                projects: []
+            },
+            {
+                id: 7, name: 'Anthony Santana', tier: 'pro', initials: 'AS',
+                status: 'active', online: true, hasUpdates: true, unreadCount: 4,
+                verified: true, assignedEditor: 'demi@contentbug.io',
+                projects: [
+                    { id: 701, name: 'Course Launch', status: 'active' }
                 ]
             },
         ];
@@ -5539,6 +5823,7 @@
         function initUI() {
             updateUserDisplay();
             initRoleBasedUI();
+            renderClientCategories(); // Discord-style client list
             initDropdowns();
             initNavigation();
             initRoleSwitcher();
@@ -5553,6 +5838,111 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // ==================== CLIENT CATEGORIES (Discord-style) ====================
+        function renderClientCategories() {
+            const container = document.getElementById('clientCategories');
+            if (!container) return;
+
+            const role = currentUser.role;
+            const isTeam = role === ROLES.EDITOR || role === ROLES.ADMIN || role === ROLES.OWNER;
+
+            // Hide for clients - they see their own channels directly
+            if (!isTeam) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+
+            // Filter clients based on role
+            let clientsToShow = DEMO_CLIENTS;
+            if (role === ROLES.EDITOR) {
+                // Editors only see assigned clients
+                clientsToShow = DEMO_CLIENTS.filter(c => c.assignedEditor === currentUser.email);
+            }
+
+            // Group by status
+            const freeTrialClients = clientsToShow.filter(c => c.status === 'free-trial');
+            const activeClients = clientsToShow.filter(c => c.status === 'active');
+
+            let html = '';
+
+            // FREE TRIAL category
+            if (freeTrialClients.length > 0) {
+                html += renderClientCategory('FREE TRIAL', 'free-trial', freeTrialClients);
+            }
+
+            // ACTIVE category
+            if (activeClients.length > 0) {
+                html += renderClientCategory('ACTIVE', 'active', activeClients);
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderClientCategory(name, status, clients) {
+            const icon = status === 'free-trial'
+                ? '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
+                : '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+
+            return `
+                <div class="client-category" data-status="${status}">
+                    <div class="client-category-header" onclick="toggleClientCategory('${status}')">
+                        <svg class="client-category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                        <svg class="client-category-icon ${status}" viewBox="0 0 24 24" fill="currentColor">${icon}</svg>
+                        <span class="client-category-name">${name}</span>
+                        <svg class="client-category-add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation()">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="client-category-clients">
+                        ${clients.map(c => renderClientChannelItem(c)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderClientChannelItem(client) {
+            const channelName = client.name.toLowerCase().replace(/\s+/g, '-');
+            const hasUpdates = client.hasUpdates || client.unreadCount > 0;
+
+            return `
+                <div class="client-channel-item ${hasUpdates ? 'has-updates' : ''} ${selectedClientId === client.id ? 'active' : ''}"
+                     onclick="selectClientChannel(${client.id})">
+                    <span class="client-channel-hash">#</span>
+                    <span class="client-channel-name">${channelName}</span>
+                    ${client.isNew ? '<span class="client-new-tag">NEW</span>' : ''}
+                    ${client.verified ? '<span class="client-verified">✓</span>' : ''}
+                    ${client.unreadCount > 0 ? `<span class="client-unread-badge">${client.unreadCount}</span>` : ''}
+                </div>
+            `;
+        }
+
+        function toggleClientCategory(status) {
+            const category = document.querySelector(`.client-category[data-status="${status}"]`);
+            if (category) {
+                category.classList.toggle('collapsed');
+            }
+        }
+
+        function selectClientChannel(clientId) {
+            selectedClientId = clientId;
+
+            // Update active state
+            document.querySelectorAll('.client-channel-item').forEach(el => el.classList.remove('active'));
+            const activeEl = document.querySelector(`.client-channel-item[onclick*="${clientId}"]`);
+            if (activeEl) activeEl.classList.add('active');
+
+            // Find client and update context
+            const client = DEMO_CLIENTS.find(c => c.id === clientId);
+            if (client) {
+                document.getElementById('serverNameDisplay').textContent = client.name;
+                // Could load client-specific data here
+            }
         }
 
 
@@ -5830,10 +6220,15 @@
                 updateGeneralChannelName(currentUser.name);
             }
 
-            // Team section (admin/owner only)
+            // Team section (all team members - editors see EDITORS only, admins see both)
             const teamSection = document.getElementById('teamSection');
-            if (isAdmin) {
+            const managementCategory = document.getElementById('managementCategory');
+            if (isTeam) {
                 teamSection.classList.remove('hidden');
+                // Hide MANAGEMENT for editors - they only get EDITORS section
+                if (isEditor && managementCategory) {
+                    managementCategory.classList.add('hidden');
+                }
             }
 
             // Team avatars in top bar (team members only - editors, admins, owners)
