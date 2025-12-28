@@ -7373,6 +7373,21 @@
                 subNav.classList.add('hidden');
             }
 
+            // For TEAM (owner/admin/editor): Hide static discord-channels, show client categories
+            // For CLIENTS: Show static discord-channels, hide client categories
+            const discordChannels = document.getElementById('discordChannels');
+            const clientCategories = document.getElementById('clientCategories');
+
+            if (isTeam) {
+                // Team sees client categories (FREE TRIAL, ACTIVE, CANCELED with client names)
+                if (discordChannels) discordChannels.classList.add('hidden');
+                if (clientCategories) clientCategories.classList.remove('hidden');
+            } else {
+                // Clients see the standard Discord-style channels (CHAT, PROJECTS, CREATE, etc.)
+                if (discordChannels) discordChannels.classList.remove('hidden');
+                if (clientCategories) clientCategories.classList.add('hidden');
+            }
+
             // Update general channel name with client name (for clients)
             if (isClient && currentUser.name) {
                 updateGeneralChannelName(currentUser.name);
