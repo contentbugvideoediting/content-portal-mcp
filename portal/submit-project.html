@@ -2752,7 +2752,7 @@
 <body>
     <!-- Portal Navigation -->
     <nav class="portal-nav">
-        <a href="https://portalv2.contentbug.io/dashboard" class="back-link" id="backToDashboard">
+        <a href="https://go.contentbug.io/dashboard" class="back-link" id="backToDashboard">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
             Back to Dashboard
         </a>
@@ -2842,7 +2842,7 @@
             </div>
 
             <!-- CTA - Goes to booking page -->
-            <a href="https://links.contentbug.io/widget/booking/jMEjaEOpcdbZDvcQFXGY" class="btn-book" id="btnBook" onclick="trackAlignmentClick()">
+            <a href="https://go.contentbug.io/book-call" class="btn-book" id="btnBook" onclick="trackAlignmentClick()">
                 Align With Your Editor <span class="btn-optional">(Optional)</span>
             </a>
 
@@ -3350,7 +3350,7 @@
         // ============================================
         // CONTENT PORTAL CONFIGURATION
         // ============================================
-        const MCP_SERVER_URL = 'https://content-portal-mcp-production.up.railway.app';
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
 
         // Local file testing bypass
         const isLocalFile = window.location.protocol === 'file:';
@@ -3378,7 +3378,7 @@
         // ============================================
         // CONTENT PORTAL CONFIGURATION (Secure)
         // ============================================
-        const MCP_SERVER_URL = 'https://content-portal-mcp-production.up.railway.app';
+        const MCP_SERVER_URL = 'https://content-portal-mcp.up.railway.app';
         const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9';
 
         document.getElementById('customStyleName').textContent = blueprintName;
@@ -4329,7 +4329,7 @@
 
             const dashboardUrl = IS_LOCAL_DEMO
                 ? 'client.html'
-                : `https://portalv2.contentbug.io/projects?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
+                : `https://go.contentbug.io/projects?email=${encodeURIComponent(userEmail)}&name=${encodeURIComponent(userName)}`;
 
             window.location.href = dashboardUrl;
         }

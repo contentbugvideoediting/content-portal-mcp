@@ -1448,6 +1448,245 @@
             font-size: 14px;
         }
 
+        /* Back button in channel header */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: var(--space-md);
+            transition: all 0.15s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* ==================== STUDIO DASHBOARD ==================== */
+        .studio-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2xl);
+        }
+
+        .studio-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-xl);
+        }
+
+        .studio-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .studio-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(0,0,0,0.5);
+        }
+
+        .studio-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .studio-card-icon.record {
+            background: var(--accent-red-soft);
+            color: var(--accent-red);
+        }
+
+        .studio-card-icon.schedule {
+            background: var(--accent-blue-soft);
+            color: var(--accent-blue);
+        }
+
+        .studio-card-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .studio-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .studio-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: var(--space-xl);
+            line-height: 1.5;
+        }
+
+        .studio-card .board-btn {
+            display: inline-flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        /* Recordings Section */
+        .recordings-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .recordings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-lg) var(--space-xl);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .recordings-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .recording-count {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .recordings-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .empty-recordings {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2xl) var(--space-xl);
+            text-align: center;
+        }
+
+        .empty-recordings svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-recordings h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .empty-recordings p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .recording-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-xl);
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .recording-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .recording-item:last-child {
+            border-bottom: none;
+        }
+
+        .recording-thumb {
+            width: 48px;
+            height: 36px;
+            background: var(--bg-active);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .recording-thumb svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .recording-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .recording-name {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .recording-date {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .recording-duration {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .recording-select {
+            padding: 6px 12px;
+            background: var(--accent-blue-soft);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--accent-blue);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            opacity: 0;
+        }
+
+        .recording-item:hover .recording-select {
+            opacity: 1;
+        }
+
+        .recording-select:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
         /* Projects View */
         .projects-view .board-header {
             flex-wrap: wrap;
@@ -6338,6 +6577,13 @@
                             <span>projects</span>
                             ${client.projects.length > 0 ? `<span class="channel-count">${client.projects.length}</span>` : ''}
                         </div>
+                        <div class="client-channel" data-channel="project-request" onclick="selectClientChannel(${client.id}, 'project-request')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            <span>project-request</span>
+                        </div>
                         <div class="client-channel" data-channel="create" onclick="selectClientChannel(${client.id}, 'create')">
                             <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -6433,6 +6679,9 @@
                     break;
                 case 'projects':
                     showProjectsView(client);
+                    break;
+                case 'project-request':
+                    showProjectRequestView(client);
                     break;
                 case 'create':
                     showCreateView(client);
@@ -6556,6 +6805,24 @@
             }
         }
 
+        function showProjectRequestView(client) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view project-request-view">
+                        <div class="channel-header">
+                            <h2>#project-request</h2>
+                            <p>Submit a new project for ${client.name}</p>
+                        </div>
+                        <div class="project-request-embed">
+                            <iframe src="https://go.contentbug.io/submit-project?client=${client.id}"
+                                    style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         function showStudioView(client) {
             const content = document.querySelector('.project-board');
             if (content) {
@@ -6563,15 +6830,136 @@
                     <div class="channel-view studio-view">
                         <div class="channel-header">
                             <h2>#studio</h2>
-                            <p>Recording Studio for ${client.name}</p>
+                            <p>Creator Lab for ${client.name}</p>
                         </div>
-                        <div class="studio-embed">
-                            <iframe src="https://go.contentbug.io/record?client=${client.id}"
-                                    style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
+                        <div class="studio-dashboard">
+                            <div class="studio-actions">
+                                <div class="studio-card" onclick="openRecordingStudio('${client.id}')">
+                                    <div class="studio-card-icon record">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                                        </svg>
+                                    </div>
+                                    <h3>Record Session</h3>
+                                    <p>Start a new recording session in the Creator Lab</p>
+                                    <button class="board-btn primary">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:8px;">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                        </svg>
+                                        Start Recording
+                                    </button>
+                                </div>
+                                <div class="studio-card" onclick="scheduleRecording('${client.id}')">
+                                    <div class="studio-card-icon schedule">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                    </div>
+                                    <h3>Schedule Session</h3>
+                                    <p>Plan your recording session in advance</p>
+                                    <button class="board-btn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:8px;">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                        Schedule
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="recordings-section">
+                                <div class="recordings-header">
+                                    <h3>Your Recordings</h3>
+                                    <span class="recording-count">${client.recordings ? client.recordings.length : 0} recordings</span>
+                                </div>
+                                <div class="recordings-list" id="recordingsList">
+                                    ${renderRecordingsList(client)}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
             }
+        }
+
+        function renderRecordingsList(client) {
+            if (!client.recordings || client.recordings.length === 0) {
+                return \`
+                    <div class="empty-recordings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                        <h4>No recordings yet</h4>
+                        <p>Start a recording session to capture your content</p>
+                    </div>
+                \`;
+            }
+            return client.recordings.map(rec => \`
+                <div class="recording-item" onclick="playRecording('\${rec.id}')">
+                    <div class="recording-thumb">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="recording-info">
+                        <span class="recording-name">\${rec.name || 'Recording'}</span>
+                        <span class="recording-date">\${rec.date || 'Unknown date'}</span>
+                    </div>
+                    <div class="recording-duration">\${rec.duration || '--:--'}</div>
+                    <button class="recording-select" onclick="event.stopPropagation(); selectForProject('\${rec.id}')">
+                        Use in Project
+                    </button>
+                </div>
+            \`).join('');
+        }
+
+        function openRecordingStudio(clientId) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = \`
+                    <div class="channel-view studio-view">
+                        <div class="channel-header">
+                            <button class="back-btn" onclick="showStudioView(getClientById(\${clientId}))">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                                    <path d="m15 18-6-6 6-6"/>
+                                </svg>
+                                Back to Studio
+                            </button>
+                            <h2>Recording Studio</h2>
+                        </div>
+                        <div class="studio-embed">
+                            <iframe src="https://go.contentbug.io/record?client=\${clientId}"
+                                    style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
+                        </div>
+                    </div>
+                \`;
+            }
+        }
+
+        function scheduleRecording(clientId) {
+            // TODO: Open scheduling modal or calendar
+            showToast('Recording scheduling coming soon!', 'info');
+        }
+
+        function playRecording(recordingId) {
+            // TODO: Open recording player modal
+            showToast('Opening recording...', 'info');
+        }
+
+        function selectForProject(recordingId) {
+            // TODO: Add recording to project submission
+            showToast('Recording selected for project', 'success');
+        }
+
+        function getClientById(clientId) {
+            return mockClients.find(c => c.id == clientId) || mockClients[0];
         }
 
         function showMeetingView(client) {
