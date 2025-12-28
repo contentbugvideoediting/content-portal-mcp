@@ -770,7 +770,7 @@
             background: rgba(59, 130, 246, 0.15);
         }
 
-        /* Client Categories */
+        /* Client Categories Container */
         .client-categories {
             padding: 8px;
         }
@@ -779,11 +779,12 @@
             display: none;
         }
 
-        .client-category {
+        /* Status Category (FREE TRIAL, ACTIVE, CANCELED) */
+        .status-category {
             margin-bottom: 4px;
         }
 
-        .client-category-header {
+        .status-category-header {
             display: flex;
             align-items: center;
             gap: 4px;
@@ -793,31 +794,31 @@
             border-radius: 4px;
         }
 
-        .client-category-header:hover {
+        .status-category-header:hover {
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .client-category-arrow {
+        .status-category-arrow {
             width: 10px;
             height: 10px;
             color: var(--text-muted);
             transition: transform 0.15s ease;
         }
 
-        .client-category.collapsed .client-category-arrow {
+        .status-category.collapsed .status-category-arrow {
             transform: rotate(-90deg);
         }
 
-        .client-category-icon {
-            width: 16px;
-            height: 16px;
+        .status-category-icon {
+            width: 14px;
+            height: 14px;
         }
 
-        .client-category-icon.free-trial { color: #f59e0b; }
-        .client-category-icon.active { color: #22c55e; }
-        .client-category-icon.paused { color: #71717a; }
+        .status-category-icon.free-trial { color: #f59e0b; }
+        .status-category-icon.active { color: #22c55e; }
+        .status-category-icon.canceled { color: #ef4444; }
 
-        .client-category-name {
+        .status-category-name {
             font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
@@ -826,71 +827,72 @@
             flex: 1;
         }
 
-        .client-category-count {
+        .status-category-count {
             font-size: 10px;
             color: var(--text-faint);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 10px;
         }
 
-        .client-category-add {
-            width: 16px;
-            height: 16px;
-            color: var(--text-muted);
-            opacity: 0;
-            cursor: pointer;
-            transition: opacity 0.15s ease;
+        .status-category-clients {
+            padding-left: 4px;
         }
 
-        .client-category-header:hover .client-category-add {
-            opacity: 1;
-        }
-
-        .client-category-clients {
-            padding-left: 8px;
-        }
-
-        .client-category.collapsed .client-category-clients {
+        .status-category.collapsed .status-category-clients {
             display: none;
         }
 
-        /* Client Channel Item */
-        .client-channel-item {
+        /* Client Section (Client Name as Header with Sub-channels) */
+        .client-section {
+            margin-bottom: 2px;
+        }
+
+        .client-section-header {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 5px 8px;
             cursor: pointer;
+            border-radius: 4px;
             transition: background 0.15s ease;
             position: relative;
         }
 
-        .client-channel-item:hover {
+        .client-section-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .client-section.expanded .client-section-header {
             background: rgba(59, 130, 246, 0.1);
         }
 
-        .client-channel-item.active {
-            background: rgba(59, 130, 246, 0.15);
-        }
-
-        .client-channel-item.has-updates::before {
+        .client-section-header.has-updates::before {
             content: '';
             position: absolute;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
             width: 4px;
-            height: 8px;
+            height: 10px;
             background: var(--accent-blue);
             border-radius: 0 4px 4px 0;
         }
 
-        .client-channel-hash {
+        .client-section-arrow {
+            width: 10px;
+            height: 10px;
             color: var(--text-muted);
-            font-weight: 500;
+            transition: transform 0.15s ease;
         }
 
-        .client-channel-name {
+        .client-section:not(.expanded) .client-section-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .client-section-name {
             font-size: 13px;
+            font-weight: 600;
             color: var(--text-secondary);
             flex: 1;
             white-space: nowrap;
@@ -898,14 +900,79 @@
             text-overflow: ellipsis;
         }
 
-        .client-channel-item:hover .client-channel-name,
-        .client-channel-item.active .client-channel-name {
+        .client-section-header:hover .client-section-name,
+        .client-section.expanded .client-section-name {
             color: var(--text-primary);
         }
 
-        .client-channel-item.has-updates .client-channel-name {
+        .client-online-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .client-new-tag {
+            font-size: 9px;
+            font-weight: 700;
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .client-unread-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            background: #ef4444;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Client Sub-channels */
+        .client-section-channels {
+            padding-left: 16px;
+            display: none;
+        }
+
+        .client-section.expanded .client-section-channels {
+            display: block;
+        }
+
+        .client-channel {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .client-channel:hover {
+            background: rgba(59, 130, 246, 0.1);
             color: var(--text-primary);
+        }
+
+        .client-channel .channel-hash {
+            color: var(--text-faint);
             font-weight: 500;
+        }
+
+        .client-channel .channel-count {
+            font-size: 10px;
+            color: var(--text-faint);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1px 5px;
+            border-radius: 8px;
+            margin-left: auto;
         }
 
         .client-new-tag {
@@ -4574,13 +4641,13 @@
 
                     <!-- Team Sections (Admin/Owner/Editor Only) -->
                     <div class="team-section hidden" id="teamSection">
-                        <!-- MANAGEMENT Section (Admin/Owner Only) -->
+                        <!-- ADMIN Section (Admin/Owner Only) -->
                         <div class="channel-category management-category" id="managementCategory">
                             <div class="channel-category-header" onclick="toggleChannelCategory('managementChannels')">
                                 <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="6 9 12 15 18 9"/>
                                 </svg>
-                                <span>MANAGEMENT</span>
+                                <span>ADMIN</span>
                             </div>
                             <div class="channel-category-items" id="managementChannels">
                                 <div class="channel-item" data-channel="overview" onclick="selectDiscordChannel('overview', 'page')">
@@ -4617,13 +4684,13 @@
                             </div>
                         </div>
 
-                        <!-- EDITORS Section (Team Chat - Admin/Owner/Editor) -->
+                        <!-- EDITOR Section (Team Chat - Admin/Owner/Editor) -->
                         <div class="channel-category editors-category">
                             <div class="channel-category-header" onclick="toggleChannelCategory('editorsChannels')">
                                 <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="6 9 12 15 18 9"/>
                                 </svg>
-                                <span>EDITORS</span>
+                                <span>EDITOR</span>
                             </div>
                             <div class="channel-category-items" id="editorsChannels">
                                 <div class="channel-item" data-channel="team-chat" onclick="openFullChat()">
@@ -5708,6 +5775,12 @@
                     { id: 701, name: 'Course Launch', status: 'active' }
                 ]
             },
+            {
+                id: 8, name: 'Lisa Thompson', tier: 'growth', initials: 'LT',
+                status: 'canceled', online: false, hasUpdates: false, unreadCount: 0,
+                verified: true, assignedEditor: 'alex@contentbug.io',
+                projects: []
+            },
         ];
 
         // ==================== STATE ====================
@@ -5722,17 +5795,29 @@
 
         function loadUser() {
             // Get user from localStorage (set by login)
+            const storedEmail = (localStorage.getItem('cb_email') || '').toLowerCase();
+
             currentUser = {
                 role: localStorage.getItem('cb_role') || 'client',
                 name: localStorage.getItem('cb_name') || 'Demo User',
                 firstName: localStorage.getItem('cb_first_name') || 'Demo',
-                email: localStorage.getItem('cb_email') || '',
+                email: storedEmail,
                 phone: localStorage.getItem('cb_phone') || '',
                 clientId: parseInt(localStorage.getItem('cb_client_id')) || 1,
                 plan: localStorage.getItem('cb_plan') || 'basic',
                 activeSlots: parseInt(localStorage.getItem('cb_active_slots')) || 1,
                 profilePic: localStorage.getItem('cb_profile_pic') || null
             };
+
+            // FORCE OWNER ROLE for founder emails (Sean & Stockton)
+            if (OWNER_EMAILS.includes(storedEmail)) {
+                currentUser.role = ROLES.OWNER;
+                currentUser.plan = 'owner';
+                currentUser.clientId = null;
+                currentUser.activeSlots = 999;
+                // Update localStorage to keep it consistent
+                localStorage.setItem('cb_role', 'owner');
+            }
 
             // Demo mode for local testing - DEFAULT TO OWNER for full visibility
             if (window.location.protocol === 'file:' && !currentUser.email) {
@@ -5866,85 +5951,129 @@
             // Group by status
             const freeTrialClients = clientsToShow.filter(c => c.status === 'free-trial');
             const activeClients = clientsToShow.filter(c => c.status === 'active');
+            const canceledClients = clientsToShow.filter(c => c.status === 'canceled');
 
             let html = '';
 
             // FREE TRIAL category
             if (freeTrialClients.length > 0) {
-                html += renderClientCategory('FREE TRIAL', 'free-trial', freeTrialClients);
+                html += renderStatusCategory('FREE TRIAL', 'free-trial', freeTrialClients);
             }
 
             // ACTIVE category
             if (activeClients.length > 0) {
-                html += renderClientCategory('ACTIVE', 'active', activeClients);
+                html += renderStatusCategory('ACTIVE', 'active', activeClients);
+            }
+
+            // CANCELED category
+            if (canceledClients.length > 0) {
+                html += renderStatusCategory('CANCELED', 'canceled', canceledClients);
             }
 
             container.innerHTML = html;
         }
 
-        function renderClientCategory(name, status, clients) {
-            const icon = status === 'free-trial'
-                ? '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
-                : '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+        function renderStatusCategory(name, status, clients) {
+            let icon;
+            if (status === 'free-trial') {
+                icon = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>';
+            } else if (status === 'active') {
+                icon = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+            } else {
+                icon = '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+            }
 
             return `
-                <div class="client-category" data-status="${status}">
-                    <div class="client-category-header" onclick="toggleClientCategory('${status}')">
-                        <svg class="client-category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="status-category" data-status="${status}">
+                    <div class="status-category-header" onclick="toggleStatusCategory('${status}')">
+                        <svg class="status-category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6 9 12 15 18 9"/>
                         </svg>
-                        <svg class="client-category-icon ${status}" viewBox="0 0 24 24" fill="currentColor">${icon}</svg>
-                        <span class="client-category-name">${name}</span>
-                        <svg class="client-category-add" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation()">
-                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
+                        <svg class="status-category-icon ${status}" viewBox="0 0 24 24" fill="currentColor">${icon}</svg>
+                        <span class="status-category-name">${name}</span>
+                        <span class="status-category-count">${clients.length}</span>
                     </div>
-                    <div class="client-category-clients">
-                        ${clients.map(c => renderClientChannelItem(c)).join('')}
+                    <div class="status-category-clients">
+                        ${clients.map(c => renderClientSection(c)).join('')}
                     </div>
                 </div>
             `;
         }
 
-        function renderClientChannelItem(client) {
-            const channelName = client.name.toLowerCase().replace(/\s+/g, '-');
+        function renderClientSection(client) {
             const hasUpdates = client.hasUpdates || client.unreadCount > 0;
+            const isSelected = selectedClientId === client.id;
 
             return `
-                <div class="client-channel-item ${hasUpdates ? 'has-updates' : ''} ${selectedClientId === client.id ? 'active' : ''}"
-                     onclick="selectClientChannel(${client.id})">
-                    <span class="client-channel-hash">#</span>
-                    <span class="client-channel-name">${channelName}</span>
-                    ${client.isNew ? '<span class="client-new-tag">NEW</span>' : ''}
-                    ${client.verified ? '<span class="client-verified">✓</span>' : ''}
-                    ${client.unreadCount > 0 ? `<span class="client-unread-badge">${client.unreadCount}</span>` : ''}
+                <div class="client-section ${isSelected ? 'expanded' : ''}" data-client-id="${client.id}">
+                    <div class="client-section-header ${hasUpdates ? 'has-updates' : ''}" onclick="toggleClientSection(${client.id})">
+                        <svg class="client-section-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                        <span class="client-section-name">${client.name}</span>
+                        ${client.online ? '<span class="client-online-dot"></span>' : ''}
+                        ${client.isNew ? '<span class="client-new-tag">NEW</span>' : ''}
+                        ${client.unreadCount > 0 ? `<span class="client-unread-badge">${client.unreadCount}</span>` : ''}
+                    </div>
+                    <div class="client-section-channels">
+                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'general')">
+                            <span class="channel-hash">#</span>
+                            <span>general</span>
+                        </div>
+                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'projects')">
+                            <span class="channel-hash">#</span>
+                            <span>projects</span>
+                            ${client.projects.length > 0 ? `<span class="channel-count">${client.projects.length}</span>` : ''}
+                        </div>
+                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'blueprint')">
+                            <span class="channel-hash">#</span>
+                            <span>blueprint</span>
+                        </div>
+                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'assets')">
+                            <span class="channel-hash">#</span>
+                            <span>assets</span>
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
-        function toggleClientCategory(status) {
-            const category = document.querySelector(`.client-category[data-status="${status}"]`);
+        function toggleStatusCategory(status) {
+            const category = document.querySelector(`.status-category[data-status="${status}"]`);
             if (category) {
                 category.classList.toggle('collapsed');
             }
         }
 
-        function selectClientChannel(clientId) {
-            selectedClientId = clientId;
+        function toggleClientSection(clientId) {
+            const section = document.querySelector(`.client-section[data-client-id="${clientId}"]`);
+            if (section) {
+                // Close other sections first
+                document.querySelectorAll('.client-section.expanded').forEach(s => {
+                    if (s !== section) s.classList.remove('expanded');
+                });
+                section.classList.toggle('expanded');
 
-            // Update active state
-            document.querySelectorAll('.client-channel-item').forEach(el => el.classList.remove('active'));
-            const activeEl = document.querySelector(`.client-channel-item[onclick*="${clientId}"]`);
-            if (activeEl) activeEl.classList.add('active');
-
-            // Find client and update context
-            const client = DEMO_CLIENTS.find(c => c.id === clientId);
-            if (client) {
-                document.getElementById('serverNameDisplay').textContent = client.name;
-                // Could load client-specific data here
+                // Update selected client
+                if (section.classList.contains('expanded')) {
+                    selectedClientId = clientId;
+                    const client = DEMO_CLIENTS.find(c => c.id === clientId);
+                    if (client) {
+                        document.getElementById('serverNameDisplay').textContent = client.name;
+                    }
+                }
             }
         }
 
+        function selectClientChannel(clientId, channel) {
+            selectedClientId = clientId;
+            const client = DEMO_CLIENTS.find(c => c.id === clientId);
+            if (client) {
+                document.getElementById('serverNameDisplay').textContent = client.name;
+                // Could navigate to specific channel view here
+                console.log(`Selected ${channel} for ${client.name}`);
+            }
+        }
 
         // ==================== SIDEBAR & CHAT TOGGLE ====================
 
