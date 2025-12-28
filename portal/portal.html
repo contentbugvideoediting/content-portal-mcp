@@ -2152,15 +2152,9 @@
             border-color: rgba(66, 133, 244, 0.5);
         }
 
-        /* ==================== RIGHT CHAT PANEL (CONTENT BUG DARK THEME) ==================== */
+        /* ==================== RIGHT CHAT PANEL - REMOVED (chat now in left sidebar general channel) ==================== */
         .chat-panel {
-            width: var(--chat-width);
-            background: #0a0d14;
-            border-left: 1px solid rgba(30, 58, 138, 0.2);
-            display: flex;
-            flex-direction: column;
-            transition: width 0.3s ease, min-width 0.3s ease;
-            position: relative;
+            display: none !important;
         }
 
         .chat-panel.minimized {
@@ -5701,144 +5695,7 @@
                 </div>
             </main>
 
-            <!-- ==================== RIGHT CHAT PANEL ==================== -->
-            <aside class="chat-panel" id="chatPanel">
-                <!-- Chat Toggle Button -->
-                <button class="chat-toggle" onclick="toggleChatPanel()" title="Toggle chat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                </button>
-                <!-- Minimized state content -->
-                <div class="chat-minimized-bar">
-                    <div class="chat-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                    </div>
-                    <div class="unread-indicator" id="chatUnreadDot"></div>
-                </div>
-                <div class="server-header" id="serverHeader">
-                    <div class="server-name">CB Team</div>
-                    <svg class="server-dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="6 9 12 15 18 9"/>
-                    </svg>
-                    <div class="server-dropdown" id="serverDropdown">
-                        <div class="server-dropdown-item">
-                            <span>Edit Server Profile</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                        </div>
-                        <div class="server-dropdown-divider"></div>
-                        <div class="server-dropdown-item admin-only hidden" id="invitePeopleBtn">
-                            <span>Invite People</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                        </div>
-                        <div class="server-dropdown-item admin-only hidden" id="serverSettingsBtn">
-                            <span>Server Settings</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project Cards Section (for clients - their active project notifications) -->
-                <div class="project-cards-section hidden" id="projectCardsSection">
-                    <div class="project-cards-header">
-                        <span class="project-cards-title">Your Projects</span>
-                    </div>
-                    <div id="projectCardsList">
-                        <!-- Populated by JS for clients -->
-                    </div>
-                </div>
-
-                <!-- Chat layout: channels on left, messages on right -->
-                <div class="chat-layout">
-                    <!-- Channel list sidebar -->
-                    <div class="channel-sidebar">
-                        <div class="channel-category" id="textChannels">
-                            <div class="channel-category-header">
-                                <div class="channel-category-title" onclick="toggleCategory('textChannels')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-                                    Text Channels
-                                </div>
-                                <div class="channel-category-add admin-only hidden" onclick="createNewChannel()">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                </div>
-                            </div>
-                            <div class="channel-list" id="channelList">
-                                <div class="channel-item active" data-channel="general" onclick="selectChannel('general')">
-                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                    <span class="channel-name">general</span>
-                                </div>
-                                <div class="channel-item" data-channel="project-updates" onclick="selectChannel('project-updates')">
-                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                    <span class="channel-name">project-updates</span>
-                                </div>
-                                <div class="channel-item" data-channel="feedback" onclick="selectChannel('feedback')">
-                                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                    <span class="channel-name">feedback</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chat messages area (quick chat shows only #general) -->
-                    <div class="chat-messages-area" id="chatMessagesArea">
-                        <div class="chat-messages-header">
-                            <div class="chat-messages-header-left">
-                                <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9l3-3 3 3M4 15l3 3 3-3M14 9h6M14 15h6"/></svg>
-                                <span class="chat-messages-header-name" id="currentChannelName">general</span>
-                            </div>
-                            <button class="expand-chat-btn" onclick="openFullChat()" title="Open full chat">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="15 3 21 3 21 9"/>
-                                    <polyline points="9 21 3 21 3 15"/>
-                                    <line x1="21" y1="3" x2="14" y2="10"/>
-                                    <line x1="3" y1="21" x2="10" y2="14"/>
-                                </svg>
-                                All Channels
-                            </button>
-                        </div>
-                        <div class="chat-messages-list" id="chatMessagesList">
-                            <!-- Messages will be rendered here -->
-                            <div class="chat-empty-state" id="chatEmptyState">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                                </svg>
-                                <div>Welcome to <strong>#general</strong></div>
-                                <div style="font-size: 13px; margin-top: 4px;">This is the start of the channel</div>
-                            </div>
-                        </div>
-                        <div class="chat-input-area">
-                            <div class="chat-input-wrapper">
-                                <input type="text" class="chat-input" id="chatInput" placeholder="Message #general" onkeypress="handleChatKeypress(event)">
-                                <button class="chat-send-btn" onclick="sendChatMessage()">Send</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="user-panel">
-                    <div class="user-panel-avatar" id="chatUserAvatar" style="background: var(--accent-green)">
-                        ?
-                        <span class="status-indicator"></span>
-                    </div>
-                    <div class="user-panel-info">
-                        <div class="user-panel-name" id="chatUserName">Loading...</div>
-                        <span class="user-panel-role client" id="chatUserRole">Client</span>
-                    </div>
-                    <div class="user-panel-actions">
-                        <button class="user-panel-btn" title="Mute">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                        </button>
-                        <button class="user-panel-btn" title="Deafen">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-                        </button>
-                        <button class="user-panel-btn" title="Settings">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        </button>
-                    </div>
-                </div>
-            </aside>
+            <!-- Right chat panel removed - chat is now in left sidebar general channel -->
 
             <!-- ==================== FULL CHAT VIEW ==================== -->
             <div class="full-chat-container" id="fullChatContainer">
@@ -7112,42 +6969,16 @@
             localStorage.setItem('cb_sidebar_minimized', sidebar.classList.contains('minimized'));
         }
 
-        function toggleChatPanel() {
-            const chatPanel = document.getElementById('chatPanel');
-            chatPanel.classList.toggle('minimized');
-            localStorage.setItem('cb_chat_minimized', chatPanel.classList.contains('minimized'));
-
-            // Update floating save button position
-            updateFloatingSavePosition();
-        }
-
-        function updateFloatingSavePosition() {
-            const chatPanel = document.getElementById('chatPanel');
-            const saveBtn = document.getElementById('floatingSaveBtn');
-            if (chatPanel.classList.contains('minimized')) {
-                saveBtn.style.right = '80px';
-            } else {
-                saveBtn.style.right = '360px';
-            }
-        }
-
-        // Restore sidebar/chat state on load
+        // Restore sidebar state on load (chat panel removed)
         function restorePanelStates() {
             const sidebarMinimized = localStorage.getItem('cb_sidebar_minimized') === 'true';
-            const chatMinimized = localStorage.getItem('cb_chat_minimized') === 'true';
-
             if (sidebarMinimized) {
                 document.getElementById('mainSidebar')?.classList.add('minimized');
             }
-            if (chatMinimized) {
-                document.getElementById('chatPanel')?.classList.add('minimized');
-            }
-            updateFloatingSavePosition();
         }
 
         // Expose toggle functions
         window.toggleSidebar = toggleSidebar;
-        window.toggleChatPanel = toggleChatPanel;
 
         // ==================== DISCORD-STYLE CHANNEL NAVIGATION ====================
         let currentDiscordChannel = 'general';
