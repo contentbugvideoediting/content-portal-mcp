@@ -975,6 +975,17 @@
             margin-left: auto;
         }
 
+        .channel-icon-sm {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .client-channel.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--text-primary);
+        }
+
         .client-new-tag {
             font-size: 9px;
             font-weight: 700;
@@ -1413,6 +1424,304 @@
         .board-btn svg {
             width: 16px;
             height: 16px;
+        }
+
+        /* ==================== CHANNEL VIEWS ==================== */
+        .channel-view {
+            padding: var(--space-xl);
+        }
+
+        .channel-header {
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .channel-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .channel-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Projects View */
+        .projects-view .board-header {
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+
+        .projects-view .board-actions {
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+
+        .project-search {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-md);
+        }
+
+        .project-search svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .project-search input {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            width: 180px;
+        }
+
+        .project-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 2px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            padding: 2px;
+        }
+
+        .filter-tab {
+            padding: var(--space-sm) var(--space-md);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .filter-tab.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            padding: var(--space-xl);
+        }
+
+        .empty-projects {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--space-2xl) * 2;
+            color: var(--text-muted);
+        }
+
+        .empty-projects svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-projects h3 {
+            font-size: 18px;
+            margin-bottom: var(--space-sm);
+            color: var(--text-secondary);
+        }
+
+        .empty-projects p {
+            margin-bottom: var(--space-xl);
+        }
+
+        .project-card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+
+        .project-status {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .project-status.queue { background: var(--accent-purple-soft); color: var(--accent-purple); }
+        .project-status.active { background: var(--accent-blue-soft); color: var(--accent-blue); }
+        .project-status.review { background: var(--accent-orange-soft); color: var(--accent-orange); }
+        .project-status.revisions { background: var(--accent-red-soft); color: var(--accent-red); }
+        .project-status.approved { background: var(--accent-green-soft); color: var(--accent-green); }
+
+        .project-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+
+        .project-card-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .project-action {
+            padding: var(--space-xs) var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .project-action:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        /* Chat Welcome */
+        .chat-welcome {
+            text-align: center;
+            padding: var(--space-2xl) * 2;
+            color: var(--text-muted);
+        }
+
+        .chat-welcome-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-lg);
+        }
+
+        .chat-welcome h3 {
+            font-size: 20px;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        .chat-messages-area {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Meeting View */
+        .meeting-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-xl);
+            padding: var(--space-xl);
+        }
+
+        .meeting-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+        }
+
+        .meeting-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--space-lg);
+            background: var(--accent-blue-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .meeting-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-blue);
+        }
+
+        .meeting-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .meeting-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Storage View */
+        .storage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-xl);
+        }
+
+        .storage-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+        }
+
+        .storage-section h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+            color: var(--text-primary);
+        }
+
+        .storage-empty {
+            text-align: center;
+            padding: var(--space-xl);
+            color: var(--text-muted);
+        }
+
+        .storage-empty svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: var(--space-md);
+            opacity: 0.5;
+        }
+
+        .storage-empty p {
+            font-size: 13px;
+            margin-bottom: var(--space-md);
+        }
+
+        .upload-btn {
+            padding: var(--space-sm) var(--space-lg);
+            background: var(--bg-hover);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .upload-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
         }
 
         /* Kanban Columns */
@@ -6016,22 +6325,47 @@
                         ${client.unreadCount > 0 ? `<span class="client-unread-badge">${client.unreadCount}</span>` : ''}
                     </div>
                     <div class="client-section-channels">
-                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'general')">
-                            <span class="channel-hash">#</span>
+                        <div class="client-channel" data-channel="general" onclick="selectClientChannel(${client.id}, 'general')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
                             <span>general</span>
                         </div>
-                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'projects')">
-                            <span class="channel-hash">#</span>
+                        <div class="client-channel" data-channel="projects" onclick="selectClientChannel(${client.id}, 'projects')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
                             <span>projects</span>
                             ${client.projects.length > 0 ? `<span class="channel-count">${client.projects.length}</span>` : ''}
                         </div>
-                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'blueprint')">
-                            <span class="channel-hash">#</span>
-                            <span>blueprint</span>
+                        <div class="client-channel" data-channel="create" onclick="selectClientChannel(${client.id}, 'create')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            <span>create</span>
                         </div>
-                        <div class="client-channel" onclick="selectClientChannel(${client.id}, 'assets')">
-                            <span class="channel-hash">#</span>
-                            <span>assets</span>
+                        <div class="client-channel" data-channel="studio" onclick="selectClientChannel(${client.id}, 'studio')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            <span>studio</span>
+                        </div>
+                        <div class="client-channel" data-channel="meeting" onclick="selectClientChannel(${client.id}, 'meeting')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            <span>meeting</span>
+                        </div>
+                        <div class="client-channel" data-channel="storage" onclick="selectClientChannel(${client.id}, 'storage')">
+                            <svg class="channel-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            <span>storage</span>
                         </div>
                     </div>
                 </div>
@@ -6065,14 +6399,321 @@
             }
         }
 
+        let selectedChannel = 'general';
+
         function selectClientChannel(clientId, channel) {
             selectedClientId = clientId;
+            selectedChannel = channel;
             const client = DEMO_CLIENTS.find(c => c.id === clientId);
+
             if (client) {
                 document.getElementById('serverNameDisplay').textContent = client.name;
-                // Could navigate to specific channel view here
-                console.log(`Selected ${channel} for ${client.name}`);
+
+                // Update active channel state in sidebar
+                document.querySelectorAll('.client-channel').forEach(el => el.classList.remove('active'));
+                const activeChannel = document.querySelector(`.client-section[data-client-id="${clientId}"] .client-channel[data-channel="${channel}"]`);
+                if (activeChannel) activeChannel.classList.add('active');
+
+                // Update main canvas content based on channel
+                showChannelView(client, channel);
             }
+        }
+
+        function showChannelView(client, channel) {
+            const mainScroll = document.querySelector('.main-scroll');
+            if (!mainScroll) return;
+
+            // Update welcome header to show channel context
+            document.getElementById('welcomeTitle').textContent = `${client.name}`;
+            document.getElementById('welcomeSubtitle').textContent = `#${channel}`;
+
+            switch(channel) {
+                case 'general':
+                    showGeneralView(client);
+                    break;
+                case 'projects':
+                    showProjectsView(client);
+                    break;
+                case 'create':
+                    showCreateView(client);
+                    break;
+                case 'studio':
+                    showStudioView(client);
+                    break;
+                case 'meeting':
+                    showMeetingView(client);
+                    break;
+                case 'storage':
+                    showStorageView(client);
+                    break;
+            }
+        }
+
+        function showGeneralView(client) {
+            // Show chat/general communication view
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view general-view">
+                        <div class="channel-header">
+                            <h2>#general</h2>
+                            <p>General communication with ${client.name}</p>
+                        </div>
+                        <div class="chat-messages-area" id="generalMessages">
+                            <div class="chat-welcome">
+                                <div class="chat-welcome-icon">💬</div>
+                                <h3>Welcome to #general</h3>
+                                <p>This is the beginning of your conversation with ${client.name}.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showProjectsView(client) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view projects-view">
+                        <div class="board-header">
+                            <div class="board-title">Project Pipeline</div>
+                            <div class="board-actions">
+                                <div class="project-search">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <path d="m21 21-4.35-4.35"/>
+                                    </svg>
+                                    <input type="text" placeholder="Search projects..." id="projectSearch">
+                                </div>
+                                <div class="filter-tabs">
+                                    <button class="filter-tab active" onclick="filterProjects('all')">All</button>
+                                    <button class="filter-tab" onclick="filterProjects('queue')">Queue</button>
+                                    <button class="filter-tab" onclick="filterProjects('active')">Active</button>
+                                    <button class="filter-tab" onclick="filterProjects('review')">Review</button>
+                                    <button class="filter-tab" onclick="filterProjects('revisions')">Revisions</button>
+                                    <button class="filter-tab" onclick="filterProjects('approved')">Approved</button>
+                                </div>
+                                <button class="board-btn primary" onclick="openSubmitProject()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Submit Project
+                                </button>
+                            </div>
+                        </div>
+                        <div class="projects-grid" id="projectsGrid">
+                            ${renderClientProjects(client)}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderClientProjects(client) {
+            if (!client.projects || client.projects.length === 0) {
+                return `
+                    <div class="empty-projects">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <h3>No projects yet</h3>
+                        <p>Submit a project to get started</p>
+                        <button class="board-btn primary" onclick="openSubmitProject()">Submit Project</button>
+                    </div>
+                `;
+            }
+
+            return client.projects.map(p => `
+                <div class="project-card" data-status="${p.status}">
+                    <div class="project-card-header">
+                        <span class="project-status ${p.status}">${p.status}</span>
+                    </div>
+                    <h4 class="project-title">${p.name}</h4>
+                    <div class="project-card-footer">
+                        <button class="project-action" onclick="openProjectReview(${p.id})">View</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCreateView(client) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view create-view">
+                        <div class="channel-header">
+                            <h2>#create</h2>
+                            <p>Style Blueprint for ${client.name}</p>
+                        </div>
+                        <div class="blueprint-embed">
+                            <iframe src="https://go.contentbug.io/blueprint-builder?client=${client.id}"
+                                    style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showStudioView(client) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view studio-view">
+                        <div class="channel-header">
+                            <h2>#studio</h2>
+                            <p>Recording Studio for ${client.name}</p>
+                        </div>
+                        <div class="studio-embed">
+                            <iframe src="https://go.contentbug.io/record?client=${client.id}"
+                                    style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showMeetingView(client) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view meeting-view">
+                        <div class="channel-header">
+                            <h2>#meeting</h2>
+                            <p>Video Meeting with ${client.name}</p>
+                        </div>
+                        <div class="meeting-options">
+                            <div class="meeting-card">
+                                <div class="meeting-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                    </svg>
+                                </div>
+                                <h3>Start Instant Meeting</h3>
+                                <p>Create a Zoom meeting right now</p>
+                                <button class="board-btn primary" onclick="startZoomMeeting('${client.id}')">Start Meeting</button>
+                            </div>
+                            <div class="meeting-card">
+                                <div class="meeting-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                </div>
+                                <h3>Schedule Meeting</h3>
+                                <p>Pick a date and time</p>
+                                <button class="board-btn" onclick="scheduleMeeting('${client.id}')">Schedule</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showStorageView(client) {
+            const content = document.querySelector('.project-board');
+            if (content) {
+                content.innerHTML = `
+                    <div class="channel-view storage-view">
+                        <div class="channel-header">
+                            <h2>#storage</h2>
+                            <p>Brand Assets for ${client.name}</p>
+                        </div>
+                        <div class="storage-grid">
+                            <div class="storage-section">
+                                <h3>Logos</h3>
+                                <div class="storage-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21 15 16 10 5 21"/>
+                                    </svg>
+                                    <p>No logos uploaded</p>
+                                    <button class="upload-btn">Upload</button>
+                                </div>
+                            </div>
+                            <div class="storage-section">
+                                <h3>Fonts</h3>
+                                <div class="storage-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <polyline points="4 7 4 4 20 4 20 7"/>
+                                        <line x1="9" y1="20" x2="15" y2="20"/>
+                                        <line x1="12" y1="4" x2="12" y2="20"/>
+                                    </svg>
+                                    <p>No fonts uploaded</p>
+                                    <button class="upload-btn">Upload</button>
+                                </div>
+                            </div>
+                            <div class="storage-section">
+                                <h3>Colors</h3>
+                                <div class="storage-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <circle cx="13.5" cy="6.5" r="2.5"/>
+                                        <circle cx="17.5" cy="10.5" r="2.5"/>
+                                        <circle cx="8.5" cy="7.5" r="2.5"/>
+                                        <circle cx="6.5" cy="12.5" r="2.5"/>
+                                        <path d="M12 22s8-4 8-10A8 8 0 1 0 4 12c0 6 8 10 8 10z"/>
+                                    </svg>
+                                    <p>No colors defined</p>
+                                    <button class="upload-btn">Add Colors</button>
+                                </div>
+                            </div>
+                            <div class="storage-section">
+                                <h3>Music / Audio</h3>
+                                <div class="storage-empty">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M9 18V5l12-2v13"/>
+                                        <circle cx="6" cy="18" r="3"/>
+                                        <circle cx="18" cy="16" r="3"/>
+                                    </svg>
+                                    <p>No audio files</p>
+                                    <button class="upload-btn">Upload</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function filterProjects(status) {
+            // Update filter tab states
+            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter project cards
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach(card => {
+                if (status === 'all' || card.dataset.status === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function openSubmitProject() {
+            // Could open submit project modal or navigate to submit page
+            window.open('https://go.contentbug.io/step-3-submit-project', '_blank');
+        }
+
+        function openProjectReview(projectId) {
+            // Navigate to review page for this project
+            window.open(`https://go.contentbug.io/review?project=${projectId}`, '_blank');
+        }
+
+        function startZoomMeeting(clientId) {
+            // Start Zoom meeting - integrate with Zoom API
+            alert('Starting Zoom meeting... (Zoom SDK integration pending)');
+        }
+
+        function scheduleMeeting(clientId) {
+            // Open calendar/scheduling modal
+            alert('Schedule meeting... (Calendar integration pending)');
         }
 
         // ==================== SIDEBAR & CHAT TOGGLE ====================
