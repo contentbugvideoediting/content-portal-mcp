@@ -5362,36 +5362,7 @@
                                     <span class="approved-expiry-note">30-day retention</span>
                                 </div>
                                 <div id="columnApproved">
-                                    <!-- Demo approved project with download options -->
-                                    <div class="project-card approved-card" data-project-id="201">
-                                        <div class="project-card-header">
-                                            <span class="project-card-title">Course Promo</span>
-                                            <span class="project-card-expiry">Expires in 28 days</span>
-                                        </div>
-                                        <div class="project-card-client">Sarah Chen</div>
-                                        <div class="project-card-download-options">
-                                            <button class="download-btn local" onclick="downloadProject(201, 'local')">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                                    <polyline points="7 10 12 15 17 10"/>
-                                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                                </svg>
-                                                Download
-                                            </button>
-                                            <button class="download-btn dropbox" onclick="downloadProject(201, 'dropbox')">
-                                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 6.5L6 10.25L12 14L6 17.75L0 14L6 10.25L0 6.5L6 2.75L12 6.5ZM6 19.25L12 15.5L18 19.25L12 23L6 19.25ZM12 14L18 10.25L12 6.5L18 2.75L24 6.5L18 10.25L24 14L18 17.75L12 14Z"/>
-                                                </svg>
-                                                Dropbox
-                                            </button>
-                                            <button class="download-btn gdrive" onclick="downloadProject(201, 'gdrive')">
-                                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M7.71 3.5L1.15 15L4.58 21L11.13 9.5L7.71 3.5ZM8.29 3.5L15.5 15.5H22.85L15.65 3.5H8.29ZM16.29 16.5H1.15L4.58 21H19.71L16.29 16.5Z"/>
-                                                </svg>
-                                                Drive
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <!-- Projects populated from API -->
                                 </div>
                             </div>
                         </div>
@@ -6120,73 +6091,8 @@
             'stockton@contentbug.io'
         ];
 
-        // Demo clients data (replace with API)
-        const DEMO_CLIENTS = [
-            {
-                id: 1, name: 'Jake Martinez', tier: 'creator', initials: 'JM',
-                status: 'active', online: true, hasUpdates: true, unreadCount: 3,
-                verified: true, assignedEditor: 'alex@contentbug.io',
-                projects: [
-                    { id: 101, name: 'Product Launch Video', status: 'review' },
-                    { id: 102, name: 'Instagram Reel #12', status: 'active' },
-                    { id: 103, name: 'YouTube Intro', status: 'queue' }
-                ]
-            },
-            {
-                id: 2, name: 'Sarah Chen', tier: 'pro', initials: 'SC',
-                status: 'active', online: true, hasUpdates: false, unreadCount: 0,
-                verified: true, assignedEditor: 'alex@contentbug.io',
-                projects: [
-                    { id: 201, name: 'Course Promo', status: 'approved' },
-                    { id: 202, name: 'TikTok Series Ep.3', status: 'active' }
-                ]
-            },
-            {
-                id: 3, name: 'Mike Roberts', tier: 'basic', initials: 'MR',
-                status: 'free-trial', online: false, hasUpdates: true, unreadCount: 1,
-                verified: false, assignedEditor: null,
-                projects: [
-                    { id: 301, name: 'Podcast Clip', status: 'revisions' }
-                ]
-            },
-            {
-                id: 4, name: 'Emma Davis', tier: 'growth', initials: 'ED',
-                status: 'active', online: false, hasUpdates: true, unreadCount: 5,
-                verified: true, assignedEditor: 'alex@contentbug.io',
-                projects: [
-                    { id: 401, name: 'Brand Story', status: 'review' },
-                    { id: 402, name: 'Ad Campaign V1', status: 'queue' },
-                    { id: 403, name: 'Short Form Pack', status: 'active' },
-                    { id: 404, name: 'Event Highlight', status: 'approved' }
-                ]
-            },
-            {
-                id: 5, name: 'Mark Brodinsky', tier: 'basic', initials: 'MB',
-                status: 'free-trial', online: false, hasUpdates: false, unreadCount: 0,
-                verified: false, assignedEditor: null, isNew: true,
-                projects: []
-            },
-            {
-                id: 6, name: 'Chris Rasmussen', tier: 'creator', initials: 'CR',
-                status: 'free-trial', online: true, hasUpdates: true, unreadCount: 2,
-                verified: false, assignedEditor: null, isNew: true,
-                projects: []
-            },
-            {
-                id: 7, name: 'Anthony Santana', tier: 'pro', initials: 'AS',
-                status: 'active', online: true, hasUpdates: true, unreadCount: 4,
-                verified: true, assignedEditor: 'demi@contentbug.io',
-                projects: [
-                    { id: 701, name: 'Course Launch', status: 'active' }
-                ]
-            },
-            {
-                id: 8, name: 'Lisa Thompson', tier: 'growth', initials: 'LT',
-                status: 'canceled', online: false, hasUpdates: false, unreadCount: 0,
-                verified: true, assignedEditor: 'alex@contentbug.io',
-                projects: []
-            },
-        ];
+        // Clients array - populated from API/database
+        let clients = [];
 
         // ==================== STATE ====================
         let currentUser = null;
@@ -6204,8 +6110,8 @@
 
             currentUser = {
                 role: localStorage.getItem('cb_role') || 'client',
-                name: localStorage.getItem('cb_name') || 'Demo User',
-                firstName: localStorage.getItem('cb_first_name') || 'Demo',
+                name: localStorage.getItem('cb_name') || 'User',
+                firstName: localStorage.getItem('cb_first_name') || 'User',
                 email: storedEmail,
                 phone: localStorage.getItem('cb_phone') || '',
                 clientId: parseInt(localStorage.getItem('cb_client_id')) || 1,
@@ -6220,28 +6126,13 @@
                 currentUser.plan = 'owner';
                 currentUser.clientId = null;
                 currentUser.activeSlots = 999;
-                // Update localStorage to keep it consistent
                 localStorage.setItem('cb_role', 'owner');
             }
 
-            // Demo mode - DEFAULT TO OWNER for full visibility if no user logged in
+            // Redirect to login if no user - must be logged in
             if (!currentUser.email) {
-                currentUser = {
-                    role: 'owner',
-                    name: 'Sean Conley',
-                    firstName: 'Sean',
-                    email: 'sean@contentbug.io',
-                    phone: '385-200-7582',
-                    clientId: null,
-                    plan: 'owner',
-                    activeSlots: 999,
-                    profilePic: null
-                };
-                // Store demo user in localStorage
-                localStorage.setItem('cb_email', currentUser.email);
-                localStorage.setItem('cb_name', currentUser.name);
-                localStorage.setItem('cb_first_name', currentUser.firstName);
-                localStorage.setItem('cb_role', currentUser.role);
+                window.location.href = '/login';
+                return;
             }
         }
 
@@ -6346,10 +6237,10 @@
             container.classList.remove('hidden');
 
             // Filter clients based on role
-            let clientsToShow = DEMO_CLIENTS;
+            let clientsToShow = clients;
             if (role === ROLES.EDITOR) {
                 // Editors only see assigned clients
-                clientsToShow = DEMO_CLIENTS.filter(c => c.assignedEditor === currentUser.email);
+                clientsToShow = clients.filter(c => c.assignedEditor === currentUser.email);
             }
 
             // Group by status
@@ -6493,7 +6384,7 @@
                 // Update selected client
                 if (section.classList.contains('expanded')) {
                     selectedClientId = clientId;
-                    const client = DEMO_CLIENTS.find(c => c.id === clientId);
+                    const client = clients.find(c => c.id === clientId);
                     if (client) {
                         document.getElementById('serverNameDisplay').textContent = client.name;
                     }
@@ -6506,7 +6397,7 @@
         function selectClientChannel(clientId, channel) {
             selectedClientId = clientId;
             selectedChannel = channel;
-            const client = DEMO_CLIENTS.find(c => c.id === clientId);
+            const client = clients.find(c => c.id === clientId);
 
             if (client) {
                 document.getElementById('serverNameDisplay').textContent = client.name;
@@ -6815,7 +6706,7 @@
         }
 
         function getClientById(clientId) {
-            return mockClients.find(c => c.id == clientId) || mockClients[0];
+            return clients.find(c => c.id == clientId) || null;
         }
 
         function showMeetingView(client) {
@@ -7250,7 +7141,7 @@
             // Context indicator (team only - shows selected client)
             if (isTeam) {
                 // Don't auto-select for editors, let them pick
-                // selectClient(DEMO_CLIENTS[0].id);
+                // selectClient(clients[0].id);
             }
 
             // For clients, show their own data
@@ -7266,9 +7157,9 @@
             const container = document.getElementById('clientListItems');
             const count = document.getElementById('clientCount');
 
-            count.textContent = DEMO_CLIENTS.length;
+            count.textContent = clients.length;
 
-            container.innerHTML = DEMO_CLIENTS.map(client => {
+            container.innerHTML = clients.map(client => {
                 const isExpanded = selectedClientId === client.id;
                 const projectCount = client.projects.length;
 
@@ -7327,7 +7218,7 @@
                 document.getElementById('currentContext').classList.add('hidden');
             } else {
                 selectedClientId = clientId;
-                const client = DEMO_CLIENTS.find(c => c.id === clientId);
+                const client = clients.find(c => c.id === clientId);
                 if (client) {
                     document.getElementById('currentContext').classList.remove('hidden');
                     document.getElementById('contextName').textContent = client.name;
@@ -7629,7 +7520,7 @@
 
         function selectClient(clientId) {
             selectedClientId = clientId;
-            const client = DEMO_CLIENTS.find(c => c.id === clientId);
+            const client = clients.find(c => c.id === clientId);
 
             if (client) {
                 // Update context indicator
@@ -7650,14 +7541,14 @@
         }
 
         function loadClientData(clientId) {
-            // Placeholder - would load from API
+            // TODO: Load from API
             console.log('Loading data for client:', clientId);
 
-            // Demo stats
-            document.getElementById('statQueue').textContent = Math.floor(Math.random() * 5);
-            document.getElementById('statActive').textContent = Math.floor(Math.random() * 3) + 1;
-            document.getElementById('statReview').textContent = Math.floor(Math.random() * 2);
-            document.getElementById('statCompleted').textContent = Math.floor(Math.random() * 10) + 5;
+            // Initial stats - will be populated from API
+            document.getElementById('statQueue').textContent = '0';
+            document.getElementById('statActive').textContent = '0';
+            document.getElementById('statReview').textContent = '0';
+            document.getElementById('statCompleted').textContent = '0';
         }
 
         // ==================== DROPDOWNS ====================
@@ -7773,13 +7664,8 @@
         // Editors: See ONLY their assigned clients' project cards
         // Admin/Owners: See ALL clients' project cards (can see all channels)
 
-        const ALL_PROJECTS = [
-            { id: 101, name: 'Product Launch Video', status: 'review', clientId: 1, clientName: 'Jake Martinez', assignedEditor: 'alex@contentbug.io', time: '2 hours ago', isNew: true },
-            { id: 102, name: 'Instagram Reel #12', status: 'active', clientId: 1, clientName: 'Jake Martinez', assignedEditor: 'alex@contentbug.io', time: '1 day ago', isNew: false },
-            { id: 201, name: 'Course Promo', status: 'approved', clientId: 2, clientName: 'Sarah Chen', assignedEditor: 'mike@contentbug.io', time: '1 hour ago', isNew: true },
-            { id: 301, name: 'Podcast Clip', status: 'revisions', clientId: 3, clientName: 'Mike Roberts', assignedEditor: 'alex@contentbug.io', time: '30 mins ago', isNew: true },
-            { id: 401, name: 'Brand Story', status: 'review', clientId: 4, clientName: 'Emma Davis', assignedEditor: 'mike@contentbug.io', time: '5 hours ago', isNew: true },
-        ];
+        // Projects array - populated from API/database
+        let projects = [];
 
         function renderProjectCards() {
             const section = document.getElementById('projectCardsSection');
@@ -7795,15 +7681,15 @@
             if (role === ROLES.CLIENT) {
                 // Clients: Only THEIR projects with status updates
                 title = 'Your Updates';
-                projectsToShow = ALL_PROJECTS.filter(p => p.clientId === currentUser.clientId && p.isNew);
+                projectsToShow = projects.filter(p => p.clientId === currentUser.clientId && p.isNew);
             } else if (role === ROLES.EDITOR) {
                 // Editors: Only ASSIGNED clients' projects
                 title = 'Your Clients';
-                projectsToShow = ALL_PROJECTS.filter(p => p.assignedEditor === currentUser.email);
+                projectsToShow = projects.filter(p => p.assignedEditor === currentUser.email);
             } else {
                 // Admin/Owner: ALL project cards
                 title = 'All Updates';
-                projectsToShow = ALL_PROJECTS.filter(p => p.isNew || p.status === 'review' || p.status === 'revisions');
+                projectsToShow = projects.filter(p => p.isNew || p.status === 'review' || p.status === 'revisions');
             }
 
             titleEl.textContent = title;
@@ -8041,21 +7927,8 @@
             { channelId: 'feedback', name: 'feedback', type: 'text', unreadCount: 0 }
         ];
 
-        // Demo messages for local testing
-        const DEMO_MESSAGES = {
-            'general': [
-                { id: 1, senderName: 'Sean Conley', senderRole: 'owner', content: 'Welcome to the Content Bug team chat! 🎉', createdAt: new Date(Date.now() - 3600000).toISOString(), senderAvatar: null },
-                { id: 2, senderName: 'Alex Editor', senderRole: 'editor', content: 'Hey everyone! Ready to crush some edits today.', createdAt: new Date(Date.now() - 1800000).toISOString(), senderAvatar: null },
-                { id: 3, senderName: 'System', senderRole: 'system', content: 'New team member Jake Martinez has joined the portal.', createdAt: new Date(Date.now() - 900000).toISOString(), senderAvatar: null }
-            ],
-            'project-updates': [
-                { id: 4, senderName: 'Alex Editor', senderRole: 'editor', content: 'Just finished the Product Launch Video for Jake - ready for review!', createdAt: new Date(Date.now() - 7200000).toISOString(), senderAvatar: null },
-                { id: 5, senderName: 'Mike Chen', senderRole: 'editor', content: 'Course Promo for Sarah is approved and delivered. Great feedback!', createdAt: new Date(Date.now() - 3600000).toISOString(), senderAvatar: null }
-            ],
-            'feedback': [
-                { id: 6, senderName: 'Jake Martinez', senderRole: 'client', content: 'The last edit was amazing! Love the transitions.', createdAt: new Date(Date.now() - 86400000).toISOString(), senderAvatar: null }
-            ]
-        };
+        // Messages storage - populated from API/database
+        let channelMessages = {};
 
         // Select a channel
         function selectChannel(channelId) {
@@ -8122,14 +7995,14 @@
                     chatMessages = data.messages || [];
                     renderMessages(chatMessages);
                 } else {
-                    // Fallback to demo messages
-                    console.log('[Chat] API not available, using demo messages');
-                    chatMessages = DEMO_MESSAGES[channelId] || [];
+                    // Fallback to local storage
+                    console.log('[Chat] API not available, using local storage');
+                    chatMessages = channelMessages[channelId] || [];
                     renderMessages(chatMessages);
                 }
             } catch (err) {
-                console.log('[Chat] Error loading messages, using demo:', err);
-                chatMessages = DEMO_MESSAGES[channelId] || [];
+                console.log('[Chat] Error loading messages, using local storage:', err);
+                chatMessages = channelMessages[channelId] || [];
                 renderMessages(chatMessages);
             }
         }
@@ -8255,7 +8128,7 @@
             input.focus();
         }
 
-        // Add message locally (for demo/offline mode)
+        // Add message locally (for offline mode)
         function addLocalMessage(content) {
             const newMessage = {
                 id: Date.now(),
@@ -8269,11 +8142,11 @@
             chatMessages.push(newMessage);
             renderMessages(chatMessages);
 
-            // Also update demo messages for persistence in session
-            if (!DEMO_MESSAGES[currentChannel]) {
-                DEMO_MESSAGES[currentChannel] = [];
+            // Also update local messages for persistence in session
+            if (!channelMessages[currentChannel]) {
+                channelMessages[currentChannel] = [];
             }
-            DEMO_MESSAGES[currentChannel].push(newMessage);
+            channelMessages[currentChannel].push(newMessage);
         }
 
         // Create a new channel (admin only)
@@ -8294,7 +8167,7 @@
             channelList.insertAdjacentHTML('beforeend', newChannelHtml);
 
             // Initialize empty messages for the channel
-            DEMO_MESSAGES[channelId] = [];
+            channelMessages[channelId] = [];
 
             // Select the new channel
             selectChannel(channelId);
@@ -8377,10 +8250,10 @@
                     const data = await response.json();
                     renderFullChatMessages(data.messages || []);
                 } else {
-                    renderFullChatMessages(DEMO_MESSAGES[channelId] || []);
+                    renderFullChatMessages(channelMessages[channelId] || []);
                 }
             } catch (err) {
-                renderFullChatMessages(DEMO_MESSAGES[channelId] || []);
+                renderFullChatMessages(channelMessages[channelId] || []);
             }
         }
 
@@ -8453,9 +8326,9 @@
             };
 
             // Re-render with new message
-            const existingMessages = DEMO_MESSAGES[fullChatChannel] || [];
+            const existingMessages = channelMessages[fullChatChannel] || [];
             existingMessages.push(newMsg);
-            DEMO_MESSAGES[fullChatChannel] = existingMessages;
+            channelMessages[fullChatChannel] = existingMessages;
             renderFullChatMessages(existingMessages);
 
             // Also update quick chat if on same channel
@@ -8547,11 +8420,8 @@
         }
 
         // ==================== EDITOR MANAGEMENT ====================
-        const DEMO_EDITORS = [
-            { id: 1, name: 'Alex Johnson', email: 'alex@contentbug.io', status: 'active', initials: 'AJ' },
-            { id: 2, name: 'Mike Chen', email: 'mike@contentbug.io', status: 'active', initials: 'MC' },
-            { id: 3, name: 'Sarah Williams', email: 'sarah@contentbug.io', status: 'pending', initials: 'SW' },
-        ];
+        // Editors array - populated from API/database
+        let editors = [];
 
         function openEditorMgmt() {
             document.getElementById('editorMgmtModal').classList.add('visible');
@@ -8564,9 +8434,19 @@
 
         function renderEditorList() {
             const container = document.getElementById('editorList');
-            document.getElementById('editorCount').textContent = `${DEMO_EDITORS.length} editors`;
+            document.getElementById('editorCount').textContent = `${editors.length} editors`;
 
-            container.innerHTML = DEMO_EDITORS.map(editor => `
+            if (editors.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                        <p>No editors yet</p>
+                        <p style="font-size: 13px; margin-top: 8px;">Invite your first editor using the form above</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = editors.map(editor => `
                 <div class="editor-item" data-id="${editor.id}">
                     <div class="editor-item-avatar">${editor.initials}</div>
                     <div class="editor-item-info">
@@ -8612,7 +8492,7 @@
         }
 
         function editEditor(id) {
-            const editor = DEMO_EDITORS.find(e => e.id === id);
+            const editor = editors.find(e => e.id === id);
             if (editor) {
                 console.log('Editing editor:', editor);
                 alert(`Edit ${editor.name}'s profile (coming soon)`);
@@ -8620,7 +8500,7 @@
         }
 
         function removeEditor(id) {
-            const editor = DEMO_EDITORS.find(e => e.id === id);
+            const editor = editors.find(e => e.id === id);
             if (editor && confirm(`Are you sure you want to remove ${editor.name} from the team?`)) {
                 console.log('Removing editor:', editor);
                 // Would call API to remove
