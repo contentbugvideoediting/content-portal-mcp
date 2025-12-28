@@ -5938,7 +5938,7 @@
                         </div>
                         <div class="invite-divider">or share link</div>
                         <div class="invite-link-box">
-                            <input type="text" class="invite-link-input" id="inviteLinkInput" readonly value="https://go.contentbug.io/join/abc123xyz">
+                            <input type="text" class="invite-link-input" id="inviteLinkInput" readonly value="https://content-portal-mcp-production.up.railway.app/join/abc123xyz">
                             <button class="copy-link-btn" onclick="copyInviteLink()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -6797,7 +6797,7 @@
                             <p>Style Blueprint for ${client.name}</p>
                         </div>
                         <div class="blueprint-embed">
-                            <iframe src="https://go.contentbug.io/blueprint-builder?client=${client.id}"
+                            <iframe src="https://content-portal-mcp-production.up.railway.app/blueprint-builder?client=${client.id}"
                                     style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
                         </div>
                     </div>
@@ -6815,7 +6815,7 @@
                             <p>Submit a new project for ${client.name}</p>
                         </div>
                         <div class="project-request-embed">
-                            <iframe src="https://go.contentbug.io/submit-project?client=${client.id}"
+                            <iframe src="https://content-portal-mcp-production.up.railway.app/submit-project?client=${client.id}"
                                     style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
                         </div>
                     </div>
@@ -6935,7 +6935,7 @@
                             <h2>Recording Studio</h2>
                         </div>
                         <div class="studio-embed">
-                            <iframe src="https://go.contentbug.io/record?client=\${clientId}"
+                            <iframe src="https://content-portal-mcp-production.up.railway.app/record?client=\${clientId}"
                                     style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
                         </div>
                     </div>
@@ -7086,12 +7086,12 @@
 
         function openSubmitProject() {
             // Could open submit project modal or navigate to submit page
-            window.open('https://go.contentbug.io/step-3-submit-project', '_blank');
+            window.open('https://content-portal-mcp-production.up.railway.app/step-3-submit-project', '_blank');
         }
 
         function openProjectReview(projectId) {
             // Navigate to review page for this project
-            window.open(`https://go.contentbug.io/review?project=${projectId}`, '_blank');
+            window.open(`https://content-portal-mcp-production.up.railway.app/review?project=${projectId}`, '_blank');
         }
 
         function startZoomMeeting(clientId) {
@@ -8756,7 +8756,7 @@
 
             // Generate invite link
             const inviteCode = Math.random().toString(36).substring(2, 10);
-            const inviteLink = `https://go.contentbug.io/editor-signup?invite=${inviteCode}`;
+            const inviteLink = `https://content-portal-mcp-production.up.railway.app/editor-signup?invite=${inviteCode}`;
 
             console.log('Sending editor invite to:', email);
             console.log('Invite link:', inviteLink);
