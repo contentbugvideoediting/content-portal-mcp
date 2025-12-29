@@ -5167,14 +5167,21 @@ app.post('/api/lead/create', async (req, res) => {
 🕐 Submitted: ${new Date().toLocaleString()}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
-    // Build contact payload (no tags - just clean contact data)
+    // Build contact payload with custom fields
     const contactPayload = {
       firstName: firstName || '',
       lastName: lastName || '',
       email,
       phone: phone || '',
       source: source || 'Free Trial Page',
-      locationId: GHL_LOCATION_ID
+      locationId: GHL_LOCATION_ID,
+      // Custom fields (using the field keys from GHL)
+      customFields: [
+        { key: 'contact.video_type', field_value: video_type || '' },
+        { key: 'contact.video_output', field_value: video_count || '' },
+        { key: 'contact.start_timeline', field_value: timeline || '' },
+        { key: 'contact.footage_ready', field_value: footage_ready || '' }
+      ]
     };
 
     let result;
