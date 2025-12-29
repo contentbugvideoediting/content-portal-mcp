@@ -220,7 +220,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-make-secret', 'x-ghl-secret']
 }));
 
-app.use(bodyParser.json({ limit: '1mb' }));
+// Skip body parser for Stripe webhook (needs raw body for signature verification)
+app.use((req, res, next) => {
+  if (req.originalUrl === '/webhook/stripe') {
+    next();
+  } else {
+    bodyParser.json({ limit: '1mb' })(req, res, next);
+  }
+});
 app.use(cookieParser(SESSION_SECRET));
 
 // Trust proxy for rate limiting behind Railway/nginx
