@@ -5181,7 +5181,7 @@ app.post('/api/lead/create', async (req, res) => {
         { key: 'contact.video_output', field_value: video_count || '' },
         { key: 'contact.start_timeline', field_value: timeline || '' },
         { key: 'contact.footage_ready', field_value: footage_ready || '' },
-        { key: 'contact.appointment_name', field_value: 'Demo Call' },
+        { key: 'contact.appointment_name', field_value: 'Content Bug | Free Demo' },
         { key: 'contact.appointment_date', field_value: formattedDate },
         { key: 'contact.appointment_time', field_value: demo_call_time || '' },
         { key: 'contact.appointment_location', field_value: 'Zoom (link sent via email)' },
