@@ -5102,6 +5102,248 @@ async function updateGHLContact(email, updates) {
   }
 }
 
+// ============================================
+// FREE TRIAL LEAD CAPTURE ENDPOINT
+// ============================================
+// Creates/updates GHL contact + sends email notification to Sean
+
+app.post('/api/lead/create', async (req, res) => {
+  try {
+    const {
+      firstName, lastName, name, email, phone, source,
+      demo_call_date, demo_call_time,
+      video_type, video_count, timeline, footage_ready,
+      lead_source
+    } = req.body.data || req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    if (!GHL_PRIVATE_TOKEN || !GHL_LOCATION_ID) {
+      console.warn('[Lead] GHL credentials not configured');
+      return res.status(500).json({ error: 'GHL not configured' });
+    }
+
+    // Format the demo call date nicely
+    const callDate = demo_call_date ? new Date(demo_call_date + 'T12:00:00') : null;
+    const formattedDate = callDate ? callDate.toLocaleDateString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric'
+    }) : 'Not scheduled';
+
+    // Check if contact exists
+    let contactId = null;
+    let isNewContact = true;
+    try {
+      const searchRes = await axios.get(
+        `${GHL_API_URL}/contacts/search/duplicate?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28'
+          }
+        }
+      );
+      contactId = searchRes.data?.contact?.id;
+      if (contactId) isNewContact = false;
+    } catch (e) {
+      // Contact doesn't exist, we'll create it
+    }
+
+    // Build qualification notes to store in contact
+    const qualNotes = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎬 FREE TRIAL LEAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 Demo Call: ${formattedDate} at ${demo_call_time || 'TBD'}
+
+📋 QUALIFICATION:
+• Video Type: ${video_type || 'Not specified'}
+• Videos/Month: ${video_count || 'Not specified'}
+• Timeline: ${timeline || 'Not specified'}
+• Footage Ready: ${footage_ready || 'Not specified'}
+
+📍 Source: ${lead_source || 'website'}
+🕐 Submitted: ${new Date().toLocaleString()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+    // Build contact payload (no tags - just clean contact data)
+    const contactPayload = {
+      firstName: firstName || '',
+      lastName: lastName || '',
+      email,
+      phone: phone || '',
+      source: source || 'Free Trial Page',
+      locationId: GHL_LOCATION_ID
+    };
+
+    let result;
+    if (contactId) {
+      // Update existing contact
+      result = await axios.put(
+        `${GHL_API_URL}/contacts/${contactId}`,
+        contactPayload,
+        {
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(`[Lead] Updated GHL contact: ${email}`);
+    } else {
+      // Create new contact
+      result = await axios.post(
+        `${GHL_API_URL}/contacts/`,
+        contactPayload,
+        {
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      contactId = result.data?.contact?.id;
+      console.log(`[Lead] Created GHL contact: ${email} (${contactId})`);
+    }
+
+    // Add qualification note to contact
+    if (contactId) {
+      try {
+        await axios.post(
+          `${GHL_API_URL}/contacts/${contactId}/notes`,
+          { body: qualNotes },
+          {
+            headers: {
+              'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+              'Version': '2021-07-28',
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+      } catch (noteErr) {
+        console.warn('[Lead] Could not add note:', noteErr.message);
+      }
+    }
+
+    // ========================================
+    // SEND EMAIL NOTIFICATION TO SEAN
+    // ========================================
+    const emailSubject = `🎬 New Free Trial Lead: ${firstName || name || email}`;
+    const emailBody = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0f; color: #fff; border-radius: 16px; overflow: hidden;">
+  <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 24px 32px;">
+    <h1 style="margin: 0; font-size: 24px; font-weight: 700;">🎬 New Free Trial Lead</h1>
+  </div>
+
+  <div style="padding: 32px;">
+    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+      <h2 style="margin: 0 0 12px; font-size: 20px; color: #60a5fa;">${firstName || ''} ${lastName || ''}</h2>
+      <p style="margin: 4px 0; color: #94a3b8;">📧 ${email}</p>
+      ${phone ? `<p style="margin: 4px 0; color: #94a3b8;">📱 ${phone}</p>` : ''}
+    </div>
+
+    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+      <h3 style="margin: 0 0 8px; font-size: 16px; color: #10b981;">📅 Demo Call Scheduled</h3>
+      <p style="margin: 0; font-size: 18px; font-weight: 600; color: #fff;">${formattedDate} at ${demo_call_time || 'TBD'}</p>
+    </div>
+
+    <div style="background: rgba(30, 30, 45, 0.5); border-radius: 12px; padding: 20px;">
+      <h3 style="margin: 0 0 16px; font-size: 16px; color: #60a5fa;">📋 Qualification Answers</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; color: #64748b; width: 40%;">Video Type:</td>
+          <td style="padding: 8px 0; color: #fff; font-weight: 500;">${video_type || 'Not specified'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #64748b;">Videos/Month:</td>
+          <td style="padding: 8px 0; color: #fff; font-weight: 500;">${video_count || 'Not specified'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #64748b;">Timeline:</td>
+          <td style="padding: 8px 0; color: #fff; font-weight: 500;">${timeline || 'Not specified'}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #64748b;">Footage Ready:</td>
+          <td style="padding: 8px 0; color: #fff; font-weight: 500;">${footage_ready || 'Not specified'}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+      <a href="https://app.gohighlevel.com/v2/location/${GHL_LOCATION_ID}/contacts/detail/${contactId || ''}"
+         style="display: inline-block; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        View in GHL →
+      </a>
+    </div>
+  </div>
+
+  <div style="background: rgba(30, 30, 45, 0.8); padding: 16px 32px; text-align: center; color: #64748b; font-size: 12px;">
+    ${isNewContact ? '✨ New Contact' : '🔄 Existing Contact Updated'} • ${new Date().toLocaleString()}
+  </div>
+</div>`;
+
+    // Send email via GHL
+    try {
+      await axios.post(
+        `${GHL_API_URL}/conversations/messages`,
+        {
+          type: 'Email',
+          locationId: GHL_LOCATION_ID,
+          contactId: contactId,
+          // Send to Sean's email
+          emailTo: 'contentbug@contentbug.io',
+          subject: emailSubject,
+          html: emailBody,
+          emailFrom: 'Content Bug <notifications@contentbug.io>'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28',
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(`[Lead] Email notification sent to contentbug@contentbug.io`);
+    } catch (emailErr) {
+      console.warn('[Lead] Could not send email notification:', emailErr.response?.data || emailErr.message);
+
+      // Fallback: Try using GHL webhook to trigger email
+      try {
+        await axios.post(
+          'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9',
+          {
+            event: 'new_free_trial_lead',
+            contact_id: contactId,
+            firstName, lastName, email, phone,
+            demo_call_date: formattedDate,
+            demo_call_time,
+            video_type, video_count, timeline, footage_ready,
+            source: lead_source
+          }
+        );
+        console.log('[Lead] Fallback webhook sent');
+      } catch (hookErr) {
+        console.warn('[Lead] Webhook fallback also failed');
+      }
+    }
+
+    return res.json({
+      success: true,
+      contact_id: contactId,
+      action: isNewContact ? 'created' : 'updated',
+      email_sent: true
+    });
+
+  } catch (err) {
+    console.error('[Lead] Error:', err.response?.data || err.message);
+    return res.status(500).json({ error: 'Failed to create lead', details: err.response?.data || err.message });
+  }
+});
+
 // Helper: Update Airtable client record
 async function updateAirtableClient(email, updates) {
   try {
@@ -5330,6 +5572,175 @@ app.get('/api/stripe/status', (req, res) => {
     ghlSync: !!(GHL_PRIVATE_TOKEN && GHL_LOCATION_ID),
     airtableSync: !!(AIRTABLE_API_KEY && AIRTABLE_BASE_ID)
   });
+});
+
+// ============================================
+// GHL CONTACT API (for signup flow)
+// ============================================
+
+// POST /api/ghl/contact - Create or update GHL contact
+app.post('/api/ghl/contact', async (req, res) => {
+  try {
+    const { email, firstName, lastName, phone, tags, customFields, source } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if GHL is configured
+    if (!GHL_PRIVATE_TOKEN || !GHL_LOCATION_ID) {
+      console.warn('[GHL Contact] GHL not configured, skipping');
+      return res.json({ success: true, contact: null, message: 'GHL not configured' });
+    }
+
+    let contactId = null;
+    let isNew = false;
+
+    // Search for existing contact
+    try {
+      const searchRes = await axios.get(
+        `${GHL_API_URL}/contacts/search/duplicate`,
+        {
+          params: { locationId: GHL_LOCATION_ID, email: normalizedEmail },
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28'
+          },
+          timeout: 10000
+        }
+      );
+
+      if (searchRes?.data?.contact?.id) {
+        contactId = searchRes.data.contact.id;
+      }
+    } catch (e) {
+      console.log('[GHL Contact] Search failed, will create new:', e.message);
+    }
+
+    // Build contact payload
+    const contactPayload = {
+      locationId: GHL_LOCATION_ID,
+      email: normalizedEmail
+    };
+
+    if (firstName) contactPayload.firstName = firstName;
+    if (lastName) contactPayload.lastName = lastName;
+    if (phone) contactPayload.phone = phone;
+    if (source) contactPayload.source = source;
+
+    // Handle tags
+    const allTags = tags || [];
+    if (source === 'Free Trial Signup' && !allTags.includes('free-trial-signup')) {
+      allTags.push('free-trial-signup');
+    }
+    if (allTags.length > 0) {
+      contactPayload.tags = allTags;
+    }
+
+    // Handle custom fields
+    if (customFields && typeof customFields === 'object') {
+      contactPayload.customFields = [];
+      for (const [key, value] of Object.entries(customFields)) {
+        // Map friendly names to field IDs
+        const fieldMappings = {
+          'contact.contact_status_mc': 'rWxj0SP4iEEOW4DBQCGq',
+          'contact.free_trial_status_mc': 'WHEVlDPKPREqv4buA8Zr',
+          'contact.payment_status_mc': 'ZjmC4pdl36axKoCPJuDh',
+          'contact.subscription_status_mc': 'Ghjqnou2JlvisuhyEXBl'
+        };
+        const fieldId = fieldMappings[key] || key;
+        contactPayload.customFields.push({ id: fieldId, value: value });
+      }
+    }
+
+    let result;
+
+    if (contactId) {
+      // Update existing contact
+      const updateRes = await axios.put(
+        `${GHL_API_URL}/contacts/${contactId}`,
+        contactPayload,
+        {
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28',
+            'Content-Type': 'application/json'
+          },
+          timeout: 15000
+        }
+      );
+      result = updateRes.data;
+      console.log(`[GHL Contact] Updated existing contact: ${contactId}`);
+    } else {
+      // Create new contact
+      isNew = true;
+      const createRes = await axios.post(
+        `${GHL_API_URL}/contacts/`,
+        contactPayload,
+        {
+          headers: {
+            'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+            'Version': '2021-07-28',
+            'Content-Type': 'application/json'
+          },
+          timeout: 15000
+        }
+      );
+      result = createRes.data;
+      contactId = result?.contact?.id;
+      console.log(`[GHL Contact] Created new contact: ${contactId}`);
+    }
+
+    res.json({
+      success: true,
+      contact: result?.contact || { id: contactId },
+      isNew: isNew
+    });
+
+  } catch (err) {
+    console.error('[GHL Contact] Error:', err.response?.data || err.message);
+    // Don't fail the request - GHL sync is secondary
+    res.json({
+      success: false,
+      error: err.response?.data?.message || err.message,
+      contact: null
+    });
+  }
+});
+
+// GET /api/ghl/contact/:email - Get contact by email
+app.get('/api/ghl/contact/:email', async (req, res) => {
+  try {
+    const email = req.params.email.toLowerCase().trim();
+
+    if (!GHL_PRIVATE_TOKEN || !GHL_LOCATION_ID) {
+      return res.status(503).json({ error: 'GHL not configured' });
+    }
+
+    const searchRes = await axios.get(
+      `${GHL_API_URL}/contacts/search/duplicate`,
+      {
+        params: { locationId: GHL_LOCATION_ID, email: email },
+        headers: {
+          'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+          'Version': '2021-07-28'
+        },
+        timeout: 10000
+      }
+    );
+
+    if (searchRes?.data?.contact) {
+      res.json({ contact: searchRes.data.contact });
+    } else {
+      res.status(404).json({ error: 'Contact not found' });
+    }
+
+  } catch (err) {
+    console.error('[GHL Contact] Lookup error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ============================================
