@@ -5241,6 +5241,59 @@ app.post('/api/lead/create', async (req, res) => {
     }
 
     // ========================================
+    // CREATE GHL CALENDAR APPOINTMENT
+    // ========================================
+    let appointmentId = null;
+    if (contactId && demo_call_date && demo_call_time) {
+      try {
+        // Parse time like "10:30 AM" to 24hr format
+        const timeParts = demo_call_time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (timeParts) {
+          let hours = parseInt(timeParts[1]);
+          const minutes = parseInt(timeParts[2]);
+          const period = timeParts[3].toUpperCase();
+
+          if (period === 'PM' && hours !== 12) hours += 12;
+          if (period === 'AM' && hours === 12) hours = 0;
+
+          // Create start time in ISO format (US/Central timezone)
+          const startDate = new Date(`${demo_call_date}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`);
+          // End time is 30 minutes later
+          const endDate = new Date(startDate.getTime() + 30 * 60 * 1000);
+
+          const appointmentPayload = {
+            calendarId: 'jMEjaEOpcdbZDvcQFXGY', // Content Bug Free Demo calendar
+            locationId: GHL_LOCATION_ID,
+            contactId: contactId,
+            startTime: startDate.toISOString(),
+            endTime: endDate.toISOString(),
+            title: 'Content Bug | Free Demo',
+            appointmentStatus: 'confirmed',
+            assignedUserId: '', // Will use calendar's default
+            address: 'Zoom (link sent via email)',
+            notes: `${appointment_notes ? 'Lead Notes: ' + appointment_notes + '\n\n' : ''}Qualification:\n• Video Type: ${video_type || 'N/A'}\n• Videos/Month: ${video_count || 'N/A'}\n• Timeline: ${timeline || 'N/A'}\n• Footage Ready: ${footage_ready || 'N/A'}`
+          };
+
+          const apptResult = await axios.post(
+            `${GHL_API_URL}/calendars/events/appointments`,
+            appointmentPayload,
+            {
+              headers: {
+                'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+                'Version': '2021-07-28',
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+          appointmentId = apptResult.data?.id || apptResult.data?.appointment?.id;
+          console.log(`[Lead] Created GHL appointment: ${appointmentId} for ${formattedDate} at ${demo_call_time}`);
+        }
+      } catch (apptErr) {
+        console.warn('[Lead] Could not create appointment:', apptErr.response?.data || apptErr.message);
+      }
+    }
+
+    // ========================================
     // SEND EMAIL NOTIFICATION TO SEAN
     // ========================================
     const emailSubject = `🎬 New Free Trial Lead: ${firstName || name || email}`;
@@ -5353,7 +5406,9 @@ app.post('/api/lead/create', async (req, res) => {
     return res.json({
       success: true,
       contact_id: contactId,
+      appointment_id: appointmentId,
       action: isNewContact ? 'created' : 'updated',
+      appointment_created: !!appointmentId,
       email_sent: true
     });
 
