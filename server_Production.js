@@ -5111,7 +5111,7 @@ app.post('/api/lead/create', async (req, res) => {
   try {
     const {
       firstName, lastName, name, email, phone, source,
-      demo_call_date, demo_call_time,
+      demo_call_date, demo_call_time, appointment_notes,
       video_type, video_count, timeline, footage_ready,
       lead_source
     } = req.body.data || req.body;
@@ -5180,7 +5180,12 @@ app.post('/api/lead/create', async (req, res) => {
         { key: 'contact.video_type', field_value: video_type || '' },
         { key: 'contact.video_output', field_value: video_count || '' },
         { key: 'contact.start_timeline', field_value: timeline || '' },
-        { key: 'contact.footage_ready', field_value: footage_ready || '' }
+        { key: 'contact.footage_ready', field_value: footage_ready || '' },
+        { key: 'contact.appointment_name', field_value: 'Demo Call' },
+        { key: 'contact.appointment_date', field_value: formattedDate },
+        { key: 'contact.appointment_time', field_value: demo_call_time || '' },
+        { key: 'contact.appointment_location', field_value: 'Zoom (link sent via email)' },
+        { key: 'contact.appointment_notes', field_value: appointment_notes || '' }
       ]
     };
 
@@ -5278,6 +5283,13 @@ app.post('/api/lead/create', async (req, res) => {
         </tr>
       </table>
     </div>
+
+    ${appointment_notes ? `
+    <div style="background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); border-radius: 12px; padding: 20px; margin-top: 16px;">
+      <h3 style="margin: 0 0 8px; font-size: 16px; color: #f97316;">📝 Lead's Notes</h3>
+      <p style="margin: 0; color: #fff; white-space: pre-wrap;">${appointment_notes}</p>
+    </div>
+    ` : ''}
 
     <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
       <a href="https://app.gohighlevel.com/v2/location/${GHL_LOCATION_ID}/contacts/detail/${contactId || ''}"
