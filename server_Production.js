@@ -247,9 +247,14 @@ app.use(globalLimiter);
 app.get('/healthz', (req, res) => res.json({
   ok: true,
   ts: Date.now(),
-  version: 'production-2.5.1',
+  version: 'production-2.6.0',
+  build: '2024-12-29',
   auth: true,
   portal: true,
+  stripe: {
+    configured: !!STRIPE_SECRET_KEY,
+    webhookVerification: !!STRIPE_WEBHOOK_SECRET
+  },
   drive: {
     ready: driveServiceReady,
     error: driveServiceReady ? null : driveInitError
