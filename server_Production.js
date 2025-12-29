@@ -5012,6 +5012,315 @@ app.post('/api/zoom/webhook', async (req, res) => {
 });
 
 // ============================================
+// STRIPE WEBHOOK - PAYMENT & SUBSCRIPTION SYNC
+// ============================================
+
+// Stripe config from environment
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
+
+// Plan name mapping (Stripe product names → clean plan names)
+const PLAN_NAME_MAP = {
+  'basic': 'Basic',
+  'silver': 'Silver',
+  'gold': 'Gold',
+  'pro': 'Pro',
+  'content bug basic': 'Basic',
+  'content bug silver': 'Silver',
+  'content bug gold': 'Gold',
+  'content bug pro': 'Pro'
+};
+
+// Helper: Normalize plan name from Stripe product
+function normalizePlanName(productName) {
+  if (!productName) return 'Unknown';
+  const lower = productName.toLowerCase();
+  for (const [key, value] of Object.entries(PLAN_NAME_MAP)) {
+    if (lower.includes(key)) return value;
+  }
+  return productName; // Return original if no match
+}
+
+// Helper: Update GHL contact via API
+async function updateGHLContact(email, updates) {
+  if (!GHL_PRIVATE_TOKEN || !GHL_LOCATION_ID) {
+    console.warn('[Stripe] GHL credentials not configured');
+    return null;
+  }
+
+  try {
+    // First, find contact by email
+    const searchRes = await axios.get(
+      `${GHL_API_URL}/contacts/search/duplicate?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+          'Version': '2021-07-28'
+        }
+      }
+    );
+
+    const contact = searchRes.data?.contact;
+    if (!contact?.id) {
+      console.warn(`[Stripe] No GHL contact found for email: ${email}`);
+      return null;
+    }
+
+    // Update the contact
+    const updateRes = await axios.put(
+      `${GHL_API_URL}/contacts/${contact.id}`,
+      {
+        customFields: updates
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${GHL_PRIVATE_TOKEN}`,
+          'Version': '2021-07-28',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    console.log(`[Stripe] Updated GHL contact ${email}:`, Object.keys(updates));
+    return updateRes.data;
+
+  } catch (err) {
+    console.error('[Stripe] GHL update error:', err.response?.data || err.message);
+    return null;
+  }
+}
+
+// Helper: Update Airtable client record
+async function updateAirtableClient(email, updates) {
+  try {
+    // Find client by email
+    const clients = await airtableQuery('Clients', `{Contact Email}='${email}'`, { maxRecords: 1 });
+    if (!clients.records?.[0]) {
+      console.warn(`[Stripe] No Airtable client found for: ${email}`);
+      return null;
+    }
+
+    const clientId = clients.records[0].id;
+    await airtableUpdate('Clients', clientId, updates);
+    console.log(`[Stripe] Updated Airtable client ${email}:`, Object.keys(updates));
+    return true;
+
+  } catch (err) {
+    console.error('[Stripe] Airtable update error:', err.message);
+    return null;
+  }
+}
+
+// POST /webhook/stripe - Receive Stripe webhook events
+app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+  let event;
+
+  // Verify webhook signature if secret is configured
+  if (STRIPE_WEBHOOK_SECRET) {
+    const sig = req.headers['stripe-signature'];
+    try {
+      const stripe = require('stripe')(STRIPE_SECRET_KEY);
+      event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+      console.error('[Stripe Webhook] Signature verification failed:', err.message);
+      return res.status(400).json({ error: 'Invalid signature' });
+    }
+  } else {
+    // No verification - parse body directly (not recommended for production)
+    try {
+      event = JSON.parse(req.body.toString());
+    } catch (err) {
+      return res.status(400).json({ error: 'Invalid JSON' });
+    }
+  }
+
+  const eventType = event.type;
+  const data = event.data.object;
+
+  console.log(`[Stripe Webhook] Received: ${eventType}`);
+
+  try {
+    switch (eventType) {
+      // ========== PAYMENT SUCCESS ==========
+      case 'invoice.payment_succeeded': {
+        const customerEmail = data.customer_email;
+        const amountPaid = (data.amount_paid / 100).toFixed(2);
+        const productName = data.lines?.data?.[0]?.description || '';
+        const interval = data.lines?.data?.[0]?.plan?.interval || 'month';
+        const nextPaymentDate = data.lines?.data?.[0]?.period?.end
+          ? new Date(data.lines.data[0].period.end * 1000).toISOString().split('T')[0]
+          : null;
+
+        const planType = normalizePlanName(productName);
+
+        console.log(`[Stripe] Payment success: ${customerEmail} - $${amountPaid} - ${planType}`);
+
+        // Update GHL contact
+        await updateGHLContact(customerEmail, {
+          'payment_status': 'Paid',
+          'subscription_status': 'Active',
+          'plan_type': planType,
+          'subscription_price': amountPaid,
+          'billing_frequency': interval === 'year' ? 'Yearly' : 'Monthly',
+          'last_payment_date': new Date().toISOString().split('T')[0],
+          'next_payment_date': nextPaymentDate,
+          'contact_type': 'Customer',
+          'permission_status_mc': 'Active'
+        });
+
+        // Update Airtable
+        await updateAirtableClient(customerEmail, {
+          'Subscription Status': 'Active',
+          'Plan Type': planType,
+          'Subscription Price': parseFloat(amountPaid),
+          'Billing Frequency': interval === 'year' ? 'Yearly' : 'Monthly',
+          'Last Payment Date': new Date().toISOString(),
+          'Next Payment Date': nextPaymentDate,
+          'Portal Access': true
+        });
+
+        break;
+      }
+
+      // ========== PAYMENT FAILED ==========
+      case 'invoice.payment_failed': {
+        const customerEmail = data.customer_email;
+        const attemptCount = data.attempt_count || 1;
+
+        console.log(`[Stripe] Payment failed: ${customerEmail} (attempt ${attemptCount})`);
+
+        // Update GHL contact
+        await updateGHLContact(customerEmail, {
+          'payment_status': 'Failed',
+          'subscription_status': 'Payment Failed',
+          'last_failed_payment_date': new Date().toISOString().split('T')[0]
+        });
+
+        // Update Airtable
+        await updateAirtableClient(customerEmail, {
+          'Subscription Status': 'Payment Failed',
+          'Last Failed Payment Date': new Date().toISOString()
+        });
+
+        break;
+      }
+
+      // ========== SUBSCRIPTION CANCELED ==========
+      case 'customer.subscription.deleted': {
+        const customerEmail = data.customer_email || data.metadata?.email;
+        const canceledAt = data.canceled_at
+          ? new Date(data.canceled_at * 1000).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0];
+
+        console.log(`[Stripe] Subscription canceled: ${customerEmail}`);
+
+        // Update GHL contact
+        await updateGHLContact(customerEmail, {
+          'subscription_status': 'Canceled',
+          'permission_status_mc': 'Revoked',
+          'contact_type': 'Churned',
+          'subscription_end_date': canceledAt
+        });
+
+        // Update Airtable - revoke portal access
+        await updateAirtableClient(customerEmail, {
+          'Subscription Status': 'Canceled',
+          'Subscription End Date': canceledAt,
+          'Portal Access': false
+        });
+
+        break;
+      }
+
+      // ========== SUBSCRIPTION UPDATED (Plan Change) ==========
+      case 'customer.subscription.updated': {
+        const customerEmail = data.customer_email || data.metadata?.email;
+        const newPlanName = data.items?.data?.[0]?.plan?.nickname || data.items?.data?.[0]?.price?.nickname || '';
+        const newAmount = data.items?.data?.[0]?.plan?.amount
+          ? (data.items.data[0].plan.amount / 100).toFixed(2)
+          : null;
+        const interval = data.items?.data?.[0]?.plan?.interval || 'month';
+
+        // Only process if it's an actual plan change (not just renewal)
+        if (newPlanName || newAmount) {
+          const planType = normalizePlanName(newPlanName);
+          console.log(`[Stripe] Plan changed: ${customerEmail} -> ${planType}`);
+
+          await updateGHLContact(customerEmail, {
+            'plan_type': planType,
+            'subscription_price': newAmount,
+            'billing_frequency': interval === 'year' ? 'Yearly' : 'Monthly',
+            'plan_change_date': new Date().toISOString().split('T')[0]
+          });
+
+          await updateAirtableClient(customerEmail, {
+            'Plan Type': planType,
+            'Subscription Price': newAmount ? parseFloat(newAmount) : undefined,
+            'Billing Frequency': interval === 'year' ? 'Yearly' : 'Monthly',
+            'Plan Change Date': new Date().toISOString()
+          });
+        }
+
+        break;
+      }
+
+      // ========== NEW SUBSCRIPTION CREATED ==========
+      case 'customer.subscription.created': {
+        const customerEmail = data.customer_email || data.metadata?.email;
+        const planName = data.items?.data?.[0]?.plan?.nickname || data.items?.data?.[0]?.price?.nickname || '';
+        const amount = data.items?.data?.[0]?.plan?.amount
+          ? (data.items.data[0].plan.amount / 100).toFixed(2)
+          : null;
+        const interval = data.items?.data?.[0]?.plan?.interval || 'month';
+
+        const planType = normalizePlanName(planName);
+        console.log(`[Stripe] New subscription: ${customerEmail} - ${planType}`);
+
+        await updateGHLContact(customerEmail, {
+          'subscription_status': 'Active',
+          'plan_type': planType,
+          'subscription_price': amount,
+          'billing_frequency': interval === 'year' ? 'Yearly' : 'Monthly',
+          'subscription_start_date': new Date().toISOString().split('T')[0],
+          'contact_type': 'Customer',
+          'permission_status_mc': 'Active'
+        });
+
+        await updateAirtableClient(customerEmail, {
+          'Subscription Status': 'Active',
+          'Plan Type': planType,
+          'Subscription Price': amount ? parseFloat(amount) : undefined,
+          'Billing Frequency': interval === 'year' ? 'Yearly' : 'Monthly',
+          'Subscription Start Date': new Date().toISOString(),
+          'Portal Access': true
+        });
+
+        break;
+      }
+
+      default:
+        console.log(`[Stripe Webhook] Unhandled event: ${eventType}`);
+    }
+
+    return res.json({ received: true });
+
+  } catch (err) {
+    console.error('[Stripe Webhook] Processing error:', err);
+    return res.status(500).json({ error: 'Webhook processing failed' });
+  }
+});
+
+// GET /api/stripe/status - Check Stripe integration status
+app.get('/api/stripe/status', (req, res) => {
+  res.json({
+    configured: !!STRIPE_SECRET_KEY,
+    webhookVerification: !!STRIPE_WEBHOOK_SECRET,
+    ghlSync: !!(GHL_PRIVATE_TOKEN && GHL_LOCATION_ID),
+    airtableSync: !!(AIRTABLE_API_KEY && AIRTABLE_BASE_ID)
+  });
+});
+
+// ============================================
 // START SERVER
 // ============================================
 
@@ -5028,5 +5337,6 @@ app.listen(PORT, () => {
   console.log(`  Drive:   ${driveServiceReady ? 'enabled' : 'DISABLED - ' + driveInitError}`);
   console.log(`  Apify:   ${APIFY_API_TOKEN ? 'enabled' : 'DISABLED - no token'}`);
   console.log(`  OTP:     GHL API=${!!GHL_API_KEY}, Webhook=${!!GHL_WEBHOOK_URL}, Debug=${EMAIL_DELIVERY_DEBUG}`);
+  console.log(`  Stripe:  ${STRIPE_SECRET_KEY ? 'enabled' : 'DISABLED - no key'}`);
   console.log(`\n${'='.repeat(50)}\n`);
 });
