@@ -834,7 +834,8 @@ app.post('/drive/folder', async (req, res) => {
 //
 // NOTE: Clients only see finished edits delivered to them, not raw project files
 
-const CLIENTS_FOLDER_ID = process.env.CLIENTS_FOLDER_ID || GOOGLE_SHARED_DRIVE_ID;
+const ACTIVE_CLIENTS_FOLDER_ID = process.env.ACTIVE_CLIENTS_FOLDER_ID || '1iaIa7B9TAysVnHnVW250oGPaiNC0wGYE';
+const CANCELED_CLIENTS_FOLDER_ID = process.env.CANCELED_CLIENTS_FOLDER_ID || '1bGb9xY283TRPVYHd-thZET5UJtwCKR1M';
 const GHL_SUBSCRIPTION_FIELD_ID = 'IsFHpDJyHPLLCBEv6p7v'; // Subscription Name (MC)
 
 app.post('/drive/client-folder', async (req, res) => {
@@ -851,12 +852,12 @@ app.post('/drive/client-folder', async (req, res) => {
     const status = (subscriptionStatus || 'TRIAL').toUpperCase();
     const folderName = `${firstName.toUpperCase()}_${lastName.toUpperCase()}_${status}`;
 
-    // Create main client folder
+    // Create main client folder in ACTIVE_CLIENTS
     const mainFolder = await googleDrive.files.create({
       requestBody: {
         name: folderName,
         mimeType: 'application/vnd.google-apps.folder',
-        parents: [parentId || CLIENTS_FOLDER_ID]
+        parents: [parentId || ACTIVE_CLIENTS_FOLDER_ID]
       },
       fields: 'id, name, webViewLink',
       supportsAllDrives: true
@@ -943,6 +944,100 @@ app.post('/drive/client-folder/:folderId/rename', async (req, res) => {
     res.json(result.data);
   } catch (err) {
     console.error('[Drive Rename]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Move client folder to CANCELED_CLIENTS when subscription ends
+app.post('/drive/client-folder/:folderId/cancel', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { firstName, lastName } = req.body;
+
+    // Get current folder info
+    const file = await googleDrive.files.get({
+      fileId: req.params.folderId,
+      fields: 'parents, name',
+      supportsAllDrives: true
+    });
+
+    // Build new name with CANCELED status
+    let newName = file.data.name;
+    if (firstName && lastName) {
+      newName = `${firstName.toUpperCase()}_${lastName.toUpperCase()}_CANCELED`;
+    } else {
+      // Just replace the status part of existing name
+      newName = file.data.name.replace(/_[A-Z]+$/, '_CANCELED');
+    }
+
+    // Move to CANCELED_CLIENTS folder and rename
+    const result = await googleDrive.files.update({
+      fileId: req.params.folderId,
+      addParents: CANCELED_CLIENTS_FOLDER_ID,
+      removeParents: file.data.parents.join(','),
+      requestBody: { name: newName },
+      fields: 'id, name, webViewLink, parents',
+      supportsAllDrives: true
+    });
+
+    res.json({
+      moved: true,
+      folder: result.data,
+      from: 'ACTIVE_CLIENTS',
+      to: 'CANCELED_CLIENTS'
+    });
+  } catch (err) {
+    console.error('[Drive Cancel]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Reactivate client - move back to ACTIVE_CLIENTS
+app.post('/drive/client-folder/:folderId/reactivate', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { firstName, lastName, subscriptionStatus } = req.body;
+
+    if (!subscriptionStatus) {
+      return res.status(400).json({ error: 'subscriptionStatus required' });
+    }
+
+    // Get current folder info
+    const file = await googleDrive.files.get({
+      fileId: req.params.folderId,
+      fields: 'parents, name',
+      supportsAllDrives: true
+    });
+
+    // Build new name with new status
+    let newName;
+    if (firstName && lastName) {
+      newName = `${firstName.toUpperCase()}_${lastName.toUpperCase()}_${subscriptionStatus.toUpperCase()}`;
+    } else {
+      // Just replace the status part of existing name
+      newName = file.data.name.replace(/_CANCELED$/, `_${subscriptionStatus.toUpperCase()}`);
+    }
+
+    // Move back to ACTIVE_CLIENTS folder and rename
+    const result = await googleDrive.files.update({
+      fileId: req.params.folderId,
+      addParents: ACTIVE_CLIENTS_FOLDER_ID,
+      removeParents: file.data.parents.join(','),
+      requestBody: { name: newName },
+      fields: 'id, name, webViewLink, parents',
+      supportsAllDrives: true
+    });
+
+    res.json({
+      reactivated: true,
+      folder: result.data,
+      from: 'CANCELED_CLIENTS',
+      to: 'ACTIVE_CLIENTS'
+    });
+  } catch (err) {
+    console.error('[Drive Reactivate]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
