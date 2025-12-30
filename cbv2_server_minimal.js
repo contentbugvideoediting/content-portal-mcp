@@ -820,19 +820,30 @@ app.post('/drive/folder', async (req, res) => {
 });
 
 // Create client folder structure
+// Format: FirstName_LastName_SubscriptionStatus
+// Example: Sean_Conley_Pro or John_Smith_FreeTrial
+const CLIENTS_FOLDER_ID = process.env.CLIENTS_FOLDER_ID || GOOGLE_SHARED_DRIVE_ID;
+
 app.post('/drive/client-folder', async (req, res) => {
   if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
 
   try {
-    const { clientName, parentId } = req.body;
-    if (!clientName) return res.status(400).json({ error: 'clientName required' });
+    const { firstName, lastName, subscriptionStatus, parentId } = req.body;
+
+    if (!firstName || !lastName) {
+      return res.status(400).json({ error: 'firstName and lastName required' });
+    }
+
+    // Build folder name: FirstName_LastName_Status
+    const status = subscriptionStatus || 'Lead';
+    const folderName = `${firstName}_${lastName}_${status}`;
 
     // Create main client folder
     const mainFolder = await googleDrive.files.create({
       requestBody: {
-        name: clientName,
+        name: folderName,
         mimeType: 'application/vnd.google-apps.folder',
-        parents: [parentId || GOOGLE_SHARED_DRIVE_ID]
+        parents: [parentId || CLIENTS_FOLDER_ID]
       },
       fields: 'id, name, webViewLink',
       supportsAllDrives: true
@@ -857,10 +868,38 @@ app.post('/drive/client-folder', async (req, res) => {
 
     res.json({
       clientFolder: mainFolder.data,
-      subfolders: created
+      subfolders: created,
+      folderName
     });
   } catch (err) {
     console.error('[Drive Client Folder]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update client folder name (when subscription changes)
+app.post('/drive/client-folder/:folderId/rename', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { firstName, lastName, subscriptionStatus } = req.body;
+
+    if (!firstName || !lastName || !subscriptionStatus) {
+      return res.status(400).json({ error: 'firstName, lastName, and subscriptionStatus required' });
+    }
+
+    const newName = `${firstName}_${lastName}_${subscriptionStatus}`;
+
+    const result = await googleDrive.files.update({
+      fileId: req.params.folderId,
+      requestBody: { name: newName },
+      fields: 'id, name, webViewLink',
+      supportsAllDrives: true
+    });
+
+    res.json(result.data);
+  } catch (err) {
+    console.error('[Drive Rename]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
