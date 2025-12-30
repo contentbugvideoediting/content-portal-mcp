@@ -23,6 +23,37 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN;
+const GOOGLE_SERVICE_ACCOUNT_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+const GOOGLE_SHARED_DRIVE_ID = process.env.GOOGLE_SHARED_DRIVE_ID || '0ADnOJaRBvSNCUk9PVA';
+
+// ============================================
+// GOOGLE DRIVE SETUP
+// ============================================
+let googleDrive = null;
+let driveReady = false;
+
+function initGoogleDrive() {
+  try {
+    if (!GOOGLE_SERVICE_ACCOUNT_JSON) {
+      console.log('[Drive] No service account configured');
+      return false;
+    }
+    const credentials = JSON.parse(GOOGLE_SERVICE_ACCOUNT_JSON);
+    const { google } = require('googleapis');
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/drive.file']
+    });
+    googleDrive = google.drive({ version: 'v3', auth });
+    driveReady = true;
+    console.log('[Drive] Initialized');
+    return true;
+  } catch (err) {
+    console.error('[Drive] Init failed:', err.message);
+    return false;
+  }
+}
+initGoogleDrive();
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }));
@@ -47,7 +78,8 @@ app.get('/healthz', (req, res) => res.json({
     claude: !!CLAUDE_API_KEY,
     openai: !!OPENAI_API_KEY,
     stripe: !!STRIPE_SECRET_KEY,
-    apify: !!APIFY_API_TOKEN
+    apify: !!APIFY_API_TOKEN,
+    drive: driveReady
   }
 }));
 
@@ -714,6 +746,169 @@ app.post('/apify/run', async (req, res) => {
 
   const result = await runApifyActor(actorId, input || {});
   res.json(result || { error: 'failed' });
+});
+
+// ============================================
+// GOOGLE DRIVE ENDPOINTS
+// ============================================
+
+// List files in folder
+app.get('/drive/files', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { folderId, pageSize = 50 } = req.query;
+    const query = folderId ? `'${folderId}' in parents and trashed = false` : 'trashed = false';
+
+    const result = await googleDrive.files.list({
+      q: query,
+      pageSize: parseInt(pageSize),
+      fields: 'files(id, name, mimeType, size, createdTime, modifiedTime, webViewLink)',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      driveId: GOOGLE_SHARED_DRIVE_ID,
+      corpora: 'drive'
+    });
+
+    res.json(result.data.files || []);
+  } catch (err) {
+    console.error('[Drive List]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get file metadata
+app.get('/drive/file/:fileId', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const result = await googleDrive.files.get({
+      fileId: req.params.fileId,
+      fields: 'id, name, mimeType, size, createdTime, modifiedTime, webViewLink, webContentLink',
+      supportsAllDrives: true
+    });
+    res.json(result.data);
+  } catch (err) {
+    console.error('[Drive Get]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create folder
+app.post('/drive/folder', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { name, parentId } = req.body;
+    if (!name) return res.status(400).json({ error: 'name required' });
+
+    const result = await googleDrive.files.create({
+      requestBody: {
+        name,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [parentId || GOOGLE_SHARED_DRIVE_ID]
+      },
+      fields: 'id, name, webViewLink',
+      supportsAllDrives: true
+    });
+
+    res.json(result.data);
+  } catch (err) {
+    console.error('[Drive Folder]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create client folder structure
+app.post('/drive/client-folder', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { clientName, parentId } = req.body;
+    if (!clientName) return res.status(400).json({ error: 'clientName required' });
+
+    // Create main client folder
+    const mainFolder = await googleDrive.files.create({
+      requestBody: {
+        name: clientName,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [parentId || GOOGLE_SHARED_DRIVE_ID]
+      },
+      fields: 'id, name, webViewLink',
+      supportsAllDrives: true
+    });
+
+    // Create subfolders
+    const subfolders = ['Brand Assets', 'Raw Uploads', 'Exports', 'Projects'];
+    const created = [];
+
+    for (const subfolder of subfolders) {
+      const sub = await googleDrive.files.create({
+        requestBody: {
+          name: subfolder,
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: [mainFolder.data.id]
+        },
+        fields: 'id, name',
+        supportsAllDrives: true
+      });
+      created.push({ name: subfolder, id: sub.data.id });
+    }
+
+    res.json({
+      clientFolder: mainFolder.data,
+      subfolders: created
+    });
+  } catch (err) {
+    console.error('[Drive Client Folder]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete file/folder
+app.delete('/drive/file/:fileId', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    await googleDrive.files.delete({
+      fileId: req.params.fileId,
+      supportsAllDrives: true
+    });
+    res.json({ deleted: true });
+  } catch (err) {
+    console.error('[Drive Delete]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Move file
+app.post('/drive/file/:fileId/move', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const { newParentId } = req.body;
+    if (!newParentId) return res.status(400).json({ error: 'newParentId required' });
+
+    // Get current parents
+    const file = await googleDrive.files.get({
+      fileId: req.params.fileId,
+      fields: 'parents',
+      supportsAllDrives: true
+    });
+
+    const result = await googleDrive.files.update({
+      fileId: req.params.fileId,
+      addParents: newParentId,
+      removeParents: file.data.parents.join(','),
+      fields: 'id, name, parents',
+      supportsAllDrives: true
+    });
+
+    res.json(result.data);
+  } catch (err) {
+    console.error('[Drive Move]', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ============================================
