@@ -22,6 +22,7 @@ const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN;
 
 // Middleware
 app.use(cors({ origin: true, credentials: true }));
@@ -45,7 +46,8 @@ app.get('/healthz', (req, res) => res.json({
     ghl: !!GHL_API_KEY,
     claude: !!CLAUDE_API_KEY,
     openai: !!OPENAI_API_KEY,
-    stripe: !!STRIPE_SECRET_KEY
+    stripe: !!STRIPE_SECRET_KEY,
+    apify: !!APIFY_API_TOKEN
   }
 }));
 
@@ -539,6 +541,179 @@ app.post('/ai/gpt', async (req, res) => {
     console.error('[GPT]', err?.response?.data || err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// ============================================
+// APIFY SCRAPING ENDPOINTS
+// ============================================
+
+// Apify actor IDs
+const APIFY_ACTORS = {
+  youtube: 'streamers/youtube-scraper',
+  tiktok: 'clockworks/tiktok-scraper',
+  instagram: 'apify/instagram-scraper',
+  twitter: 'quacker/twitter-scraper',
+  facebook: 'apify/facebook-posts-scraper'
+};
+
+// Run Apify actor
+async function runApifyActor(actorId, input) {
+  if (!APIFY_API_TOKEN) return null;
+  try {
+    const res = await axios.post(
+      `https://api.apify.com/v2/acts/${actorId}/runs?token=${APIFY_API_TOKEN}`,
+      input,
+      { headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
+    );
+    return res.data;
+  } catch (err) {
+    console.error('[Apify Run]', err?.response?.data || err.message);
+    return null;
+  }
+}
+
+// Get Apify run status/results
+async function getApifyRun(runId) {
+  if (!APIFY_API_TOKEN) return null;
+  try {
+    const res = await axios.get(
+      `https://api.apify.com/v2/actor-runs/${runId}?token=${APIFY_API_TOKEN}`
+    );
+    return res.data;
+  } catch (err) {
+    console.error('[Apify Status]', err?.response?.data || err.message);
+    return null;
+  }
+}
+
+// Get Apify dataset items
+async function getApifyDataset(datasetId, limit = 100) {
+  if (!APIFY_API_TOKEN) return null;
+  try {
+    const res = await axios.get(
+      `https://api.apify.com/v2/datasets/${datasetId}/items?token=${APIFY_API_TOKEN}&limit=${limit}`
+    );
+    return res.data;
+  } catch (err) {
+    console.error('[Apify Dataset]', err?.response?.data || err.message);
+    return null;
+  }
+}
+
+// Scrape YouTube channel/video
+app.post('/apify/youtube', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+
+  const { channelUrl, videoUrl, maxVideos = 10 } = req.body;
+  const input = {};
+
+  if (channelUrl) {
+    input.startUrls = [{ url: channelUrl }];
+    input.maxResults = maxVideos;
+  } else if (videoUrl) {
+    input.startUrls = [{ url: videoUrl }];
+  } else {
+    return res.status(400).json({ error: 'channelUrl or videoUrl required' });
+  }
+
+  const result = await runApifyActor(APIFY_ACTORS.youtube, input);
+  res.json(result || { error: 'failed' });
+});
+
+// Scrape TikTok profile/video
+app.post('/apify/tiktok', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+
+  const { profileUrl, videoUrl, maxVideos = 10 } = req.body;
+  const input = { maxProfilesPerQuery: 1, resultsPerPage: maxVideos };
+
+  if (profileUrl) {
+    input.profiles = [profileUrl];
+  } else if (videoUrl) {
+    input.postURLs = [videoUrl];
+  } else {
+    return res.status(400).json({ error: 'profileUrl or videoUrl required' });
+  }
+
+  const result = await runApifyActor(APIFY_ACTORS.tiktok, input);
+  res.json(result || { error: 'failed' });
+});
+
+// Scrape Instagram profile/reel
+app.post('/apify/instagram', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+
+  const { profileUrl, postUrl, maxPosts = 10 } = req.body;
+  const input = { resultsLimit: maxPosts };
+
+  if (profileUrl) {
+    input.directUrls = [profileUrl];
+  } else if (postUrl) {
+    input.directUrls = [postUrl];
+  } else {
+    return res.status(400).json({ error: 'profileUrl or postUrl required' });
+  }
+
+  const result = await runApifyActor(APIFY_ACTORS.instagram, input);
+  res.json(result || { error: 'failed' });
+});
+
+// Scrape Twitter/X profile
+app.post('/apify/twitter', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+
+  const { handle, maxTweets = 20 } = req.body;
+  if (!handle) return res.status(400).json({ error: 'handle required' });
+
+  const input = {
+    handles: [handle.replace('@', '')],
+    maxTweets
+  };
+
+  const result = await runApifyActor(APIFY_ACTORS.twitter, input);
+  res.json(result || { error: 'failed' });
+});
+
+// Scrape Facebook posts
+app.post('/apify/facebook', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+
+  const { pageUrl, maxPosts = 10 } = req.body;
+  if (!pageUrl) return res.status(400).json({ error: 'pageUrl required' });
+
+  const input = {
+    startUrls: [{ url: pageUrl }],
+    maxPosts
+  };
+
+  const result = await runApifyActor(APIFY_ACTORS.facebook, input);
+  res.json(result || { error: 'failed' });
+});
+
+// Get run status
+app.get('/apify/run/:runId', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+  const result = await getApifyRun(req.params.runId);
+  res.json(result || { error: 'not found' });
+});
+
+// Get dataset results
+app.get('/apify/dataset/:datasetId', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+  const limit = parseInt(req.query.limit) || 100;
+  const result = await getApifyDataset(req.params.datasetId, limit);
+  res.json(result || { error: 'not found' });
+});
+
+// Generic actor run
+app.post('/apify/run', async (req, res) => {
+  if (!APIFY_API_TOKEN) return res.status(503).json({ error: 'Apify not configured' });
+
+  const { actorId, input } = req.body;
+  if (!actorId) return res.status(400).json({ error: 'actorId required' });
+
+  const result = await runApifyActor(actorId, input || {});
+  res.json(result || { error: 'failed' });
 });
 
 // ============================================
