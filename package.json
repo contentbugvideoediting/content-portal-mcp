@@ -1,28 +1,16 @@
 {
-  "name": "mcp-ai-integration",
-  "version": "2.4.0",
-  "description": "Middleware to connect Make, Claude, OpenAI, Airtable, GoHighLevel, Google Drive with Auth",
-  "main": "server_Production.js",
+  "name": "contentbug-mcp",
+  "version": "3.0.0",
+  "description": "ContentBug MCP Server - Minimal",
+  "main": "server_minimal.js",
   "scripts": {
-    "start": "node server_Production.js",
-    "dev": "nodemon server_Production.js"
+    "start": "node server_minimal.js"
   },
   "dependencies": {
-    "argon2": "^0.31.2",
-    "axios": "^1.4.0",
-    "body-parser": "^1.20.2",
-    "cookie-parser": "^1.4.6",
+    "axios": "^1.6.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
-    "googleapis": "^144.0.0",
-    "multer": "^1.4.5-lts.1",
-    "otplib": "^12.0.1",
-    "stripe": "^14.10.0",
-    "uuid": "^9.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.22"
+    "stripe": "^14.10.0"
   }
 }
