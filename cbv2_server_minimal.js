@@ -1058,6 +1058,127 @@ app.delete('/drive/file/:fileId', async (req, res) => {
   }
 });
 
+// ============================================
+// AUTO-DELETE PROJECTS AFTER 30 DAYS
+// ============================================
+// Finds all PROJECTS folders, checks files older than 30 days, deletes them
+// Call this endpoint daily via cron/scheduled task (Make.com, Railway cron, etc.)
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+app.post('/drive/cleanup-old-projects', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const cutoffDate = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
+    let deletedCount = 0;
+    let checkedCount = 0;
+    const deletedFiles = [];
+
+    // Find all folders named "PROJECTS" in active clients
+    const projectFolders = await googleDrive.files.list({
+      q: `name = 'PROJECTS' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+      fields: 'files(id, name, parents)',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      driveId: GOOGLE_SHARED_DRIVE_ID,
+      corpora: 'drive'
+    });
+
+    // For each PROJECTS folder, find old files
+    for (const projectFolder of projectFolders.data.files || []) {
+      const oldFiles = await googleDrive.files.list({
+        q: `'${projectFolder.id}' in parents and modifiedTime < '${cutoffDate}' and trashed = false`,
+        fields: 'files(id, name, modifiedTime)',
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true
+      });
+
+      checkedCount += (oldFiles.data.files || []).length;
+
+      // Delete each old file/folder
+      for (const file of oldFiles.data.files || []) {
+        try {
+          await googleDrive.files.delete({
+            fileId: file.id,
+            supportsAllDrives: true
+          });
+          deletedCount++;
+          deletedFiles.push({
+            name: file.name,
+            modifiedTime: file.modifiedTime,
+            parentFolder: projectFolder.id
+          });
+        } catch (delErr) {
+          console.error(`[Cleanup] Failed to delete ${file.name}:`, delErr.message);
+        }
+      }
+    }
+
+    console.log(`[Cleanup] Deleted ${deletedCount} files older than 30 days`);
+
+    res.json({
+      success: true,
+      projectFoldersChecked: (projectFolders.data.files || []).length,
+      filesChecked: checkedCount,
+      filesDeleted: deletedCount,
+      cutoffDate,
+      deletedFiles
+    });
+  } catch (err) {
+    console.error('[Cleanup]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get list of projects that WOULD be deleted (dry run)
+app.get('/drive/cleanup-old-projects/preview', async (req, res) => {
+  if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
+
+  try {
+    const cutoffDate = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
+    const toDelete = [];
+
+    // Find all PROJECTS folders
+    const projectFolders = await googleDrive.files.list({
+      q: `name = 'PROJECTS' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+      fields: 'files(id, name)',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      driveId: GOOGLE_SHARED_DRIVE_ID,
+      corpora: 'drive'
+    });
+
+    for (const projectFolder of projectFolders.data.files || []) {
+      const oldFiles = await googleDrive.files.list({
+        q: `'${projectFolder.id}' in parents and modifiedTime < '${cutoffDate}' and trashed = false`,
+        fields: 'files(id, name, modifiedTime, size)',
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true
+      });
+
+      for (const file of oldFiles.data.files || []) {
+        toDelete.push({
+          name: file.name,
+          modifiedTime: file.modifiedTime,
+          size: file.size,
+          projectFolderId: projectFolder.id
+        });
+      }
+    }
+
+    res.json({
+      cutoffDate,
+      daysOld: 30,
+      wouldDelete: toDelete.length,
+      files: toDelete
+    });
+  } catch (err) {
+    console.error('[Cleanup Preview]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Move file
 app.post('/drive/file/:fileId/move', async (req, res) => {
   if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
