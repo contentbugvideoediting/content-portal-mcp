@@ -820,23 +820,36 @@ app.post('/drive/folder', async (req, res) => {
 });
 
 // Create client folder structure
-// Format: FirstName_LastName_SubscriptionStatus
-// Example: Sean_Conley_Pro or John_Smith_FreeTrial
+// Format: FIRSTNAME_LASTNAME_SUBSCRIPTIONSTATUS (ALL CAPS)
+// Example: SEAN_CONLEY_PRO or JOHN_SMITH_TRIAL
+//
+// Folder Structure:
+// └── FIRSTNAME_LASTNAME_STATUS/
+//     ├── BRAND ASSETS/
+//     │   ├── LOGOS/
+//     │   ├── HEADSHOTS - SMILING/
+//     │   └── HEADSHOTS - SHOCKED/
+//     ├── SESSIONS/           (recorded virtual studio sessions - not tied to projects)
+//     └── PROJECTS/           (auto-deleted after 30 days, clients never see contents)
+//
+// NOTE: Clients only see finished edits delivered to them, not raw project files
+
 const CLIENTS_FOLDER_ID = process.env.CLIENTS_FOLDER_ID || GOOGLE_SHARED_DRIVE_ID;
+const GHL_SUBSCRIPTION_FIELD_ID = 'IsFHpDJyHPLLCBEv6p7v'; // Subscription Name (MC)
 
 app.post('/drive/client-folder', async (req, res) => {
   if (!driveReady) return res.status(503).json({ error: 'Drive not configured' });
 
   try {
-    const { firstName, lastName, subscriptionStatus, parentId } = req.body;
+    const { firstName, lastName, subscriptionStatus, parentId, airtableId } = req.body;
 
     if (!firstName || !lastName) {
       return res.status(400).json({ error: 'firstName and lastName required' });
     }
 
-    // Build folder name: FirstName_LastName_Status
-    const status = subscriptionStatus || 'Lead';
-    const folderName = `${firstName}_${lastName}_${status}`;
+    // Build folder name: FIRSTNAME_LASTNAME_STATUS (ALL CAPS)
+    const status = (subscriptionStatus || 'TRIAL').toUpperCase();
+    const folderName = `${firstName.toUpperCase()}_${lastName.toUpperCase()}_${status}`;
 
     // Create main client folder
     const mainFolder = await googleDrive.files.create({
@@ -849,27 +862,56 @@ app.post('/drive/client-folder', async (req, res) => {
       supportsAllDrives: true
     });
 
-    // Create subfolders
-    const subfolders = ['Brand Assets', 'Raw Uploads', 'Exports', 'Projects'];
-    const created = [];
+    // Create folder structure
+    const folderStructure = {
+      'BRAND ASSETS': ['LOGOS', 'HEADSHOTS - SMILING', 'HEADSHOTS - SHOCKED'],
+      'SESSIONS': [],      // Virtual studio recordings (not tied to projects)
+      'PROJECTS': []       // Auto-deleted after 30 days, clients never see contents
+    };
 
-    for (const subfolder of subfolders) {
-      const sub = await googleDrive.files.create({
+    const created = {};
+
+    for (const [folderName, subfolders] of Object.entries(folderStructure)) {
+      // Create main subfolder
+      const folder = await googleDrive.files.create({
         requestBody: {
-          name: subfolder,
+          name: folderName,
           mimeType: 'application/vnd.google-apps.folder',
           parents: [mainFolder.data.id]
         },
         fields: 'id, name',
         supportsAllDrives: true
       });
-      created.push({ name: subfolder, id: sub.data.id });
+
+      created[folderName] = { id: folder.data.id, subfolders: [] };
+
+      // Create nested subfolders if any
+      for (const subfolder of subfolders) {
+        const sub = await googleDrive.files.create({
+          requestBody: {
+            name: subfolder,
+            mimeType: 'application/vnd.google-apps.folder',
+            parents: [folder.data.id]
+          },
+          fields: 'id, name',
+          supportsAllDrives: true
+        });
+        created[folderName].subfolders.push({ name: subfolder, id: sub.data.id });
+      }
+    }
+
+    // Update Airtable with folder info if airtableId provided
+    if (airtableId) {
+      await airtableUpdate('Clients', airtableId, {
+        'Drive Folder ID': mainFolder.data.id,
+        'Drive Folder URL': mainFolder.data.webViewLink
+      });
     }
 
     res.json({
       clientFolder: mainFolder.data,
-      subfolders: created,
-      folderName
+      structure: created,
+      folderName: mainFolder.data.name
     });
   } catch (err) {
     console.error('[Drive Client Folder]', err.message);
@@ -888,7 +930,8 @@ app.post('/drive/client-folder/:folderId/rename', async (req, res) => {
       return res.status(400).json({ error: 'firstName, lastName, and subscriptionStatus required' });
     }
 
-    const newName = `${firstName}_${lastName}_${subscriptionStatus}`;
+    // ALL CAPS format
+    const newName = `${firstName.toUpperCase()}_${lastName.toUpperCase()}_${subscriptionStatus.toUpperCase()}`;
 
     const result = await googleDrive.files.update({
       fileId: req.params.folderId,
