@@ -238,6 +238,205 @@ app.get('/ghl/contact/:id', async (req, res) => {
   res.json(result || { error: 'not found' });
 });
 
+// Update contact
+app.post('/ghl/contact/:id', async (req, res) => {
+  const result = await ghlRequest(`/contacts/${req.params.id}`, 'PUT', req.body);
+  res.json(result || { error: 'update failed' });
+});
+
+// Delete contact
+app.delete('/ghl/contact/:id', async (req, res) => {
+  const result = await ghlRequest(`/contacts/${req.params.id}`, 'DELETE');
+  res.json(result || { success: true });
+});
+
+// Add tags to contact
+app.post('/ghl/contact/:id/tags', async (req, res) => {
+  const { tags } = req.body;
+  const result = await ghlRequest(`/contacts/${req.params.id}/tags`, 'POST', { tags });
+  res.json(result || { error: 'failed' });
+});
+
+// Remove tag from contact
+app.delete('/ghl/contact/:id/tags', async (req, res) => {
+  const result = await ghlRequest(`/contacts/${req.params.id}/tags`, 'DELETE', req.body);
+  res.json(result || { success: true });
+});
+
+// ============================================
+// GHL PIPELINES & OPPORTUNITIES
+// ============================================
+
+// Get all pipelines
+app.get('/ghl/pipelines', async (req, res) => {
+  const result = await ghlRequest(`/opportunities/pipelines?locationId=${GHL_LOCATION_ID}`);
+  res.json(result || { error: 'failed' });
+});
+
+// Get opportunities
+app.get('/ghl/opportunities', async (req, res) => {
+  const { pipelineId, stageId, contactId } = req.query;
+  let url = `/opportunities/search?locationId=${GHL_LOCATION_ID}`;
+  if (pipelineId) url += `&pipelineId=${pipelineId}`;
+  if (stageId) url += `&stageId=${stageId}`;
+  if (contactId) url += `&contactId=${contactId}`;
+  const result = await ghlRequest(url);
+  res.json(result || { error: 'failed' });
+});
+
+// Create opportunity
+app.post('/ghl/opportunity', async (req, res) => {
+  const result = await ghlRequest('/opportunities/', 'POST', {
+    locationId: GHL_LOCATION_ID,
+    ...req.body
+  });
+  res.json(result || { error: 'create failed' });
+});
+
+// Update opportunity
+app.post('/ghl/opportunity/:id', async (req, res) => {
+  const result = await ghlRequest(`/opportunities/${req.params.id}`, 'PUT', req.body);
+  res.json(result || { error: 'update failed' });
+});
+
+// ============================================
+// GHL CALENDARS & APPOINTMENTS
+// ============================================
+
+// Get calendars
+app.get('/ghl/calendars', async (req, res) => {
+  const result = await ghlRequest(`/calendars/?locationId=${GHL_LOCATION_ID}`);
+  res.json(result || { error: 'failed' });
+});
+
+// Get calendar slots
+app.get('/ghl/calendar/:id/slots', async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const result = await ghlRequest(`/calendars/${req.params.id}/free-slots?startDate=${startDate}&endDate=${endDate}`);
+  res.json(result || { error: 'failed' });
+});
+
+// Create appointment
+app.post('/ghl/appointment', async (req, res) => {
+  const result = await ghlRequest('/calendars/events/appointments', 'POST', {
+    locationId: GHL_LOCATION_ID,
+    ...req.body
+  });
+  res.json(result || { error: 'create failed' });
+});
+
+// Get appointments
+app.get('/ghl/appointments', async (req, res) => {
+  const { calendarId, startTime, endTime, contactId } = req.query;
+  let url = `/calendars/events?locationId=${GHL_LOCATION_ID}`;
+  if (calendarId) url += `&calendarId=${calendarId}`;
+  if (startTime) url += `&startTime=${startTime}`;
+  if (endTime) url += `&endTime=${endTime}`;
+  if (contactId) url += `&contactId=${contactId}`;
+  const result = await ghlRequest(url);
+  res.json(result || { error: 'failed' });
+});
+
+// ============================================
+// GHL CONVERSATIONS & SMS/EMAIL
+// ============================================
+
+// Get conversations
+app.get('/ghl/conversations', async (req, res) => {
+  const { contactId } = req.query;
+  const result = await ghlRequest(`/conversations/search?locationId=${GHL_LOCATION_ID}${contactId ? `&contactId=${contactId}` : ''}`);
+  res.json(result || { error: 'failed' });
+});
+
+// Send SMS
+app.post('/ghl/sms', async (req, res) => {
+  const { contactId, message } = req.body;
+  const result = await ghlRequest('/conversations/messages', 'POST', {
+    type: 'SMS',
+    contactId,
+    message
+  });
+  res.json(result || { error: 'send failed' });
+});
+
+// Send Email
+app.post('/ghl/email', async (req, res) => {
+  const { contactId, subject, body, html } = req.body;
+  const result = await ghlRequest('/conversations/messages', 'POST', {
+    type: 'Email',
+    contactId,
+    subject,
+    body,
+    html
+  });
+  res.json(result || { error: 'send failed' });
+});
+
+// ============================================
+// GHL WORKFLOWS & AUTOMATIONS
+// ============================================
+
+// Get workflows
+app.get('/ghl/workflows', async (req, res) => {
+  const result = await ghlRequest(`/workflows/?locationId=${GHL_LOCATION_ID}`);
+  res.json(result || { error: 'failed' });
+});
+
+// ============================================
+// GHL FORMS & SURVEYS
+// ============================================
+
+// Get forms
+app.get('/ghl/forms', async (req, res) => {
+  const result = await ghlRequest(`/forms/?locationId=${GHL_LOCATION_ID}`);
+  res.json(result || { error: 'failed' });
+});
+
+// Get form submissions
+app.get('/ghl/forms/:id/submissions', async (req, res) => {
+  const result = await ghlRequest(`/forms/submissions?locationId=${GHL_LOCATION_ID}&formId=${req.params.id}`);
+  res.json(result || { error: 'failed' });
+});
+
+// ============================================
+// GHL PAYMENTS & INVOICES
+// ============================================
+
+// Get invoices
+app.get('/ghl/invoices', async (req, res) => {
+  const { contactId, status } = req.query;
+  let url = `/invoices?locationId=${GHL_LOCATION_ID}`;
+  if (contactId) url += `&contactId=${contactId}`;
+  if (status) url += `&status=${status}`;
+  const result = await ghlRequest(url);
+  res.json(result || { error: 'failed' });
+});
+
+// Create invoice
+app.post('/ghl/invoice', async (req, res) => {
+  const result = await ghlRequest('/invoices', 'POST', {
+    locationId: GHL_LOCATION_ID,
+    ...req.body
+  });
+  res.json(result || { error: 'create failed' });
+});
+
+// ============================================
+// GHL CUSTOM FIELDS & VALUES
+// ============================================
+
+// Get custom fields
+app.get('/ghl/custom-fields', async (req, res) => {
+  const result = await ghlRequest(`/locations/${GHL_LOCATION_ID}/customFields`);
+  res.json(result || { error: 'failed' });
+});
+
+// Get custom values
+app.get('/ghl/custom-values', async (req, res) => {
+  const result = await ghlRequest(`/locations/${GHL_LOCATION_ID}/customValues`);
+  res.json(result || { error: 'failed' });
+});
+
 // ============================================
 // LEAD CAPTURE (Free Trial)
 // ============================================
@@ -338,6 +537,228 @@ app.post('/ai/gpt', async (req, res) => {
     res.json(response.data);
   } catch (err) {
     console.error('[GPT]', err?.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
+// STRIPE PAYMENT ENDPOINTS
+// ============================================
+
+// Get Stripe instance
+function getStripe() {
+  if (!STRIPE_SECRET_KEY) return null;
+  return require('stripe')(STRIPE_SECRET_KEY);
+}
+
+// Create checkout session
+app.post('/stripe/checkout', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { priceId, customerEmail, successUrl, cancelUrl, metadata } = req.body;
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      customer_email: customerEmail,
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl || 'https://go.contentbug.io/dashboard?success=true',
+      cancel_url: cancelUrl || 'https://contentbug.io/pricing?canceled=true',
+      metadata: metadata || {}
+    });
+
+    res.json({ sessionId: session.id, url: session.url });
+  } catch (err) {
+    console.error('[Stripe Checkout]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create customer
+app.post('/stripe/customer', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { email, name, metadata } = req.body;
+    const customer = await stripe.customers.create({ email, name, metadata });
+    res.json(customer);
+  } catch (err) {
+    console.error('[Stripe Customer]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get customer by email
+app.get('/stripe/customer', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { email } = req.query;
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    res.json(customers.data[0] || null);
+  } catch (err) {
+    console.error('[Stripe Customer]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get subscriptions
+app.get('/stripe/subscriptions', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { customerId, status } = req.query;
+    const params = { limit: 100 };
+    if (customerId) params.customer = customerId;
+    if (status) params.status = status;
+    const subscriptions = await stripe.subscriptions.list(params);
+    res.json(subscriptions.data);
+  } catch (err) {
+    console.error('[Stripe Subscriptions]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Cancel subscription
+app.post('/stripe/subscription/:id/cancel', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { immediately } = req.body;
+    let result;
+    if (immediately) {
+      result = await stripe.subscriptions.cancel(req.params.id);
+    } else {
+      result = await stripe.subscriptions.update(req.params.id, { cancel_at_period_end: true });
+    }
+    res.json(result);
+  } catch (err) {
+    console.error('[Stripe Cancel]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get invoices
+app.get('/stripe/invoices', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { customerId } = req.query;
+    const params = { limit: 100 };
+    if (customerId) params.customer = customerId;
+    const invoices = await stripe.invoices.list(params);
+    res.json(invoices.data);
+  } catch (err) {
+    console.error('[Stripe Invoices]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create billing portal session
+app.post('/stripe/portal', async (req, res) => {
+  const stripe = getStripe();
+  if (!stripe) return res.status(503).json({ error: 'Stripe not configured' });
+
+  try {
+    const { customerId, returnUrl } = req.body;
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: returnUrl || 'https://go.contentbug.io/dashboard'
+    });
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('[Stripe Portal]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
+// HTML STORAGE (Airtable-based)
+// ============================================
+const HTML_TABLE = 'HTML_Files';
+
+// Save/update HTML file
+app.post('/html/save', async (req, res) => {
+  try {
+    const { filename, content, type, version } = req.body;
+    if (!filename || !content) {
+      return res.status(400).json({ error: 'filename and content required' });
+    }
+
+    // Check if file exists
+    const existing = await airtableQuery(HTML_TABLE, `{Filename} = "${filename}"`, { maxRecords: 1 });
+
+    if (existing.records.length > 0) {
+      // Update existing
+      const result = await airtableUpdate(HTML_TABLE, existing.records[0].id, {
+        Content: content,
+        Type: type || 'html',
+        Version: version || (parseInt(existing.records[0].fields.Version || '0') + 1).toString(),
+        'Last Updated': new Date().toISOString()
+      });
+      res.json({ updated: true, id: result?.id, filename });
+    } else {
+      // Create new
+      const result = await airtableCreate(HTML_TABLE, {
+        Filename: filename,
+        Content: content,
+        Type: type || 'html',
+        Version: version || '1',
+        'Last Updated': new Date().toISOString()
+      });
+      res.json({ created: true, id: result?.id, filename });
+    }
+  } catch (err) {
+    console.error('[HTML Save]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get HTML file
+app.get('/html/:filename', async (req, res) => {
+  try {
+    const filename = req.params.filename;
+    const result = await airtableQuery(HTML_TABLE, `{Filename} = "${filename}"`, { maxRecords: 1 });
+
+    if (result.records.length === 0) {
+      return res.status(404).json({ error: 'not found' });
+    }
+
+    const record = result.records[0];
+    res.json({
+      filename: record.fields.Filename,
+      content: record.fields.Content,
+      type: record.fields.Type,
+      version: record.fields.Version,
+      lastUpdated: record.fields['Last Updated']
+    });
+  } catch (err) {
+    console.error('[HTML Get]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// List all HTML files
+app.get('/html', async (req, res) => {
+  try {
+    const result = await airtableQuery(HTML_TABLE, '', { maxRecords: 100 });
+    const files = result.records.map(r => ({
+      id: r.id,
+      filename: r.fields.Filename,
+      type: r.fields.Type,
+      version: r.fields.Version,
+      lastUpdated: r.fields['Last Updated']
+    }));
+    res.json(files);
+  } catch (err) {
+    console.error('[HTML List]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
