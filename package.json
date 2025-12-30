@@ -2,9 +2,9 @@
   "name": "contentbug-mcp",
   "version": "3.0.0",
   "description": "ContentBug MCP Server - Minimal",
-  "main": "server_minimal.js",
+  "main": "cbv2_server_minimal.js",
   "scripts": {
-    "start": "node server_minimal.js"
+    "start": "node cbv2_server_minimal.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
