@@ -498,6 +498,672 @@
             font-size: 14px;
         }
 
+        /* === NOTIFICATION TOAST SYSTEM (Apple-style) === */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .notification-toast {
+            background: linear-gradient(165deg, rgba(30, 30, 38, 0.95) 0%, rgba(20, 20, 26, 0.98) 100%);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 320px;
+            max-width: 400px;
+            box-shadow:
+                0 20px 60px -10px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .notification-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification-toast.hiding {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .notification-toast:hover {
+            transform: translateX(0) scale(1.02);
+            box-shadow:
+                0 24px 70px -10px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(59, 130, 246, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.info {
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+        }
+
+        .notification-icon.success {
+            background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+        }
+
+        .notification-icon.warning {
+            background: linear-gradient(135deg, var(--orange) 0%, #d97706 100%);
+        }
+
+        .notification-icon.error {
+            background: linear-gradient(135deg, var(--red) 0%, #dc2626 100%);
+        }
+
+        .notification-icon.message {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .notification-icon.project {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .notification-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .notification-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-app {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notification-body {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .notification-toast:hover .notification-close {
+            opacity: 1;
+        }
+
+        .notification-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .notification-close svg {
+            width: 12px;
+            height: 12px;
+            color: var(--text-gray);
+        }
+
+        /* Progress bar for auto-dismiss */
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+            right: 16px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .notification-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            border-radius: 2px;
+            transform-origin: left;
+            animation: progressShrink 5s linear forwards;
+        }
+
+        @keyframes progressShrink {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+
+        /* Sound indicator pulse */
+        .notification-toast.with-sound .notification-icon::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 14px;
+            background: inherit;
+            opacity: 0;
+            animation: soundPulse 0.6s ease-out;
+        }
+
+        @keyframes soundPulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            .notification-container {
+                left: 12px;
+                right: 12px;
+                top: 12px;
+            }
+            .notification-toast {
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
+        /* === ATHENA AI SUPPORT CHAT WIDGET === */
+        .athena-chat-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9000;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Floating Button */
+        .athena-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 8px 32px rgba(139, 92, 246, 0.4),
+                0 0 0 4px rgba(139, 92, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .athena-toggle::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+            border-radius: 50%;
+        }
+
+        .athena-toggle:hover {
+            transform: scale(1.1);
+            box-shadow:
+                0 12px 40px rgba(139, 92, 246, 0.5),
+                0 0 0 6px rgba(139, 92, 246, 0.15);
+        }
+
+        .athena-toggle:active {
+            transform: scale(1.05);
+        }
+
+        .athena-toggle svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .athena-toggle.open svg.chat-icon {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.5);
+        }
+
+        .athena-toggle svg.close-icon {
+            position: absolute;
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.5);
+        }
+
+        .athena-toggle.open svg.close-icon {
+            opacity: 1;
+            transform: rotate(0) scale(1);
+        }
+
+        /* Notification Badge */
+        .athena-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-dark);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .athena-badge.show {
+            opacity: 1;
+            transform: scale(1);
+            animation: badgePop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes badgePop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* Pulsing ring animation */
+        .athena-pulse {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            animation: athenaRingPulse 2s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes athenaRingPulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        /* Chat Panel */
+        .athena-panel {
+            position: absolute;
+            bottom: 76px;
+            right: 0;
+            width: 380px;
+            height: 520px;
+            background: linear-gradient(165deg, rgba(20, 20, 28, 0.98) 0%, rgba(12, 12, 18, 0.99) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow:
+                0 25px 80px -10px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(139, 92, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .athena-panel.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Panel Header */
+        .athena-header {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.1) 100%);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .athena-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .athena-avatar svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .athena-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
+            background: var(--green);
+            border-radius: 50%;
+            border: 2px solid rgba(20, 20, 28, 0.98);
+        }
+
+        .athena-info {
+            flex: 1;
+        }
+
+        .athena-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .athena-status {
+            font-size: 12px;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .athena-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+
+        .athena-minimize {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .athena-minimize:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+        }
+
+        /* Messages Area */
+        .athena-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .athena-msg {
+            display: flex;
+            gap: 10px;
+            animation: msgFadeIn 0.3s ease;
+        }
+
+        @keyframes msgFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .athena-msg.user {
+            flex-direction: row-reverse;
+        }
+
+        .athena-msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .athena-msg.user .athena-msg-avatar {
+            background: var(--accent);
+        }
+
+        .athena-msg-bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .athena-msg:not(.user) .athena-msg-bubble {
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--text-light);
+            border-bottom-left-radius: 4px;
+        }
+
+        .athena-msg.user .athena-msg-bubble {
+            background: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Typing Indicator */
+        .athena-typing {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+
+        .athena-typing span {
+            width: 8px;
+            height: 8px;
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 50%;
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+
+        .athena-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .athena-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        /* Quick Actions */
+        .athena-quick-actions {
+            padding: 12px 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .athena-quick-btn {
+            padding: 8px 14px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .athena-quick-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: var(--text-white);
+        }
+
+        /* Input Area */
+        .athena-input-area {
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .athena-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .athena-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            max-height: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .athena-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .athena-input:focus {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .athena-send {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .athena-send:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .athena-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .athena-send svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* GHL Widget Container (hidden - loaded in background) */
+        .ghl-widget-container {
+            display: none !important;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            .athena-chat-widget {
+                bottom: 16px;
+                right: 16px;
+            }
+            .athena-panel {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+            .athena-toggle {
+                width: 56px;
+                height: 56px;
+            }
+        }
+
         /* Role Switcher */
         .role-switcher {
             display: flex;
@@ -532,6 +1198,82 @@
     </style>
 </head>
 <body>
+    <!-- Notification Toast Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Athena AI Support Chat Widget -->
+    <div class="athena-chat-widget" id="athenaWidget">
+        <!-- Floating Toggle Button -->
+        <button class="athena-toggle" id="athenaToggle" aria-label="Open support chat">
+            <div class="athena-pulse"></div>
+            <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+            <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            <span class="athena-badge" id="athenaBadge">1</span>
+        </button>
+
+        <!-- Chat Panel -->
+        <div class="athena-panel" id="athenaPanel">
+            <!-- Header -->
+            <div class="athena-header">
+                <div class="athena-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                        <path d="M15 3c2 1 3 3 3 5s-1 4-3 5"/>
+                    </svg>
+                </div>
+                <div class="athena-info">
+                    <div class="athena-name">Athena</div>
+                    <div class="athena-status">Online - Ready to help</div>
+                </div>
+                <button class="athena-minimize" onclick="AthenaChat.toggle()" aria-label="Minimize chat">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Messages -->
+            <div class="athena-messages" id="athenaMessages">
+                <div class="athena-msg">
+                    <div class="athena-msg-avatar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h4"/>
+                        </svg>
+                    </div>
+                    <div class="athena-msg-bubble">
+                        Hi! I'm Athena, your Content Bug assistant. How can I help you today?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="athena-quick-actions" id="athenaQuickActions">
+                <button class="athena-quick-btn" onclick="AthenaChat.quickAction('project-status')">Project Status</button>
+                <button class="athena-quick-btn" onclick="AthenaChat.quickAction('submit-project')">Submit Project</button>
+                <button class="athena-quick-btn" onclick="AthenaChat.quickAction('revision-help')">Revision Help</button>
+                <button class="athena-quick-btn" onclick="AthenaChat.quickAction('billing')">Billing</button>
+            </div>
+
+            <!-- Input Area -->
+            <div class="athena-input-area">
+                <div class="athena-input-wrapper">
+                    <textarea class="athena-input" id="athenaInput" placeholder="Type your message..." rows="1"></textarea>
+                </div>
+                <button class="athena-send" id="athenaSend" onclick="AthenaChat.send()" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="app">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -896,6 +1638,500 @@
             container.insertAdjacentHTML('beforeend', messageHtml);
             container.scrollTop = container.scrollHeight;
         }
+
+        // ============ NOTIFICATION SYSTEM (Apple-style) ============
+        const NotificationSystem = {
+            container: null,
+            queue: [],
+            maxVisible: 4,
+            defaultDuration: 5000,
+
+            // Icon SVG templates
+            icons: {
+                info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+                success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+                warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+                error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+                message: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+                project: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
+                edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"/><line x1="3" y1="22" x2="21" y2="22"/></svg>`,
+                review: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M21 12c-1.5 4-5.5 7-9 7s-7.5-3-9-7c1.5-4 5.5-7 9-7s7.5 3 9 7z"/></svg>`
+            },
+
+            init() {
+                this.container = document.getElementById('notificationContainer');
+                if (!this.container) {
+                    this.container = document.createElement('div');
+                    this.container.id = 'notificationContainer';
+                    this.container.className = 'notification-container';
+                    document.body.appendChild(this.container);
+                }
+            },
+
+            show(options) {
+                if (!this.container) this.init();
+
+                const {
+                    type = 'info',
+                    title,
+                    body,
+                    app = 'Content Portal',
+                    duration = this.defaultDuration,
+                    sound = false,
+                    onClick = null,
+                    showProgress = true
+                } = options;
+
+                const id = 'notif-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+                const toast = document.createElement('div');
+                toast.id = id;
+                toast.className = `notification-toast${sound ? ' with-sound' : ''}`;
+                toast.style.position = 'relative';
+
+                toast.innerHTML = `
+                    <button class="notification-close" onclick="NotificationSystem.dismiss('${id}'); event.stopPropagation();">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                    <div class="notification-header">
+                        <div class="notification-icon ${type}">
+                            ${this.icons[type] || this.icons.info}
+                        </div>
+                        <div class="notification-meta">
+                            <div class="notification-app">${app}</div>
+                        </div>
+                        <div class="notification-time">${timeStr}</div>
+                    </div>
+                    <div class="notification-title">${title}</div>
+                    ${body ? `<div class="notification-body">${body}</div>` : ''}
+                    ${showProgress && duration > 0 ? `
+                        <div class="notification-progress">
+                            <div class="notification-progress-bar" style="animation-duration: ${duration}ms;"></div>
+                        </div>
+                    ` : ''}
+                `;
+
+                if (onClick) {
+                    toast.addEventListener('click', (e) => {
+                        if (!e.target.closest('.notification-close')) {
+                            onClick();
+                            this.dismiss(id);
+                        }
+                    });
+                }
+
+                // Add to container
+                this.container.appendChild(toast);
+
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    toast.classList.add('show');
+                });
+
+                // Play sound if enabled
+                if (sound) {
+                    this.playSound(type);
+                }
+
+                // Auto dismiss
+                if (duration > 0) {
+                    setTimeout(() => this.dismiss(id), duration);
+                }
+
+                // Limit visible notifications
+                this.trimQueue();
+
+                return id;
+            },
+
+            dismiss(id) {
+                const toast = document.getElementById(id);
+                if (!toast) return;
+
+                toast.classList.remove('show');
+                toast.classList.add('hiding');
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 400);
+            },
+
+            dismissAll() {
+                const toasts = this.container.querySelectorAll('.notification-toast');
+                toasts.forEach((toast, i) => {
+                    setTimeout(() => this.dismiss(toast.id), i * 100);
+                });
+            },
+
+            trimQueue() {
+                const toasts = this.container.querySelectorAll('.notification-toast');
+                if (toasts.length > this.maxVisible) {
+                    for (let i = 0; i < toasts.length - this.maxVisible; i++) {
+                        this.dismiss(toasts[i].id);
+                    }
+                }
+            },
+
+            playSound(type) {
+                // Simple notification sound using Web Audio API
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    // Different tones for different types
+                    const tones = {
+                        success: [523, 659, 784], // C, E, G (happy chord)
+                        error: [392, 330],        // G, E (descending)
+                        warning: [440, 440],      // A, A (alert)
+                        info: [523, 587],         // C, D (ascending)
+                        message: [659, 784],      // E, G (bright)
+                        project: [523, 659]       // C, E (positive)
+                    };
+
+                    const frequencies = tones[type] || tones.info;
+                    let time = audioContext.currentTime;
+
+                    frequencies.forEach((freq, i) => {
+                        oscillator.frequency.setValueAtTime(freq, time + i * 0.1);
+                    });
+
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } catch (e) {
+                    // Audio not supported, fail silently
+                }
+            },
+
+            // Convenience methods
+            info(title, body = '', options = {}) {
+                return this.show({ type: 'info', title, body, ...options });
+            },
+
+            success(title, body = '', options = {}) {
+                return this.show({ type: 'success', title, body, ...options });
+            },
+
+            warning(title, body = '', options = {}) {
+                return this.show({ type: 'warning', title, body, ...options });
+            },
+
+            error(title, body = '', options = {}) {
+                return this.show({ type: 'error', title, body, ...options });
+            },
+
+            message(title, body = '', options = {}) {
+                return this.show({ type: 'message', title, body, sound: true, ...options });
+            },
+
+            projectUpdate(title, body = '', options = {}) {
+                return this.show({ type: 'project', title, body, ...options });
+            }
+        };
+
+        // Initialize notification system
+        NotificationSystem.init();
+
+        // Demo notifications on page load (can be removed in production)
+        setTimeout(() => {
+            NotificationSystem.success('Welcome back!', `Good to see you, ${currentUser.name}`);
+        }, 1000);
+
+        // Example: Show notification when new message arrives
+        function showNewMessageNotification(sender, preview) {
+            NotificationSystem.message(
+                `New message from ${sender}`,
+                preview,
+                {
+                    onClick: () => {
+                        // Navigate to chat
+                        console.log('Navigate to chat');
+                    }
+                }
+            );
+        }
+
+        // Example: Show notification when project status changes
+        function showProjectNotification(projectName, status) {
+            const messages = {
+                'in_progress': { type: 'info', title: 'Edit Started', body: `Your project "${projectName}" is now being edited.` },
+                'review': { type: 'project', title: 'Ready for Review', body: `Your project "${projectName}" is ready for your review!` },
+                'completed': { type: 'success', title: 'Project Completed', body: `Your project "${projectName}" has been approved and is ready to download.` },
+                'revision': { type: 'warning', title: 'Revision Requested', body: `Revisions have been requested for "${projectName}".` }
+            };
+
+            const msg = messages[status];
+            if (msg) {
+                NotificationSystem.show({
+                    type: msg.type,
+                    title: msg.title,
+                    body: msg.body,
+                    sound: true,
+                    onClick: () => {
+                        // Navigate to project
+                        console.log('Navigate to project:', projectName);
+                    }
+                });
+            }
+        }
+
+        // Make notification system globally available
+        window.notify = NotificationSystem;
+
+        // ============ ATHENA AI CHAT SYSTEM ============
+        const AthenaChat = {
+            isOpen: false,
+            isTyping: false,
+            messageHistory: [],
+            userInitials: 'U',
+
+            // GHL Chat Widget ID (from CLAUDE.md)
+            GHL_WIDGET_ID: '6801e2aed4fd9bd05de4a3d0',
+
+            // Quick response templates
+            quickResponses: {
+                'project-status': "I'd be happy to check on your project status! Can you tell me which project you're asking about, or would you like me to show you all your active projects?",
+                'submit-project': "Great! To submit a new project, you can use the 'Submit Project' section in the sidebar. Would you like me to walk you through the submission process?",
+                'revision-help': "I can help with revisions! When reviewing your edit, you can click on the video timeline to add timestamped comments. What specific revision guidance do you need?",
+                'billing': "For billing questions, I can help with:\n• Viewing your current plan\n• Upgrading or changing plans\n• Invoice history\n• Payment methods\n\nWhat would you like to know?"
+            },
+
+            // AI response knowledge base
+            knowledgeBase: {
+                greetings: ['hi', 'hello', 'hey', 'sup', 'yo', 'greetings'],
+                thanks: ['thanks', 'thank you', 'thx', 'ty', 'appreciate'],
+                help: ['help', 'support', 'assistance', 'stuck', 'confused'],
+                pricing: ['price', 'cost', 'pricing', 'plan', 'tier', 'upgrade'],
+                turnaround: ['turnaround', 'how long', 'when', 'eta', 'delivery', 'timeline'],
+                revision: ['revision', 'change', 'edit', 'modify', 'fix', 'redo'],
+                upload: ['upload', 'submit', 'send', 'footage', 'raw', 'file'],
+                human: ['human', 'real person', 'agent', 'talk to', 'speak with', 'manager']
+            },
+
+            init() {
+                const toggle = document.getElementById('athenaToggle');
+                const input = document.getElementById('athenaInput');
+                const sendBtn = document.getElementById('athenaSend');
+
+                // Get user initials
+                const userName = localStorage.getItem('cb_name') || 'User';
+                this.userInitials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+                // Toggle click
+                toggle.addEventListener('click', () => this.toggle());
+
+                // Input handling
+                input.addEventListener('input', () => {
+                    sendBtn.disabled = !input.value.trim();
+                    // Auto-resize textarea
+                    input.style.height = 'auto';
+                    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.send();
+                    }
+                });
+
+                // Hide badge after opening
+                this.hideBadge();
+
+                // Show welcome badge after delay
+                setTimeout(() => {
+                    if (!this.isOpen) {
+                        this.showBadge(1);
+                    }
+                }, 5000);
+            },
+
+            toggle() {
+                this.isOpen = !this.isOpen;
+                const toggle = document.getElementById('athenaToggle');
+                const panel = document.getElementById('athenaPanel');
+
+                toggle.classList.toggle('open', this.isOpen);
+                panel.classList.toggle('open', this.isOpen);
+
+                if (this.isOpen) {
+                    this.hideBadge();
+                    document.getElementById('athenaInput').focus();
+                }
+            },
+
+            showBadge(count) {
+                const badge = document.getElementById('athenaBadge');
+                badge.textContent = count;
+                badge.classList.add('show');
+            },
+
+            hideBadge() {
+                document.getElementById('athenaBadge').classList.remove('show');
+            },
+
+            send() {
+                const input = document.getElementById('athenaInput');
+                const message = input.value.trim();
+                if (!message || this.isTyping) return;
+
+                // Add user message
+                this.addMessage(message, true);
+                input.value = '';
+                input.style.height = 'auto';
+                document.getElementById('athenaSend').disabled = true;
+
+                // Hide quick actions after first message
+                document.getElementById('athenaQuickActions').style.display = 'none';
+
+                // Generate AI response
+                this.generateResponse(message);
+            },
+
+            quickAction(action) {
+                // Hide quick actions
+                document.getElementById('athenaQuickActions').style.display = 'none';
+
+                // Add user message as if they asked
+                const actionMessages = {
+                    'project-status': "What's the status of my projects?",
+                    'submit-project': "How do I submit a new project?",
+                    'revision-help': "I need help with revisions",
+                    'billing': "I have a billing question"
+                };
+
+                this.addMessage(actionMessages[action], true);
+
+                // Show typing then response
+                this.showTyping();
+                setTimeout(() => {
+                    this.hideTyping();
+                    this.addMessage(this.quickResponses[action], false);
+                }, 1200);
+            },
+
+            addMessage(text, isUser) {
+                const container = document.getElementById('athenaMessages');
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `athena-msg${isUser ? ' user' : ''}`;
+
+                if (isUser) {
+                    msgDiv.innerHTML = `
+                        <div class="athena-msg-avatar">${this.userInitials}</div>
+                        <div class="athena-msg-bubble">${this.escapeHtml(text)}</div>
+                    `;
+                } else {
+                    msgDiv.innerHTML = `
+                        <div class="athena-msg-avatar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="4"/>
+                                <path d="M6 21v-2a4 4 0 0 1 4-4h4"/>
+                            </svg>
+                        </div>
+                        <div class="athena-msg-bubble">${text.replace(/\n/g, '<br>')}</div>
+                    `;
+                }
+
+                container.appendChild(msgDiv);
+                container.scrollTop = container.scrollHeight;
+
+                // Store in history
+                this.messageHistory.push({ text, isUser, timestamp: Date.now() });
+            },
+
+            showTyping() {
+                this.isTyping = true;
+                const container = document.getElementById('athenaMessages');
+                const typingDiv = document.createElement('div');
+                typingDiv.id = 'athenaTypingIndicator';
+                typingDiv.className = 'athena-msg';
+                typingDiv.innerHTML = `
+                    <div class="athena-msg-avatar">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h4"/>
+                        </svg>
+                    </div>
+                    <div class="athena-msg-bubble">
+                        <div class="athena-typing">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(typingDiv);
+                container.scrollTop = container.scrollHeight;
+            },
+
+            hideTyping() {
+                this.isTyping = false;
+                const typing = document.getElementById('athenaTypingIndicator');
+                if (typing) typing.remove();
+            },
+
+            generateResponse(userMessage) {
+                this.showTyping();
+
+                // Simple pattern matching for demo (would connect to Claude API in production)
+                const message = userMessage.toLowerCase();
+                let response = '';
+
+                // Check for keywords
+                if (this.matchesAny(message, this.knowledgeBase.greetings)) {
+                    response = "Hello! Great to hear from you. How can I assist you with your Content Bug experience today?";
+                } else if (this.matchesAny(message, this.knowledgeBase.thanks)) {
+                    response = "You're welcome! Is there anything else I can help you with?";
+                } else if (this.matchesAny(message, this.knowledgeBase.human)) {
+                    response = "I'd be happy to connect you with our team! You can:\n\n• Use the chat in the sidebar to message your Creative Director directly\n• Email us at contentbug@contentbug.io\n• Call/text us at 385-200-7582\n\nOur team typically responds within a few hours during business hours.";
+                } else if (this.matchesAny(message, this.knowledgeBase.pricing)) {
+                    response = "We have 4 pricing tiers:\n\n• **Basic** - Perfect for getting started\n• **Silver** - Our most popular plan\n• **Gold** - For growing creators (2 slots)\n• **Pro** - Maximum output (3 slots)\n\nEach tier includes unlimited project submissions with different turnaround times. Would you like me to explain any specific plan?";
+                } else if (this.matchesAny(message, this.knowledgeBase.turnaround)) {
+                    response = "Turnaround times depend on your plan and project type:\n\n• **Shorts (under 90 sec):** 24-48 hours\n• **Long-form (over 90 sec):** 3-5 business days\n\nYour dashboard shows estimated delivery dates for all queued projects!";
+                } else if (this.matchesAny(message, this.knowledgeBase.revision)) {
+                    response = "For revisions, you can:\n\n1. Go to the Review section when your edit is ready\n2. Watch the video and click on the timeline to leave timestamped comments\n3. Submit your revisions and we'll update your edit\n\nMost revisions are completed within 24 hours!";
+                } else if (this.matchesAny(message, this.knowledgeBase.upload)) {
+                    response = "To submit footage:\n\n1. Click 'Submit Project' in the sidebar\n2. Add your Google Drive, Dropbox, or Frame.io link\n3. Include any special instructions\n4. Hit submit!\n\nWe support most cloud storage links. Need help with a specific platform?";
+                } else if (this.matchesAny(message, this.knowledgeBase.help)) {
+                    response = "I'm here to help! Here are some things I can assist with:\n\n• Project status & ETAs\n• Submitting new projects\n• Revision requests\n• Billing & plans\n• Technical issues\n\nWhat would you like to know more about?";
+                } else {
+                    // Default response
+                    response = "Thanks for your message! I'm still learning, but I want to make sure you get the help you need.\n\nFor specific account questions, you can reach our team directly through the chat in your sidebar, or email contentbug@contentbug.io.\n\nIs there something specific about your projects I can help with?";
+                }
+
+                // Simulate typing delay based on response length
+                const delay = Math.min(1000 + response.length * 10, 3000);
+
+                setTimeout(() => {
+                    this.hideTyping();
+                    this.addMessage(response, false);
+                }, delay);
+            },
+
+            matchesAny(text, keywords) {
+                return keywords.some(keyword => text.includes(keyword));
+            },
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        };
+
+        // Initialize Athena Chat
+        AthenaChat.init();
+
+        // Make globally available
+        window.AthenaChat = AthenaChat;
     </script>
 </body>
 </html>
