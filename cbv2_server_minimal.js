@@ -1899,6 +1899,127 @@ app.post('/api/auth/verify-code', async (req, res) => {
 });
 
 // ============================================
+// TRIAL CONTACT CREATION
+// ============================================
+
+// Create/update GHL contact with full info after name capture
+app.post('/api/trial/create-contact', async (req, res) => {
+  try {
+    const { email, firstName, lastName, source, onboardingStatus } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    let contactId = null;
+    let isExisting = false;
+
+    if (GHL_API_KEY) {
+      // Check if contact exists
+      const searchRes = await axios.get(
+        `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+        { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+      );
+
+      if (searchRes.data?.contacts?.length > 0) {
+        // Update existing contact
+        contactId = searchRes.data.contacts[0].id;
+        isExisting = true;
+
+        await axios.put(
+          `https://services.leadconnectorhq.com/contacts/${contactId}`,
+          {
+            firstName: firstName || undefined,
+            lastName: lastName || undefined,
+            customFields: [
+              { key: 'onboarding_status', field_value: onboardingStatus || 'Started' }
+            ]
+          },
+          { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+        );
+
+        // Add tags
+        await axios.post(
+          `https://services.leadconnectorhq.com/contacts/${contactId}/tags`,
+          { tags: ['trial-started', 'email-verified', 'portal-onboarding'] },
+          { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+        );
+
+      } else {
+        // Create new contact
+        const createRes = await axios.post(
+          'https://services.leadconnectorhq.com/contacts/',
+          {
+            locationId: GHL_LOCATION_ID,
+            email: email,
+            firstName: firstName || '',
+            lastName: lastName || '',
+            source: source || 'Free Trial',
+            tags: ['trial-started', 'email-verified', 'portal-onboarding'],
+            customFields: [
+              { key: 'onboarding_status', field_value: onboardingStatus || 'Started' }
+            ]
+          },
+          { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+        );
+        contactId = createRes.data?.contact?.id;
+      }
+    }
+
+    console.log(`[Trial] Contact ${isExisting ? 'updated' : 'created'}: ${email} (${contactId})`);
+    res.json({
+      success: true,
+      contactId,
+      isExisting,
+      message: isExisting ? 'Contact updated' : 'Contact created'
+    });
+
+  } catch (err) {
+    console.error('[Trial] Contact creation error:', err?.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to create contact' });
+  }
+});
+
+// Check if email exists in system (for routing existing vs new users)
+app.post('/api/trial/check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    let exists = false;
+    let contactData = null;
+    let isCustomer = false;
+
+    if (GHL_API_KEY) {
+      const searchRes = await axios.get(
+        `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+        { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+      );
+
+      if (searchRes.data?.contacts?.length > 0) {
+        exists = true;
+        contactData = searchRes.data.contacts[0];
+        // Check if they're already a customer (has customer tag or subscription)
+        const tags = contactData.tags || [];
+        isCustomer = tags.includes('customer') || tags.includes('active-subscription');
+      }
+    }
+
+    res.json({
+      exists,
+      isCustomer,
+      firstName: contactData?.firstName,
+      lastName: contactData?.lastName
+    });
+
+  } catch (err) {
+    console.error('[Trial] Email check error:', err.message);
+    res.json({ exists: false, isCustomer: false });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
