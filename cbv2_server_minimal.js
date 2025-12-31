@@ -1650,6 +1650,83 @@ app.get('/api/client/team-members', async (req, res) => {
 });
 
 // ============================================
+// PRESENCE TRACKING - Online Users
+// ============================================
+
+// In-memory store for online users (in production, use Redis)
+const onlineUsers = new Map();
+const PRESENCE_TIMEOUT = 60000; // 60 seconds - user considered offline after this
+
+// Clean up stale users every 30 seconds
+setInterval(() => {
+  const now = Date.now();
+  for (const [email, data] of onlineUsers.entries()) {
+    if (now - data.timestamp > PRESENCE_TIMEOUT) {
+      onlineUsers.delete(email);
+      console.log(`[Presence] User offline (timeout): ${email}`);
+    }
+  }
+}, 30000);
+
+// Heartbeat - update user presence
+app.post('/api/presence/heartbeat', (req, res) => {
+  try {
+    const { email, name, role, avatar, currentPage, timestamp } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    // Update user presence
+    onlineUsers.set(email.toLowerCase(), {
+      email: email.toLowerCase(),
+      name: name || 'User',
+      role: role || 'client',
+      avatar: avatar || null,
+      currentPage: currentPage || 'Unknown',
+      timestamp: timestamp || Date.now()
+    });
+
+    // Return all online users
+    const users = Array.from(onlineUsers.values());
+    res.json({ success: true, onlineUsers: users });
+  } catch (err) {
+    console.error('[Presence] Heartbeat error:', err.message);
+    res.status(500).json({ error: 'Heartbeat failed' });
+  }
+});
+
+// Get online users
+app.get('/api/presence/online', (req, res) => {
+  try {
+    const users = Array.from(onlineUsers.values());
+    res.json({ success: true, onlineUsers: users, count: users.length });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get online users' });
+  }
+});
+
+// Mark user offline
+app.post('/api/presence/offline', express.text({ type: '*/*' }), (req, res) => {
+  try {
+    let email;
+    try {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      email = body.email;
+    } catch (e) {
+      email = req.body;
+    }
+
+    if (email) {
+      onlineUsers.delete(email.toLowerCase());
+      console.log(`[Presence] User offline: ${email}`);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to mark offline' });
+  }
+});
+
+// ============================================
 // AUTHENTICATION - Email Verification
 // ============================================
 
