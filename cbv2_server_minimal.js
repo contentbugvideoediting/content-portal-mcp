@@ -1650,6 +1650,178 @@ app.get('/api/client/team-members', async (req, res) => {
 });
 
 // ============================================
+// AUTHENTICATION - Email Verification
+// ============================================
+
+// In-memory store for verification codes (in production, use Redis)
+const verificationCodes = new Map();
+
+// Generate 6-digit code
+function generateCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Clean up expired codes every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [email, data] of verificationCodes.entries()) {
+    if (now - data.createdAt > 600000) { // 10 minutes expiry
+      verificationCodes.delete(email);
+    }
+  }
+}, 300000);
+
+// Send verification code
+app.post('/api/auth/send-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Valid email required' });
+    }
+
+    const code = generateCode();
+    verificationCodes.set(email.toLowerCase(), {
+      code,
+      createdAt: Date.now(),
+      attempts: 0
+    });
+
+    // Send code via GHL email
+    if (GHL_API_KEY) {
+      try {
+        // First, find or create the contact
+        let contactId = null;
+
+        // Search for existing contact
+        const searchRes = await axios.get(
+          `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+          { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+        );
+
+        if (searchRes.data?.contacts?.length > 0) {
+          contactId = searchRes.data.contacts[0].id;
+        } else {
+          // Create new contact
+          const createRes = await axios.post(
+            'https://services.leadconnectorhq.com/contacts/',
+            {
+              locationId: GHL_LOCATION_ID,
+              email: email,
+              source: 'Free Trial Verification',
+              tags: ['trial-signup']
+            },
+            { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+          );
+          contactId = createRes.data?.contact?.id;
+        }
+
+        // Send email with code
+        if (contactId) {
+          await axios.post(
+            'https://services.leadconnectorhq.com/conversations/messages',
+            {
+              type: 'Email',
+              contactId: contactId,
+              subject: 'Your Content Bug Verification Code',
+              html: `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
+                  <div style="text-align: center; margin-bottom: 32px;">
+                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" style="width: 48px; height: 48px;">
+                  </div>
+                  <h1 style="font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; color: #1a1a1a;">Your Verification Code</h1>
+                  <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 32px;">Enter this code to unlock your free edit portal</p>
+                  <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                    <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #ffffff;">${code}</div>
+                  </div>
+                  <p style="font-size: 14px; color: #999; text-align: center;">This code expires in 10 minutes.</p>
+                  <p style="font-size: 14px; color: #999; text-align: center; margin-top: 24px;">Didn't request this? Just ignore this email.</p>
+                </div>
+              `
+            },
+            { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+          );
+        }
+      } catch (emailErr) {
+        console.log('[Auth] GHL email error:', emailErr.message);
+        // Continue anyway - user can request resend
+      }
+    }
+
+    console.log(`[Auth] Code sent to ${email}: ${code}`);
+    res.json({ success: true, message: 'Verification code sent' });
+  } catch (err) {
+    console.error('[Auth] Send code error:', err.message);
+    res.status(500).json({ error: 'Failed to send verification code' });
+  }
+});
+
+// Verify code
+app.post('/api/auth/verify-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and code required' });
+    }
+
+    const stored = verificationCodes.get(email.toLowerCase());
+    if (!stored) {
+      return res.status(400).json({ error: 'No code found. Please request a new one.' });
+    }
+
+    // Check expiry (10 minutes)
+    if (Date.now() - stored.createdAt > 600000) {
+      verificationCodes.delete(email.toLowerCase());
+      return res.status(400).json({ error: 'Code expired. Please request a new one.' });
+    }
+
+    // Check attempts (max 5)
+    if (stored.attempts >= 5) {
+      verificationCodes.delete(email.toLowerCase());
+      return res.status(400).json({ error: 'Too many attempts. Please request a new code.' });
+    }
+
+    // Verify code
+    if (stored.code !== code) {
+      stored.attempts++;
+      return res.status(400).json({ error: 'Invalid code' });
+    }
+
+    // Success - clean up and return token
+    verificationCodes.delete(email.toLowerCase());
+
+    // Generate simple session token
+    const token = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+
+    // Update contact in GHL with verified tag
+    if (GHL_API_KEY) {
+      try {
+        const searchRes = await axios.get(
+          `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+          { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+        );
+
+        if (searchRes.data?.contacts?.length > 0) {
+          const contactId = searchRes.data.contacts[0].id;
+          await axios.post(
+            `https://services.leadconnectorhq.com/contacts/${contactId}/tags`,
+            { tags: ['email-verified', 'trial-started'] },
+            { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+          );
+        }
+      } catch (tagErr) {
+        console.log('[Auth] Tag update error:', tagErr.message);
+      }
+    }
+
+    console.log(`[Auth] Email verified: ${email}`);
+    res.json({ success: true, token, verified: true });
+  } catch (err) {
+    console.error('[Auth] Verify error:', err.message);
+    res.status(500).json({ error: 'Verification failed' });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
