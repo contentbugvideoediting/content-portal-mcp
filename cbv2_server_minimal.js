@@ -1450,6 +1450,206 @@ portalPages.forEach(page => {
 app.get('/', (req, res) => res.redirect('/login'));
 
 // ============================================
+// INVITE & AFFILIATE SYSTEM
+// ============================================
+
+// POST /api/invite/send - Send invite to team member
+app.post('/api/invite/send', async (req, res) => {
+  try {
+    const { type, recipient, inviteLink, inviterEmail, inviterName, channelId, permissions } = req.body;
+
+    if (!recipient || !inviteLink) {
+      return res.status(400).json({ error: 'Missing recipient or invite link' });
+    }
+
+    // Build message
+    const message = `${inviterName || 'Someone'} has invited you to join their Content Bug channel!\n\nClick here to join: ${inviteLink}`;
+
+    if (type === 'email' && recipient.includes('@') && GHL_API_KEY) {
+      try {
+        // Send via GHL
+        await axios.post(GHL_WEBHOOK_URL || 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9', {
+          type: 'invite',
+          email: recipient,
+          subject: `${inviterName || 'Someone'} invited you to Content Bug`,
+          message: message,
+          inviteLink: inviteLink
+        });
+      } catch (ghlErr) {
+        console.log('[Invite] GHL webhook error:', ghlErr.message);
+      }
+    }
+
+    // Store in Airtable
+    if (AIRTABLE_API_KEY) {
+      try {
+        await axios.post(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Client%20Team%20Members`,
+          {
+            fields: {
+              'Contact': recipient,
+              'Invite Type': type,
+              'Inviter Email': inviterEmail,
+              'Inviter Name': inviterName,
+              'Channel ID': channelId,
+              'Can Chat': permissions?.canChat !== false,
+              'Can View Projects': permissions?.canViewProjects !== false,
+              'Can Submit': permissions?.canSubmit || false,
+              'Status': 'Invited',
+              'Invite Sent': new Date().toISOString()
+            }
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+      } catch (atErr) {
+        console.log('[Invite] Airtable storage:', atErr.message);
+      }
+    }
+
+    console.log(`[Invite] Sent ${type} invite to ${recipient} from ${inviterEmail}`);
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error('[Invite] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/affiliate/send - Send affiliate link
+app.post('/api/affiliate/send', async (req, res) => {
+  try {
+    const { type, recipient, affiliateLink, referrerEmail, referrerName } = req.body;
+
+    if (!recipient || !affiliateLink) {
+      return res.status(400).json({ error: 'Missing recipient or affiliate link' });
+    }
+
+    const message = `Hey! ${referrerName || 'Your friend'} thinks you'd love Content Bug - professional video editing for content creators.\n\nCheck it out: ${affiliateLink}`;
+
+    if (type === 'email' && recipient.includes('@') && GHL_API_KEY) {
+      try {
+        await axios.post(GHL_WEBHOOK_URL || 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9', {
+          type: 'affiliate',
+          email: recipient,
+          subject: `${referrerName || 'A friend'} recommends Content Bug`,
+          message: message,
+          affiliateLink: affiliateLink
+        });
+      } catch (ghlErr) {
+        console.log('[Affiliate] GHL webhook error:', ghlErr.message);
+      }
+    }
+
+    // Track referral in Airtable
+    if (AIRTABLE_API_KEY) {
+      try {
+        await axios.post(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Affiliate%20Referrals`,
+          {
+            fields: {
+              'Referred Contact': recipient,
+              'Referrer Email': referrerEmail,
+              'Referrer Name': referrerName,
+              'Send Type': type,
+              'Status': 'Sent',
+              'Date Sent': new Date().toISOString()
+            }
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+      } catch (atErr) {
+        console.log('[Affiliate] Airtable storage:', atErr.message);
+      }
+    }
+
+    console.log(`[Affiliate] Sent ${type} referral to ${recipient} from ${referrerEmail}`);
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error('[Affiliate] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/affiliate/stats - Get affiliate stats for a user
+app.get('/api/affiliate/stats', async (req, res) => {
+  try {
+    const email = req.query.email;
+    if (!email) return res.json({ signups: 0, pending: 0 });
+
+    let signups = 0, pending = 0;
+
+    if (AIRTABLE_API_KEY) {
+      try {
+        const response = await axios.get(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Affiliate%20Referrals`,
+          {
+            params: { filterByFormula: `{Referrer Email}='${email}'` },
+            headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
+          }
+        );
+        const records = response.data?.records || [];
+        signups = records.filter(r => r.fields?.Status === 'Converted').length;
+        pending = records.filter(r => r.fields?.Status === 'Sent' || r.fields?.Status === 'Clicked').length;
+      } catch (atErr) {
+        console.log('[Affiliate Stats]:', atErr.message);
+      }
+    }
+
+    res.json({ signups, pending });
+  } catch (err) {
+    res.json({ signups: 0, pending: 0 });
+  }
+});
+
+// GET /api/client/team-members - Get team members for a channel
+app.get('/api/client/team-members', async (req, res) => {
+  try {
+    const channelId = req.query.channelId;
+    if (!channelId) return res.json({ members: [] });
+
+    let members = [];
+
+    if (AIRTABLE_API_KEY) {
+      try {
+        const response = await axios.get(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Client%20Team%20Members`,
+          {
+            params: { filterByFormula: `{Channel ID}='${channelId}'` },
+            headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
+          }
+        );
+        members = (response.data?.records || []).map(r => ({
+          id: r.id,
+          name: r.fields?.Name || 'Pending',
+          email: r.fields?.Email || r.fields?.Contact,
+          status: r.fields?.Status || 'Invited',
+          canChat: r.fields?.['Can Chat'] || false,
+          canViewProjects: r.fields?.['Can View Projects'] || false,
+          canSubmit: r.fields?.['Can Submit'] || false
+        }));
+      } catch (atErr) {
+        console.log('[Team Members]:', atErr.message);
+      }
+    }
+
+    res.json({ members });
+  } catch (err) {
+    res.json({ members: [] });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
