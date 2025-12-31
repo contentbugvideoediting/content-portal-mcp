@@ -1,6 +1,6 @@
-// ContentBug Minimal MCP Server v3.1
+// ContentBug Minimal MCP Server v3.1.1
 // Core integrations: Airtable, GHL, Make.com, Google Drive
-// Updated: Unified email webhook, Airtable field sync
+// Updated: New GHL webhook URL for unified emails
 
 const express = require('express');
 const axios = require('axios');
@@ -27,7 +27,7 @@ const GOOGLE_SERVICE_ACCOUNT_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 const GOOGLE_SHARED_DRIVE_ID = process.env.GOOGLE_SHARED_DRIVE_ID || '0ADnOJaRBvSNCUk9PVA';
 
 // UNIFIED EMAIL WEBHOOK - One webhook routes to all email templates
-const GHL_EMAIL_WEBHOOK = process.env.GHL_EMAIL_WEBHOOK || 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9';
+const GHL_EMAIL_WEBHOOK = process.env.GHL_EMAIL_WEBHOOK || 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/8e7bf1a8-4355-4f40-a944-b16b4ca86fa9';
 
 // ============================================
 // AIRTABLE FIELD MAPPING (Clients Table)
@@ -148,7 +148,7 @@ app.use((req, res, next) => {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.1.0-unified',
+  version: '3.1.1-unified',
   ts: Date.now(),
   services: {
     airtable: !!AIRTABLE_API_KEY,
