@@ -1792,31 +1792,68 @@ app.post('/api/auth/send-code', async (req, res) => {
           contactId = createRes.data?.contact?.id;
         }
 
-        // Send email with code
+        // Send email with code using GHL's email endpoint
         if (contactId) {
-          await axios.post(
-            'https://services.leadconnectorhq.com/conversations/messages',
-            {
-              type: 'Email',
-              contactId: contactId,
-              subject: 'Your Content Bug Verification Code',
-              html: `
-                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-                  <div style="text-align: center; margin-bottom: 32px;">
-                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" style="width: 48px; height: 48px;">
-                  </div>
-                  <h1 style="font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; color: #1a1a1a;">Your Verification Code</h1>
-                  <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 32px;">Enter this code to unlock your free edit portal</p>
-                  <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 32px;">
-                    <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #ffffff;">${code}</div>
-                  </div>
-                  <p style="font-size: 14px; color: #999; text-align: center;">This code expires in 10 minutes.</p>
-                  <p style="font-size: 14px; color: #999; text-align: center; margin-top: 24px;">Didn't request this? Just ignore this email.</p>
-                </div>
-              `
-            },
-            { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
-          );
+          // First, get or create a conversation for this contact
+          try {
+            // Create conversation if needed
+            const convRes = await axios.post(
+              'https://services.leadconnectorhq.com/conversations/',
+              {
+                locationId: GHL_LOCATION_ID,
+                contactId: contactId
+              },
+              { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+            );
+
+            const conversationId = convRes.data?.conversation?.id;
+
+            if (conversationId) {
+              // Now send email message
+              await axios.post(
+                `https://services.leadconnectorhq.com/conversations/messages`,
+                {
+                  type: 'Email',
+                  conversationId: conversationId,
+                  contactId: contactId,
+                  subject: 'Your Content Bug Verification Code',
+                  html: `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px; background: #ffffff;">
+                      <div style="text-align: center; margin-bottom: 32px;">
+                        <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="Content Bug" style="height: 40px; width: auto;">
+                      </div>
+                      <h1 style="font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; color: #1a1a1a;">Your Verification Code</h1>
+                      <p style="font-size: 16px; color: #666; text-align: center; margin-bottom: 32px;">Enter this code to unlock your free edit portal</p>
+                      <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 32px;">
+                        <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #ffffff;">${code}</div>
+                      </div>
+                      <p style="font-size: 14px; color: #999; text-align: center;">This code expires in 10 minutes.</p>
+                      <p style="font-size: 14px; color: #999; text-align: center; margin-top: 24px;">Didn't request this? Just ignore this email.</p>
+                    </div>
+                  `
+                },
+                { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+              );
+              console.log(`[Auth] Email sent to ${email} via conversation ${conversationId}`);
+            }
+          } catch (convErr) {
+            console.log('[Auth] Conversation/email error:', convErr?.response?.data || convErr.message);
+            // Fallback: Try direct email send via workflow webhook
+            try {
+              await axios.post(
+                'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9',
+                {
+                  email: email,
+                  verification_code: code,
+                  type: 'verification_code'
+                },
+                { headers: { 'Content-Type': 'application/json' } }
+              );
+              console.log(`[Auth] Email sent via webhook for ${email}`);
+            } catch (webhookErr) {
+              console.log('[Auth] Webhook fallback also failed:', webhookErr.message);
+            }
+          }
         }
       } catch (emailErr) {
         console.log('[Auth] GHL email error:', emailErr.message);
