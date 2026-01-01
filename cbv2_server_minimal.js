@@ -38,10 +38,11 @@ const AT_TABLES = {
   team: 'tblHlgg1sHKFt052x'
 };
 
-// Zoom Configuration
-const ZOOM_ACCOUNT_ID = process.env.ZOOM_ACCOUNT_ID;
+// Zoom Configuration (Server-to-Server OAuth)
+const ZOOM_ACCOUNT_ID = process.env.ZOOM_ACCOUNT_ID || 'грRxnFg8QnKOzхCrF_хP7w';
 const ZOOM_CLIENT_ID = process.env.ZOOM_CLIENT_ID || 'Da0ubYM3QrSpY1ZHjSOtlg';
-const ZOOM_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET;
+const ZOOM_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET || 'хуJfh9Vgb6401Qqc3hmВuS00naIHZs7j';
+const ZOOM_WEBHOOK_SECRET = process.env.ZOOM_WEBHOOK_SECRET || '2W9_jl6oT36Gaisjq3F9ZQ';
 
 // GHL WEBHOOK - triggers workflow that creates contact + sends email
 const GHL_EMAIL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/8e7bf1a8-4355-4f40-a944-b16b4ca86fa9';
@@ -162,7 +163,7 @@ app.get('/healthz', (req, res) => res.json({
     apify: !!APIFY_API_TOKEN,
     drive: driveReady,
     airtable: !!AIRTABLE_API_KEY,
-    zoom: !!(ZOOM_CLIENT_ID && ZOOM_CLIENT_SECRET)
+    zoom: !!(ZOOM_CLIENT_ID && ZOOM_CLIENT_SECRET && ZOOM_ACCOUNT_ID)
   }
 }));
 
@@ -841,7 +842,7 @@ app.post('/api/zoom/webhook', async (req, res) => {
   // Handle Zoom webhook validation
   if (req.body.event === 'endpoint.url_validation') {
     const hashForValidation = crypto
-      .createHmac('sha256', process.env.ZOOM_WEBHOOK_SECRET || '')
+      .createHmac('sha256', ZOOM_WEBHOOK_SECRET)
       .update(req.body.payload.plainToken)
       .digest('hex');
 
