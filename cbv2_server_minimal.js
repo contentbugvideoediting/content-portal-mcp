@@ -1,4 +1,4 @@
-// ContentBug Portal MCP Server v3.4.0
+// ContentBug Portal MCP Server v3.5.0
 // GHL is source of truth for contacts - GHL natively syncs to Airtable
 // Chat/Messages stored in Airtable directly
 // Zoom integration for instant meetings
@@ -97,6 +97,27 @@ app.use((req, res, next) => {
     express.json({ limit: '10mb' })(req, res, next);
   }
 });
+
+// ============================================
+// STATIC FILE SERVING (Portal HTML)
+// ============================================
+const path = require('path');
+app.use('/portal', express.static(path.join(__dirname, 'portal')));
+
+// Route aliases for clean URLs
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'login.html')));
+app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'signup.html')));
+app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'portal.html')));
+app.get('/review', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'review.html')));
+app.get('/record', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'record.html')));
+app.get('/blueprint', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'style-blueprint.html')));
+app.get('/submit', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'submit-project.html')));
+app.get('/team-login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-login.html')));
+app.get('/team-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-signup.html')));
+app.get('/editor-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor-signup.html')));
+
+// Root redirect to login
+app.get('/', (req, res) => res.redirect('/login'));
 
 // ============================================
 // AIRTABLE HELPERS
@@ -1082,7 +1103,7 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
-  console.log(`ContentBug Portal v3.4.0 on port ${PORT}`);
+  console.log(`ContentBug Portal v3.5.0 on port ${PORT}`);
   console.log('Chat stored in Airtable, GHL for contacts');
   console.log('Zoom integration active');
 });
