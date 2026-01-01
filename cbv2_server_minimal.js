@@ -115,6 +115,8 @@ app.get('/submit', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'su
 app.get('/team-login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-login.html')));
 app.get('/team-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-signup.html')));
 app.get('/editor-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor-signup.html')));
+app.get('/team', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-index.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-index.html'))); // Admin uses same view with different permissions
 
 // Root redirect to login
 app.get('/', (req, res) => res.redirect('/login'));
