@@ -1,0 +1,133 @@
+<!-- =====================================================
+     GHL EMAIL TEMPLATE: CANCELLATION REQUESTED
+     (Still has access until billing period ends)
+     Copy everything below into GHL HTML Block
+     ===================================================== -->
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #050508;">
+  <tr>
+    <td align="center" style="padding: 40px 16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 480px;">
+        
+        <!-- Logo -->
+        <tr>
+          <td align="center" style="padding-bottom: 32px;">
+            <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f19a634f4b0f21c170.png" alt="Content Bug" width="64" height="64" style="display: block; width: 64px; height: 64px;">
+          </td>
+        </tr>
+
+        <!-- Card -->
+        <tr>
+          <td style="background-color: #0a0a0f; border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 24px; padding: 40px 32px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+
+              <!-- Header -->
+              <tr>
+                <td align="center" style="padding-bottom: 8px;">
+                  <p style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Cancellation Confirmed</p>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding-bottom: 32px;">
+                  <p style="margin: 0; font-size: 15px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">We've received your request, {{contact.first_name}}</p>
+                </td>
+              </tr>
+
+              <!-- Still Active Notice -->
+              <tr>
+                <td style="padding-bottom: 24px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                        <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #22c55e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          ✓ You Still Have Full Access
+                        </p>
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Your subscription remains active until <strong style="color: #ffffff;">{{contact.subscription_end_date}}</strong>. Keep submitting projects and using the portal until then!
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- What Happens Next -->
+              <tr>
+                <td style="padding-bottom: 24px;">
+                  <p style="margin: 0 0 12px 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">What happens next:</p>
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <p style="margin: 0; font-size: 13px; color: #d1d5db; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          <strong style="color: #3b82f6;">Now → {{contact.subscription_end_date}}</strong><br>
+                          <span style="color: #94a3b8;">Full portal access. Submit projects, download files, chat with your editor.</span>
+                        </p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <p style="margin: 0; font-size: 13px; color: #d1d5db; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          <strong style="color: #f59e0b;">On {{contact.subscription_end_date}}</strong><br>
+                          <span style="color: #94a3b8;">Portal access ends. No charges. We'll send a final email.</span>
+                        </p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px 0;">
+                        <p style="margin: 0; font-size: 13px; color: #d1d5db; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          <strong style="color: #ef4444;">30 days after</strong><br>
+                          <span style="color: #94a3b8;">Approved project files are automatically deleted. Download before then!</span>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Changed Your Mind -->
+              <tr>
+                <td style="padding-bottom: 24px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 20px; text-align: center;">
+                        <p style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Changed your mind?
+                        </p>
+                        <p style="margin: 0 0 16px 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          You can reactivate anytime before {{contact.subscription_end_date}} and keep your momentum going.
+                        </p>
+                        <a href="{{contact.stripe_billing_portal_url}}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #6366f1); padding: 12px 24px; font-size: 13px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Reactivate Subscription
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Divider -->
+              <tr>
+                <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 24px;">
+                  <p style="margin: 0; font-size: 12px; color: #475569; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    Questions or feedback? We'd love to hear from you.<br>Just reply to this email.
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td align="center" style="padding-top: 32px;">
+            <p style="margin: 12px 0 0 0; font-size: 11px; color: #374151; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              © {{current_year}} Content Bug Video Editing, LLC
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,179 @@
+<!-- =====================================================
+     GHL EMAIL TEMPLATE: PAYMENT FAILED - NOTICE #2
+     (Second notice - more urgent)
+     Copy everything below into GHL HTML Block
+     ===================================================== -->
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #050508;">
+  <tr>
+    <td align="center" style="padding: 40px 16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 480px;">
+        
+        <!-- Logo -->
+        <tr>
+          <td align="center" style="padding-bottom: 32px;">
+            <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f19a634f4b0f21c170.png" alt="Content Bug" width="64" height="64" style="display: block; width: 64px; height: 64px;">
+          </td>
+        </tr>
+
+        <!-- Card -->
+        <tr>
+          <td style="background-color: #0a0a0f; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 24px; padding: 40px 32px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+              
+              <!-- Badge -->
+              <tr>
+                <td align="center" style="padding-bottom: 24px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background: linear-gradient(135deg, #c2410c 0%, #f97316 100%); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 16px; border-radius: 20px;">
+                        Second Notice
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Header -->
+              <tr>
+                <td align="center" style="padding-bottom: 8px;">
+                  <p style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Payment Still Pending</p>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding-bottom: 32px;">
+                  <p style="margin: 0; font-size: 15px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.first_name}}, we still haven't been able to process your payment</p>
+                </td>
+              </tr>
+
+              <!-- Payment Details -->
+              <tr>
+                <td style="padding-bottom: 24px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(249, 115, 22, 0.08); border: 1px solid rgba(249, 115, 22, 0.2); border-radius: 12px; padding: 20px;">
+                        <p style="margin: 0 0 16px 0; font-size: 12px; font-weight: 600; color: #fb923c; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Outstanding Payment</p>
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                          <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                  <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Date</p></td>
+                                  <td><p style="margin: 0; font-size: 13px; color: #ffffff; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_failed_date}}</p></td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                  <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Amount Due</p></td>
+                                  <td><p style="margin: 0; font-size: 13px; color: #fb923c; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_amount}}</p></td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding: 8px 0;">
+                              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                  <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Card</p></td>
+                                  <td><p style="margin: 0; font-size: 13px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_method}} •••• {{contact.card_last_four}}</p></td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Warning -->
+              <tr>
+                <td style="padding-bottom: 24px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; padding: 16px; text-align: center;">
+                        <p style="margin: 0; font-size: 13px; color: #f87171; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          <strong>⚠️ Your access will be paused soon</strong><br>
+                          <span style="color: #94a3b8;">Update your payment method now to avoid service interruption</span>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- CTA Button -->
+              <tr>
+                <td align="center" style="padding-bottom: 24px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); border-radius: 12px;">
+                        <a href="{{contact.stripe_billing_portal_url}}" target="_blank" style="display: inline-block; padding: 16px 32px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Update Payment Now →
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Common Issues -->
+              <tr>
+                <td style="padding-bottom: 24px;">
+                  <p style="margin: 0 0 12px 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Common fixes:</p>
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="padding: 6px 0;">
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">• Check if your card has expired</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0;">
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">• Ensure sufficient funds available</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0;">
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">• Contact your bank if payment is blocked</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 6px 0;">
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">• Try a different card</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Divider -->
+              <tr>
+                <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 24px;">
+                  <p style="margin: 0; font-size: 12px; color: #475569; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    Need help? Just reply to this email — we're here for you.
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td align="center" style="padding-top: 32px;">
+            <p style="margin: 12px 0 0 0; font-size: 11px; color: #374151; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              © {{current_year}} Content Bug Video Editing, LLC
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>

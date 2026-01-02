@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Content Bug - Login Code</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        @media (prefers-color-scheme: dark) {
+            .email-bg { background-color: #050508 !important; }
+            .card-bg { background-color: #0a0a0f !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050508; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+
+    <!-- Preview Text -->
+    <div style="display: none; max-height: 0; overflow: hidden;">
+        Your login code is {{contact.verification_code}} - We'd love to have you back! Check out our current plans.
+        &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+    </div>
+
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #050508;" class="email-bg">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 480px;">
+                    <tr>
+                        <td style="background: linear-gradient(165deg, rgba(15, 15, 25, 0.98) 0%, rgba(8, 8, 15, 0.99) 100%); background-color: #0a0a0f; border-radius: 24px; border: 1px solid rgba(59, 130, 246, 0.15); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 100px -20px rgba(59, 130, 246, 0.15);" class="card-bg">
+
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+
+                                <!-- Logo -->
+                                <tr>
+                                    <td align="center" style="padding: 48px 48px 32px 48px;">
+                                        <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" width="64" height="64" style="display: block; width: 64px; height: 64px;">
+                                    </td>
+                                </tr>
+
+                                <!-- Title -->
+                                <tr>
+                                    <td align="center" style="padding: 0 48px 8px 48px;">
+                                        <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
+                                            We Miss You, {{contact.first_name}}!
+                                        </h1>
+                                    </td>
+                                </tr>
+
+                                <!-- Subtitle -->
+                                <tr>
+                                    <td align="center" style="padding: 0 48px 32px 48px;">
+                                        <p style="margin: 0; font-size: 15px; color: #94a3b8; line-height: 1.5;">
+                                            Here's your login code to access your account
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <!-- Code Box -->
+                                <tr>
+                                    <td align="center" style="padding: 0 48px 32px 48px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(37, 99, 235, 0.2) 100%); background-color: #1e3a8a; border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.3); padding: 24px 48px;">
+                                                    <p style="margin: 0; font-size: 42px; font-weight: 800; color: #ffffff; letter-spacing: 12px; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">
+                                                        {{contact.verification_code}}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- Win-back Offer -->
+                                <tr>
+                                    <td style="padding: 0 48px 32px 48px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%); border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.2); padding: 20px;">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #22c55e;">Ready to come back?</p>
+                                                    <p style="margin: 0 0 16px 0; font-size: 14px; color: #94a3b8; line-height: 1.5;">
+                                                        We've been making improvements and would love to help you create amazing content again.
+                                                    </p>
+                                                    <a href="{{custom_values.pricing}}" style="display: inline-block; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 10px 20px; border-radius: 8px;">
+                                                        View Current Plans
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- Expiry Notice -->
+                                <tr>
+                                    <td align="center" style="padding: 0 48px 40px 48px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="background-color: rgba(234, 179, 8, 0.1); border-radius: 8px; padding: 12px 20px;">
+                                                    <p style="margin: 0; font-size: 13px; color: #eab308;">
+                                                        <span style="margin-right: 6px;">&#9202;</span>
+                                                        This code expires in <strong>10 minutes</strong>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- Divider -->
+                                <tr>
+                                    <td style="padding: 0 48px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                            <tr>
+                                                <td style="border-top: 1px solid rgba(255, 255, 255, 0.08);"></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <!-- Security Notice -->
+                                <tr>
+                                    <td align="center" style="padding: 32px 48px 16px 48px;">
+                                        <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.6;">
+                                            <span style="color: #22c55e; margin-right: 4px;">&#128274;</span>
+                                            Didn't request this? You can safely ignore this email.
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <!-- Footer -->
+                                <tr>
+                                    <td align="center" style="padding: 16px 48px 48px 48px;">
+                                        <p style="margin: 0; font-size: 12px; color: #64748b;">
+                                            &copy; 2025 Content Bug Video Editing, LLC
+                                        </p>
+                                        <p style="margin: 8px 0 0 0; font-size: 12px;">
+                                            <a href="{{custom_values.website}}" style="color: #3b82f6; text-decoration: none;">contentbug.io</a>
+                                            <span style="color: #64748b; margin: 0 8px;">|</span>
+                                            <a href="mailto:contentbug@contentbug.io" style="color: #3b82f6; text-decoration: none;">contentbug@contentbug.io</a>
+                                        </p>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
