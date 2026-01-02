@@ -634,64 +634,115 @@
         // Set welcome name
         document.getElementById('welcomeName').textContent = userName;
 
-        // Load dashboard data
+        // Load dashboard data from MCP server
         async function loadDashboardData() {
             try {
-                // For now, show demo data
-                // In production, fetch from MCP server
-                document.getElementById('activeProjects').textContent = '2';
-                document.getElementById('pendingReview').textContent = '1';
-                document.getElementById('completedProjects').textContent = '5';
+                // Fetch real project data from MCP server
+                const response = await fetch(`${MCP_SERVER}/projects/${encodeURIComponent(userEmail)}`, {
+                    headers: {
+                        'X-User-Email': userEmail,
+                        'X-User-Role': 'client'
+                    }
+                });
 
-                // Demo recent projects
                 const projectsContainer = document.getElementById('recentProjects');
-                projectsContainer.innerHTML = `
-                    <div class="project-card" onclick="parent.loadPage('review')">
-                        <div class="project-thumb">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2"/>
-                            </svg>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Morning Routine Vlog</div>
-                            <div class="project-meta">Ready for your review</div>
-                        </div>
-                        <span class="project-status review">Review</span>
-                    </div>
 
-                    <div class="project-card" onclick="parent.loadPage('pipeline')">
-                        <div class="project-thumb">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2"/>
-                            </svg>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Product Launch Promo</div>
-                            <div class="project-meta">Editing in progress</div>
-                        </div>
-                        <span class="project-status progress">In Progress</span>
-                    </div>
+                if (response.ok) {
+                    const data = await response.json();
+                    const projects = data.projects || [];
 
-                    <div class="project-card" onclick="parent.loadPage('storage')">
-                        <div class="project-thumb">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2"/>
-                            </svg>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Weekly Podcast Episode 12</div>
-                            <div class="project-meta">Completed Dec 28</div>
-                        </div>
-                        <span class="project-status complete">Complete</span>
-                    </div>
-                `;
+                    // Calculate stats
+                    const active = projects.filter(p => ['in_progress', 'editing', 'submitted'].includes(p.status)).length;
+                    const pending = projects.filter(p => p.status === 'review').length;
+                    const completed = projects.filter(p => p.status === 'complete').length;
 
+                    document.getElementById('activeProjects').textContent = active;
+                    document.getElementById('pendingReview').textContent = pending;
+                    document.getElementById('completedProjects').textContent = completed;
+
+                    // Show recent projects (last 3)
+                    const recent = projects.slice(0, 3);
+
+                    if (recent.length === 0) {
+                        projectsContainer.innerHTML = `
+                            <div class="empty-state" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+                                <p>No projects yet. Submit your first video!</p>
+                                <button onclick="parent.loadPage('submit')" style="margin-top: 16px; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                                    Submit Video
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        projectsContainer.innerHTML = recent.map(project => `
+                            <div class="project-card" onclick="parent.loadPage('${project.status === 'review' ? 'review' : 'pipeline'}')">
+                                <div class="project-thumb">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2"/>
+                                    </svg>
+                                </div>
+                                <div class="project-info">
+                                    <div class="project-title">${project.title || 'Untitled Project'}</div>
+                                    <div class="project-meta">${getStatusText(project.status)}</div>
+                                </div>
+                                <span class="project-status ${getStatusClass(project.status)}">${getStatusLabel(project.status)}</span>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    // No projects found - show empty state
+                    document.getElementById('activeProjects').textContent = '0';
+                    document.getElementById('pendingReview').textContent = '0';
+                    document.getElementById('completedProjects').textContent = '0';
+
+                    projectsContainer.innerHTML = `
+                        <div class="empty-state" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+                            <p>No projects yet. Submit your first video!</p>
+                            <button onclick="parent.loadPage('submit')" style="margin-top: 16px; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                                Submit Video
+                            </button>
+                        </div>
+                    `;
+                }
             } catch (err) {
                 console.error('[Dashboard Error]', err);
+                // Show empty state on error
+                document.getElementById('activeProjects').textContent = '0';
+                document.getElementById('pendingReview').textContent = '0';
+                document.getElementById('completedProjects').textContent = '0';
             }
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'submitted': 'Just submitted',
+                'in_progress': 'Editing in progress',
+                'editing': 'Editing in progress',
+                'review': 'Ready for your review',
+                'revisions': 'Revisions requested',
+                'complete': 'Completed',
+                'approved': 'Approved'
+            };
+            return texts[status] || status;
+        }
+
+        function getStatusClass(status) {
+            if (['complete', 'approved'].includes(status)) return 'complete';
+            if (status === 'review') return 'review';
+            return 'progress';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'submitted': 'Submitted',
+                'in_progress': 'In Progress',
+                'editing': 'In Progress',
+                'review': 'Review',
+                'revisions': 'Revisions',
+                'complete': 'Complete',
+                'approved': 'Approved'
+            };
+            return labels[status] || status;
         }
 
         // Ensure chat channel exists for this client

@@ -46,6 +46,11 @@
             --panel-width: 380px;
             --toolbar-height: 48px;
             --timeline-height: 80px;
+
+            /* Premium glow effects */
+            --glow-blue: 0 0 20px rgba(59, 130, 246, 0.4);
+            --glow-green: 0 0 20px rgba(34, 197, 94, 0.4);
+            --glow-purple: 0 0 20px rgba(139, 92, 246, 0.4);
         }
 
         body {
@@ -54,6 +59,193 @@
             color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
+        }
+
+        /* Premium animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+        }
+
+        @keyframes slide-in-right {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fade-in-up {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes recording-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Keyboard shortcut hints */
+        .shortcut-hint {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-left: 8px;
+            font-family: monospace;
+        }
+
+        /* Keyboard Shortcuts Modal */
+        .shortcuts-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.2s ease;
+        }
+
+        .shortcuts-modal.visible {
+            display: flex;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .shortcuts-content {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 16px;
+            padding: 24px 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .shortcuts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .shortcuts-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .shortcuts-close {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-surface);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shortcuts-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .shortcuts-section {
+            margin-bottom: 20px;
+        }
+
+        .shortcuts-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .shortcut-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .shortcut-row:last-child {
+            border-bottom: none;
+        }
+
+        .shortcut-action {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .shortcut-keys {
+            display: flex;
+            gap: 4px;
+        }
+
+        .shortcut-key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: monospace;
+            color: var(--text-primary);
+        }
+
+        .shortcut-hint-trigger {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shortcut-hint-trigger:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .shortcut-hint-trigger kbd {
+            padding: 2px 6px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
         }
 
         /* ==================== LAYOUT ==================== */
@@ -202,6 +394,31 @@
             height: auto;
         }
 
+        /* Video Placeholder */
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-base);
+            z-index: 5;
+        }
+
+        /* Comments Empty State */
+        .comments-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
         /* Annotation Canvas Overlay */
         .annotation-canvas {
             position: absolute;
@@ -275,20 +492,52 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
+            position: relative;
         }
 
         .tool-btn:hover {
             background: var(--bg-hover);
-            color: var(--text-secondary);
+            color: var(--text-primary);
+            transform: scale(1.05);
+        }
+
+        .tool-btn:active {
+            transform: scale(0.95);
         }
 
         .tool-btn.active {
-            background: var(--accent-blue);
+            background: linear-gradient(135deg, var(--accent-blue), #8b5cf6);
             color: white;
+            box-shadow: var(--glow-blue);
         }
 
         .tool-btn svg { width: 18px; height: 18px; }
+
+        /* Tooltip for tools */
+        .tool-btn::after {
+            content: attr(title);
+            position: absolute;
+            bottom: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        .tool-btn:hover::after {
+            opacity: 1;
+        }
 
         .tool-divider {
             width: 1px;
@@ -311,18 +560,84 @@
             border-radius: 50%;
             border: 2px solid transparent;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
+            position: relative;
         }
 
-        .color-btn:hover { transform: scale(1.1); }
-        .color-btn.active { border-color: white; }
+        .color-btn:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px currentColor;
+        }
 
-        .color-red { background: #ff3b30; }
-        .color-orange { background: #ff9500; }
-        .color-yellow { background: #ffcc00; }
-        .color-green { background: #00d084; }
-        .color-blue { background: #7b61ff; }
-        .color-white { background: #ffffff; }
+        .color-btn.active {
+            border-color: white;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .color-btn::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .color-btn.active::before {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .color-red { background: #ff3b30; color: #ff3b30; }
+        .color-orange { background: #ff9500; color: #ff9500; }
+        .color-yellow { background: #ffcc00; color: #ffcc00; }
+        .color-green { background: #00d084; color: #00d084; }
+        .color-blue { background: #7b61ff; color: #7b61ff; }
+        .color-white { background: #ffffff; color: #ffffff; }
+
+        /* Brush size selector */
+        .brush-size-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: var(--bg-surface);
+            border-radius: 8px;
+        }
+
+        .brush-size-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .brush-size-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .brush-size-btn.active {
+            background: var(--accent-blue-soft);
+        }
+
+        .brush-size-dot {
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+
+        .brush-size-btn.active .brush-size-dot {
+            background: var(--accent-blue);
+        }
+
+        .brush-sm .brush-size-dot { width: 4px; height: 4px; }
+        .brush-md .brush-size-dot { width: 8px; height: 8px; }
+        .brush-lg .brush-size-dot { width: 12px; height: 12px; }
 
         /* ==================== TIMELINE ==================== */
         .timeline-container {
@@ -363,6 +678,104 @@
             color: var(--text-secondary);
             min-width: 100px;
         }
+
+        /* Volume Control */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 12px;
+        }
+
+        .volume-btn {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .volume-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .volume-btn svg { width: 18px; height: 18px; }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--bg-surface);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Speed Control */
+        .speed-control {
+            margin-left: 8px;
+        }
+
+        .speed-btn {
+            padding: 4px 8px;
+            background: var(--bg-surface);
+            border: none;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .speed-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Fullscreen Button */
+        .fullscreen-btn {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            transition: all 0.15s;
+        }
+
+        .fullscreen-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .fullscreen-btn svg { width: 18px; height: 18px; }
 
         .timeline-track {
             flex: 1;
@@ -2301,12 +2714,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
                 Back
             </a>
-            <h1 class="project-title">Behind the Scenes: My Morning Routine</h1>
+            <h1 class="project-title" id="projectTitle">Loading...</h1>
 
-            <div class="version-selector">
-                <button class="version-btn" onclick="switchVersion(1)">V1</button>
-                <button class="version-btn" onclick="switchVersion(2)">V2</button>
-                <button class="version-btn active" onclick="switchVersion(3)">V3</button>
+            <div class="version-selector" id="versionSelector">
+                <!-- Version buttons populated by JavaScript -->
             </div>
 
             <div class="header-actions">
@@ -2360,18 +2771,26 @@
             <!-- Video Area -->
             <div class="video-container">
                 <div class="video-wrapper" id="videoWrapper">
-                    <!-- Sample video placeholder -->
-                    <video class="video-player" id="videoPlayer" poster="https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=1280&h=720&fit=crop">
-                        <!-- Video source loaded dynamically from project data -->
-                        <source src="about:blank" type="video/mp4">
+                    <!-- Video player - source loaded from project data -->
+                    <video class="video-player" id="videoPlayer">
+                        <!-- Video source loaded dynamically -->
                     </video>
+
+                    <!-- No video placeholder -->
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 64px; height: 64px; opacity: 0.3; margin-bottom: 16px;">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2"/>
+                        </svg>
+                        <p style="color: var(--text-secondary); font-size: 16px; font-weight: 500;">Loading video...</p>
+                        <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;" id="videoPlaceholderHint">Select a project to review</p>
+                    </div>
 
                     <!-- Annotation Canvas -->
                     <canvas class="annotation-canvas" id="annotationCanvas"></canvas>
 
-                    <!-- Comment Anchors -->
-                    <div class="video-comment-anchor" style="left: 45%; top: 30%;" onclick="jumpToComment(1)">1</div>
-                    <div class="video-comment-anchor" style="left: 70%; top: 60%;" onclick="jumpToComment(2)">2</div>
+                    <!-- Comment Anchors - populated dynamically -->
+                    <div class="video-comment-anchors" id="videoCommentAnchors"></div>
 
                     <!-- Click to Comment Hint -->
                     <div class="click-to-comment" id="clickHint">
@@ -2403,18 +2822,32 @@
                     <div class="tool-divider"></div>
 
                     <div class="color-picker">
-                        <button class="color-btn color-red active" onclick="setColor('#ff3b30')"></button>
-                        <button class="color-btn color-orange" onclick="setColor('#ff9500')"></button>
-                        <button class="color-btn color-yellow" onclick="setColor('#ffcc00')"></button>
-                        <button class="color-btn color-green" onclick="setColor('#00d084')"></button>
-                        <button class="color-btn color-blue" onclick="setColor('#7b61ff')"></button>
-                        <button class="color-btn color-white" onclick="setColor('#ffffff')"></button>
+                        <button class="color-btn color-red active" onclick="setColor('#ff3b30')" title="Red"></button>
+                        <button class="color-btn color-orange" onclick="setColor('#ff9500')" title="Orange"></button>
+                        <button class="color-btn color-yellow" onclick="setColor('#ffcc00')" title="Yellow"></button>
+                        <button class="color-btn color-green" onclick="setColor('#00d084')" title="Green"></button>
+                        <button class="color-btn color-blue" onclick="setColor('#7b61ff')" title="Purple"></button>
+                        <button class="color-btn color-white" onclick="setColor('#ffffff')" title="White"></button>
+                    </div>
+
+                    <div class="tool-divider"></div>
+
+                    <div class="brush-size-group">
+                        <button class="brush-size-btn brush-sm" onclick="setBrushSize(2)" title="Small">
+                            <div class="brush-size-dot"></div>
+                        </button>
+                        <button class="brush-size-btn brush-md active" onclick="setBrushSize(4)" title="Medium">
+                            <div class="brush-size-dot"></div>
+                        </button>
+                        <button class="brush-size-btn brush-lg" onclick="setBrushSize(8)" title="Large">
+                            <div class="brush-size-dot"></div>
+                        </button>
                     </div>
 
                     <div class="tool-divider"></div>
 
                     <div class="tool-group">
-                        <button class="tool-btn" onclick="undoAnnotation()" title="Undo">
+                        <button class="tool-btn" onclick="undoAnnotation()" title="Undo (Ctrl+Z)">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
                         </button>
                         <button class="tool-btn" onclick="redoAnnotation()" title="Redo">
@@ -2432,25 +2865,39 @@
                         <button class="play-btn" id="playBtn" onclick="togglePlay()">
                             <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                         </button>
-                        <span class="time-display"><span id="currentTime">0:00</span> / <span id="duration">15:42</span></span>
+                        <span class="time-display"><span id="currentTime">0:00</span> / <span id="duration">0:00</span></span>
 
                         <div class="timeline-track" id="timelineTrack" onclick="seekTimeline(event)">
-                            <div class="timeline-progress" id="timelineProgress" style="width: 15%;"></div>
-                            <div class="timeline-playhead" id="timelinePlayhead" style="left: 15%;"></div>
+                            <div class="timeline-progress" id="timelineProgress" style="width: 0%;"></div>
+                            <div class="timeline-playhead" id="timelinePlayhead" style="left: 0%;"></div>
 
-                            <!-- Comment Markers -->
-                            <div class="timeline-markers" id="timelineMarkers">
-                                <div class="timeline-marker cut" style="left: 15%;" onclick="seekToTime(142)">
-                                    <div class="timeline-marker-tooltip">2:22 - Cut the awkward pause</div>
-                                </div>
-                                <div class="timeline-marker" style="left: 35%;" onclick="seekToTime(330)">
-                                    <div class="timeline-marker-tooltip">5:30 - Change music here</div>
-                                </div>
-                                <div class="timeline-marker love" style="left: 65%;" onclick="seekToTime(612)">
-                                    <div class="timeline-marker-tooltip">10:12 - Love this transition!</div>
-                                </div>
-                            </div>
+                            <!-- Comment Markers - populated dynamically -->
+                            <div class="timeline-markers" id="timelineMarkers"></div>
                         </div>
+
+                        <!-- Volume Control -->
+                        <div class="volume-control">
+                            <button class="volume-btn" onclick="toggleMute()" title="Mute/Unmute">
+                                <svg id="volumeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                                </svg>
+                            </button>
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value)" />
+                        </div>
+
+                        <!-- Playback Speed -->
+                        <div class="speed-control">
+                            <button class="speed-btn" onclick="cyclePlaybackSpeed()" id="speedBtn" title="Playback Speed">1x</button>
+                        </div>
+
+                        <!-- Fullscreen -->
+                        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen (F)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2460,7 +2907,7 @@
                 <div class="panel-header">
                     <div class="panel-header-row">
                         <div class="client-title">
-                            <div class="client-name" id="clientName">sean<span>-</span>conley</div>
+                            <div class="client-name" id="clientName">Review</div>
                             <span class="client-status active" id="clientStatus">Active</span>
                         </div>
                         <div class="panel-actions">
@@ -2494,78 +2941,13 @@
                 </div>
 
                 <div class="comments-list" id="commentsList">
-                    <!-- Comment 1 - With annotation -->
-                    <div class="comment-card" data-time="142" onclick="seekToTime(142)">
-                        <div class="comment-header">
-                            <div class="comment-avatar">SC</div>
-                            <div class="comment-meta">
-                                <div class="comment-author">Sean Conley</div>
-                                <div class="comment-time-badge">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    2:22
-                                </div>
-                            </div>
-                        </div>
-                        <div class="comment-body">
-                            <p class="comment-text">Cut the awkward pause here, feels too long. The energy drops.</p>
-                            <div class="comment-annotation-preview">
-                                <img src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=225&fit=crop" alt="Annotation">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Comment 2 - With voice note -->
-                    <div class="comment-card" data-time="330" onclick="seekToTime(330)">
-                        <div class="comment-header">
-                            <div class="comment-avatar" style="background: var(--accent-green);">SW</div>
-                            <div class="comment-meta">
-                                <div class="comment-author">Stockton Walbeck</div>
-                                <div class="comment-time-badge">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    5:30
-                                </div>
-                            </div>
-                        </div>
-                        <div class="comment-body">
-                            <p class="comment-text">Change the background music to something more upbeat here.</p>
-                            <div class="comment-media">
-                                <button class="media-play-btn" onclick="event.stopPropagation(); playVoiceNote(this)">
-                                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                </button>
-                                <div class="media-waveform">
-                                    <span style="height: 8px;"></span>
-                                    <span style="height: 16px;"></span>
-                                    <span style="height: 12px;"></span>
-                                    <span style="height: 20px;"></span>
-                                    <span style="height: 14px;"></span>
-                                    <span style="height: 18px;"></span>
-                                    <span style="height: 10px;"></span>
-                                    <span style="height: 22px;"></span>
-                                    <span style="height: 16px;"></span>
-                                    <span style="height: 12px;"></span>
-                                    <span style="height: 8px;"></span>
-                                </div>
-                                <span class="media-duration">0:24</span>
-                                <span class="media-type-badge">Voice</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Comment 3 - Positive -->
-                    <div class="comment-card" data-time="612" onclick="seekToTime(612)">
-                        <div class="comment-header">
-                            <div class="comment-avatar">SC</div>
-                            <div class="comment-meta">
-                                <div class="comment-author">Sean Conley</div>
-                                <div class="comment-time-badge" style="background: var(--accent-green-soft); color: var(--accent-green);">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                                    10:12
-                                </div>
-                            </div>
-                        </div>
-                        <div class="comment-body">
-                            <p class="comment-text">Love this transition! Perfect. Keep this exactly as is.</p>
-                        </div>
+                    <!-- Comments loaded dynamically from project data -->
+                    <div class="comments-empty" id="commentsEmpty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 12px;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <p style="color: var(--text-muted); font-size: 14px;">No feedback yet</p>
+                        <p style="color: var(--text-muted); font-size: 12px; opacity: 0.7;">Add comments, draw on the video, or record voice notes</p>
                     </div>
                 </div>
 
@@ -2667,6 +3049,105 @@
                 <button class="upload-submit-btn" id="uploadSubmitBtn" onclick="submitNewVersion()" disabled>Upload & Send to Review</button>
             </div>
         </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="shortcuts-modal" id="shortcutsModal" onclick="if(event.target === this) closeShortcuts()">
+        <div class="shortcuts-content">
+            <div class="shortcuts-header">
+                <h3 class="shortcuts-title">Keyboard Shortcuts</h3>
+                <button class="shortcuts-close" onclick="closeShortcuts()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="shortcuts-section">
+                <div class="shortcuts-section-title">Playback</div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Play / Pause</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">Space</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Skip back 5s</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">←</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Skip forward 5s</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">→</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Skip back 10s</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">Shift</kbd><kbd class="shortcut-key">←</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Skip forward 10s</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">Shift</kbd><kbd class="shortcut-key">→</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Increase speed</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">Shift</kbd><kbd class="shortcut-key">></kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Decrease speed</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">Shift</kbd><kbd class="shortcut-key"><</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Mute / Unmute</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">V</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Fullscreen</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">F</kbd></div>
+                </div>
+            </div>
+
+            <div class="shortcuts-section">
+                <div class="shortcuts-section-title">Annotation Tools</div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Arrow tool</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">1</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Circle tool</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">2</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Rectangle tool</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">3</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Freehand draw</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">4</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Toggle draw mode</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">D</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Exit tool / Cancel</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">Esc</kbd></div>
+                </div>
+            </div>
+
+            <div class="shortcuts-section">
+                <div class="shortcuts-section-title">Comments</div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Add comment</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">M</kbd></div>
+                </div>
+                <div class="shortcut-row">
+                    <span class="shortcut-action">Show shortcuts</span>
+                    <div class="shortcut-keys"><kbd class="shortcut-key">?</kbd></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard shortcut hint trigger -->
+    <div class="shortcut-hint-trigger" onclick="openShortcuts()">
+        <kbd>?</kbd> Keyboard shortcuts
     </div>
 
     <!-- Approval Modal -->
@@ -2838,17 +3319,289 @@
         const CURRENT_CLIENT_ID = localStorage.getItem('cb_client_id') || null;
         const PROJECT_ID = urlParams.get('project') || 'proj-002';
 
-        // Mock project data - in production, fetched from Airtable
+        // Project data - fetched from MCP server
         let currentProject = {
             id: PROJECT_ID,
-            title: 'Instagram Reel: Product Launch',
-            client_id: 'client-001',
-            editor_id: 'editor-001',
+            title: '',
+            client_id: '',
+            editor_id: '',
             status: 'review',
+            video_url: '',
             feedbackSaved: false,
             feedback: [],
-            revisionChecklist: []
+            revisionChecklist: [],
+            versions: []
         };
+
+        // Test video for demo/testing (Big Buck Bunny - free to use)
+        const TEST_VIDEO_URL = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+        const TEST_PROJECT = {
+            id: 'test-project',
+            title: 'Content Bug Review Demo',
+            client_name: 'Demo Client',
+            client_id: 'demo-client',
+            editor_id: 'demo-editor',
+            status: 'review',
+            video_url: TEST_VIDEO_URL,
+            versions: [
+                { version: 1, date: '2025-12-28', status: 'previous', notes: 'Initial rough cut' },
+                { version: 2, date: '2025-12-30', status: 'current', notes: 'Color graded + audio fixed' }
+            ],
+            feedback: []
+        };
+
+        // Fetch project data from MCP server
+        async function loadProjectData() {
+            const MCP_SERVER = 'https://portalv2.contentbug.io';
+            const userEmail = localStorage.getItem('cb_email') || '';
+
+            // Check for test mode via URL param
+            const isTestMode = urlParams.get('test') === 'true' || PROJECT_ID === 'demo';
+
+            if (isTestMode) {
+                console.log('[Review] Loading in TEST MODE with demo video');
+                currentProject = { ...currentProject, ...TEST_PROJECT };
+                initializeProjectUI();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${MCP_SERVER}/projects/${PROJECT_ID}`, {
+                    headers: {
+                        'X-User-Email': userEmail,
+                        'X-User-Role': ROLE
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentProject = { ...currentProject, ...data.project };
+                    initializeProjectUI();
+                } else {
+                    // Fallback to test mode if project not found
+                    console.log('[Review] Project not found, loading demo');
+                    currentProject = { ...currentProject, ...TEST_PROJECT };
+                    initializeProjectUI();
+                }
+            } catch (err) {
+                console.error('Failed to load project:', err);
+                // Fallback to test mode on error
+                console.log('[Review] Error loading project, falling back to demo');
+                currentProject = { ...currentProject, ...TEST_PROJECT };
+                initializeProjectUI();
+            }
+        }
+
+        function initializeProjectUI() {
+            // Update UI with project data
+            document.getElementById('projectTitle').textContent = currentProject.title || 'Untitled Project';
+            document.getElementById('clientName').textContent = currentProject.client_name || 'Review';
+
+            // Load video if available
+            if (currentProject.video_url) {
+                loadVideo(currentProject.video_url);
+            }
+
+            // Load versions
+            if (currentProject.versions && currentProject.versions.length > 0) {
+                projectVersions = currentProject.versions;
+                renderVersionSelector();
+            } else {
+                // Default single version
+                renderVersionSelector();
+            }
+
+            // Load existing feedback/comments
+            if (currentProject.feedback && currentProject.feedback.length > 0) {
+                renderComments(currentProject.feedback);
+            }
+
+            // Update comment count
+            updateCommentCount();
+
+            // Initialize keyboard shortcuts
+            initKeyboardShortcuts();
+
+            console.log('[Review] Project initialized:', currentProject.title);
+        }
+
+        // Keyboard shortcuts for power users
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Don't trigger if typing in input
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                const video = document.getElementById('videoPlayer');
+
+                switch(e.code) {
+                    case 'Space':
+                        e.preventDefault();
+                        togglePlay();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        if (video.readyState >= 1) {
+                            video.currentTime = Math.max(0, video.currentTime - (e.shiftKey ? 10 : 5));
+                        }
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        if (video.readyState >= 1) {
+                            video.currentTime = Math.min(duration, video.currentTime + (e.shiftKey ? 10 : 5));
+                        }
+                        break;
+                    case 'KeyM':
+                        // Quick comment at current time
+                        document.getElementById('commentInput').focus();
+                        break;
+                    case 'KeyD':
+                        // Toggle draw mode
+                        toggleDrawMode();
+                        break;
+                    case 'Digit1':
+                        setTool('arrow');
+                        break;
+                    case 'Digit2':
+                        setTool('circle');
+                        break;
+                    case 'Digit3':
+                        setTool('rect');
+                        break;
+                    case 'Digit4':
+                        setTool('pen');
+                        break;
+                    case 'Escape':
+                        setTool('select');
+                        break;
+                    case 'KeyF':
+                        toggleFullscreen();
+                        break;
+                    case 'KeyV':
+                        toggleMute();
+                        break;
+                    case 'Slash':
+                        if (e.shiftKey) { // ? key
+                            toggleShortcuts();
+                        }
+                        break;
+                    case 'Period':
+                        // > key - increase speed
+                        if (e.shiftKey) cyclePlaybackSpeed();
+                        break;
+                    case 'Comma':
+                        // < key - decrease speed
+                        if (e.shiftKey) {
+                            currentSpeedIndex = (currentSpeedIndex - 1 + playbackSpeeds.length) % playbackSpeeds.length;
+                            const speed = playbackSpeeds[currentSpeedIndex];
+                            document.getElementById('videoPlayer').playbackRate = speed;
+                            document.getElementById('speedBtn').textContent = speed + 'x';
+                            showNotification('Playback speed: ' + speed + 'x', 'info');
+                        }
+                        break;
+                }
+            });
+        }
+
+        function loadVideo(url) {
+            const video = document.getElementById('videoPlayer');
+            const placeholder = document.getElementById('videoPlaceholder');
+
+            video.src = url;
+            video.load();
+
+            video.addEventListener('loadedmetadata', function() {
+                duration = Math.floor(video.duration);
+                document.getElementById('duration').textContent = formatTime(duration);
+                placeholder.style.display = 'none';
+            });
+
+            video.addEventListener('timeupdate', function() {
+                currentTime = Math.floor(video.currentTime);
+                updatePlayhead();
+            });
+
+            video.addEventListener('error', function() {
+                placeholder.style.display = 'flex';
+                document.getElementById('videoPlaceholderHint').textContent = 'Video could not be loaded';
+            });
+        }
+
+        function renderVersionSelector() {
+            const container = document.getElementById('versionSelector');
+            if (!projectVersions || projectVersions.length === 0) {
+                container.innerHTML = '<button class="version-btn active">V1</button>';
+                return;
+            }
+
+            container.innerHTML = projectVersions.map((v, i) => `
+                <button class="version-btn ${v.status === 'current' ? 'active' : ''}" onclick="switchVersion(${v.version})">V${v.version}</button>
+            `).join('');
+        }
+
+        function renderComments(comments) {
+            const container = document.getElementById('commentsList');
+            const emptyState = document.getElementById('commentsEmpty');
+
+            if (!comments || comments.length === 0) {
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            container.innerHTML = comments.map((comment, index) => {
+                const initials = (comment.author || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                const isPositive = comment.type === 'love' || comment.type === 'positive';
+
+                return `
+                    <div class="comment-card" data-time="${comment.timestamp}" onclick="seekToTime(${comment.timestamp})">
+                        <div class="comment-header">
+                            <div class="comment-avatar" ${isPositive ? 'style="background: var(--accent-green);"' : ''}>${initials}</div>
+                            <div class="comment-meta">
+                                <div class="comment-author">${escapeHTML(comment.author || 'Unknown')}</div>
+                                <div class="comment-time-badge" ${isPositive ? 'style="background: var(--accent-green-soft); color: var(--accent-green);"' : ''}>
+                                    ${isPositive ?
+                                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' :
+                                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+                                    }
+                                    ${formatTime(comment.timestamp)}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-body">
+                            <p class="comment-text">${escapeHTML(comment.text)}</p>
+                            ${comment.annotation ? `<div class="comment-annotation-preview"><img src="${comment.annotation}" alt="Annotation"></div>` : ''}
+                            ${comment.voice_url ? renderVoiceNote(comment.voice_url, comment.voice_duration) : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add timeline markers
+            comments.forEach(comment => {
+                addTimelineMarker(comment.timestamp, comment.text, comment.type);
+            });
+        }
+
+        function renderVoiceNote(url, durationSec) {
+            return `
+                <div class="comment-media">
+                    <button class="media-play-btn" onclick="event.stopPropagation(); playVoiceNote(this, '${url}')">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </button>
+                    <div class="media-waveform">
+                        ${Array(11).fill(0).map(() => `<span style="height: ${8 + Math.random() * 14}px;"></span>`).join('')}
+                    </div>
+                    <span class="media-duration">${formatTime(durationSec || 0)}</span>
+                    <span class="media-type-badge">Voice</span>
+                </div>
+            `;
+        }
+
+        // Initialize project data on load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjectData();
+        });
 
         // Role-based permissions for review page
         const reviewPermissions = {
@@ -2865,14 +3618,15 @@
         // ==================== STATE ====================
         let currentTool = 'arrow';
         let currentColor = '#ff3b30';
+        let brushSize = 4;
         let isDrawing = false;
         let isRecording = false;
         let recordingType = null;
         let recordingSeconds = 0;
         let recordingInterval = null;
         let selectedRating = 0;
-        let currentTime = 142; // 2:22 in seconds
-        let duration = 942; // 15:42 in seconds
+        let currentTime = 0;
+        let duration = 0;
         let annotations = [];
         let annotationHistory = [];
         let feedbackItems = [];
@@ -2912,6 +3666,12 @@
             event.target.classList.add('active');
         }
 
+        function setBrushSize(size) {
+            brushSize = size;
+            document.querySelectorAll('.brush-size-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.brush-size-btn').classList.add('active');
+        }
+
         // ==================== DRAWING ====================
         canvas.addEventListener('mousedown', (e) => {
             if (currentTool === 'select') return;
@@ -2924,8 +3684,9 @@
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 ctx.strokeStyle = currentColor;
-                ctx.lineWidth = 3;
+                ctx.lineWidth = brushSize;
                 ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
             }
         });
 
@@ -3172,13 +3933,22 @@
             const text = commentInput.value.trim();
             if (!text) return;
 
+            // Get user info
+            const userName = localStorage.getItem('cb_name') || localStorage.getItem('cb_first_name') || 'You';
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'YO';
+
             const time = formatTime(currentTime);
+
+            // Hide empty state if visible
+            const emptyState = document.getElementById('commentsEmpty');
+            if (emptyState) emptyState.style.display = 'none';
+
             const commentHTML = `
-                <div class="comment-card" data-time="${currentTime}" onclick="seekToTime(${currentTime})">
+                <div class="comment-card new-comment" data-time="${currentTime}" onclick="seekToTime(${currentTime})" style="animation: fade-in-up 0.3s ease;">
                     <div class="comment-header">
-                        <div class="comment-avatar">YO</div>
+                        <div class="comment-avatar">${initials}</div>
                         <div class="comment-meta">
-                            <div class="comment-author">You</div>
+                            <div class="comment-author">${escapeHTML(userName)}</div>
                             <div class="comment-time-badge">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                 ${time}
@@ -3190,21 +3960,56 @@
                     </div>
                 </div>
             `;
+
             document.getElementById('commentsList').insertAdjacentHTML('beforeend', commentHTML);
             commentInput.value = '';
             sendBtn.disabled = true;
             commentInput.style.height = 'auto';
 
+            // Add to feedbackItems for submission
+            feedbackItems.push({
+                text: text,
+                timestamp: currentTime,
+                author: userName,
+                type: 'feedback',
+                created_at: new Date().toISOString()
+            });
+
+            // Update revision count badge
+            updateRevisionBadge();
+
             // Add marker to timeline
             addTimelineMarker(currentTime, text);
             updateCommentCount();
+
+            // Scroll to the new comment
+            const commentsList = document.getElementById('commentsList');
+            commentsList.scrollTop = commentsList.scrollHeight;
+
+            // Show success notification
+            showNotification('Comment added at ' + time, 'success');
         }
 
-        function addTimelineMarker(time, text) {
+        function updateRevisionBadge() {
+            const badge = document.getElementById('revisionCountBadge');
+            if (badge) {
+                badge.textContent = feedbackItems.length;
+                badge.style.display = feedbackItems.length > 0 ? 'inline-flex' : 'none';
+            }
+
+            // Show submit bar if there are items
+            const submitBar = document.getElementById('submitRevisionsBar');
+            if (submitBar) {
+                submitBar.style.display = feedbackItems.length > 0 ? 'block' : 'none';
+            }
+        }
+
+        function addTimelineMarker(time, text, type = 'default') {
             const percent = (time / duration) * 100;
+            const typeClass = type === 'love' || type === 'positive' ? 'love' : (type === 'cut' ? 'cut' : '');
             const markerHTML = `
-                <div class="timeline-marker" style="left: ${percent}%;" onclick="seekToTime(${time})">
-                    <div class="timeline-marker-tooltip">${formatTime(time)} - ${text.substring(0, 30)}...</div>
+                <div class="timeline-marker ${typeClass}" style="left: ${percent}%;" onclick="seekToTime(${time})">
+                    <div class="timeline-marker-tooltip">${formatTime(time)} - ${(text || '').substring(0, 30)}${text && text.length > 30 ? '...' : ''}</div>
                 </div>
             `;
             document.getElementById('timelineMarkers').insertAdjacentHTML('beforeend', markerHTML);
@@ -3223,8 +4028,16 @@
 
         // ==================== TIMELINE ====================
         function seekToTime(seconds) {
+            const video = document.getElementById('videoPlayer');
             currentTime = seconds;
+
+            // Seek video if loaded
+            if (video.readyState >= 1) {
+                video.currentTime = seconds;
+            }
+
             updatePlayhead();
+
             // Highlight the comment
             document.querySelectorAll('.comment-card').forEach(card => {
                 card.classList.toggle('active', parseInt(card.dataset.time) === seconds);
@@ -3232,10 +4045,17 @@
         }
 
         function seekTimeline(e) {
+            const video = document.getElementById('videoPlayer');
             const track = document.getElementById('timelineTrack');
             const rect = track.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
             currentTime = Math.floor(percent * duration);
+
+            // Seek video if loaded
+            if (video.readyState >= 1) {
+                video.currentTime = currentTime;
+            }
+
             updatePlayhead();
         }
 
@@ -3253,12 +4073,18 @@
         }
 
         function togglePlay() {
-            // Demo only - would control actual video
+            const video = document.getElementById('videoPlayer');
             const btn = document.getElementById('playBtn');
-            const isPlaying = btn.classList.toggle('playing');
-            btn.innerHTML = isPlaying
-                ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
-                : '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+
+            if (video.paused) {
+                video.play();
+                btn.classList.add('playing');
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+            } else {
+                video.pause();
+                btn.classList.remove('playing');
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+            }
         }
 
         function jumpToComment(num) {
@@ -3267,6 +4093,111 @@
                 const time = parseInt(cards[num - 1].dataset.time);
                 seekToTime(time);
             }
+        }
+
+        // ==================== VOLUME & PLAYBACK ====================
+        let isMuted = false;
+        let previousVolume = 100;
+        const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+        let currentSpeedIndex = 2; // Default 1x
+
+        function setVolume(value) {
+            const video = document.getElementById('videoPlayer');
+            const slider = document.getElementById('volumeSlider');
+
+            video.volume = value / 100;
+            slider.value = value;
+
+            updateVolumeIcon(value);
+
+            if (value > 0) {
+                isMuted = false;
+                previousVolume = value;
+            }
+        }
+
+        function toggleMute() {
+            const video = document.getElementById('videoPlayer');
+            const slider = document.getElementById('volumeSlider');
+
+            if (isMuted) {
+                video.volume = previousVolume / 100;
+                slider.value = previousVolume;
+                updateVolumeIcon(previousVolume);
+                isMuted = false;
+            } else {
+                previousVolume = video.volume * 100;
+                video.volume = 0;
+                slider.value = 0;
+                updateVolumeIcon(0);
+                isMuted = true;
+            }
+        }
+
+        function updateVolumeIcon(value) {
+            const icon = document.getElementById('volumeIcon');
+            if (value === 0) {
+                icon.innerHTML = `
+                    <line x1="23" y1="9" x2="17" y2="15"/>
+                    <line x1="17" y1="9" x2="23" y2="15"/>
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                `;
+            } else if (value < 50) {
+                icon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                `;
+            } else {
+                icon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                `;
+            }
+        }
+
+        function cyclePlaybackSpeed() {
+            const video = document.getElementById('videoPlayer');
+            const btn = document.getElementById('speedBtn');
+
+            currentSpeedIndex = (currentSpeedIndex + 1) % playbackSpeeds.length;
+            const speed = playbackSpeeds[currentSpeedIndex];
+
+            video.playbackRate = speed;
+            btn.textContent = speed + 'x';
+
+            showNotification('Playback speed: ' + speed + 'x', 'info');
+        }
+
+        function toggleFullscreen() {
+            const videoContainer = document.querySelector('.video-container');
+
+            if (!document.fullscreenElement) {
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        // ==================== SHORTCUTS MODAL ====================
+        function openShortcuts() {
+            document.getElementById('shortcutsModal').classList.add('visible');
+        }
+
+        function closeShortcuts() {
+            document.getElementById('shortcutsModal').classList.remove('visible');
+        }
+
+        function toggleShortcuts() {
+            document.getElementById('shortcutsModal').classList.toggle('visible');
         }
 
         // ==================== VERSION ====================
@@ -3742,19 +4673,11 @@
         // EDITOR REVISION CHECKLIST SYSTEM
         // ============================================
 
-        // Mock version history - in production, fetched from project data
-        let projectVersions = [
-            { version: 1, date: '2024-12-20', status: 'previous', notes: 'Initial edit' },
-            { version: 2, date: '2024-12-22', status: 'previous', notes: 'Fixed audio sync issues' },
-            { version: 3, date: '2024-12-24', status: 'current', notes: 'Added requested transitions' }
-        ];
+        // Version history - loaded from project data
+        let projectVersions = [];
 
-        // Mock revision checklist items - built from client feedback
-        let revisionChecklist = [
-            { id: 1, text: 'Cut the awkward pause at 2:22', timestamp: 142, type: 'cut', completed: false },
-            { id: 2, text: 'Change background music at 5:30 to something more upbeat', timestamp: 330, type: 'audio', completed: false },
-            { id: 3, text: 'Add text overlay at intro', timestamp: 5, type: 'text', completed: false }
-        ];
+        // Revision checklist items - built from client feedback
+        let revisionChecklist = [];
 
         let selectedFile = null;
 

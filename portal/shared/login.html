@@ -1140,9 +1140,232 @@
                 animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             }
         }
+        /* ==================== COMING SOON OVERLAY ==================== */
+        .coming-soon-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(5, 5, 8, 0.98);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .coming-soon-content {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .coming-soon-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 32px;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .coming-soon-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5));
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 50px rgba(59, 130, 246, 0.8)); }
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #60a5fa;
+            margin-bottom: 24px;
+        }
+
+        .coming-soon-title {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .coming-soon-subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .coming-soon-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .feature-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .feature-tag:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .feature-tag svg {
+            width: 18px;
+            height: 18px;
+            stroke: #60a5fa;
+        }
+
+        .coming-soon-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+        }
+
+        .coming-soon-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(59, 130, 246, 0.4);
+        }
+
+        .coming-soon-note {
+            margin-top: 24px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Floating particles background */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            animation: float-up 8s linear infinite;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+        }
     </style>
 </head>
 <body>
+    <!-- Coming Soon Overlay -->
+    <div class="coming-soon-overlay">
+        <div class="particles">
+            <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+            <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+            <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+            <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+            <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+            <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+            <div class="particle" style="left: 70%; animation-delay: 6s;"></div>
+            <div class="particle" style="left: 80%; animation-delay: 7s;"></div>
+            <div class="particle" style="left: 90%; animation-delay: 0.5s;"></div>
+        </div>
+        <div class="coming-soon-content">
+            <div class="coming-soon-logo">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug">
+            </div>
+            <div class="coming-soon-badge">New & Improved</div>
+            <h1 class="coming-soon-title">Portal 2.0<br>Coming Soon</h1>
+            <p class="coming-soon-subtitle">We're rebuilding the Content Bug Portal from the ground up with powerful new features.</p>
+
+            <div class="coming-soon-features">
+                <div class="feature-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Real-time Chat
+                </div>
+                <div class="feature-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2"/>
+                    </svg>
+                    Video Review
+                </div>
+                <div class="feature-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9"/>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                    Blueprint Builder
+                </div>
+                <div class="feature-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Project Pipeline
+                </div>
+            </div>
+
+            <a href="https://www.contentbug.io" class="coming-soon-cta">
+                Visit ContentBug.io
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <p class="coming-soon-note">Existing clients will be notified when the new portal is ready.</p>
+        </div>
+    </div>
+
     <!-- Minimal Background -->
     <div class="bg-layer">
         <div class="bg-gradient"></div>
@@ -1150,7 +1373,7 @@
         <div class="bg-grid"></div>
     </div>
 
-    <div class="login-wrapper">
+    <div class="login-wrapper" style="display: none;">
         <div class="login-card">
             <!-- Card Effects -->
             <div class="card-border"></div>
@@ -1242,15 +1465,6 @@
                     </a>
                     <p class="trial-note">No credit card required</p>
 
-                    <!-- Demo Mode Quick Access (only visible in local testing) -->
-                    <div class="demo-quick-access" id="demoQuickAccess" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <p style="font-size: 12px; color: #f59e0b; margin-bottom: 12px; font-weight: 600;">Demo Mode - Quick Access:</p>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button onclick="demoLogin('client')" style="padding: 8px 16px; background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; color: #3b82f6; font-size: 12px; font-weight: 600; cursor: pointer;">Client Dashboard</button>
-                            <button onclick="demoLogin('editor')" style="padding: 8px 16px; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; color: #f59e0b; font-size: 12px; font-weight: 600; cursor: pointer;">Editor View</button>
-                            <button onclick="demoLogin('admin')" style="padding: 8px 16px; background: rgba(168,85,247,0.2); border: 1px solid rgba(168,85,247,0.3); border-radius: 8px; color: #a855f7; font-size: 12px; font-weight: 600; cursor: pointer;">Admin View</button>
-                        </div>
-                    </div>
 
                     <div class="trust-row">
                         <div class="trust-item">
@@ -1380,24 +1594,16 @@
             PAYMENT_FAILED: 'payment_failed'
         };
 
-        // Portal URLs by role - role-specific portals with full sidebar
-        const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const PORTAL_ROUTES = IS_LOCAL_DEMO ? {
-            owner: 'admin/index.html',
-            admin: 'admin/index.html',
-            editor: 'editor/index.html',
-            client: 'client/index.html',
-            lead: 'client/index.html',
-            trial: 'client/index.html',
-            cancelled: 'client/index.html'
-        } : {
-            owner: `${PORTAL_BASE}/admin`,
-            admin: `${PORTAL_BASE}/admin`,
-            editor: `${PORTAL_BASE}/editor`,
-            client: `${PORTAL_BASE}/client`,
-            lead: `${PORTAL_BASE}/client`,
-            trial: `${PORTAL_BASE}/client`,
-            cancelled: `${PORTAL_BASE}/client`
+        // Portal URLs by role - unified routing
+        // All roles go to /dashboard - the dashboard reads cb_role from localStorage and shows appropriate UI
+        const PORTAL_ROUTES = {
+            owner: `${PORTAL_BASE}/dashboard`,
+            admin: `${PORTAL_BASE}/dashboard`,
+            editor: `${PORTAL_BASE}/dashboard`,
+            client: `${PORTAL_BASE}/dashboard`,
+            lead: `${PORTAL_BASE}/dashboard`,
+            trial: `${PORTAL_BASE}/dashboard`,
+            cancelled: `${PORTAL_BASE}/reactivate`
         };
 
         // State
@@ -1796,35 +2002,10 @@
             }
         });
 
-        // ============================================
-        // DEMO MODE FUNCTIONS
-        // ============================================
-        function demoLogin(role, tier = 'gold') {
-            // Set demo user data in localStorage
-            localStorage.setItem('cb_email', 'demo@contentbug.io');
-            localStorage.setItem('cb_first_name', 'Demo');
-            localStorage.setItem('cb_name', 'Demo User');
-            localStorage.setItem('cb_role', role);
-            localStorage.setItem('cb_airtable_id', 'rec_demo_user');
-
-            // Set demo tier and status (default to gold/active for full access demo)
-            localStorage.setItem('cb_tier', tier);
-            localStorage.setItem('cb_status', 'active');
-
-            // Navigate to appropriate dashboard
-            window.location.href = PORTAL_ROUTES[role] || PORTAL_ROUTES.client;
-        }
-
         // INITIALIZATION
         // ============================================
         document.addEventListener('DOMContentLoaded', async function() {
             setupOTPInputs();
-
-            // Show demo quick access in local mode
-            if (IS_LOCAL_DEMO) {
-                const demoPanel = document.getElementById('demoQuickAccess');
-                if (demoPanel) demoPanel.style.display = 'block';
-            }
 
             // Check for remembered email
             const rememberedEmail = localStorage.getItem('cb_remembered_email');
@@ -1832,13 +2013,11 @@
                 document.getElementById('loginEmail').value = rememberedEmail;
             }
 
-            // Check if already authenticated (skip in local demo for easy testing)
-            if (!IS_LOCAL_DEMO) {
-                const status = await checkAuthStatus();
-                if (status.authenticated) {
-                    const portalUrl = PORTAL_ROUTES[status.user?.role] || PORTAL_ROUTES.client;
-                    window.location.href = portalUrl;
-                }
+            // Check if already authenticated
+            const status = await checkAuthStatus();
+            if (status.authenticated) {
+                const portalUrl = PORTAL_ROUTES[status.user?.role] || PORTAL_ROUTES.client;
+                window.location.href = portalUrl;
             }
         });
     </script>

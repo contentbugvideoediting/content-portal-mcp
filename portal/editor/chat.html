@@ -2188,95 +2188,12 @@
                 }
             } catch (err) {
                 console.error('Failed to load channels:', err);
-                loadDemoChannels();
+                // Show empty state on error
+                channels = [];
+                updateCounts();
+                updateUIForRole();
+                filterChannels();
             }
-        }
-
-        function loadDemoChannels() {
-            // Demo data - editors will only see assigned clients, admin/owner see all
-            channels = [
-                {
-                    channel_id: 'demo-1',
-                    client_name: 'Sarah Johnson',
-                    client_email: 'sarah@example.com',
-                    client_tier: 'gold',
-                    client_status: 'active',
-                    trial_step: null,
-                    last_message: 'Thanks for the edits! Looking great.',
-                    last_message_at: new Date(Date.now() - 300000).toISOString(),
-                    unread_team: 2,
-                    badges: [],
-                    assigned_editor: currentUser.email // Assigned to current user for demo
-                },
-                {
-                    channel_id: 'demo-2',
-                    client_name: 'Mike Wilson',
-                    client_email: 'mike@example.com',
-                    client_tier: 'trial',
-                    client_status: 'active',
-                    trial_step: 2,
-                    last_message: 'Just submitted my blueprint!',
-                    last_message_at: new Date(Date.now() - 600000).toISOString(),
-                    unread_team: 1,
-                    badges: ['trial-step'],
-                    assigned_editor: currentUser.email // Assigned to current user for demo
-                },
-                {
-                    channel_id: 'demo-3',
-                    client_name: 'Emily Chen',
-                    client_email: 'emily@example.com',
-                    client_tier: 'pro',
-                    client_status: 'active',
-                    trial_step: null,
-                    last_message: 'Can we jump on a quick call?',
-                    last_message_at: new Date(Date.now() - 86400000).toISOString(),
-                    unread_team: 0,
-                    badges: ['ghost-7d'],
-                    assigned_editor: 'other-editor@contentbug.io' // Different editor
-                },
-                {
-                    channel_id: 'demo-4',
-                    client_name: 'Alex Thompson',
-                    client_email: 'alex@example.com',
-                    client_tier: 'silver',
-                    client_status: 'payment_failed',
-                    trial_step: null,
-                    last_message: 'My card got declined...',
-                    last_message_at: new Date(Date.now() - 172800000).toISOString(),
-                    unread_team: 3,
-                    badges: ['payment'],
-                    assigned_editor: currentUser.email // Assigned to current user
-                },
-                {
-                    channel_id: 'demo-5',
-                    client_name: 'Jessica Lee',
-                    client_email: 'jessica@example.com',
-                    client_tier: 'basic',
-                    client_status: 'active',
-                    trial_step: null,
-                    last_message: 'Approved! Great work as always.',
-                    last_message_at: new Date(Date.now() - 7200000).toISOString(),
-                    unread_team: 0,
-                    assigned_editor: 'other-editor@contentbug.io', // Different editor
-                    badges: []
-                },
-                {
-                    channel_id: 'demo-6',
-                    client_name: 'David Martinez',
-                    client_email: 'david@example.com',
-                    client_tier: 'trial',
-                    client_status: 'active',
-                    trial_step: 1,
-                    last_message: null,
-                    last_message_at: new Date(Date.now() - 60000).toISOString(),
-                    unread_team: 0,
-                    badges: ['new', 'trial-step'],
-                    assigned_editor: null // Unassigned - visible to admin/owner only
-                }
-            ];
-            updateCounts();
-            updateUIForRole();
-            filterChannels();
         }
 
         function updateCounts() {
@@ -2540,34 +2457,10 @@
                 }
             } catch (err) {
                 console.error('Failed to load messages:', err);
-                loadDemoMessages();
+                // Show empty state on error
+                messages = [];
+                renderMessages();
             }
-        }
-
-        function loadDemoMessages() {
-            messages = [
-                {
-                    message_id: 'msg-1',
-                    sender_name: currentChannel.client_name,
-                    sender_email: currentChannel.client_email,
-                    sender_role: 'client',
-                    content: currentChannel.last_message || 'Hello!',
-                    created_at: currentChannel.last_message_at
-                }
-            ];
-
-            if (currentChannel.client_tier !== 'trial') {
-                messages.unshift({
-                    message_id: 'msg-0',
-                    sender_name: 'Content Bug Team',
-                    sender_email: 'team@contentbug.io',
-                    sender_role: 'editor',
-                    content: `Welcome ${currentChannel.client_name.split(' ')[0]}! We're excited to work with you. Feel free to reach out anytime.`,
-                    created_at: new Date(Date.now() - 86400000 * 7).toISOString()
-                });
-            }
-
-            renderMessages();
         }
 
         function renderMessages() {
