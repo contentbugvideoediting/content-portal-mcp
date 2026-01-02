@@ -107,6 +107,8 @@ app.use('/portal', express.static(path.join(__dirname, 'portal')));
 // Route aliases for clean URLs
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'login.html')));
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'signup.html')));
+app.get('/create-account', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'free-trial.html')));
+app.get('/free-trial', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'free-trial.html')));
 app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'portal.html')));
 app.get('/review', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'review.html')));
 app.get('/record', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'record.html')));

@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Trial - Get Your First Edit Free | Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg">
+    <link rel="apple-touch-icon" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f19a634f4b0f21c170.png">
+    <meta name="description" content="Try Content Bug's unlimited video editing service free. Answer a few questions and book your demo call.">
+    <meta name="theme-color" content="#050508">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--blue-bright);
+            outline-offset: 2px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Background */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background: var(--dark-bg);
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180vw;
+            height: 140vh;
+            background: radial-gradient(ellipse at center, rgba(30, 58, 138, 0.08) 0%, rgba(15, 23, 42, 0.04) 40%, transparent 60%);
+            filter: blur(60px);
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+        }
+
+        /* Layout */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 48px 24px 64px;
+        }
+
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 20px;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.25));
+        }
+
+        .page-title {
+            font-size: clamp(26px, 4.5vw, 34px);
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--text-white);
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: var(--text-light);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .page-reassurance {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 16px;
+            font-weight: 400;
+        }
+
+        .trust-line {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Card */
+        .card {
+            background: linear-gradient(165deg, rgba(10, 10, 18, 0.95) 0%, rgba(6, 6, 12, 0.98) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 18px;
+            padding: 28px;
+            position: relative;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.35);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.3), transparent);
+        }
+
+        /* Progress */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .step-text span {
+            color: var(--blue-bright);
+        }
+
+        .step-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--dark-border);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: var(--blue-bright);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+        }
+
+        /* Question */
+        .question-container {
+            min-height: 280px;
+        }
+
+        .question {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(10, 10, 18, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: rgba(59, 130, 246, 0.35);
+            background: rgba(59, 130, 246, 0.06);
+            color: var(--text-white);
+        }
+
+        .option.selected {
+            border-color: var(--blue-bright);
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-white);
+        }
+
+        .option.selected::after {
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            background: var(--success);
+            border-radius: 50%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+            background-size: 12px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Question Back Button */
+        .question-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0;
+            margin-bottom: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .question-back:hover {
+            color: var(--text-light);
+        }
+
+        .question-back svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Volume Slider */
+        .volume-slider-container {
+            padding: 20px 0 10px;
+        }
+
+        .volume-display {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .volume-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--blue-bright);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .volume-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .slider-track {
+            position: relative;
+            height: 8px;
+            background: var(--dark-border);
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright));
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+            border-radius: 50%;
+            border: 3px solid var(--dark-bg);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4), 0 0 0 2px rgba(59, 130, 246, 0.2);
+            cursor: grab;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5), 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        .volume-slider::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(1.15);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+            border-radius: 50%;
+            border: 3px solid var(--dark-bg);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            cursor: grab;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .volume-continue-btn {
+            width: 100%;
+            padding: 14px 20px;
+            margin-top: 24px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        }
+
+        .volume-continue-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Timezone display */
+        .timezone-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.06);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .timezone-info svg {
+            width: 14px;
+            height: 14px;
+            color: var(--blue-bright);
+            flex-shrink: 0;
+        }
+
+        /* Completed Summary */
+        .completed-summary {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .completed-summary.active {
+            display: block;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--success);
+        }
+
+        .summary-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .summary-item-label {
+            color: var(--text-muted);
+        }
+
+        .summary-item-value {
+            color: var(--text-white);
+            font-weight: 500;
+        }
+
+        .edit-answers-btn {
+            margin-top: 16px;
+            padding: 10px 16px;
+            background: transparent;
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-answers-btn:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--text-light);
+        }
+
+        /* Calendar Card */
+        .calendar-card {
+            min-height: 560px;
+            transition: opacity 0.4s ease;
+        }
+
+        .calendar-card.locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .calendar-card.unlocked {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-white);
+        }
+
+        .card-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--blue-bright);
+            flex-shrink: 0;
+        }
+
+        .calendar-locked {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 440px;
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .lock-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.25;
+            color: var(--text-muted);
+        }
+
+        .calendar-locked h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        .calendar-locked p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 240px;
+        }
+
+        .unlock-message {
+            text-align: center;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 10px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .unlock-message p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .unlock-message p:first-child {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        /* Custom Calendar */
+        .custom-calendar {
+            padding: 0;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .cal-header { margin-bottom: 16px; }
+
+        .cal-month {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .day-header { text-align: left; }
+
+        .day-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-white);
+            line-height: 1.2;
+        }
+
+        .day-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .availability-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .availability-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        .cal-days { display: flex; flex-direction: column; gap: 12px; }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 500px) {
+            .slots-grid { grid-template-columns: 1fr; }
+        }
+
+        .time-slot {
+            padding: 12px 10px;
+            background: rgba(10, 10, 18, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .time-slot:hover:not(.taken) {
+            border-color: var(--blue-bright);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .time-slot.taken {
+            opacity: 0.25;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .day-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-white);
+        }
+
+        .nav-btn svg { width: 12px; height: 12px; }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 10px;
+            background: rgba(59, 130, 246, 0.06);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-white);
+        }
+
+        .back-btn svg { width: 12px; height: 12px; }
+
+        /* Confirm */
+        .confirm-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .confirm-header span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .confirm-details {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .confirm-row {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 2px;
+        }
+
+        .confirm-row:last-child { margin-bottom: 0; }
+
+        .confirm-row strong {
+            color: var(--text-white);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .confirm-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input::placeholder { color: var(--text-muted); }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .confirm-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .confirm-btn svg { width: 14px; height: 14px; }
+
+        /* Success */
+        .cal-success {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 0 28px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #fff;
+        }
+
+        .cal-success h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-white);
+        }
+
+        .cal-success p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+
+        /* ============================================
+           PAGE STATE VIEWS - Progressive Entry Flow
+           ============================================ */
+
+        /* Email Entry State - Two Column Layout */
+        .email-entry-view {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .entry-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .entry-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            .value-preview {
+                order: 2;
+            }
+            .entry-card {
+                order: 1;
+            }
+        }
+
+        /* Value Preview (Left Side) */
+        .value-preview {
+            padding: 8px 0;
+        }
+
+        .value-header {
+            margin-bottom: 32px;
+        }
+
+        .value-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 20px;
+            color: var(--blue-bright);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .value-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-white);
+            letter-spacing: -0.02em;
+        }
+
+        /* Trial Steps */
+        .trial-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .trial-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--blue-bright);
+        }
+
+        .step-content {
+            flex: 1;
+            padding-top: 2px;
+        }
+
+        .step-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Value Stats */
+        .value-stats {
+            display: flex;
+            gap: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .stat {
+            text-align: left;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--blue-bright);
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .value-stats {
+                gap: 20px;
+            }
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+
+        /* Entry Card (Right Side) */
+        .entry-card {
+            padding: 40px 36px;
+        }
+
+        .entry-card-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .entry-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+        }
+
+        .entry-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #10b981;
+        }
+
+        .email-form-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+
+        .email-form-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .email-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 16px 18px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+
+        .email-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .email-continue-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .email-continue-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .email-continue-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .email-continue-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .email-helper {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        /* Entry Trust Badges */
+        .entry-trust {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .trust-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .entry-card {
+                padding: 32px 24px;
+            }
+            .entry-trust {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
+        }
+
+        /* Verification State */
+        .verification-view {
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .verification-view .card {
+            text-align: center;
+            padding: 44px 36px;
+        }
+
+        .verification-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .verification-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--blue-bright);
+        }
+
+        .verification-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+
+        .verification-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .verification-email {
+            color: var(--blue-bright);
+            font-weight: 600;
+        }
+
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .code-digit {
+            width: 48px;
+            height: 56px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            font-family: inherit;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .code-digit:focus {
+            outline: none;
+            border-color: var(--blue-mid);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .code-digit.filled {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .code-digit.error {
+            border-color: #ef4444;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        }
+
+        .verify-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .verify-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .resend-link {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .resend-link:hover {
+            color: var(--text-light);
+        }
+
+        .resend-link:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-to-email {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 12px;
+            padding: 0;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .back-to-email:hover {
+            color: var(--text-light);
+        }
+
+        .back-to-email svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .verification-error {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .verification-error.show {
+            display: block;
+        }
+
+        /* Qualification View - Uses existing main-grid */
+        .qualification-view {
+            /* Uses existing layout */
+        }
+
+        /* Page state transitions */
+        .page-state {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page-state.active {
+            display: block;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .page-wrapper { padding: 28px 16px 40px; }
+            .card { padding: 22px 18px; }
+            .calendar-card { min-height: auto; }
+            .calendar-locked { min-height: 360px; padding: 28px 16px; }
+            .question-container { min-height: 240px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <header class="page-header">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug" class="brand-logo">
+                <h1 class="page-title">Let's get you set up.</h1>
+                <p class="page-subtitle">Your first edit is on us. No credit card. No commitment.</p>
+            </header>
+
+            <!-- STATE 1: Email Entry with Value Preview -->
+            <div class="page-state email-entry-view active" id="emailEntryState">
+                <div class="entry-grid">
+                    <!-- Left: How It Works -->
+                    <div class="value-preview">
+                        <div class="value-header">
+                            <span class="value-badge">How it works</span>
+                            <h2 class="value-title">Your onboarding in 3 steps</h2>
+                        </div>
+
+                        <div class="trial-steps">
+                            <div class="trial-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-name">Build Your Style Blueprint</div>
+                                    <div class="step-desc">Walk us through your editing preferences — pacing, captions, b-roll, music. This is how we learn to edit like you.</div>
+                                </div>
+                            </div>
+                            <div class="trial-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-name">Submit Your First Project</div>
+                                    <div class="step-desc">Upload footage or link your Google Drive. You'll see exactly how our submission process works.</div>
+                                </div>
+                            </div>
+                            <div class="trial-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-name">Review Your Edit</div>
+                                    <div class="step-desc">Get a polished edit back. Request revisions, leave feedback — experience the full workflow firsthand.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="value-stats">
+                            <div class="stat">
+                                <div class="stat-value">500+</div>
+                                <div class="stat-label">Creators & teams</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">3.3x</div>
+                                <div class="stat-label">More content output</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">17.5h</div>
+                                <div class="stat-label">Saved weekly</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Account Creation -->
+                    <div class="card entry-card">
+                        <div class="entry-card-header">
+                            <div class="entry-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                </svg>
+                            </div>
+                            <div class="email-form-title">Unlock Your Free Edit</div>
+                            <div class="email-form-subtitle">Get instant portal access. Your first edit is completely free.</div>
+                        </div>
+
+                        <form class="email-input-group" onsubmit="submitEmail(event)">
+                            <input type="email" class="email-input" id="entryEmail" placeholder="your@email.com" required autocomplete="email">
+                            <button type="submit" class="email-continue-btn" id="emailContinueBtn">
+                                Get Instant Access
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                            </button>
+                        </form>
+
+                        <div class="email-helper" id="emailHelper">We'll send a quick code to unlock your portal.</div>
+
+                        <div class="entry-trust">
+                            <div class="trust-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                Your info stays private
+                            </div>
+                            <div class="trust-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Cancel anytime
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATE 2: Email Verification -->
+            <div class="page-state verification-view" id="verificationState">
+                <div class="card">
+                    <div class="verification-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <div class="verification-title">Check your inbox</div>
+                    <div class="verification-subtitle">We sent a 6-digit code to <span class="verification-email" id="verifyEmailDisplay"></span></div>
+                    <div class="code-input-group" id="codeInputGroup">
+                        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="0">
+                        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1">
+                        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2">
+                        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3">
+                        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4">
+                        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5">
+                    </div>
+                    <button class="verify-btn" id="verifyBtn" onclick="verifyCode()">Verify</button>
+                    <div class="verification-error" id="verifyError">Invalid code. Please try again.</div>
+                    <button class="resend-link" id="resendBtn" onclick="resendCode()">Resend code</button>
+                    <button class="back-to-email" onclick="backToEmail()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                        Use a different email
+                    </button>
+                </div>
+            </div>
+
+            <!-- STATE 3: Name Capture (after verification, before qualification) -->
+            <div class="page-state name-capture-view" id="nameCaptureState">
+                <div class="card" style="max-width: 440px; margin: 0 auto; padding: 48px;">
+                    <div class="verification-icon" style="background: linear-gradient(135deg, var(--success), #059669);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="verification-title" style="color: var(--success);">You're in!</div>
+                    <div class="verification-subtitle" style="margin-bottom: 28px;">One more thing – what should we call you?</div>
+
+                    <form class="name-capture-form" onsubmit="submitName(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">First Name</label>
+                                <input type="text" id="firstNameInput" class="email-input" placeholder="Sean" required autocomplete="given-name" style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Last Name</label>
+                                <input type="text" id="lastNameInput" class="email-input" placeholder="Conley" required autocomplete="family-name" style="width: 100%;">
+                            </div>
+                        </div>
+                        <button type="submit" class="verify-btn" id="nameSubmitBtn">
+                            Continue to My Free Edit
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px; margin-left: 8px; display: inline-block; vertical-align: middle;"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 20px; font-size: 12px; color: var(--text-muted); text-align: center;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; opacity: 0.7;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Your info stays private & secure
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATE 4: Qualification Questions + Calendar -->
+            <div class="page-state qualification-view" id="qualificationState">
+            <div class="main-grid">
+                <section class="card" aria-labelledby="questions-title">
+                    <div class="step-indicator">
+                        <span class="step-text">Let's tailor this to you · Step <span id="currentStep">1</span> of 4</span>
+                        <div class="step-dots">
+                            <div class="step-dot active" id="dot1"></div>
+                            <div class="step-dot" id="dot2"></div>
+                            <div class="step-dot" id="dot3"></div>
+                            <div class="step-dot" id="dot4"></div>
+                        </div>
+                    </div>
+
+                    <div class="question-container" id="questionContainer">
+                        <div class="question active" data-q="content_type" data-step="1">
+                            <div class="question-title">What kind of content are you focused on right now?</div>
+                            <div class="options" role="group">
+                                <button class="option" data-value="short-form" type="button">Short-form (Reels, TikTok)</button>
+                                <button class="option" data-value="long-form" type="button">Long-form (YouTube, podcasts)</button>
+                                <button class="option" data-value="both" type="button">A mix of both</button>
+                            </div>
+                        </div>
+
+                        <div class="question" data-q="monthly_volume" data-step="2">
+                            <button class="question-back" onclick="goBack(2)" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                Back
+                            </button>
+                            <div class="question-title">About how much content are you putting out each month?</div>
+                            <div class="volume-slider-container">
+                                <div class="volume-display">
+                                    <div class="volume-number" id="volumeNumber">5</div>
+                                    <div class="volume-label" id="volumeLabel">videos per month</div>
+                                </div>
+                                <div class="slider-track">
+                                    <div class="slider-fill" id="sliderFill" style="width: 16.67%"></div>
+                                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="30" value="5">
+                                </div>
+                                <div class="slider-labels">
+                                    <span>0</span>
+                                    <span>10</span>
+                                    <span>20</span>
+                                    <span>30+</span>
+                                </div>
+                                <button class="volume-continue-btn" onclick="submitVolume()" type="button">Continue</button>
+                            </div>
+                        </div>
+
+                        <div class="question" data-q="start_timing" data-step="3">
+                            <button class="question-back" onclick="goBack(3)" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                Back
+                            </button>
+                            <div class="question-title">When would you ideally like to get started?</div>
+                            <div class="options" role="group">
+                                <button class="option" data-value="now" type="button">Ready now</button>
+                                <button class="option" data-value="soon" type="button">In a couple weeks</button>
+                                <button class="option" data-value="exploring" type="button">Just exploring</button>
+                            </div>
+                        </div>
+
+                        <div class="question" data-q="footage" data-step="4">
+                            <button class="question-back" onclick="goBack(4)" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                Back
+                            </button>
+                            <div class="question-title">Where are you at with footage right now?</div>
+                            <div class="options" role="group">
+                                <button class="option" data-value="ready" type="button">I'm ready to go</button>
+                                <button class="option" data-value="soon" type="button">I'll have footage soon</button>
+                                <button class="option" data-value="figuring" type="button">Still figuring it out</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="completed-summary" id="completedSummary">
+                        <div class="summary-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Your setup
+                        </div>
+                        <div class="summary-items" id="summaryItems"></div>
+                        <button class="edit-answers-btn" onclick="editAnswers()" type="button">Edit answers</button>
+                    </div>
+                </section>
+
+                <section class="card calendar-card locked" id="calendarCard" aria-labelledby="calendar-title">
+                    <h2 class="card-title" id="calendar-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Book Your Intro Call
+                    </h2>
+
+                    <div class="calendar-locked" id="calendarLocked">
+                        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                        <h3>Almost there</h3>
+                        <p>Answer a few quick questions so we can tailor your first edit to you.</p>
+                    </div>
+
+                    <div id="customCalendar" class="custom-calendar hidden">
+                        <div class="unlock-message" id="unlockMessage">
+                            <p>Perfect — this helps a lot.</p>
+                            <p>Let's walk you through how your first edit will work.</p>
+                        </div>
+                        <div class="cal-header">
+                            <div class="cal-month" id="calMonth"></div>
+                        </div>
+                        <div class="cal-days" id="calDays"></div>
+                        <div class="cal-confirm hidden" id="calConfirm">
+                            <div class="confirm-header">
+                                <button class="back-btn" onclick="showTimes()" type="button" aria-label="Go back">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                                    Back
+                                </button>
+                                <span>Confirm Your Booking</span>
+                            </div>
+                            <div class="confirm-details">
+                                <div class="confirm-row"><strong id="confirmDate"></strong></div>
+                                <div class="confirm-row" id="confirmTime"></div>
+                                <div class="timezone-info" id="timezoneInfo">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                    </svg>
+                                    <span id="timezoneText"></span>
+                                </div>
+                            </div>
+                            <form class="confirm-form" onsubmit="confirmBooking(event)">
+                                <input type="text" class="form-input" id="bookName" placeholder="Your name" required autocomplete="name">
+                                <input type="email" class="form-input" id="bookEmail" placeholder="Your email" required autocomplete="email">
+                                <input type="tel" class="form-input" id="bookPhone" placeholder="Phone (optional)" autocomplete="tel">
+                                <button class="confirm-btn" type="submit" id="confirmBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Confirm Booking
+                                </button>
+                            </form>
+                        </div>
+                        <div class="cal-success hidden" id="calSuccess">
+                            <div class="success-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <h3>You're Booked!</h3>
+                            <p id="successDetails"></p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            </div><!-- END qualification-view -->
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // PAGE STATE MANAGEMENT
+        // ============================================
+        let entryEmail = '';
+        let verificationCode = '';
+        let sessionToken = null;
+
+        const API_BASE = 'https://portalv2.contentbug.io';
+        const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9';
+
+        // Check for existing session on load
+        (function checkSession() {
+            const savedEmail = localStorage.getItem('cb_email');
+            const savedSession = localStorage.getItem('cb_session');
+            const savedStep = localStorage.getItem('cb_entry_step');
+
+            if (savedSession && savedEmail && savedStep === 'qualified') {
+                entryEmail = savedEmail;
+                showPageState('qualificationState');
+            }
+        })();
+
+        function showPageState(stateId) {
+            document.querySelectorAll('.page-state').forEach(s => s.classList.remove('active'));
+            document.getElementById(stateId).classList.add('active');
+        }
+
+        // ============================================
+        // STATE 1: EMAIL ENTRY
+        // ============================================
+        async function submitEmail(e) {
+            if (e) e.preventDefault();
+
+            const emailInput = document.getElementById('entryEmail');
+            const btn = document.getElementById('emailContinueBtn');
+            entryEmail = emailInput.value.trim().toLowerCase();
+
+            if (!entryEmail || !entryEmail.includes('@')) return;
+
+            btn.innerHTML = '<span class="spinner"></span>';
+            btn.disabled = true;
+
+            try {
+                // Send verification code via Railway MCP
+                const response = await fetch(API_BASE + '/api/auth/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: entryEmail })
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('cb_email', entryEmail);
+                    document.getElementById('verifyEmailDisplay').textContent = entryEmail;
+                    showPageState('verificationState');
+                    document.querySelector('.code-digit').focus();
+                } else {
+                    // Server returned error - show message and stay on email entry
+                    showEmailError('Unable to send verification code. Please try again.');
+                }
+            } catch (err) {
+                // MCP unreachable - fail closed
+                showEmailError('Connection issue. Please check your internet and try again.');
+            }
+
+            btn.innerHTML = 'Get Instant Access <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><polyline points="9 18 15 12 9 6"/></svg>';
+            btn.disabled = false;
+        }
+
+        // ============================================
+        // STATE 2: EMAIL VERIFICATION
+        // ============================================
+        const codeDigits = document.querySelectorAll('.code-digit');
+
+        codeDigits.forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                const val = this.value.replace(/[^0-9]/g, '');
+                this.value = val;
+
+                if (val) {
+                    this.classList.add('filled');
+                    if (index < 5) {
+                        codeDigits[index + 1].focus();
+                    }
+                } else {
+                    this.classList.remove('filled');
+                }
+
+                updateVerifyButton();
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    codeDigits[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const digits = paste.replace(/[^0-9]/g, '').slice(0, 6);
+
+                digits.split('').forEach((d, i) => {
+                    if (codeDigits[i]) {
+                        codeDigits[i].value = d;
+                        codeDigits[i].classList.add('filled');
+                    }
+                });
+
+                if (digits.length === 6) {
+                    codeDigits[5].focus();
+                }
+                updateVerifyButton();
+            });
+        });
+
+        function updateVerifyButton() {
+            const code = Array.from(codeDigits).map(i => i.value).join('');
+            document.getElementById('verifyBtn').disabled = code.length !== 6;
+        }
+
+        async function verifyCode() {
+            const code = Array.from(codeDigits).map(i => i.value).join('');
+            if (code.length !== 6) return;
+
+            const btn = document.getElementById('verifyBtn');
+            btn.innerHTML = '<span class="spinner"></span>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(API_BASE + '/api/auth/verify-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: entryEmail, code: code })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionToken = data.token || 'verified';
+                    localStorage.setItem('cb_session', sessionToken);
+                    localStorage.setItem('cb_trial_user', 'true');
+
+                    // Go to name capture (don't create GHL contact yet - do that after name)
+                    showPageState('nameCaptureState');
+                    document.getElementById('firstNameInput').focus();
+                } else {
+                    showVerificationError();
+                }
+            } catch (err) {
+                // MCP unreachable - fail closed, show error
+                showVerificationError('Connection issue. Please try again.');
+            }
+
+            btn.innerHTML = 'Verify';
+            btn.disabled = false;
+        }
+
+        function showEmailError(message) {
+            const helper = document.getElementById('emailHelper');
+            if (helper) {
+                helper.textContent = message;
+                helper.style.color = '#ef4444';
+                setTimeout(() => {
+                    helper.textContent = 'No spam. Just your first edit.';
+                    helper.style.color = '';
+                }, 4000);
+            }
+        }
+
+        function showVerificationError(message) {
+            const errorEl = document.getElementById('verifyError');
+            if (message) errorEl.textContent = message;
+            else errorEl.textContent = 'Invalid code. Please try again.';
+            errorEl.classList.add('show');
+            codeDigits.forEach(d => {
+                d.classList.add('error');
+                d.classList.remove('filled');
+                d.value = '';
+            });
+            setTimeout(() => {
+                codeDigits.forEach(d => d.classList.remove('error'));
+                errorEl.classList.remove('show');
+            }, 3000);
+            codeDigits[0].focus();
+        }
+
+        async function resendCode() {
+            const btn = document.getElementById('resendBtn');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                await fetch(API_BASE + '/api/auth/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: entryEmail })
+                });
+            } catch (err) {}
+
+            btn.textContent = 'Code sent!';
+            setTimeout(() => {
+                btn.textContent = 'Resend code';
+                btn.disabled = false;
+            }, 30000);
+        }
+
+        function backToEmail() {
+            codeDigits.forEach(d => {
+                d.value = '';
+                d.classList.remove('filled', 'error');
+            });
+            showPageState('emailEntryState');
+            document.getElementById('entryEmail').focus();
+        }
+
+        // ============================================
+        // STATE 3: NAME CAPTURE
+        // ============================================
+        let entryFirstName = '';
+        let entryLastName = '';
+
+        async function submitName(e) {
+            if (e) e.preventDefault();
+
+            const firstNameInput = document.getElementById('firstNameInput');
+            const lastNameInput = document.getElementById('lastNameInput');
+            const btn = document.getElementById('nameSubmitBtn');
+
+            entryFirstName = firstNameInput.value.trim();
+            entryLastName = lastNameInput.value.trim();
+
+            if (!entryFirstName || !entryLastName) return;
+
+            btn.innerHTML = '<span class="spinner"></span>';
+            btn.disabled = true;
+
+            try {
+                // Create/update GHL contact with full info via MCP server
+                const response = await fetch(API_BASE + '/api/trial/create-contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: entryEmail,
+                        firstName: entryFirstName,
+                        lastName: entryLastName,
+                        source: 'Free Trial',
+                        onboardingStatus: 'Started'
+                    })
+                });
+
+                const data = await response.json();
+
+                // Store in localStorage
+                localStorage.setItem('cb_email', entryEmail);
+                localStorage.setItem('cb_name', entryFirstName + ' ' + entryLastName);
+                localStorage.setItem('cb_first_name', entryFirstName);
+                localStorage.setItem('cb_entry_step', 'qualified');
+
+                if (data.contactId) {
+                    localStorage.setItem('cb_ghl_contact_id', data.contactId);
+                }
+
+                // Move to qualification
+                showPageState('qualificationState');
+
+            } catch (err) {
+                console.log('Contact creation error:', err);
+                // Still proceed - we can sync later
+                localStorage.setItem('cb_email', entryEmail);
+                localStorage.setItem('cb_name', entryFirstName + ' ' + entryLastName);
+                localStorage.setItem('cb_first_name', entryFirstName);
+                localStorage.setItem('cb_entry_step', 'qualified');
+                showPageState('qualificationState');
+            }
+
+            btn.innerHTML = 'Continue to My Free Edit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px;margin-left:8px;display:inline-block;vertical-align:middle"><polyline points="9 18 15 12 9 6"/></svg>';
+            btn.disabled = false;
+        }
+
+        // Legacy function - now handled by submitName
+        async function createGHLContact() {
+            // Deprecated - contact creation now happens in submitName
+        }
+
+        // ============================================
+        // STATE 4: QUALIFICATION (existing logic)
+        // ============================================
+        const totalQuestions = 4;
+        let answers = {};
+        let currentQuestion = 1;
+        let selectedDate = null;
+        let selectedTime = null;
+        let currentDayIndex = 0;
+        let businessDays = [];
+
+        const questionLabels = {
+            content_type: 'Content type',
+            monthly_volume: 'Monthly volume',
+            start_timing: 'Start timing',
+            footage: 'Footage'
+        };
+
+        const valueLabels = {
+            'short-form': 'Short-form',
+            'long-form': 'Long-form',
+            'both': 'A mix of both',
+            'now': 'Ready now',
+            'soon': 'In a couple weeks',
+            'exploring': 'Just exploring',
+            'ready': 'Ready to go',
+            'figuring': 'Still figuring it out'
+        };
+
+        // Get user's timezone
+        function getUserTimezone() {
+            try {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const offset = new Date().getTimezoneOffset();
+                const hours = Math.abs(Math.floor(offset / 60));
+                const mins = Math.abs(offset % 60);
+                const sign = offset <= 0 ? '+' : '-';
+                const offsetStr = 'GMT' + sign + hours + (mins ? ':' + mins.toString().padStart(2, '0') : '');
+                return tz.replace(/_/g, ' ') + ' (' + offsetStr + ')';
+            } catch (e) {
+                return 'Your local time';
+            }
+        }
+
+        // Volume slider setup
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeNumber = document.getElementById('volumeNumber');
+        const volumeLabel = document.getElementById('volumeLabel');
+        const sliderFill = document.getElementById('sliderFill');
+
+        volumeSlider.addEventListener('input', function() {
+            const val = parseInt(this.value);
+            volumeNumber.textContent = val >= 30 ? '30+' : val;
+            sliderFill.style.width = (val / 30 * 100) + '%';
+
+            if (val === 0) {
+                volumeLabel.textContent = 'just getting started';
+            } else if (val === 1) {
+                volumeLabel.textContent = 'video per month';
+            } else if (val >= 30) {
+                volumeLabel.textContent = 'videos per month (high volume!)';
+            } else if (val >= 20) {
+                volumeLabel.textContent = 'videos per month (serious output!)';
+            } else if (val >= 10) {
+                volumeLabel.textContent = 'videos per month (consistent!)';
+            } else {
+                volumeLabel.textContent = 'videos per month';
+            }
+        });
+
+        function submitVolume() {
+            const val = parseInt(volumeSlider.value);
+            answers.monthly_volume = val;
+            showQuestion(3);
+        }
+
+        function goBack(fromStep) {
+            showQuestion(fromStep - 1);
+        }
+
+        const allSlots = [
+            '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+            '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM',
+            '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM'
+        ];
+
+        function generateDaySlots(dateStr) {
+            const date = new Date(dateStr + 'T12:00:00');
+            const dayOfWeek = date.getDay();
+            const dayNum = date.getDate();
+            const seed = (dayOfWeek * 7) + (dayNum % 5);
+
+            const seededRandom = (s) => {
+                const x = Math.sin(s * 9999) * 10000;
+                return x - Math.floor(x);
+            };
+
+            const shuffled = [...allSlots].map((slot, i) => ({
+                slot,
+                rand: seededRandom(seed + i * 13)
+            })).sort((a, b) => a.rand - b.rand).map(x => x.slot);
+
+            const takenCount = 3 + (dayOfWeek % 2);
+            const taken = shuffled.slice(0, takenCount);
+
+            return { available: shuffled.slice(takenCount), taken, all: allSlots };
+        }
+
+        document.querySelectorAll('.option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const question = this.closest('.question');
+                const qName = question.dataset.q;
+                const step = parseInt(question.dataset.step);
+
+                question.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                answers[qName] = this.dataset.value;
+
+                setTimeout(() => {
+                    if (step < totalQuestions) {
+                        showQuestion(step + 1);
+                    } else {
+                        showCompletedSummary();
+                    }
+                }, 250);
+            });
+        });
+
+        function showQuestion(step) {
+            currentQuestion = step;
+            document.getElementById('currentStep').textContent = step;
+
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+            document.querySelector('.question[data-step="' + step + '"]').classList.add('active');
+
+            for (let i = 1; i <= 4; i++) {
+                const dot = document.getElementById('dot' + i);
+                dot.classList.remove('active', 'completed');
+                if (i < step) dot.classList.add('completed');
+                if (i === step) dot.classList.add('active');
+            }
+        }
+
+        function getVolumeLabel(val) {
+            if (val === 0) return 'Just getting started';
+            if (val >= 30) return '30+ videos/month';
+            return val + ' videos/month';
+        }
+
+        function showCompletedSummary() {
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('completedSummary').classList.add('active');
+
+            let html = '';
+            for (const [key, value] of Object.entries(answers)) {
+                let displayValue = valueLabels[value] || value;
+                if (key === 'monthly_volume') {
+                    displayValue = getVolumeLabel(value);
+                }
+                html += '<div class="summary-item">' +
+                    '<span class="summary-item-label">' + questionLabels[key] + '</span>' +
+                    '<span class="summary-item-value">' + displayValue + '</span>' +
+                '</div>';
+            }
+            document.getElementById('summaryItems').innerHTML = html;
+
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('dot' + i).classList.add('completed');
+                document.getElementById('dot' + i).classList.remove('active');
+            }
+            document.getElementById('currentStep').textContent = '4';
+
+            unlockCalendar();
+        }
+
+        function editAnswers() {
+            document.getElementById('completedSummary').classList.remove('active');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            showQuestion(1);
+            lockCalendar();
+        }
+
+        function unlockCalendar() {
+            const card = document.getElementById('calendarCard');
+            card.classList.remove('locked');
+            card.classList.add('unlocked');
+
+            document.getElementById('calendarLocked').classList.add('hidden');
+            document.getElementById('customCalendar').classList.remove('hidden');
+
+            businessDays = getNext3BusinessDays();
+            currentDayIndex = 0;
+            renderCurrentDay();
+
+            if (window.innerWidth < 900) {
+                document.getElementById('calendarCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function lockCalendar() {
+            const card = document.getElementById('calendarCard');
+            card.classList.add('locked');
+            card.classList.remove('unlocked');
+            document.getElementById('calendarLocked').classList.remove('hidden');
+            document.getElementById('customCalendar').classList.add('hidden');
+        }
+
+        function getNext3BusinessDays() {
+            const days = [];
+            let date = new Date();
+            date.setHours(0, 0, 0, 0);
+
+            if (new Date().getHours() >= 16) {
+                date.setDate(date.getDate() + 1);
+            }
+
+            while (days.length < 3) {
+                const dayOfWeek = date.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    days.push(new Date(date));
+                }
+                date.setDate(date.getDate() + 1);
+            }
+            return days;
+        }
+
+        function formatDate(date) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            return {
+                dayName: days[date.getDay()],
+                dayNum: date.getDate(),
+                month: months[date.getMonth()],
+                fullDate: days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate()
+            };
+        }
+
+        function getDayLabel(date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            if (date.getTime() === today.getTime()) return 'Today';
+            if (date.getTime() === tomorrow.getTime()) return 'Tomorrow';
+            return formatDate(date).dayName;
+        }
+
+        function renderCurrentDay() {
+            const date = businessDays[currentDayIndex];
+            const f = formatDate(date);
+            const dateStr = date.toISOString().split('T')[0];
+            const slots = generateDaySlots(dateStr);
+
+            selectedDate = dateStr;
+
+            document.getElementById('calMonth').innerHTML =
+                '<div class="day-header">' +
+                    '<div class="day-title">' + getDayLabel(date) + '</div>' +
+                    '<div class="day-subtitle">' + f.month + ' ' + f.dayNum + '</div>' +
+                '</div>' +
+                '<div class="availability-badge">' +
+                    '<span class="availability-dot"></span>' +
+                    slots.available.length + ' available' +
+                '</div>';
+
+            let html = '<div class="slots-grid">';
+            slots.all.forEach(time => {
+                const isTaken = slots.taken.includes(time);
+                html += '<button class="time-slot' + (isTaken ? ' taken' : '') + '" type="button" ' +
+                    (isTaken ? 'disabled' : 'onclick="selectTime(\'' + time + '\')"') + '>' + time + '</button>';
+            });
+            html += '</div>';
+
+            html += '<div class="day-nav">';
+            html += currentDayIndex > 0
+                ? '<button class="nav-btn" onclick="prevDay()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>' + getDayLabel(businessDays[currentDayIndex - 1]) + '</button>'
+                : '<div></div>';
+            html += currentDayIndex < 2
+                ? '<button class="nav-btn" onclick="nextDay()" type="button">' + getDayLabel(businessDays[currentDayIndex + 1]) + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>'
+                : '<div></div>';
+            html += '</div>';
+
+            document.getElementById('calDays').innerHTML = html;
+        }
+
+        function prevDay() {
+            if (currentDayIndex > 0) { currentDayIndex--; renderCurrentDay(); }
+        }
+
+        function nextDay() {
+            if (currentDayIndex < 2) { currentDayIndex++; renderCurrentDay(); }
+        }
+
+        function selectTime(time) {
+            selectedTime = time;
+            const date = new Date(selectedDate + 'T12:00:00');
+
+            document.getElementById('confirmDate').textContent = formatDate(date).fullDate;
+            document.getElementById('confirmTime').textContent = time;
+            document.getElementById('timezoneText').textContent = getUserTimezone();
+
+            const savedEmail = localStorage.getItem('cb_email');
+            const savedName = localStorage.getItem('cb_name');
+            if (savedEmail) document.getElementById('bookEmail').value = savedEmail;
+            if (savedName) document.getElementById('bookName').value = savedName;
+
+            document.getElementById('calDays').classList.add('hidden');
+            document.getElementById('calMonth').classList.add('hidden');
+            document.getElementById('calConfirm').classList.remove('hidden');
+            document.getElementById('bookName').focus();
+        }
+
+        function showTimes() {
+            document.getElementById('calConfirm').classList.add('hidden');
+            document.getElementById('calDays').classList.remove('hidden');
+            document.getElementById('calMonth').classList.remove('hidden');
+        }
+
+        async function confirmBooking(e) {
+            if (e) e.preventDefault();
+
+            const name = document.getElementById('bookName').value.trim();
+            const email = document.getElementById('bookEmail').value.trim();
+            const phone = document.getElementById('bookPhone').value.trim();
+
+            if (!name || !email) return;
+
+            const btn = document.getElementById('confirmBtn');
+            btn.innerHTML = '<span class="spinner"></span> Booking...';
+            btn.disabled = true;
+
+            localStorage.setItem('cb_email', email);
+            localStorage.setItem('cb_name', name);
+            if (phone) localStorage.setItem('cb_phone', phone);
+
+            const date = new Date(selectedDate + 'T12:00:00');
+            const nameParts = name.split(' ');
+
+            const bookingData = {
+                firstName: nameParts[0] || '',
+                lastName: nameParts.slice(1).join(' ') || '',
+                name: name,
+                email: email,
+                phone: phone,
+                source: 'Free Trial Page',
+                demo_call_date: selectedDate,
+                demo_call_time: selectedTime,
+                content_type: answers.content_type || '',
+                monthly_volume: answers.monthly_volume || '',
+                start_timing: answers.start_timing || '',
+                footage: answers.footage || '',
+                lead_source: 'free-trial-standalone',
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                await fetch('https://portalv2.contentbug.io/api/lead/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData)
+                });
+            } catch (err) {
+                await fetch('https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData),
+                    mode: 'no-cors'
+                });
+            }
+
+            document.getElementById('calConfirm').classList.add('hidden');
+            document.getElementById('calSuccess').classList.remove('hidden');
+            document.getElementById('successDetails').innerHTML =
+                '<strong>' + formatDate(date).fullDate + ' at ' + selectedTime + '</strong><br>' +
+                '<span style="color: var(--text-light); margin-top: 6px; display: block;">Check your email for confirmation.</span>';
+
+            // Mark trial user and step 1 complete
+            localStorage.setItem('cb_trial_user', 'true');
+            localStorage.setItem('cb_trial_step', '2'); // Account created (step 1), advance to step 2 (blueprint)
+            localStorage.setItem('cb_tier', 'trial');
+            localStorage.setItem('cb_trial_booking', JSON.stringify({
+                date: selectedDate,
+                time: selectedTime,
+                name: name,
+                email: email
+            }));
+
+            // Redirect to portal on MCP server
+            setTimeout(() => {
+                window.location.href = 'https://portalv2.contentbug.io/portal/';
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
