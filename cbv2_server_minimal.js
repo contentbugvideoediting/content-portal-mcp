@@ -539,12 +539,11 @@ app.get('/chat/channels/:user_email', async (req, res) => {
 
     const createdChannels = [];
 
-    // Create chat channel if needed
+    // Create chat channel if needed (ch_ prefix indicates chat channel)
     if (!hasChatChannel) {
       const chatChannelId = `ch_${generateId()}`;
       const chatChannel = await airtableCreate(AT_TABLES.channels, {
         channel_id: chatChannelId,
-        type: 'client',
         name: clientName,
         client_email: userEmail,
         client_tier: 'trial',
@@ -565,12 +564,11 @@ app.get('/chat/channels/:user_email', async (req, res) => {
       }
     }
 
-    // Create project updates channel if needed
+    // Create project updates channel if needed (pu_ prefix indicates updates channel)
     if (!hasUpdatesChannel) {
       const updatesChannelId = `pu_${generateId()}`;
       const updatesChannel = await airtableCreate(AT_TABLES.channels, {
         channel_id: updatesChannelId,
-        type: 'project_updates',
         name: `${clientName} - Project Updates`,
         client_email: userEmail,
         client_tier: 'trial',
@@ -621,16 +619,17 @@ app.get('/chat/channels/:user_email', async (req, res) => {
 
 /**
  * POST /chat/channels - Create a new channel
+ * Channel type is determined by channel_id prefix: ch_ = chat, pu_ = project_updates
  */
 app.post('/chat/channels', async (req, res) => {
   try {
     const { type = 'client', name, client_email, participant_emails, client_tier = 'trial' } = req.body;
 
-    const channelId = `ch_${generateId()}`;
+    // Use pu_ prefix for project_updates, ch_ for everything else
+    const channelId = type === 'project_updates' ? `pu_${generateId()}` : `ch_${generateId()}`;
 
     const channel = await airtableCreate(AT_TABLES.channels, {
       channel_id: channelId,
-      type,
       name: name || client_email?.split('@')[0] || 'New Channel',
       client_email: client_email?.toLowerCase(),
       client_tier,
@@ -863,13 +862,19 @@ app.post('/project/update', async (req, res) => {
     const userEmail = client_email.toLowerCase().trim();
 
     // Find or create the project_updates channel for this client
-    const filter = `AND({client_email} = "${userEmail}", {type} = "project_updates")`;
-    let channels = await airtableGet(AT_TABLES.channels, filter);
+    // Look for channels with pu_ prefix (project updates)
+    const filter = `{client_email} = "${userEmail}"`;
+    let allChannels = await airtableGet(AT_TABLES.channels, filter);
+
+    // Find existing updates channel by pu_ prefix
+    const existingUpdatesChannel = allChannels.find(ch =>
+      ch.fields.channel_id && ch.fields.channel_id.startsWith('pu_')
+    );
 
     let updatesChannelId;
 
-    if (channels.length === 0) {
-      // Create the updates channel
+    if (!existingUpdatesChannel) {
+      // Create the updates channel (pu_ prefix = project updates)
       updatesChannelId = `pu_${generateId()}`;
       let clientName = userEmail.split('@')[0];
 
@@ -880,7 +885,6 @@ app.post('/project/update', async (req, res) => {
 
       await airtableCreate(AT_TABLES.channels, {
         channel_id: updatesChannelId,
-        type: 'project_updates',
         name: `${clientName} - Project Updates`,
         client_email: userEmail,
         client_tier: 'trial',
@@ -889,7 +893,7 @@ app.post('/project/update', async (req, res) => {
         created_at: new Date().toISOString()
       });
     } else {
-      updatesChannelId = channels[0].fields.channel_id;
+      updatesChannelId = existingUpdatesChannel.fields.channel_id;
     }
 
     // Generate formatted message based on update type
