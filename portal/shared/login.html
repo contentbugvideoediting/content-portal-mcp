@@ -1380,25 +1380,24 @@
             PAYMENT_FAILED: 'payment_failed'
         };
 
-        // Portal URLs by role - unified routing
-        // All roles go to /dashboard - the dashboard reads cb_role from localStorage and shows appropriate UI
+        // Portal URLs by role - role-specific dashboards
         const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const PORTAL_ROUTES = IS_LOCAL_DEMO ? {
-            owner: 'client-portal.html',
-            admin: 'client-portal.html',
-            editor: 'client-portal.html',
-            client: 'client-portal.html',
-            lead: 'client-portal.html',
-            trial: 'client-portal.html',
-            cancelled: 'client-portal.html'
+            owner: 'admin/dashboard.html',
+            admin: 'admin/dashboard.html',
+            editor: 'editor/dashboard.html',
+            client: 'client/dashboard.html',
+            lead: 'client/dashboard.html',
+            trial: 'client/dashboard.html',
+            cancelled: 'client/dashboard.html'
         } : {
-            owner: `${PORTAL_BASE}/dashboard`,
-            admin: `${PORTAL_BASE}/dashboard`,
-            editor: `${PORTAL_BASE}/dashboard`,
-            client: `${PORTAL_BASE}/dashboard`,
-            lead: `${PORTAL_BASE}/dashboard`,
-            trial: `${PORTAL_BASE}/dashboard`,
-            cancelled: `${PORTAL_BASE}/reactivate`
+            owner: `${PORTAL_BASE}/admin/dashboard`,
+            admin: `${PORTAL_BASE}/admin/dashboard`,
+            editor: `${PORTAL_BASE}/editor/dashboard`,
+            client: `${PORTAL_BASE}/client/dashboard`,
+            lead: `${PORTAL_BASE}/client/dashboard`,
+            trial: `${PORTAL_BASE}/client/dashboard`,
+            cancelled: `${PORTAL_BASE}/client/dashboard`
         };
 
         // State

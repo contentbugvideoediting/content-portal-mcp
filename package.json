@@ -13,5 +13,8 @@
     "express": "^4.18.2",
     "googleapis": "^144.0.0",
     "stripe": "^14.10.0"
+  },
+  "devDependencies": {
+    "@railway/cli": "^4.16.1"
   }
 }
