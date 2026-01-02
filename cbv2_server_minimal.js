@@ -331,6 +331,8 @@ app.post('/api/auth/send-code', async (req, res) => {
 
     if (source === 'pricing_unlock' || source === 'pricing_page') {
       template = 'pricing_unlock';
+    } else if (source === 'free_trial' || source === 'free_trial_signup') {
+      template = 'free_trial_signup';
     } else {
       const contact = await ghlFindByEmail(normalizedEmail);
       if (contact?.customFields) {
