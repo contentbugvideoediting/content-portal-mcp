@@ -1380,24 +1380,24 @@
             PAYMENT_FAILED: 'payment_failed'
         };
 
-        // Portal URLs by role - role-specific dashboards
+        // Portal URLs by role - role-specific portals with full sidebar
         const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const PORTAL_ROUTES = IS_LOCAL_DEMO ? {
-            owner: 'admin/dashboard.html',
-            admin: 'admin/dashboard.html',
-            editor: 'editor/dashboard.html',
-            client: 'client/dashboard.html',
-            lead: 'client/dashboard.html',
-            trial: 'client/dashboard.html',
-            cancelled: 'client/dashboard.html'
+            owner: 'admin/index.html',
+            admin: 'admin/index.html',
+            editor: 'editor/index.html',
+            client: 'client/index.html',
+            lead: 'client/index.html',
+            trial: 'client/index.html',
+            cancelled: 'client/index.html'
         } : {
-            owner: `${PORTAL_BASE}/admin/dashboard`,
-            admin: `${PORTAL_BASE}/admin/dashboard`,
-            editor: `${PORTAL_BASE}/editor/dashboard`,
-            client: `${PORTAL_BASE}/client/dashboard`,
-            lead: `${PORTAL_BASE}/client/dashboard`,
-            trial: `${PORTAL_BASE}/client/dashboard`,
-            cancelled: `${PORTAL_BASE}/client/dashboard`
+            owner: `${PORTAL_BASE}/admin`,
+            admin: `${PORTAL_BASE}/admin`,
+            editor: `${PORTAL_BASE}/editor`,
+            client: `${PORTAL_BASE}/client`,
+            lead: `${PORTAL_BASE}/client`,
+            trial: `${PORTAL_BASE}/client`,
+            cancelled: `${PORTAL_BASE}/client`
         };
 
         // State
