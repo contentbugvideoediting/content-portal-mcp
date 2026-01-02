@@ -1163,6 +1163,119 @@
             height: 18px;
         }
 
+        /* Chat Tabs */
+        .chat-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--dark-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-tab:hover {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .chat-tab.active {
+            color: var(--theme-primary);
+            border-bottom-color: var(--theme-primary);
+        }
+
+        .chat-tab svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .tab-badge {
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            background: #ef4444;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-badge.visible {
+            display: flex;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Updates Welcome State */
+        .updates-welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .updates-welcome svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .updates-welcome h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .updates-welcome p {
+            font-size: 12px;
+            max-width: 200px;
+        }
+
+        /* Update Message Styling */
+        .update-item {
+            padding: 12px 16px;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .update-item .update-content {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .update-item .update-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 1024px) {
             .chat-panel {
@@ -1561,8 +1674,8 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
-                    <h3>Your Team</h3>
-                    <span class="online-indicator"></span>
+                    <h3 id="chatPanelTitle">Your Team</h3>
+                    <span class="online-indicator" id="chatOnlineIndicator"></span>
                 </div>
                 <button class="chat-minimize">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1571,6 +1684,28 @@
                 </button>
             </header>
 
+            <!-- Channel Tabs -->
+            <div class="chat-tabs">
+                <button class="chat-tab active" data-tab="chat" onclick="switchChatTab('chat')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                    <span class="tab-badge" id="chatTabBadge"></span>
+                </button>
+                <button class="chat-tab" data-tab="updates" onclick="switchChatTab('updates')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    Updates
+                    <span class="tab-badge" id="updatesTabBadge"></span>
+                </button>
+            </div>
+
+            <!-- Chat Messages Tab -->
             <div class="chat-messages" id="chatMessages">
                 <!-- Welcome message -->
                 <div class="chat-message">
@@ -1585,7 +1720,20 @@
                 </div>
             </div>
 
-            <div class="chat-input-area">
+            <!-- Project Updates Tab -->
+            <div class="chat-messages hidden" id="updatesMessages">
+                <div class="updates-welcome">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <h4>Project Updates</h4>
+                    <p>Status changes, revisions, and project notifications will appear here.</p>
+                </div>
+            </div>
+
+            <!-- Chat Input (only shown on chat tab) -->
+            <div class="chat-input-area" id="chatInputArea">
                 <div class="chat-input-wrapper">
                     <textarea class="chat-input" id="chatInput" placeholder="Type a message..." rows="1"></textarea>
                     <button class="chat-send-btn" onclick="sendMessage()">
@@ -1888,6 +2036,8 @@
         // Chat functionality
         const MCP_SERVER = 'https://portalv2.contentbug.io';
         let clientChannelId = null;
+        let updatesChannelId = null;
+        let currentTab = 'chat';
 
         // Ensure chat channel exists on load
         async function ensureClientChannel() {
@@ -1904,32 +2054,120 @@
                 const data = await response.json();
 
                 if (data.channels && data.channels.length > 0) {
-                    clientChannelId = data.channels[0].channel_id;
-                    loadChatMessages();
-                } else {
-                    // Create channel
-                    const name = localStorage.getItem('cb_name') || 'Client';
-                    const createRes = await fetch(`${MCP_SERVER}/chat/channels`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-User-Email': email,
-                            'X-User-Role': 'client'
-                        },
-                        body: JSON.stringify({
-                            type: 'client',
-                            name: name,
-                            client_email: email
-                        })
+                    // Find chat and updates channels
+                    data.channels.forEach(ch => {
+                        if (ch.type === 'client' || !ch.type) {
+                            clientChannelId = ch.channel_id;
+                        } else if (ch.type === 'project_updates') {
+                            updatesChannelId = ch.channel_id;
+                        }
                     });
-                    const createData = await createRes.json();
-                    if (createData.channel_id) {
-                        clientChannelId = createData.channel_id;
-                    }
+
+                    loadChatMessages();
+                    loadProjectUpdates();
                 }
             } catch (err) {
                 console.log('[Chat] Channel setup failed:', err.message);
             }
+        }
+
+        // Switch between chat and updates tabs
+        function switchChatTab(tab) {
+            currentTab = tab;
+
+            // Update tab active states
+            document.querySelectorAll('.chat-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+
+            // Show/hide content
+            document.getElementById('chatMessages').classList.toggle('hidden', tab !== 'chat');
+            document.getElementById('updatesMessages').classList.toggle('hidden', tab !== 'updates');
+            document.getElementById('chatInputArea').classList.toggle('hidden', tab !== 'chat');
+
+            // Update header
+            document.getElementById('chatPanelTitle').textContent = tab === 'chat' ? 'Your Team' : 'Project Updates';
+            document.getElementById('chatOnlineIndicator').style.display = tab === 'chat' ? 'block' : 'none';
+
+            // Clear unread badge for current tab
+            if (tab === 'updates' && updatesChannelId) {
+                markUpdatesRead();
+            }
+        }
+
+        // Load project updates
+        async function loadProjectUpdates() {
+            const email = localStorage.getItem('cb_email');
+            if (!email) return;
+
+            try {
+                const response = await fetch(`${MCP_SERVER}/project/updates/${encodeURIComponent(email)}`, {
+                    headers: {
+                        'X-User-Email': email,
+                        'X-User-Role': 'client'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.updates && data.updates.length > 0) {
+                    const container = document.getElementById('updatesMessages');
+                    container.innerHTML = data.updates.map(update => {
+                        const time = formatRelativeTime(update.created_at);
+                        return `
+                            <div class="update-item">
+                                <div class="update-content">${escapeHtml(update.content)}</div>
+                                <div class="update-time">${time}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Update badge
+                if (data.unread > 0) {
+                    const badge = document.getElementById('updatesTabBadge');
+                    badge.textContent = data.unread;
+                    badge.classList.add('visible');
+                }
+
+            } catch (err) {
+                console.log('[Updates] Load failed:', err.message);
+            }
+        }
+
+        // Mark updates as read
+        async function markUpdatesRead() {
+            if (!updatesChannelId) return;
+
+            try {
+                await fetch(`${MCP_SERVER}/chat/read/${updatesChannelId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Email': localStorage.getItem('cb_email'),
+                        'X-User-Role': 'client'
+                    }
+                });
+
+                document.getElementById('updatesTabBadge').classList.remove('visible');
+            } catch (err) {
+                console.log('[Updates] Mark read failed:', err.message);
+            }
+        }
+
+        // Format relative time
+        function formatRelativeTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
         // Load existing messages

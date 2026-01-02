@@ -508,6 +508,7 @@ app.get('/inbox', async (req, res) => {
 
 /**
  * GET /chat/channels/:user_email - Get channels for a specific user (client view)
+ * Returns both chat channel and project updates channel
  */
 app.get('/chat/channels/:user_email', async (req, res) => {
   try {
@@ -517,19 +518,26 @@ app.get('/chat/channels/:user_email', async (req, res) => {
     const filter = `{client_email} = "${userEmail}"`;
     const channels = await airtableGet(AT_TABLES.channels, filter);
 
-    if (channels.length === 0) {
-      // No channel exists - create one
-      const channelId = `ch_${generateId()}`;
+    // Check if chat and updates channels exist
+    const hasChatChannel = channels.some(ch => ch.fields.type === 'client' || !ch.fields.type);
+    const hasUpdatesChannel = channels.some(ch => ch.fields.type === 'project_updates');
 
-      // Try to get client name from GHL
-      let clientName = userEmail.split('@')[0];
+    // Try to get client name from GHL if we need to create channels
+    let clientName = userEmail.split('@')[0];
+    if (!hasChatChannel || !hasUpdatesChannel) {
       const contact = await ghlFindByEmail(userEmail);
       if (contact) {
         clientName = `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || clientName;
       }
+    }
 
-      const newChannel = await airtableCreate(AT_TABLES.channels, {
-        channel_id: channelId,
+    const createdChannels = [];
+
+    // Create chat channel if needed
+    if (!hasChatChannel) {
+      const chatChannelId = `ch_${generateId()}`;
+      const chatChannel = await airtableCreate(AT_TABLES.channels, {
+        channel_id: chatChannelId,
         type: 'client',
         name: clientName,
         client_email: userEmail,
@@ -538,24 +546,47 @@ app.get('/chat/channels/:user_email', async (req, res) => {
         participant_emails: userEmail,
         created_at: new Date().toISOString()
       });
-
-      if (newChannel) {
-        return res.json({
-          success: true,
-          channels: [{
-            id: newChannel.id,
-            channel_id: channelId,
-            type: 'client',
-            name: clientName,
-            client_email: userEmail,
-            client_tier: 'trial',
-            unread_client: 0
-          }]
+      if (chatChannel) {
+        createdChannels.push({
+          id: chatChannel.id,
+          channel_id: chatChannelId,
+          type: 'client',
+          name: clientName,
+          client_email: userEmail,
+          client_tier: 'trial',
+          unread_client: 0
         });
       }
     }
 
-    const formatted = channels.map(ch => ({
+    // Create project updates channel if needed
+    if (!hasUpdatesChannel) {
+      const updatesChannelId = `pu_${generateId()}`;
+      const updatesChannel = await airtableCreate(AT_TABLES.channels, {
+        channel_id: updatesChannelId,
+        type: 'project_updates',
+        name: `${clientName} - Project Updates`,
+        client_email: userEmail,
+        client_tier: 'trial',
+        client_status: 'active',
+        participant_emails: userEmail,
+        created_at: new Date().toISOString()
+      });
+      if (updatesChannel) {
+        createdChannels.push({
+          id: updatesChannel.id,
+          channel_id: updatesChannelId,
+          type: 'project_updates',
+          name: `${clientName} - Project Updates`,
+          client_email: userEmail,
+          client_tier: 'trial',
+          unread_client: 0
+        });
+      }
+    }
+
+    // Combine existing and new channels
+    const existingFormatted = channels.map(ch => ({
       id: ch.id,
       channel_id: ch.fields.channel_id,
       type: ch.fields.type || 'client',
@@ -565,7 +596,9 @@ app.get('/chat/channels/:user_email', async (req, res) => {
       unread_client: ch.fields.unread_client || 0
     }));
 
-    res.json({ success: true, channels: formatted });
+    const allChannels = [...existingFormatted, ...createdChannels];
+
+    res.json({ success: true, channels: allChannels });
 
   } catch (err) {
     console.error('[Get Channels]', err.message);
@@ -791,6 +824,158 @@ app.post('/chat/read/:channel_id', async (req, res) => {
 
   } catch (err) {
     console.error('[Mark Read]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /project/update - Post a project update to client's project updates channel
+ * Used for automatic status updates, revision notifications, edit submissions, etc.
+ */
+app.post('/project/update', async (req, res) => {
+  try {
+    const {
+      client_email,
+      project_name,
+      update_type,  // 'status_change', 'revision_request', 'edit_submitted', 'new_request', 'approved', 'rejected'
+      message,
+      project_id,
+      metadata = {}
+    } = req.body;
+
+    if (!client_email || !update_type) {
+      return res.status(400).json({ error: 'client_email and update_type required' });
+    }
+
+    const userEmail = client_email.toLowerCase().trim();
+
+    // Find or create the project_updates channel for this client
+    const filter = `AND({client_email} = "${userEmail}", {type} = "project_updates")`;
+    let channels = await airtableGet(AT_TABLES.channels, filter);
+
+    let updatesChannelId;
+
+    if (channels.length === 0) {
+      // Create the updates channel
+      updatesChannelId = `pu_${generateId()}`;
+      let clientName = userEmail.split('@')[0];
+
+      const contact = await ghlFindByEmail(userEmail);
+      if (contact) {
+        clientName = `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || clientName;
+      }
+
+      await airtableCreate(AT_TABLES.channels, {
+        channel_id: updatesChannelId,
+        type: 'project_updates',
+        name: `${clientName} - Project Updates`,
+        client_email: userEmail,
+        client_tier: 'trial',
+        client_status: 'active',
+        participant_emails: userEmail,
+        created_at: new Date().toISOString()
+      });
+    } else {
+      updatesChannelId = channels[0].fields.channel_id;
+    }
+
+    // Generate formatted message based on update type
+    const updateMessages = {
+      status_change: `📋 Project "${project_name || 'Your project'}" status updated: ${message || metadata.new_status || 'Updated'}`,
+      revision_request: `🔄 Revision requested for "${project_name || 'Your project'}": ${message || 'Please review the changes'}`,
+      edit_submitted: `✅ Edit submitted for "${project_name || 'Your project'}". Ready for your review!`,
+      new_request: `🆕 New project request received: "${project_name || 'Your project'}"`,
+      approved: `🎉 "${project_name || 'Your project'}" has been approved! Your files are ready.`,
+      rejected: `❌ "${project_name || 'Your project'}" needs changes: ${message || 'Please see notes'}`,
+      comment: `💬 New comment on "${project_name || 'Your project'}": ${message || ''}`,
+      upload: `📁 New files uploaded for "${project_name || 'Your project'}"`,
+      deadline: `⏰ Deadline update for "${project_name || 'Your project'}": ${message || metadata.deadline || 'Updated'}`
+    };
+
+    const formattedMessage = updateMessages[update_type] || message || `Update for ${project_name || 'your project'}`;
+
+    // Create the system message
+    const messageId = `msg_${generateId()}`;
+    const newMessage = await airtableCreate(AT_TABLES.messages, {
+      message_id: messageId,
+      channel_id: updatesChannelId,
+      sender_email: 'system@contentbug.io',
+      sender_name: 'Content Bug',
+      sender_role: 'system',
+      content: formattedMessage,
+      is_system: true,
+      created_at: new Date().toISOString(),
+      metadata: JSON.stringify({
+        update_type,
+        project_id,
+        project_name,
+        ...metadata
+      })
+    });
+
+    // Increment unread count for client
+    const channelRecords = await airtableGet(AT_TABLES.channels, `{channel_id} = "${updatesChannelId}"`);
+    if (channelRecords.length > 0) {
+      const currentUnread = channelRecords[0].fields.unread_client || 0;
+      await airtableUpdate(AT_TABLES.channels, channelRecords[0].id, {
+        unread_client: currentUnread + 1,
+        last_message_at: new Date().toISOString()
+      });
+    }
+
+    res.json({
+      success: true,
+      message_id: messageId,
+      channel_id: updatesChannelId,
+      content: formattedMessage
+    });
+
+  } catch (err) {
+    console.error('[Project Update]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /project/updates/:client_email - Get all project updates for a client
+ */
+app.get('/project/updates/:client_email', async (req, res) => {
+  try {
+    const userEmail = req.params.client_email.toLowerCase().trim();
+
+    // Find the project_updates channel
+    const filter = `AND({client_email} = "${userEmail}", {type} = "project_updates")`;
+    const channels = await airtableGet(AT_TABLES.channels, filter);
+
+    if (channels.length === 0) {
+      return res.json({ success: true, updates: [], channel_id: null });
+    }
+
+    const channelId = channels[0].fields.channel_id;
+
+    // Get messages from this channel
+    const messages = await airtableGet(AT_TABLES.messages, `{channel_id} = "${channelId}"`, 100);
+
+    const updates = messages.map(msg => ({
+      id: msg.id,
+      message_id: msg.fields.message_id,
+      content: msg.fields.content,
+      created_at: msg.fields.created_at,
+      metadata: msg.fields.metadata ? JSON.parse(msg.fields.metadata) : {}
+    }));
+
+    // Sort by created_at desc (newest first)
+    updates.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    res.json({
+      success: true,
+      channel_id: channelId,
+      updates,
+      unread: channels[0].fields.unread_client || 0
+    });
+
+  } catch (err) {
+    console.error('[Get Project Updates]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
