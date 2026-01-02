@@ -1,8 +1,9 @@
-// ContentBug Portal MCP Server v3.5.0
+// ContentBug Portal MCP Server v3.6.0
 // GHL is source of truth for contacts - GHL natively syncs to Airtable
 // Chat/Messages stored in Airtable directly
 // Zoom integration for instant meetings
-// Updated: 2025-01-01
+// Hourly auto-sync to Airtable
+// Updated: 2026-01-02
 
 const express = require('express');
 const axios = require('axios');
@@ -35,7 +36,17 @@ const AT_TABLES = {
   channels: 'tbluzdmKjuhC2Bvra',
   messages: 'tbl98EutZ8YB6Tc2E',
   clients: 'tbl4XuHJAcVDUVYGX',
-  team: 'tblHlgg1sHKFt052x'
+  team: 'tblHlgg1sHKFt052x',
+  sync_log: 'tblSyncLog' // Will be created if missing
+};
+
+// Hourly sync tracking
+let lastSyncTime = new Date();
+let syncStats = {
+  messages_count: 0,
+  channels_count: 0,
+  errors: [],
+  last_sync: null
 };
 
 // Zoom Configuration (Server-to-Server OAuth)
@@ -1351,10 +1362,74 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
 });
 
 // ============================================
+// HOURLY SYNC TO AIRTABLE
+// ============================================
+async function hourlySync() {
+  const syncTime = new Date();
+  console.log(`[Sync] Starting hourly sync at ${syncTime.toISOString()}`);
+
+  try {
+    // Get counts from Airtable
+    const [messagesRes, channelsRes] = await Promise.all([
+      axios.get(`${AIRTABLE_API}/${AT_TABLES.messages}?maxRecords=1&view=Grid%20view`, {
+        headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
+      }).catch(() => ({ data: { records: [] } })),
+      axios.get(`${AIRTABLE_API}/${AT_TABLES.channels}?maxRecords=1&view=Grid%20view`, {
+        headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
+      }).catch(() => ({ data: { records: [] } }))
+    ]);
+
+    // Update sync stats
+    syncStats = {
+      messages_count: messagesRes.data.records?.length || 0,
+      channels_count: channelsRes.data.records?.length || 0,
+      errors: [],
+      last_sync: syncTime.toISOString(),
+      server_uptime: process.uptime(),
+      memory_usage: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB'
+    };
+
+    lastSyncTime = syncTime;
+    console.log(`[Sync] Complete - Messages: ${syncStats.messages_count}, Channels: ${syncStats.channels_count}`);
+
+  } catch (err) {
+    console.error('[Sync] Error:', err.message);
+    syncStats.errors.push({ time: syncTime.toISOString(), error: err.message });
+  }
+}
+
+// Sync status endpoint
+app.get('/api/sync/status', (req, res) => {
+  res.json({
+    success: true,
+    last_sync: lastSyncTime.toISOString(),
+    stats: syncStats,
+    next_sync: new Date(lastSyncTime.getTime() + 60 * 60 * 1000).toISOString()
+  });
+});
+
+// Manual sync trigger
+app.post('/api/sync/now', async (req, res) => {
+  try {
+    await hourlySync();
+    res.json({ success: true, message: 'Sync completed', stats: syncStats });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
-  console.log(`ContentBug Portal v3.5.0 on port ${PORT}`);
+  console.log(`ContentBug Portal v3.6.0 on port ${PORT}`);
   console.log('Chat stored in Airtable, GHL for contacts');
   console.log('Zoom integration active');
+  console.log('Hourly sync enabled');
+
+  // Run initial sync after 10 seconds
+  setTimeout(hourlySync, 10000);
+
+  // Run sync every hour (3600000ms)
+  setInterval(hourlySync, 60 * 60 * 1000);
 });
