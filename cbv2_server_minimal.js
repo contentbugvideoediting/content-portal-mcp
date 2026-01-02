@@ -116,19 +116,19 @@ const path = require('path');
 app.use('/portal', express.static(path.join(__dirname, 'portal')));
 
 // Route aliases for clean URLs
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'login.html')));
-app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'signup.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'shared', 'login.html')));
+app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'shared', 'team-signup.html')));
 app.get('/create-account', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'free-trial.html')));
 app.get('/free-trial', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'free-trial.html')));
-app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'portal.html')));
-app.get('/review', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'review.html')));
-app.get('/record', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'record.html')));
+app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'dashboard.html')));
+app.get('/review', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'review.html')));
+app.get('/record', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'record.html')));
 app.get('/blueprint', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'style-blueprint.html')));
 app.get('/submit', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'submit-project.html')));
 app.get('/team-login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-login.html')));
-app.get('/team-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-signup.html')));
+app.get('/team-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'shared', 'team-signup.html')));
 app.get('/editor-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor-signup.html')));
-app.get('/team', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-index.html')));
+app.get('/team', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'index.html')));
 
 // ============================================
 // ADMIN PORTAL ROUTES
