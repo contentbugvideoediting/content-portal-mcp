@@ -116,7 +116,51 @@ app.get('/team-login', (req, res) => res.sendFile(path.join(__dirname, 'portal',
 app.get('/team-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-signup.html')));
 app.get('/editor-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor-signup.html')));
 app.get('/team', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-index.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'team-index.html'))); // Admin uses same view with different permissions
+
+// ============================================
+// ADMIN PORTAL ROUTES
+// ============================================
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'index.html')));
+app.get('/admin/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'dashboard.html')));
+app.get('/admin/clients', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'clients.html')));
+app.get('/admin/editors', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'editors.html')));
+app.get('/admin/projects', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'projects.html')));
+app.get('/admin/leads', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'leads.html')));
+app.get('/admin/sales', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'sales.html')));
+app.get('/admin/kpi', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'admin', 'kpi.html')));
+
+// ============================================
+// EDITOR PORTAL ROUTES
+// ============================================
+app.get('/editor', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'index.html')));
+app.get('/editor/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'dashboard.html')));
+app.get('/editor/clients', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'clients.html')));
+app.get('/editor/pipeline', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'pipeline.html')));
+app.get('/editor/chat', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'chat.html')));
+app.get('/editor/payouts', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'payouts.html')));
+app.get('/editor/leaderboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'leaderboard.html')));
+app.get('/editor/schedule', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'schedule.html')));
+app.get('/editor/meeting', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'editor', 'meeting.html')));
+
+// ============================================
+// CLIENT PORTAL ROUTES
+// ============================================
+app.get('/client', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'index.html')));
+app.get('/client/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'dashboard.html')));
+app.get('/client/pipeline', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'pipeline.html')));
+app.get('/client/chat', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'chat.html')));
+app.get('/client/blueprint', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'blueprint.html')));
+app.get('/client/submit', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'submit.html')));
+app.get('/client/review', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'review.html')));
+app.get('/client/record', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'record.html')));
+app.get('/client/storage', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'storage.html')));
+app.get('/client/store', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'client', 'store.html')));
+
+// ============================================
+// SHARED ROUTES
+// ============================================
+app.get('/shared/login', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'shared', 'login.html')));
+app.get('/shared/team-signup', (req, res) => res.sendFile(path.join(__dirname, 'portal', 'shared', 'team-signup.html')));
 
 // Root redirect to login
 app.get('/', (req, res) => res.redirect('/login'));
@@ -176,7 +220,7 @@ async function airtableUpdate(table, recordId, fields) {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.4.0-chat-airtable',
+  version: '3.5.0-admin-editor-client-portals',
   ts: Date.now(),
   services: {
     ghl: !!GHL_API_KEY,

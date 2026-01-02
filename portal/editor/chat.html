@@ -1,0 +1,3729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Inbox - Content Bug</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #050508;
+            --bg-secondary: #0a0a0f;
+            --bg-tertiary: #0f0f14;
+            --bg-hover: #16161d;
+            --bg-active: #1e1e28;
+            --border: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+            --yellow: #eab308;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg-primary);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-primary);
+        }
+
+        .chat-app {
+            display: flex;
+            height: 100%;
+        }
+
+        /* === SERVER/CHANNEL SIDEBAR === */
+        .channel-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .server-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .server-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .server-icon img {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+        }
+
+        .server-info h2 {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .server-stats {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .server-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .server-stat .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .server-stat .dot.online { background: var(--green); }
+        .server-stat .dot.total { background: var(--text-muted); }
+
+        /* Search */
+        .search-bar {
+            padding: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            padding-left: 36px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 12px center;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 0 12px 12px;
+        }
+
+        .filter-tab {
+            flex: 1;
+            padding: 8px 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: center;
+        }
+
+        .filter-tab:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .filter-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .filter-tab .count {
+            display: inline-block;
+            margin-left: 4px;
+            padding: 1px 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        .filter-tab:not(.active) .count {
+            background: var(--bg-active);
+        }
+
+        /* Channel List */
+        .channel-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px 12px;
+        }
+
+        .channel-section {
+            margin-bottom: 16px;
+        }
+
+        .channel-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            padding: 8px 8px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        .channel-section-title .count {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Client Channel Items */
+        .client-channel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 10px;
+            margin: 2px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+            position: relative;
+        }
+
+        .client-channel:hover {
+            background: var(--bg-hover);
+        }
+
+        .client-channel.active {
+            background: var(--bg-active);
+        }
+
+        .client-channel.unread {
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .client-channel.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .client-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .client-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .client-avatar .tier-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-secondary);
+            font-size: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .tier-badge.trial { background: var(--orange); }
+        .tier-badge.basic { background: var(--accent); }
+        .tier-badge.silver { background: linear-gradient(135deg, #6b7280, #9ca3af, #6b7280); background-size: 200% 200%; animation: silverShimmer 3s ease infinite; }
+        .tier-badge.gold { background: linear-gradient(135deg, #92710a, #d4a017, #fbbf24); background-size: 200% 200%; animation: goldFlow 4s ease infinite; }
+        .tier-badge.pro { background: linear-gradient(135deg, #4c1d95, #7c3aed, #a855f7); background-size: 200% 200%; animation: proFlow 5s ease infinite; }
+
+        /* Online indicator for client cards */
+        .client-online-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--green);
+            border-radius: 50%;
+            border: 2px solid var(--bg-secondary);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 5;
+        }
+
+        .client-channel.is-online .client-online-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .client-channel.is-online .client-online-indicator::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: onlinePing 2s ease-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes onlinePing {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Activity tooltip on hover (shows current page) */
+        .client-channel.is-online[data-activity]::after {
+            content: attr(data-activity);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 8px;
+            padding: 4px 8px;
+            background: rgba(59, 130, 246, 0.95);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .client-channel.is-online:hover[data-activity]::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Premium tier animations */
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        @keyframes goldFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes proFlow {
+            0% { background-position: 0% 50%; opacity: 0.9; }
+            50% { background-position: 100% 50%; opacity: 1; }
+            100% { background-position: 0% 50%; opacity: 0.9; }
+        }
+
+        @keyframes silverShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @keyframes tierGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Premium client channel cards with tier styling */
+        .client-channel.tier-gold {
+            border: 1px solid rgba(212, 160, 23, 0.15);
+            position: relative;
+        }
+
+        .client-channel.tier-gold::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(212, 160, 23, 0.03), transparent 60%);
+            pointer-events: none;
+        }
+
+        .client-channel.tier-gold:hover {
+            border-color: rgba(212, 160, 23, 0.25);
+            background: linear-gradient(135deg, rgba(212, 160, 23, 0.08), var(--bg-hover));
+        }
+
+        .client-channel.tier-pro {
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            position: relative;
+        }
+
+        .client-channel.tier-pro::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.04), transparent 60%);
+            pointer-events: none;
+        }
+
+        .client-channel.tier-pro:hover {
+            border-color: rgba(124, 58, 237, 0.25);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), var(--bg-hover));
+        }
+
+        .client-channel.tier-silver {
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .client-channel.tier-silver:hover {
+            border-color: rgba(148, 163, 184, 0.2);
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.05), var(--bg-hover));
+        }
+
+        /* Tier name badges (like Discord role tags next to name) */
+        .tier-name-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-left: 2px;
+            vertical-align: middle;
+        }
+
+        .tier-name-badge.trial {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .tier-name-badge.basic {
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .tier-name-badge.silver {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(156, 163, 175, 0.15));
+            color: #d1d5db;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            animation: silverShimmer 4s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        .tier-name-badge.gold {
+            background: linear-gradient(135deg, rgba(146, 113, 10, 0.2), rgba(212, 160, 23, 0.25), rgba(251, 191, 36, 0.2));
+            color: #fbbf24;
+            border: 1px solid rgba(212, 160, 23, 0.35);
+            animation: goldFlow 4s ease infinite;
+            background-size: 200% 200%;
+            text-shadow: 0 0 4px rgba(251, 191, 36, 0.2);
+        }
+
+        .tier-name-badge.pro {
+            background: linear-gradient(135deg, rgba(76, 29, 149, 0.25), rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.15));
+            color: #c4b5fd;
+            border: 1px solid rgba(124, 58, 237, 0.35);
+            animation: proFlow 5s ease infinite;
+            background-size: 200% 200%;
+            text-shadow: 0 0 4px rgba(168, 85, 247, 0.2);
+        }
+
+        .client-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .client-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .client-preview {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+
+        .client-channel.unread .client-name {
+            color: #fff;
+        }
+
+        .client-channel.unread .client-preview {
+            color: var(--text-secondary);
+        }
+
+        .client-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .client-time {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .client-channel.unread .client-time {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .unread-badge {
+            background: var(--accent);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Client Badges (alerts) */
+        .client-badges {
+            display: flex;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .client-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .client-badge.trial { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .client-badge.trial-step { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .client-badge.late { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        .client-badge.ghost-7d { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+        .client-badge.ghost-14d { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        .client-badge.payment { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        .client-badge.new { background: rgba(34, 197, 94, 0.15); color: var(--green); animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* User footer */
+        .user-footer {
+            padding: 10px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+
+        .user-panel:hover {
+            background: var(--bg-hover);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar .status-dot {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-tertiary);
+        }
+
+        .status-dot.online { background: var(--green); }
+        .status-dot.away { background: var(--orange); }
+        .status-dot.offline { background: var(--text-muted); }
+
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .user-role.admin { color: var(--purple); }
+        .user-role.owner { color: var(--orange); }
+        .user-role.editor { color: var(--accent); }
+
+        /* === MAIN CHAT AREA === */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            min-width: 0;
+        }
+
+        .chat-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-primary);
+        }
+
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .chat-header-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-header-info {
+            flex: 1;
+        }
+
+        .chat-header-info h3 {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-header-info h3 .tier-label {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .tier-label.trial { background: rgba(245, 158, 11, 0.15); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.2); }
+        .tier-label.basic { background: rgba(59, 130, 246, 0.15); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .tier-label.silver {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(156, 163, 175, 0.15));
+            color: #d1d5db;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            animation: silverShimmer 4s ease infinite;
+            background-size: 200% 200%;
+        }
+        .tier-label.gold {
+            background: linear-gradient(135deg, rgba(146, 113, 10, 0.2), rgba(212, 160, 23, 0.25), rgba(251, 191, 36, 0.2));
+            color: #fbbf24;
+            border: 1px solid rgba(212, 160, 23, 0.35);
+            animation: goldFlow 4s ease infinite;
+            background-size: 200% 200%;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+        }
+        .tier-label.pro {
+            background: linear-gradient(135deg, rgba(76, 29, 149, 0.25), rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.15));
+            color: #c4b5fd;
+            border: 1px solid rgba(124, 58, 237, 0.35);
+            animation: proFlow 5s ease infinite;
+            background-size: 200% 200%;
+            text-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+
+        .chat-header-info span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .header-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        .header-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+
+        .no-channel-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .no-channel-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .no-channel-icon svg {
+            width: 36px;
+            height: 36px;
+            color: var(--text-muted);
+        }
+
+        .no-channel-selected h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .no-channel-selected p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 300px;
+        }
+
+        .message-date-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .message-date-divider::before,
+        .message-date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .message-date-divider span {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            padding: 6px 0;
+            border-radius: 6px;
+        }
+
+        .message:hover {
+            background: var(--bg-hover);
+            margin: 0 -12px;
+            padding: 6px 12px;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-avatar.team { background: var(--accent); }
+        .message-avatar.client { background: var(--green); }
+        .message-avatar.admin { background: var(--purple); }
+        .message-avatar.owner { background: var(--orange); }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .message-author {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message-author.team { color: var(--accent); }
+        .message-author.client { color: var(--green); }
+        .message-author.admin { color: var(--purple); }
+        .message-author.owner { color: var(--orange); }
+
+        .message-role-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .message-role-badge.editor { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .message-role-badge.admin { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .message-role-badge.owner { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .message-role-badge.client { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .message-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        /* Chat Input */
+        .chat-input-area {
+            padding: 16px 20px;
+            background: var(--bg-primary);
+        }
+
+        .chat-input-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .chat-input-container:focus-within {
+            border-color: var(--accent);
+        }
+
+        .chat-input-row {
+            display: flex;
+            align-items: flex-end;
+            padding: 10px 14px;
+            gap: 10px;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 4px;
+            padding-bottom: 4px;
+        }
+
+        .input-action {
+            padding: 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .input-action:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .input-action svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            min-height: 24px;
+            max-height: 120px;
+            padding: 4px 0;
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            padding: 8px 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            margin-bottom: 4px;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .send-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* === MEMBERS SIDEBAR === */
+        .members-sidebar {
+            width: 240px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .members-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .members-header h4 {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .members-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+        }
+
+        .member-category {
+            margin-bottom: 16px;
+        }
+
+        .member-category-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            margin-bottom: 6px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .member-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-avatar .status-dot {
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-secondary);
+        }
+
+        .member-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-item:hover .member-name {
+            color: var(--text-primary);
+        }
+
+        /* Quick Actions Panel */
+        .quick-actions {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .quick-action-btn {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.15s;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .quick-action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* New Trial Notification Popup */
+        .trial-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--green);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .trial-notification.show {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .trial-notification-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trial-notification-icon svg {
+            width: 22px;
+            height: 22px;
+            color: var(--green);
+        }
+
+        .trial-notification-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .trial-notification-content p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Live Project Timer (visible to team/admin only) */
+        .project-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.95), rgba(15, 15, 22, 0.9));
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 12px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-timer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--purple), var(--accent));
+            background-size: 200% 100%;
+            animation: timerGlow 2s ease infinite;
+        }
+
+        @keyframes timerGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .project-timer-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .project-timer-icon svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent);
+        }
+
+        .project-timer-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-timer-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .project-timer-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .project-timer-clock {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-segment {
+            text-align: center;
+        }
+
+        .timer-segment .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            min-width: 28px;
+            display: block;
+        }
+
+        .timer-segment .label {
+            font-size: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .timer-divider {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .timer-status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .timer-status.on-track {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        .timer-status.at-risk {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--orange);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .timer-status.overdue {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* DM Permission Indicator */
+        .dm-restricted {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            border-radius: 10px;
+            margin: 12px 20px;
+        }
+
+        .dm-restricted svg {
+            width: 18px;
+            height: 18px;
+            color: var(--red);
+        }
+
+        .dm-restricted span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Role badge in messages */
+        .message-role-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 4px;
+        }
+
+        .trial-notification-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bg-active);
+        }
+
+        /* Mobile */
+        @media (max-width: 1024px) {
+            .members-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .channel-sidebar {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .channel-sidebar {
+                display: none;
+            }
+        }
+
+        /* ============================================
+           ADMIN/OWNER RIGHT-CLICK QUICK MENU
+           ============================================ */
+        .quick-menu {
+            position: fixed;
+            z-index: 10000;
+            background: linear-gradient(145deg, rgba(15, 15, 22, 0.98), rgba(10, 10, 15, 0.98));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 6px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5),
+                        0 0 0 1px rgba(59, 130, 246, 0.1),
+                        0 0 60px -10px rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(-5px);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .quick-menu.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        .quick-menu::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 60%);
+            pointer-events: none;
+        }
+
+        .quick-menu-header {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 4px;
+        }
+
+        .quick-menu-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-menu-section {
+            padding: 4px 0;
+        }
+
+        .quick-menu-section:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 4px;
+        }
+
+        .quick-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            position: relative;
+        }
+
+        .quick-menu-item:hover {
+            background: rgba(59, 130, 246, 0.12);
+        }
+
+        .quick-menu-item:active {
+            transform: scale(0.98);
+        }
+
+        .quick-menu-item.danger:hover {
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .quick-menu-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .quick-menu-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--accent);
+        }
+
+        .quick-menu-item.danger .quick-menu-icon {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .quick-menu-item.danger .quick-menu-icon svg {
+            color: var(--red);
+        }
+
+        .quick-menu-item.zoom .quick-menu-icon {
+            background: rgba(45, 140, 255, 0.15);
+        }
+
+        .quick-menu-item.zoom .quick-menu-icon svg {
+            color: #2d8cff;
+        }
+
+        .quick-menu-item.success .quick-menu-icon {
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .quick-menu-item.success .quick-menu-icon svg {
+            color: var(--green);
+        }
+
+        .quick-menu-text {
+            flex: 1;
+        }
+
+        .quick-menu-text .label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .quick-menu-text .hint {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .quick-menu-item.danger .quick-menu-text .label {
+            color: var(--red);
+        }
+
+        .quick-menu-shortcut {
+            font-size: 10px;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Zoom meeting loading state */
+        .quick-menu-item.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .quick-menu-item.loading .quick-menu-icon {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ============================================
+           3D FLOATING ADMIN MINI-TOOLBAR
+           Premium hover-follow toolbar for quick actions
+           ============================================ */
+        .admin-mini-toolbar {
+            position: fixed;
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -100%) translateY(-20px) perspective(800px) rotateX(10deg);
+            transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .admin-mini-toolbar.visible {
+            opacity: 1;
+            transform: translate(-50%, -100%) translateY(-15px) perspective(800px) rotateX(0deg);
+            pointer-events: auto;
+        }
+
+        .mini-toolbar-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(12, 12, 18, 0.98));
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(59, 130, 246, 0.1),
+                        0 0 40px -15px rgba(59, 130, 246, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .mini-toolbar-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: radial-gradient(ellipse at top, rgba(59, 130, 246, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Arrow pointer */
+        .mini-toolbar-container::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, transparent 50%, rgba(12, 12, 18, 0.98) 50%);
+            border-right: 1px solid rgba(59, 130, 246, 0.25);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.25);
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        .mini-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .mini-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .mini-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mini-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .mini-btn.zoom-btn {
+            background: linear-gradient(135deg, rgba(45, 140, 255, 0.15), rgba(45, 140, 255, 0.08));
+        }
+
+        .mini-btn.zoom-btn:hover {
+            background: rgba(45, 140, 255, 0.25);
+            color: #2d8cff;
+        }
+
+        .mini-btn.calendar-btn svg {
+            color: var(--orange);
+        }
+
+        .mini-btn.calendar-btn:hover {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        /* Tooltip for mini buttons */
+        .mini-btn::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+        }
+
+        .mini-btn:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        .mini-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 0 4px;
+        }
+
+        /* Client name in toolbar */
+        .mini-client-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            padding: 0 8px;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Calendar Quick View Popup */
+        .calendar-popup {
+            position: fixed;
+            z-index: 10001;
+            background: linear-gradient(145deg, rgba(15, 15, 22, 0.98), rgba(10, 10, 15, 0.98));
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            width: 280px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5),
+                        0 0 60px -15px rgba(245, 158, 11, 0.2);
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(10px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .calendar-popup.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        .calendar-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .calendar-popup-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .calendar-popup-close {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-popup-close:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .calendar-events {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .calendar-event {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .calendar-event:hover {
+            background: rgba(245, 158, 11, 0.15);
+            transform: translateX(4px);
+        }
+
+        .calendar-event:last-child {
+            margin-bottom: 0;
+        }
+
+        .calendar-event-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--orange);
+            min-width: 50px;
+        }
+
+        .calendar-event-title {
+            flex: 1;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .calendar-event-join {
+            padding: 4px 10px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--orange);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .calendar-event-join:hover {
+            background: var(--orange);
+            color: #000;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-app">
+        <!-- Channel Sidebar -->
+        <aside class="channel-sidebar">
+            <div class="server-header">
+                <div class="server-icon">
+                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="CB">
+                </div>
+                <div class="server-info">
+                    <h2>Team Inbox</h2>
+                    <div class="server-stats" id="serverStats">
+                        <span class="server-stat"><span class="dot online"></span> <span id="onlineCount">0</span> online</span>
+                        <span class="server-stat"><span class="dot total"></span> <span id="memberCount">0</span> clients</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search clients..." oninput="filterChannels()">
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">
+                    All <span class="count" id="allCount">0</span>
+                </button>
+                <button class="filter-tab" data-filter="unread" onclick="setFilter('unread')">
+                    Unread <span class="count" id="unreadCount">0</span>
+                </button>
+                <button class="filter-tab" data-filter="alerts" onclick="setFilter('alerts')">
+                    Alerts <span class="count" id="alertsCount">0</span>
+                </button>
+            </div>
+
+            <div class="channel-list" id="channelList">
+                <!-- Client channels populated dynamically -->
+            </div>
+
+            <!-- User Footer -->
+            <div class="user-footer">
+                <div class="user-panel">
+                    <div class="user-avatar" id="currentUserAvatar">
+                        ?
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name" id="currentUserName">Loading...</div>
+                        <div class="user-role" id="currentUserRole">Editor</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <div class="chat-header" id="chatHeader" style="display: none;">
+                <div class="chat-header-avatar" id="chatHeaderAvatar">?</div>
+                <div class="chat-header-info">
+                    <h3>
+                        <span id="chatHeaderName">Select a client</span>
+                        <span class="tier-label" id="chatHeaderTier" style="display: none;">Trial</span>
+                    </h3>
+                    <span id="chatHeaderMeta">Choose a client from the sidebar to view messages</span>
+                </div>
+                <div class="chat-header-actions">
+                    <button class="header-btn" onclick="viewClientProfile()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Profile
+                    </button>
+                    <button class="header-btn" onclick="viewClientProjects()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 3v18"/>
+                        </svg>
+                        Projects
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="no-channel-selected" id="noChannelSelected">
+                    <div class="no-channel-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <h3>Team Inbox</h3>
+                    <p>Select a client channel from the sidebar to view and respond to their messages.</p>
+                </div>
+                <div id="messageContainer" style="display: none;"></div>
+            </div>
+
+            <div class="chat-input-area" id="chatInputArea" style="display: none;">
+                <div class="chat-input-container">
+                    <div class="chat-input-row">
+                        <div class="input-actions">
+                            <button class="input-action" title="Attach file">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                </svg>
+                            </button>
+                            <button class="input-action" title="Quick responses">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="9" x2="20" y2="9"/>
+                                    <line x1="4" y1="15" x2="20" y2="15"/>
+                                    <line x1="10" y1="3" x2="8" y2="21"/>
+                                    <line x1="16" y1="3" x2="14" y2="21"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <textarea
+                            class="chat-input"
+                            id="chatInput"
+                            placeholder="Reply to client..."
+                            rows="1"
+                        ></textarea>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Members Sidebar (for selected channel) -->
+        <aside class="members-sidebar" id="membersSidebar" style="display: none;">
+            <div class="members-header">
+                <h4>Channel Members</h4>
+            </div>
+            <div class="members-list" id="membersList">
+                <!-- Members populated dynamically -->
+            </div>
+            <div class="quick-actions">
+                <button class="quick-action-btn" onclick="viewBlueprint()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    View Blueprint
+                </button>
+                <button class="quick-action-btn" onclick="viewStorage()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    View Storage
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- New Trial Notification -->
+    <div class="trial-notification" id="trialNotification">
+        <button class="trial-notification-close" onclick="hideTrialNotification()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <div class="trial-notification-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+        </div>
+        <div class="trial-notification-content">
+            <h4 id="trialNotificationTitle">New Trial User!</h4>
+            <p id="trialNotificationText">John Doe just started their free trial</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const MCP_SERVER = 'https://portalv2.contentbug.io';
+        const POLL_INTERVAL = 3000;
+
+        // ============================================
+        // STATE
+        // ============================================
+        let currentUser = {
+            email: '',
+            name: '',
+            role: 'editor',
+            avatar: null
+        };
+
+        let channels = [];
+        let filteredChannels = [];
+        let currentFilter = 'all';
+        let currentChannel = null;
+        let messages = [];
+        let lastMessageId = null;
+        let pollTimer = null;
+        let teamMembers = [];
+
+        // Online clients tracking
+        let onlineClientsMap = new Map();
+        let presenceTimer = null;
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load user from localStorage
+            currentUser.email = localStorage.getItem('cb_team_email') || '';
+            currentUser.name = localStorage.getItem('cb_team_name') || 'Team Member';
+            currentUser.role = localStorage.getItem('cb_team_role') || 'editor';
+
+            updateUserUI();
+            updateUIForRole(); // Apply role-based visibility
+            await loadChannels();
+            await loadTeamMembers();
+            setupInputHandlers();
+            startPolling();
+            startPresencePolling(); // Poll for online clients
+
+            // Check for new trial notifications
+            checkNewTrials();
+        });
+
+        // ============================================
+        // PRESENCE POLLING - Track Online Clients
+        // ============================================
+        async function fetchOnlineClients() {
+            try {
+                const response = await fetch(`${MCP_SERVER}/api/presence/online`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const onlineUsers = data.onlineUsers || [];
+
+                    // Update the map of online clients
+                    onlineClientsMap.clear();
+                    onlineUsers.forEach(user => {
+                        if (user.role === 'client') {
+                            onlineClientsMap.set(user.email.toLowerCase(), {
+                                name: user.name,
+                                currentPage: user.currentPage,
+                                timestamp: user.timestamp
+                            });
+                        }
+                    });
+
+                    // Update client cards with online status
+                    updateClientOnlineStatus();
+                }
+            } catch (err) {
+                console.log('[Presence] Failed to fetch online clients:', err.message);
+            }
+        }
+
+        function updateClientOnlineStatus() {
+            document.querySelectorAll('.client-channel[data-client-email]').forEach(card => {
+                const clientEmail = card.dataset.clientEmail?.toLowerCase();
+                if (!clientEmail) return;
+
+                const isOnline = onlineClientsMap.has(clientEmail);
+                const clientData = onlineClientsMap.get(clientEmail);
+
+                card.classList.toggle('is-online', isOnline);
+
+                if (isOnline && clientData?.currentPage) {
+                    card.dataset.activity = clientData.currentPage;
+                } else {
+                    delete card.dataset.activity;
+                }
+            });
+        }
+
+        function startPresencePolling() {
+            // Initial fetch
+            fetchOnlineClients();
+
+            // Poll every 15 seconds
+            presenceTimer = setInterval(fetchOnlineClients, 15000);
+        }
+
+        // ============================================
+        // USER UI
+        // ============================================
+        function updateUserUI() {
+            document.getElementById('currentUserName').textContent = currentUser.name;
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('currentUserAvatar').innerHTML = `
+                ${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="">` : initials}
+                <span class="status-dot online"></span>
+            `;
+
+            const roleEl = document.getElementById('currentUserRole');
+            roleEl.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            roleEl.className = 'user-role ' + currentUser.role;
+        }
+
+        // ============================================
+        // LOAD CHANNELS
+        // ============================================
+        async function loadChannels() {
+            try {
+                const response = await fetch(`${MCP_SERVER}/inbox`, {
+                    headers: {
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    channels = data.channels || [];
+                    updateCounts();
+                    filterChannels();
+                }
+            } catch (err) {
+                console.error('Failed to load channels:', err);
+                loadDemoChannels();
+            }
+        }
+
+        function loadDemoChannels() {
+            // Demo data - editors will only see assigned clients, admin/owner see all
+            channels = [
+                {
+                    channel_id: 'demo-1',
+                    client_name: 'Sarah Johnson',
+                    client_email: 'sarah@example.com',
+                    client_tier: 'gold',
+                    client_status: 'active',
+                    trial_step: null,
+                    last_message: 'Thanks for the edits! Looking great.',
+                    last_message_at: new Date(Date.now() - 300000).toISOString(),
+                    unread_team: 2,
+                    badges: [],
+                    assigned_editor: currentUser.email // Assigned to current user for demo
+                },
+                {
+                    channel_id: 'demo-2',
+                    client_name: 'Mike Wilson',
+                    client_email: 'mike@example.com',
+                    client_tier: 'trial',
+                    client_status: 'active',
+                    trial_step: 2,
+                    last_message: 'Just submitted my blueprint!',
+                    last_message_at: new Date(Date.now() - 600000).toISOString(),
+                    unread_team: 1,
+                    badges: ['trial-step'],
+                    assigned_editor: currentUser.email // Assigned to current user for demo
+                },
+                {
+                    channel_id: 'demo-3',
+                    client_name: 'Emily Chen',
+                    client_email: 'emily@example.com',
+                    client_tier: 'pro',
+                    client_status: 'active',
+                    trial_step: null,
+                    last_message: 'Can we jump on a quick call?',
+                    last_message_at: new Date(Date.now() - 86400000).toISOString(),
+                    unread_team: 0,
+                    badges: ['ghost-7d'],
+                    assigned_editor: 'other-editor@contentbug.io' // Different editor
+                },
+                {
+                    channel_id: 'demo-4',
+                    client_name: 'Alex Thompson',
+                    client_email: 'alex@example.com',
+                    client_tier: 'silver',
+                    client_status: 'payment_failed',
+                    trial_step: null,
+                    last_message: 'My card got declined...',
+                    last_message_at: new Date(Date.now() - 172800000).toISOString(),
+                    unread_team: 3,
+                    badges: ['payment'],
+                    assigned_editor: currentUser.email // Assigned to current user
+                },
+                {
+                    channel_id: 'demo-5',
+                    client_name: 'Jessica Lee',
+                    client_email: 'jessica@example.com',
+                    client_tier: 'basic',
+                    client_status: 'active',
+                    trial_step: null,
+                    last_message: 'Approved! Great work as always.',
+                    last_message_at: new Date(Date.now() - 7200000).toISOString(),
+                    unread_team: 0,
+                    assigned_editor: 'other-editor@contentbug.io', // Different editor
+                    badges: []
+                },
+                {
+                    channel_id: 'demo-6',
+                    client_name: 'David Martinez',
+                    client_email: 'david@example.com',
+                    client_tier: 'trial',
+                    client_status: 'active',
+                    trial_step: 1,
+                    last_message: null,
+                    last_message_at: new Date(Date.now() - 60000).toISOString(),
+                    unread_team: 0,
+                    badges: ['new', 'trial-step'],
+                    assigned_editor: null // Unassigned - visible to admin/owner only
+                }
+            ];
+            updateCounts();
+            updateUIForRole();
+            filterChannels();
+        }
+
+        function updateCounts() {
+            const unreadChannels = channels.filter(c => c.unread_team > 0);
+            const alertChannels = channels.filter(c => c.badges && c.badges.length > 0);
+
+            document.getElementById('allCount').textContent = channels.length;
+            document.getElementById('unreadCount').textContent = unreadChannels.length;
+            document.getElementById('alertsCount').textContent = alertChannels.length;
+
+            // Hype up the numbers - total community (like Discord)
+            const baseMembers = 389; // Base community size
+            const totalMembers = baseMembers + channels.length;
+            const onlineNow = Math.floor(totalMembers * 0.15) + Math.floor(Math.random() * 10); // ~15% online
+
+            document.getElementById('memberCount').textContent = totalMembers;
+            document.getElementById('onlineCount').textContent = onlineNow;
+        }
+
+        // Role-based UI adjustments
+        function updateUIForRole() {
+            const isAdmin = currentUser.role === 'admin' || currentUser.role === 'owner';
+
+            // Server stats visible to all (hyped numbers)
+            const serverStats = document.getElementById('serverStats');
+            if (serverStats) {
+                serverStats.style.display = ''; // Always show stats
+            }
+
+            // Editors see filtered view, admin/owner see all
+            if (!isAdmin) {
+                // Update header text for editors
+                const serverInfo = document.querySelector('.server-info h2');
+                if (serverInfo) {
+                    serverInfo.textContent = 'My Clients';
+                }
+            }
+        }
+
+        // ============================================
+        // FILTER & SEARCH
+        // ============================================
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.filter === filter);
+            });
+            filterChannels();
+        }
+
+        function filterChannels() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            filteredChannels = channels.filter(channel => {
+                // Search filter
+                if (searchTerm && !channel.client_name.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+
+                // Tab filter
+                if (currentFilter === 'unread' && channel.unread_team === 0) {
+                    return false;
+                }
+                if (currentFilter === 'alerts' && (!channel.badges || channel.badges.length === 0)) {
+                    return false;
+                }
+
+                // Role-based filter (editors only see assigned clients)
+                if (currentUser.role === 'editor' && channel.assigned_editor && channel.assigned_editor !== currentUser.email) {
+                    return false; // Hide channels not assigned to this editor
+                }
+
+                return true;
+            });
+
+            // Sort by unread first, then by last message time
+            filteredChannels.sort((a, b) => {
+                if (a.unread_team > 0 && b.unread_team === 0) return -1;
+                if (b.unread_team > 0 && a.unread_team === 0) return 1;
+                return new Date(b.last_message_at) - new Date(a.last_message_at);
+            });
+
+            renderChannelList();
+        }
+
+        function renderChannelList() {
+            const container = document.getElementById('channelList');
+
+            if (filteredChannels.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                        <p style="font-size: 13px;">No channels found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by tier/status for organization
+            const trialChannels = filteredChannels.filter(c => c.client_tier === 'trial');
+            const activeChannels = filteredChannels.filter(c => c.client_tier !== 'trial');
+
+            let html = '';
+
+            // Trial users section
+            if (trialChannels.length > 0) {
+                html += `
+                    <div class="channel-section">
+                        <div class="channel-section-title">
+                            <span>Free Trial Users</span>
+                            <span class="count">${trialChannels.length}</span>
+                        </div>
+                        ${trialChannels.map(c => renderChannelItem(c)).join('')}
+                    </div>
+                `;
+            }
+
+            // Active clients section
+            if (activeChannels.length > 0) {
+                html += `
+                    <div class="channel-section">
+                        <div class="channel-section-title">
+                            <span>Active Clients</span>
+                            <span class="count">${activeChannels.length}</span>
+                        </div>
+                        ${activeChannels.map(c => renderChannelItem(c)).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderChannelItem(channel) {
+            const initials = channel.client_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            const isUnread = channel.unread_team > 0;
+            const isActive = currentChannel && currentChannel.channel_id === channel.channel_id;
+            const timeAgo = formatTimeAgo(channel.last_message_at);
+
+            let badgesHtml = '';
+            if (channel.badges && channel.badges.length > 0) {
+                badgesHtml = channel.badges.map(badge => {
+                    const labels = {
+                        'new': 'NEW',
+                        'trial': 'TRIAL',
+                        'trial-step': `Step ${channel.trial_step}`,
+                        'late': 'LATE',
+                        'ghost-7d': '7D',
+                        'ghost-14d': '14D',
+                        'payment': 'PAYMENT'
+                    };
+                    return `<span class="client-badge ${badge}">${labels[badge] || badge}</span>`;
+                }).join('');
+            }
+
+            // Add tier class for premium styling (gold, pro, silver get special borders)
+            const tierClass = ['gold', 'pro', 'silver'].includes(channel.client_tier) ? `tier-${channel.client_tier}` : '';
+
+            // Check if client is online
+            const isOnline = onlineClientsMap.has(channel.client_email?.toLowerCase());
+            const onlineClass = isOnline ? 'is-online' : '';
+            const clientActivity = isOnline ? onlineClientsMap.get(channel.client_email?.toLowerCase())?.currentPage || '' : '';
+
+            return `
+                <div class="client-channel ${isUnread ? 'unread' : ''} ${isActive ? 'active' : ''} ${tierClass} ${onlineClass}"
+                     onclick="selectChannel('${channel.channel_id}')"
+                     data-channel-id="${channel.channel_id}"
+                     data-client-email="${channel.client_email || ''}"
+                     ${clientActivity ? `data-activity="${clientActivity}"` : ''}>
+                    <div class="client-avatar">
+                        ${initials}
+                        <span class="tier-badge ${channel.client_tier}"></span>
+                        <span class="client-online-indicator"></span>
+                    </div>
+                    <div class="client-info">
+                        <div class="client-name">
+                            ${channel.client_name}
+                            <span class="tier-name-badge ${channel.client_tier}">${channel.client_tier.toUpperCase()}</span>
+                            ${badgesHtml ? `<span class="client-badges">${badgesHtml}</span>` : ''}
+                        </div>
+                        <div class="client-preview">
+                            ${channel.last_message || 'No messages yet'}
+                        </div>
+                    </div>
+                    <div class="client-meta">
+                        <span class="client-time">${timeAgo}</span>
+                        ${isUnread ? `<span class="unread-badge">${channel.unread_team}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // SELECT CHANNEL
+        // ============================================
+        async function selectChannel(channelId) {
+            currentChannel = channels.find(c => c.channel_id === channelId) || filteredChannels.find(c => c.channel_id === channelId);
+            if (!currentChannel) return;
+
+            // Update sidebar active state
+            document.querySelectorAll('.client-channel').forEach(el => {
+                el.classList.toggle('active', el.dataset.channelId === channelId);
+                if (el.dataset.channelId === channelId) {
+                    el.classList.remove('unread');
+                }
+            });
+
+            // Show chat area
+            document.getElementById('noChannelSelected').style.display = 'none';
+            document.getElementById('messageContainer').style.display = 'block';
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('chatInputArea').style.display = 'block';
+            document.getElementById('membersSidebar').style.display = 'flex';
+
+            // Update header
+            const initials = currentChannel.client_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('chatHeaderAvatar').innerHTML = initials;
+            document.getElementById('chatHeaderName').textContent = currentChannel.client_name;
+
+            const tierLabel = document.getElementById('chatHeaderTier');
+            tierLabel.textContent = currentChannel.client_tier.charAt(0).toUpperCase() + currentChannel.client_tier.slice(1);
+            tierLabel.className = 'tier-label ' + currentChannel.client_tier;
+            tierLabel.style.display = 'inline-block';
+
+            // Meta info
+            let metaText = currentChannel.client_email;
+            if (currentChannel.client_tier === 'trial' && currentChannel.trial_step) {
+                metaText += ` • Trial Step ${currentChannel.trial_step}/4`;
+            }
+            document.getElementById('chatHeaderMeta').textContent = metaText;
+
+            // Update input placeholder
+            document.getElementById('chatInput').placeholder = `Reply to ${currentChannel.client_name.split(' ')[0]}...`;
+
+            // Load messages
+            await loadMessages(channelId);
+
+            // Load channel members
+            renderChannelMembers();
+
+            // Mark as read
+            markAsRead(channelId);
+        }
+
+        async function loadMessages(channelId) {
+            try {
+                const response = await fetch(`${MCP_SERVER}/chat/messages/${channelId}`, {
+                    headers: {
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    messages = data.messages || [];
+                    renderMessages();
+
+                    if (messages.length > 0) {
+                        lastMessageId = messages[messages.length - 1].message_id;
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load messages:', err);
+                loadDemoMessages();
+            }
+        }
+
+        function loadDemoMessages() {
+            messages = [
+                {
+                    message_id: 'msg-1',
+                    sender_name: currentChannel.client_name,
+                    sender_email: currentChannel.client_email,
+                    sender_role: 'client',
+                    content: currentChannel.last_message || 'Hello!',
+                    created_at: currentChannel.last_message_at
+                }
+            ];
+
+            if (currentChannel.client_tier !== 'trial') {
+                messages.unshift({
+                    message_id: 'msg-0',
+                    sender_name: 'Content Bug Team',
+                    sender_email: 'team@contentbug.io',
+                    sender_role: 'editor',
+                    content: `Welcome ${currentChannel.client_name.split(' ')[0]}! We're excited to work with you. Feel free to reach out anytime.`,
+                    created_at: new Date(Date.now() - 86400000 * 7).toISOString()
+                });
+            }
+
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messageContainer');
+
+            // Generate project timer HTML (visible to team/admin only)
+            const projectTimerHtml = renderProjectTimer();
+
+            if (messages.length === 0) {
+                container.innerHTML = `
+                    ${projectTimerHtml}
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 16px; opacity: 0.5;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <p style="font-size: 14px;">No messages yet</p>
+                        <p style="font-size: 12px; margin-top: 4px;">Send the first message to start the conversation</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = projectTimerHtml;
+            let lastDate = null;
+
+            messages.forEach(msg => {
+                const msgDate = new Date(msg.created_at).toLocaleDateString();
+
+                if (msgDate !== lastDate) {
+                    html += `
+                        <div class="message-date-divider">
+                            <span>${formatDate(msg.created_at)}</span>
+                        </div>
+                    `;
+                    lastDate = msgDate;
+                }
+
+                const roleClass = msg.sender_role || 'client';
+                const initials = msg.sender_name ? msg.sender_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+
+                // Get role icon
+                const roleIcons = {
+                    owner: '<svg class="message-role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+                    admin: '<svg class="message-role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+                    editor: '<svg class="message-role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+                    client: ''
+                };
+
+                html += `
+                    <div class="message">
+                        <div class="message-avatar ${roleClass}">
+                            ${msg.sender_avatar ? `<img src="${msg.sender_avatar}" alt="">` : initials}
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author ${roleClass}">${msg.sender_name || 'Unknown'}</span>
+                                <span class="message-role-badge ${roleClass}">${roleIcons[roleClass] || ''}${roleClass.charAt(0).toUpperCase() + roleClass.slice(1)}</span>
+                                <span class="message-time">${formatTime(msg.created_at)}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(msg.content)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            scrollToBottom();
+
+            // Start timer update interval
+            startProjectTimerUpdates();
+        }
+
+        // Live Project Timer for team/admin
+        function renderProjectTimer() {
+            if (!currentChannel) return '';
+
+            // Demo project data - would come from actual project data
+            const project = {
+                title: currentChannel.client_name + "'s Latest Project",
+                submitted_at: new Date(Date.now() - (Math.random() * 86400000 * 2)), // Random 0-2 days ago
+                due_at: new Date(Date.now() + (Math.random() * 86400000 * 3)), // Random 0-3 days from now
+                tier: currentChannel.client_tier,
+                status: 'in_progress'
+            };
+
+            // Calculate time remaining
+            const now = new Date();
+            const dueTime = project.due_at;
+            const diff = dueTime - now;
+
+            const isOverdue = diff < 0;
+            const isAtRisk = diff > 0 && diff < 86400000; // Less than 24 hours
+            const statusClass = isOverdue ? 'overdue' : (isAtRisk ? 'at-risk' : 'on-track');
+            const statusLabel = isOverdue ? 'Overdue' : (isAtRisk ? 'At Risk' : 'On Track');
+
+            const absDiff = Math.abs(diff);
+            const hours = Math.floor(absDiff / 3600000);
+            const minutes = Math.floor((absDiff % 3600000) / 60000);
+            const seconds = Math.floor((absDiff % 60000) / 1000);
+
+            return `
+                <div class="project-timer" id="projectTimer">
+                    <div class="project-timer-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="project-timer-info">
+                        <div class="project-timer-title">Active Project: ${currentChannel.client_tier.toUpperCase()} Edit</div>
+                        <div class="project-timer-subtitle">${isOverdue ? 'Time overdue' : 'Time remaining until delivery'}</div>
+                    </div>
+                    <div class="project-timer-clock" id="timerClock" data-due="${dueTime.toISOString()}">
+                        <div class="timer-segment">
+                            <span class="value" id="timerHours">${String(hours).padStart(2, '0')}</span>
+                            <span class="label">HRS</span>
+                        </div>
+                        <span class="timer-divider">:</span>
+                        <div class="timer-segment">
+                            <span class="value" id="timerMinutes">${String(minutes).padStart(2, '0')}</span>
+                            <span class="label">MIN</span>
+                        </div>
+                        <span class="timer-divider">:</span>
+                        <div class="timer-segment">
+                            <span class="value" id="timerSeconds">${String(seconds).padStart(2, '0')}</span>
+                            <span class="label">SEC</span>
+                        </div>
+                    </div>
+                    <span class="timer-status ${statusClass}">${statusLabel}</span>
+                </div>
+            `;
+        }
+
+        let timerInterval = null;
+
+        function startProjectTimerUpdates() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                const timerClock = document.getElementById('timerClock');
+                if (!timerClock) return;
+
+                const dueTime = new Date(timerClock.dataset.due);
+                const now = new Date();
+                const diff = dueTime - now;
+                const absDiff = Math.abs(diff);
+
+                const hours = Math.floor(absDiff / 3600000);
+                const minutes = Math.floor((absDiff % 3600000) / 60000);
+                const seconds = Math.floor((absDiff % 60000) / 1000);
+
+                document.getElementById('timerHours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('timerMinutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('timerSeconds').textContent = String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // DM Permission Check - Clients can DM admin/owner but not editors
+        function canSendDM(senderRole, targetRole) {
+            // Admin and owners can DM anyone
+            if (senderRole === 'admin' || senderRole === 'owner') {
+                return true;
+            }
+            // Editors can DM clients, admins, and owners
+            if (senderRole === 'editor') {
+                return ['client', 'admin', 'owner'].includes(targetRole);
+            }
+            // Clients can DM admin and owner, but NOT editors directly
+            if (senderRole === 'client') {
+                return ['admin', 'owner'].includes(targetRole);
+            }
+            return false;
+        }
+
+        function renderChannelMembers() {
+            const container = document.getElementById('membersList');
+
+            // Get assigned team members and the client
+            const members = [
+                { name: currentChannel.client_name, role: 'client', status: 'online' }
+            ];
+
+            // Add team members
+            teamMembers.forEach(tm => {
+                if (currentUser.role === 'admin' || currentUser.role === 'owner' || tm.email === currentUser.email) {
+                    members.push(tm);
+                }
+            });
+
+            let html = '';
+
+            // Client section
+            html += `
+                <div class="member-category">
+                    <div class="member-category-title">Client</div>
+                    <div class="member-item">
+                        <div class="member-avatar" style="background: var(--green);">
+                            ${currentChannel.client_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                            <span class="status-dot online"></span>
+                        </div>
+                        <span class="member-name">${currentChannel.client_name}</span>
+                    </div>
+                </div>
+            `;
+
+            // Team section
+            const teamInChannel = teamMembers.slice(0, 3); // Show first 3 team members
+            if (teamInChannel.length > 0) {
+                html += `
+                    <div class="member-category">
+                        <div class="member-category-title">Team</div>
+                        ${teamInChannel.map(tm => `
+                            <div class="member-item">
+                                <div class="member-avatar" style="background: var(--${tm.role === 'admin' ? 'purple' : tm.role === 'owner' ? 'orange' : 'accent'});">
+                                    ${tm.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                                    <span class="status-dot ${tm.status || 'offline'}"></span>
+                                </div>
+                                <span class="member-name">${tm.name}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ============================================
+        // TEAM MEMBERS
+        // ============================================
+        async function loadTeamMembers() {
+            try {
+                const response = await fetch(`${MCP_SERVER}/team/members`, {
+                    headers: { 'X-User-Email': currentUser.email }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    teamMembers = data.members || [];
+                }
+            } catch (err) {
+                // Load demo team members
+                teamMembers = [
+                    { name: 'Sean Conley', email: 'sean@contentbug.io', role: 'owner', status: 'online' },
+                    { name: 'Stockton Walbeck', email: 'stockton@contentbug.io', role: 'owner', status: 'away' },
+                    { name: 'Creative Director', email: 'cd@contentbug.io', role: 'admin', status: 'online' }
+                ];
+            }
+        }
+
+        // ============================================
+        // SEND MESSAGE
+        // ============================================
+        function setupInputHandlers() {
+            const input = document.getElementById('chatInput');
+
+            input.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+
+        async function sendMessage() {
+            if (!currentChannel) return;
+
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            if (!content) return;
+
+            // Check DM permissions based on role
+            // In channel context, we're messaging the client
+            // Clients can only DM admin/owner, not editors
+            // Editors can DM everyone
+            // Admin/Owner can DM everyone
+            const targetRole = 'client'; // In team inbox, we're always replying to clients
+
+            // For DM context (if we add direct messaging between team members)
+            // The permission check would use the target user's role
+            // For now, team members can always reply to clients in their channels
+
+            // Optimistic UI update
+            const tempMessage = {
+                message_id: 'temp-' + Date.now(),
+                sender_name: currentUser.name,
+                sender_email: currentUser.email,
+                sender_role: currentUser.role,
+                content: content,
+                created_at: new Date().toISOString()
+            };
+            messages.push(tempMessage);
+            renderMessages();
+            input.value = '';
+            input.style.height = 'auto';
+
+            // Send to server
+            try {
+                await fetch(`${MCP_SERVER}/chat/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    },
+                    body: JSON.stringify({
+                        channel_id: currentChannel.channel_id,
+                        content: content,
+                        sender_email: currentUser.email,
+                        sender_name: currentUser.name,
+                        sender_role: currentUser.role
+                    })
+                });
+            } catch (err) {
+                console.error('Failed to send message:', err);
+            }
+        }
+
+        async function markAsRead(channelId) {
+            // Update local state
+            const channel = channels.find(c => c.channel_id === channelId);
+            if (channel) {
+                channel.unread_team = 0;
+                updateCounts();
+            }
+
+            try {
+                await fetch(`${MCP_SERVER}/chat/read/${channelId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    }
+                });
+            } catch (err) {
+                // Silent fail
+            }
+        }
+
+        // ============================================
+        // POLLING
+        // ============================================
+        function startPolling() {
+            if (pollTimer) clearInterval(pollTimer);
+
+            pollTimer = setInterval(async () => {
+                await pollNewMessages();
+                await checkNewTrials();
+            }, POLL_INTERVAL);
+        }
+
+        async function pollNewMessages() {
+            if (!currentChannel) return;
+
+            try {
+                const response = await fetch(`${MCP_SERVER}/chat/poll/${currentChannel.channel_id}?after=${lastMessageId || ''}`, {
+                    headers: {
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.messages && data.messages.length > 0) {
+                        messages = messages.filter(m => !m.message_id.startsWith('temp-'));
+                        messages.push(...data.messages);
+                        renderMessages();
+                        lastMessageId = data.messages[data.messages.length - 1].message_id;
+                    }
+                }
+            } catch (err) {
+                // Silent fail
+            }
+        }
+
+        async function checkNewTrials() {
+            // This would check for new trial signups and show notification
+            // For demo, we'll simulate occasional new trials
+            const lastCheck = localStorage.getItem('cb_last_trial_check') || '0';
+            const now = Date.now();
+
+            if (now - parseInt(lastCheck) > 60000) { // Check every minute
+                localStorage.setItem('cb_last_trial_check', now.toString());
+
+                // Simulate random new trial (10% chance)
+                if (Math.random() < 0.1) {
+                    showTrialNotification('New User', 'Just started their free trial');
+                }
+            }
+        }
+
+        function showTrialNotification(name, action) {
+            const notification = document.getElementById('trialNotification');
+            document.getElementById('trialNotificationTitle').textContent = 'New Trial User!';
+            document.getElementById('trialNotificationText').textContent = `${name} ${action}`;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                hideTrialNotification();
+            }, 5000);
+        }
+
+        function hideTrialNotification() {
+            document.getElementById('trialNotification').classList.remove('show');
+        }
+
+        // ============================================
+        // ACTIONS
+        // ============================================
+        function viewClientProfile() {
+            if (!currentChannel) return;
+            // Navigate to client profile page
+            window.parent.postMessage({
+                type: 'navigate',
+                page: 'admin-clients',
+                clientId: currentChannel.client_email
+            }, '*');
+        }
+
+        function viewClientProjects() {
+            if (!currentChannel) return;
+            window.parent.postMessage({
+                type: 'navigate',
+                page: 'admin-projects',
+                clientId: currentChannel.client_email
+            }, '*');
+        }
+
+        function viewBlueprint() {
+            if (!currentChannel) return;
+            window.open(`/blueprint?client=${currentChannel.client_email}`, '_blank');
+        }
+
+        function viewStorage() {
+            if (!currentChannel) return;
+            window.open(`/storage?client=${currentChannel.client_email}`, '_blank');
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (date.toDateString() === today.toDateString()) return 'Today';
+            if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatTime(dateStr) {
+            return new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        function formatTimeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return 'now';
+            if (minutes < 60) return `${minutes}m`;
+            if (hours < 24) return `${hours}h`;
+            if (days < 7) return `${days}d`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (pollTimer) clearInterval(pollTimer);
+        });
+
+        // ============================================
+        // ADMIN/OWNER RIGHT-CLICK QUICK MENU
+        // ============================================
+        const quickMenu = document.getElementById('quickMenu');
+        let quickMenuTarget = null;
+
+        // Only show menu for admin/owner roles
+        function canShowQuickMenu() {
+            return currentUser.role === 'admin' || currentUser.role === 'owner';
+        }
+
+        // Handle right-click
+        document.addEventListener('contextmenu', (e) => {
+            if (!canShowQuickMenu()) return;
+
+            // Check if clicked on a channel item or chat area
+            const channelItem = e.target.closest('.client-channel');
+            const chatArea = e.target.closest('.chat-main');
+            const messageItem = e.target.closest('.message');
+
+            if (channelItem || chatArea) {
+                e.preventDefault();
+
+                // Store target info
+                if (channelItem) {
+                    quickMenuTarget = {
+                        type: 'channel',
+                        channelId: channelItem.dataset.channelId,
+                        clientName: channelItem.querySelector('.client-name')?.textContent,
+                        clientEmail: channelItem.dataset.clientEmail
+                    };
+                } else if (currentChannel) {
+                    quickMenuTarget = {
+                        type: 'chat',
+                        channelId: currentChannel.channel_id,
+                        clientName: currentChannel.name,
+                        clientEmail: currentChannel.client_email
+                    };
+                } else {
+                    return;
+                }
+
+                showQuickMenu(e.clientX, e.clientY);
+            }
+        });
+
+        // Show quick menu at position
+        function showQuickMenu(x, y) {
+            const menu = quickMenu;
+
+            // Position menu
+            let menuX = x;
+            let menuY = y;
+
+            // Ensure menu stays within viewport
+            const menuRect = menu.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            if (x + 220 > viewportWidth) {
+                menuX = viewportWidth - 230;
+            }
+            if (y + 320 > viewportHeight) {
+                menuY = viewportHeight - 330;
+            }
+
+            menu.style.left = menuX + 'px';
+            menu.style.top = menuY + 'px';
+            menu.classList.add('visible');
+        }
+
+        // Hide quick menu
+        function hideQuickMenu() {
+            quickMenu.classList.remove('visible');
+            quickMenuTarget = null;
+        }
+
+        // Click outside to close
+        document.addEventListener('click', (e) => {
+            if (!quickMenu.contains(e.target)) {
+                hideQuickMenu();
+            }
+        });
+
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideQuickMenu();
+            }
+        });
+
+        // Quick menu actions
+        async function quickStartZoom() {
+            if (!quickMenuTarget) return;
+
+            const zoomItem = document.getElementById('quickZoomItem');
+            zoomItem.classList.add('loading');
+
+            try {
+                const response = await fetch(`${MCP_SERVER}/api/zoom/meeting`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    },
+                    body: JSON.stringify({
+                        topic: `Quick Call with ${quickMenuTarget.clientName || 'Client'}`,
+                        channel_id: quickMenuTarget.channelId,
+                        host_email: currentUser.email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.meeting) {
+                    // Open Zoom meeting in new tab
+                    window.open(data.meeting.start_url, '_blank');
+
+                    // Refresh messages to show system message
+                    if (currentChannel && currentChannel.channel_id === quickMenuTarget.channelId) {
+                        await loadMessages(currentChannel.channel_id);
+                    }
+                } else {
+                    alert('Failed to create Zoom meeting. Please try again.');
+                }
+            } catch (err) {
+                console.error('[Zoom Error]', err);
+                alert('Failed to start Zoom meeting. Check console for details.');
+            } finally {
+                zoomItem.classList.remove('loading');
+                hideQuickMenu();
+            }
+        }
+
+        function quickViewProfile() {
+            if (!quickMenuTarget) return;
+            // Navigate to client profile
+            window.location.href = `/team-portal/client-profile.html?email=${encodeURIComponent(quickMenuTarget.clientEmail)}`;
+            hideQuickMenu();
+        }
+
+        function quickViewProjects() {
+            if (!quickMenuTarget) return;
+            window.location.href = `/team-portal/client-projects.html?email=${encodeURIComponent(quickMenuTarget.clientEmail)}`;
+            hideQuickMenu();
+        }
+
+        function quickViewBlueprint() {
+            if (!quickMenuTarget) return;
+            window.location.href = `/team-portal/client-blueprint.html?email=${encodeURIComponent(quickMenuTarget.clientEmail)}`;
+            hideQuickMenu();
+        }
+
+        function quickViewDrive() {
+            if (!quickMenuTarget) return;
+            // This would fetch the client's Google Drive folder link from the API
+            alert('Opening Google Drive folder for ' + quickMenuTarget.clientName);
+            hideQuickMenu();
+        }
+
+        function quickCopyEmail() {
+            if (!quickMenuTarget || !quickMenuTarget.clientEmail) return;
+            navigator.clipboard.writeText(quickMenuTarget.clientEmail);
+
+            // Visual feedback
+            const item = document.getElementById('quickCopyEmail');
+            const originalLabel = item.querySelector('.label').textContent;
+            item.querySelector('.label').textContent = 'Copied!';
+            item.classList.add('success');
+
+            setTimeout(() => {
+                item.querySelector('.label').textContent = originalLabel;
+                item.classList.remove('success');
+            }, 1500);
+
+            hideQuickMenu();
+        }
+
+        async function quickAssignEditor() {
+            if (!quickMenuTarget) return;
+            // TODO: Show editor picker modal
+            alert('Assign editor feature coming soon for ' + quickMenuTarget.clientName);
+            hideQuickMenu();
+        }
+
+        function quickMarkPriority() {
+            if (!quickMenuTarget) return;
+            // TODO: Mark channel as priority
+            alert('Marked as priority: ' + quickMenuTarget.clientName);
+            hideQuickMenu();
+        }
+    </script>
+
+    <!-- Admin/Owner Quick Menu -->
+    <div class="quick-menu" id="quickMenu">
+        <div class="quick-menu-header">
+            <div class="quick-menu-title">Quick Tools</div>
+        </div>
+        <div class="quick-menu-section">
+            <div class="quick-menu-item zoom" id="quickZoomItem" onclick="quickStartZoom()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 7l-7 5 7 5V7z"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">Start Zoom Call</div>
+                    <div class="hint">Instant meeting in channel</div>
+                </div>
+            </div>
+        </div>
+        <div class="quick-menu-section">
+            <div class="quick-menu-item" onclick="quickViewProfile()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">View Profile</div>
+                </div>
+                <span class="quick-menu-shortcut">P</span>
+            </div>
+            <div class="quick-menu-item" onclick="quickViewProjects()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M9 3v18"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">View Projects</div>
+                </div>
+            </div>
+            <div class="quick-menu-item" onclick="quickViewBlueprint()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">View Blueprint</div>
+                </div>
+            </div>
+            <div class="quick-menu-item" onclick="quickViewDrive()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">Open Drive Folder</div>
+                </div>
+            </div>
+        </div>
+        <div class="quick-menu-section">
+            <div class="quick-menu-item" id="quickCopyEmail" onclick="quickCopyEmail()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">Copy Email</div>
+                </div>
+            </div>
+            <div class="quick-menu-item" onclick="quickAssignEditor()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">Assign Editor</div>
+                </div>
+            </div>
+            <div class="quick-menu-item" onclick="quickMarkPriority()">
+                <div class="quick-menu-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <div class="quick-menu-text">
+                    <div class="label">Mark Priority</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Floating Admin Mini-Toolbar -->
+    <div class="admin-mini-toolbar" id="adminMiniToolbar">
+        <div class="mini-toolbar-container">
+            <span class="mini-client-name" id="miniClientName">Client</span>
+            <div class="mini-divider"></div>
+            <button class="mini-btn zoom-btn" data-tooltip="Start Zoom" onclick="miniZoom()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 7l-7 5 7 5V7z"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2"/>
+                </svg>
+            </button>
+            <button class="mini-btn calendar-btn" data-tooltip="Calendar" onclick="toggleMiniCalendar(event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+            </button>
+            <button class="mini-btn" data-tooltip="Profile" onclick="miniViewProfile()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </button>
+            <button class="mini-btn" data-tooltip="Projects" onclick="miniViewProjects()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M9 3v18"/>
+                </svg>
+            </button>
+            <button class="mini-btn" data-tooltip="Blueprint" onclick="miniViewBlueprint()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </button>
+            <div class="mini-divider"></div>
+            <button class="mini-btn" data-tooltip="Copy Email" onclick="miniCopyEmail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Calendar Quick View Popup -->
+    <div class="calendar-popup" id="calendarPopup">
+        <div class="calendar-popup-header">
+            <span class="calendar-popup-title">Upcoming Events</span>
+            <button class="calendar-popup-close" onclick="closeCalendarPopup()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="calendar-events" id="calendarEvents">
+            <div class="no-events">Loading events...</div>
+        </div>
+    </div>
+
+    <script>
+        // ===============================================
+        // 3D FLOATING MINI-TOOLBAR LOGIC
+        // Context-aware toolbar that follows admin's mouse
+        // ===============================================
+
+        const miniToolbar = document.getElementById('adminMiniToolbar');
+        const miniClientName = document.getElementById('miniClientName');
+        const calendarPopup = document.getElementById('calendarPopup');
+        let miniToolbarTarget = null;
+        let miniToolbarVisible = false;
+        let calendarPopupVisible = false;
+        let mouseX = 0, mouseY = 0;
+
+        // Track mouse position globally
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Update toolbar position if visible
+            if (miniToolbarVisible && miniToolbar.classList.contains('visible')) {
+                updateToolbarPosition();
+            }
+        });
+
+        function updateToolbarPosition() {
+            // Keep toolbar above cursor with bounds checking
+            let x = mouseX;
+            let y = mouseY - 20; // Offset above cursor
+
+            const rect = miniToolbar.getBoundingClientRect();
+            const viewW = window.innerWidth;
+            const viewH = window.innerHeight;
+
+            // Keep within viewport
+            if (x - rect.width/2 < 10) x = rect.width/2 + 10;
+            if (x + rect.width/2 > viewW - 10) x = viewW - rect.width/2 - 10;
+            if (y - rect.height < 10) y = mouseY + rect.height + 30; // Below cursor if no room
+
+            miniToolbar.style.left = x + 'px';
+            miniToolbar.style.top = y + 'px';
+        }
+
+        // Show mini-toolbar when hovering over a channel
+        const channelList = document.getElementById('channelList');
+        if (channelList) {
+            channelList.addEventListener('mouseover', (e) => {
+                // Only for admin/owner
+                if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'owner')) return;
+
+                const channelItem = e.target.closest('.channel-item');
+                if (channelItem) {
+                    const channelId = channelItem.dataset.id;
+                    const channel = channels.find(c => c.channel_id === channelId);
+
+                    if (channel && channel.type === 'client') {
+                        // Set context
+                        miniToolbarTarget = {
+                            channelId: channel.channel_id,
+                            clientName: channel.name,
+                            clientEmail: channel.client_email
+                        };
+
+                        // Update client name in toolbar
+                        miniClientName.textContent = channel.name || 'Client';
+
+                        // Show toolbar
+                        miniToolbarVisible = true;
+                        updateToolbarPosition();
+                        miniToolbar.classList.add('visible');
+                    }
+                }
+            });
+
+            channelList.addEventListener('mouseout', (e) => {
+                const channelItem = e.target.closest('.channel-item');
+                const relatedTarget = e.relatedTarget;
+
+                // Don't hide if moving within channel list or to toolbar
+                if (relatedTarget &&
+                    (relatedTarget.closest('.channel-item') ||
+                     relatedTarget.closest('.admin-mini-toolbar') ||
+                     relatedTarget.closest('.calendar-popup'))) {
+                    return;
+                }
+
+                // Hide after delay to allow moving to toolbar
+                setTimeout(() => {
+                    if (!document.querySelector('.channel-item:hover') &&
+                        !document.querySelector('.admin-mini-toolbar:hover') &&
+                        !document.querySelector('.calendar-popup:hover')) {
+                        hideMiniToolbar();
+                    }
+                }, 300);
+            });
+        }
+
+        // Keep toolbar visible when hovering over it
+        miniToolbar.addEventListener('mouseenter', () => {
+            miniToolbarVisible = true;
+        });
+
+        miniToolbar.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!document.querySelector('.channel-item:hover') &&
+                    !document.querySelector('.calendar-popup:hover')) {
+                    hideMiniToolbar();
+                }
+            }, 200);
+        });
+
+        function hideMiniToolbar() {
+            miniToolbarVisible = false;
+            miniToolbar.classList.remove('visible');
+            closeCalendarPopup();
+        }
+
+        // Mini toolbar actions (same as quick menu but using miniToolbarTarget)
+        async function miniZoom() {
+            if (!miniToolbarTarget) return;
+
+            try {
+                const response = await fetch(`${MCP_SERVER}/api/zoom/meeting`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    },
+                    body: JSON.stringify({
+                        topic: `Quick Call with ${miniToolbarTarget.clientName || 'Client'}`,
+                        channel_id: miniToolbarTarget.channelId,
+                        host_email: currentUser.email
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success && data.meeting) {
+                    window.open(data.meeting.start_url, '_blank');
+                    if (currentChannel && currentChannel.channel_id === miniToolbarTarget.channelId) {
+                        await loadMessages(currentChannel.channel_id);
+                    }
+                } else {
+                    alert('Failed to create Zoom meeting');
+                }
+            } catch (err) {
+                console.error('[Zoom Error]', err);
+                alert('Failed to start Zoom meeting');
+            }
+        }
+
+        function miniViewProfile() {
+            if (!miniToolbarTarget) return;
+            window.location.href = `/team-portal/client-profile.html?email=${encodeURIComponent(miniToolbarTarget.clientEmail)}`;
+        }
+
+        function miniViewProjects() {
+            if (!miniToolbarTarget) return;
+            window.location.href = `/team-portal/client-projects.html?email=${encodeURIComponent(miniToolbarTarget.clientEmail)}`;
+        }
+
+        function miniViewBlueprint() {
+            if (!miniToolbarTarget) return;
+            window.location.href = `/team-portal/client-blueprint.html?email=${encodeURIComponent(miniToolbarTarget.clientEmail)}`;
+        }
+
+        function miniCopyEmail() {
+            if (!miniToolbarTarget || !miniToolbarTarget.clientEmail) return;
+            navigator.clipboard.writeText(miniToolbarTarget.clientEmail);
+
+            // Flash the button to confirm
+            const btn = document.querySelector('.mini-btn[data-tooltip="Copy Email"]');
+            if (btn) {
+                btn.style.background = 'rgba(34, 197, 94, 0.3)';
+                btn.dataset.tooltip = 'Copied!';
+                setTimeout(() => {
+                    btn.style.background = '';
+                    btn.dataset.tooltip = 'Copy Email';
+                }, 1500);
+            }
+        }
+
+        // Calendar popup functionality
+        function toggleMiniCalendar(e) {
+            e.stopPropagation();
+            if (calendarPopupVisible) {
+                closeCalendarPopup();
+            } else {
+                showCalendarPopup();
+            }
+        }
+
+        async function showCalendarPopup() {
+            const btnRect = document.querySelector('.calendar-btn').getBoundingClientRect();
+
+            // Position popup below/beside the calendar button
+            let popupX = btnRect.left + btnRect.width / 2;
+            let popupY = btnRect.bottom + 10;
+
+            // Bounds check
+            if (popupX + 140 > window.innerWidth) popupX = window.innerWidth - 150;
+            if (popupX - 140 < 0) popupX = 150;
+            if (popupY + 250 > window.innerHeight) popupY = btnRect.top - 260;
+
+            calendarPopup.style.left = (popupX - 140) + 'px';
+            calendarPopup.style.top = popupY + 'px';
+            calendarPopup.classList.add('visible');
+            calendarPopupVisible = true;
+
+            // Load events for current client
+            await loadCalendarEvents();
+        }
+
+        function closeCalendarPopup() {
+            calendarPopup.classList.remove('visible');
+            calendarPopupVisible = false;
+        }
+
+        async function loadCalendarEvents() {
+            const eventsContainer = document.getElementById('calendarEvents');
+            eventsContainer.innerHTML = '<div class="no-events">Loading events...</div>';
+
+            try {
+                // Fetch calendar events from GHL for this client
+                const response = await fetch(`${MCP_SERVER}/api/calendar/events?client_email=${encodeURIComponent(miniToolbarTarget?.clientEmail || '')}`, {
+                    headers: {
+                        'X-User-Email': currentUser.email,
+                        'X-User-Role': currentUser.role
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.events && data.events.length > 0) {
+                    eventsContainer.innerHTML = data.events.map(event => `
+                        <div class="calendar-event" onclick="window.open('${event.join_url || '#'}', '_blank')">
+                            <div class="calendar-event-time">${formatEventTime(event.start_time)}</div>
+                            <div class="calendar-event-title">${event.title || 'Meeting'}</div>
+                            ${event.join_url ? '<button class="calendar-event-join">Join</button>' : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    eventsContainer.innerHTML = `
+                        <div class="no-events">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity: 0.4; margin-bottom: 8px;">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <p>No upcoming events</p>
+                            <p style="font-size: 10px; margin-top: 4px;">Schedule a call with ${miniToolbarTarget?.clientName || 'this client'}</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('[Calendar Error]', err);
+                eventsContainer.innerHTML = `
+                    <div class="no-events">
+                        <p>Unable to load events</p>
+                        <p style="font-size: 10px; margin-top: 4px;">Check connection</p>
+                    </div>
+                `;
+            }
+        }
+
+        function formatEventTime(dateString) {
+            if (!dateString) return '--:--';
+            const date = new Date(dateString);
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+            if (date.toDateString() === now.toDateString()) {
+                return 'Today ' + timeStr;
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return 'Tomorrow ' + timeStr;
+            } else {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + timeStr;
+            }
+        }
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+            if (calendarPopupVisible && !e.target.closest('.calendar-popup') && !e.target.closest('.calendar-btn')) {
+                closeCalendarPopup();
+            }
+        });
+
+        calendarPopup.addEventListener('mouseenter', () => {
+            miniToolbarVisible = true;
+        });
+
+        calendarPopup.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!document.querySelector('.channel-item:hover') &&
+                    !document.querySelector('.admin-mini-toolbar:hover')) {
+                    hideMiniToolbar();
+                }
+            }, 200);
+        });
+    </script>
+</body>
+</html>

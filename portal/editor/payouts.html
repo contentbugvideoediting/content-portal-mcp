@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Payouts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .payout-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .summary-card.highlight {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .summary-value.green { color: var(--green); }
+
+        .summary-change {
+            font-size: 12px;
+            color: var(--green);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .summary-change svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Breakdown Section */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .breakdown-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .breakdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .breakdown-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .breakdown-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        .breakdown-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .breakdown-item-type {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .breakdown-item-type.short { background: var(--purple); }
+        .breakdown-item-type.long { background: var(--accent); }
+
+        .breakdown-item-name {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .breakdown-item-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Payment History */
+        .history-table {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .history-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 14px 20px;
+            background: var(--dark-surface);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 16px 20px;
+            border-top: 1px solid var(--dark-border);
+            align-items: center;
+        }
+
+        .history-row:hover {
+            background: var(--dark-surface);
+        }
+
+        .history-period {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .history-projects {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .history-amount {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .history-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .history-status.paid {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        .history-status.pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--orange);
+        }
+
+        .history-status.processing {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+        }
+
+        .history-status svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Rate Card */
+        .rate-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .rate-header {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .rate-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .rate-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--dark-surface);
+            border-radius: 8px;
+        }
+
+        .rate-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .rate-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .payout-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+            .history-header,
+            .history-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .history-header > *:nth-child(2),
+            .history-row > *:nth-child(2) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Payout Summary -->
+    <div class="payout-summary">
+        <div class="summary-card highlight">
+            <div class="summary-label">Projected This Month</div>
+            <div class="summary-value green">$2,450</div>
+            <div class="summary-change">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                +$320 from last month
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Earned This Month</div>
+            <div class="summary-value">$1,890</div>
+            <div class="summary-change">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                18 projects completed
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Pending Payment</div>
+            <div class="summary-value">$560</div>
+            <div class="summary-change" style="color: var(--orange);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                6 projects in review
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">Lifetime Earnings</div>
+            <div class="summary-value">$14,280</div>
+            <div class="summary-change">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Since Aug 2024
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Breakdown -->
+    <div class="section">
+        <h3 class="section-title">December Breakdown</h3>
+        <div class="breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-header">
+                    <span class="breakdown-title">Short-form Edits</span>
+                    <span class="breakdown-total">$840</span>
+                </div>
+                <div class="breakdown-list">
+                    <div class="breakdown-item">
+                        <div class="breakdown-item-info">
+                            <div class="breakdown-item-type short"></div>
+                            <span class="breakdown-item-name">Instagram Reels (8)</span>
+                        </div>
+                        <span class="breakdown-item-value">$320</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-item-info">
+                            <div class="breakdown-item-type short"></div>
+                            <span class="breakdown-item-name">TikTok Videos (6)</span>
+                        </div>
+                        <span class="breakdown-item-value">$240</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-item-info">
+                            <div class="breakdown-item-type short"></div>
+                            <span class="breakdown-item-name">YouTube Shorts (7)</span>
+                        </div>
+                        <span class="breakdown-item-value">$280</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="breakdown-card">
+                <div class="breakdown-header">
+                    <span class="breakdown-title">Long-form Edits</span>
+                    <span class="breakdown-total">$1,610</span>
+                </div>
+                <div class="breakdown-list">
+                    <div class="breakdown-item">
+                        <div class="breakdown-item-info">
+                            <div class="breakdown-item-type long"></div>
+                            <span class="breakdown-item-name">YouTube Videos (4)</span>
+                        </div>
+                        <span class="breakdown-item-value">$800</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-item-info">
+                            <div class="breakdown-item-type long"></div>
+                            <span class="breakdown-item-name">Course Content (2)</span>
+                        </div>
+                        <span class="breakdown-item-value">$500</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-item-info">
+                            <div class="breakdown-item-type long"></div>
+                            <span class="breakdown-item-name">Promotional (1)</span>
+                        </div>
+                        <span class="breakdown-item-value">$310</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your Rates -->
+    <div class="section">
+        <h3 class="section-title">Your Rates</h3>
+        <div class="rate-card">
+            <div class="rate-header">Current Pay Rates</div>
+            <div class="rate-grid">
+                <div class="rate-item">
+                    <div class="rate-value">$40</div>
+                    <div class="rate-label">Short-form Base</div>
+                </div>
+                <div class="rate-item">
+                    <div class="rate-value">$200</div>
+                    <div class="rate-label">Long-form Base</div>
+                </div>
+                <div class="rate-item">
+                    <div class="rate-value">$25</div>
+                    <div class="rate-label">Rush Fee</div>
+                </div>
+                <div class="rate-item">
+                    <div class="rate-value">$15</div>
+                    <div class="rate-label">Revision (3+)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="section">
+        <h3 class="section-title">Payment History</h3>
+        <div class="history-table">
+            <div class="history-header">
+                <span>Period</span>
+                <span>Projects</span>
+                <span>Amount</span>
+                <span>Status</span>
+            </div>
+
+            <div class="history-row">
+                <span class="history-period">December 2024</span>
+                <span class="history-projects">24 projects</span>
+                <span class="history-amount">$2,450</span>
+                <span class="history-status processing">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    In Progress
+                </span>
+            </div>
+
+            <div class="history-row">
+                <span class="history-period">November 2024</span>
+                <span class="history-projects">21 projects</span>
+                <span class="history-amount">$2,130</span>
+                <span class="history-status paid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Paid Dec 5
+                </span>
+            </div>
+
+            <div class="history-row">
+                <span class="history-period">October 2024</span>
+                <span class="history-projects">19 projects</span>
+                <span class="history-amount">$1,940</span>
+                <span class="history-status paid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Paid Nov 5
+                </span>
+            </div>
+
+            <div class="history-row">
+                <span class="history-period">September 2024</span>
+                <span class="history-projects">18 projects</span>
+                <span class="history-amount">$1,820</span>
+                <span class="history-status paid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Paid Oct 5
+                </span>
+            </div>
+
+            <div class="history-row">
+                <span class="history-period">August 2024</span>
+                <span class="history-projects">15 projects</span>
+                <span class="history-amount">$1,520</span>
+                <span class="history-status paid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Paid Sep 5
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | Content Bug Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --fire: #ff6b35;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        /* Sub Navigation */
+        .sub-nav {
+            display: flex;
+            gap: 4px;
+            background: var(--dark-card);
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            border: 1px solid var(--dark-border);
+            width: fit-content;
+        }
+
+        .sub-nav-item {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-nav-item:hover {
+            color: var(--text-light);
+            background: var(--dark-surface);
+        }
+
+        .sub-nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .sub-nav-item .badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .sub-nav-item.active .badge {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .sub-nav-item:not(.active) .badge {
+            background: var(--dark-border);
+        }
+
+        .sub-nav-item .badge.alert {
+            background: var(--danger);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.alert {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), transparent);
+        }
+
+        .stat-card.warning-card {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.green { color: var(--success); }
+        .stat-value.blue { color: var(--accent); }
+        .stat-value.orange { color: var(--warning); }
+        .stat-value.red { color: var(--danger); }
+        .stat-value.purple { color: var(--purple); }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Filters Bar */
+        .filters-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 18px 14px 48px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        .search-box svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            padding: 14px 18px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .status-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-filter {
+            padding: 10px 16px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .status-filter:hover {
+            border-color: var(--accent);
+            color: var(--text-light);
+        }
+
+        .status-filter.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .status-filter .count {
+            margin-left: 6px;
+            opacity: 0.7;
+        }
+
+        /* Pipeline Board */
+        .pipeline-board {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .pipeline-column {
+            min-width: 280px;
+            max-width: 280px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .column-title {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .column-dot.queue { background: var(--text-muted); }
+        .column-dot.active { background: var(--accent); }
+        .column-dot.review { background: var(--purple); }
+        .column-dot.revisions { background: var(--warning); }
+        .column-dot.approved { background: var(--success); }
+        .column-dot.late { background: var(--danger); }
+
+        .column-count {
+            padding: 4px 10px;
+            background: var(--dark-surface);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .column-cards {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            max-height: calc(100vh - 400px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Project Card */
+        .project-card {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .project-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .project-card.late {
+            border-left: 3px solid var(--danger);
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
+        }
+
+        .project-card.warning {
+            border-left: 3px solid var(--warning);
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.05), transparent);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .project-title {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .project-type {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .project-type.short { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .project-type.long { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .project-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .client-mini {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .client-avatar-tiny {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 700;
+        }
+
+        .client-avatar-tiny.basic { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
+        .client-avatar-tiny.silver { background: rgba(148, 163, 184, 0.2); color: var(--text-light); }
+        .client-avatar-tiny.gold { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .client-avatar-tiny.pro { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+
+        .project-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .editor-mini {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .editor-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: 700;
+        }
+
+        .time-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .time-badge.late {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .time-badge.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .time-badge.ok {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        /* Late Projects Alert */
+        .late-alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(255, 107, 53, 0.1));
+            border: 1px solid var(--danger);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .late-alert-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--danger);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .late-alert-content {
+            flex: 1;
+        }
+
+        .late-alert-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .late-alert-desc {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .late-alert-btn {
+            padding: 12px 24px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .dashboard-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Project Table */
+        .table-wrapper {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--dark-border);
+            font-size: 13px;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: var(--dark-surface); }
+
+        .data-table tr.late-row {
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .data-table tr.warning-row {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-badge.queue { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+        .status-badge.active { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .status-badge.review { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .status-badge.revisions { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-badge.approved { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+
+        /* Tier Badge */
+        .tier-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-badge.basic { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .tier-badge.silver { background: rgba(148, 163, 184, 0.15); color: var(--text-light); }
+        .tier-badge.gold { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .tier-badge.pro { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+            .pipeline-board { flex-direction: column; }
+            .pipeline-column { min-width: 100%; max-width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .sub-nav { flex-wrap: wrap; width: 100%; }
+            .sub-nav-item { flex: 1; min-width: calc(50% - 4px); justify-content: center; }
+            .filters-bar { flex-direction: column; }
+            .search-box { min-width: 100%; }
+            .status-filters { flex-wrap: wrap; width: 100%; }
+            .status-filter { flex: 1; min-width: calc(50% - 4px); text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="page-title">
+            <span class="icon">📁</span>
+            Projects
+        </h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary">
+                <span>📊</span> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Sub Navigation -->
+    <div class="sub-nav">
+        <button class="sub-nav-item active" data-tab="pipeline">
+            📊 Pipeline
+        </button>
+        <button class="sub-nav-item" data-tab="dashboard">
+            🏠 Dashboard
+            <span class="badge alert">5</span>
+        </button>
+        <button class="sub-nav-item" data-tab="all">
+            📋 All Projects
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PIPELINE TAB (Default Home) -->
+    <!-- ============================================ -->
+    <div class="tab-content active" id="pipeline-tab">
+        <div class="stats-bar">
+            <div class="stat-card alert">
+                <div class="stat-value red">5</div>
+                <div class="stat-label">Late</div>
+            </div>
+            <div class="stat-card warning-card">
+                <div class="stat-value orange">8</div>
+                <div class="stat-label">Due Soon</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue">24</div>
+                <div class="stat-label">In Queue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple">18</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">In Review</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orange">6</div>
+                <div class="stat-label">Revisions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">32</div>
+                <div class="stat-label">Approved</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" placeholder="Search by project, client, or editor..." id="pipeline-search">
+            </div>
+            <select class="filter-select" id="editor-filter">
+                <option value="">All Editors</option>
+                <option value="jake">Jake Martinez</option>
+                <option value="sarah">Sarah Kim</option>
+                <option value="mike">Mike Edwards</option>
+                <option value="anna">Anna Lopez</option>
+            </select>
+            <select class="filter-select" id="client-filter">
+                <option value="">All Clients</option>
+                <option value="alex">Alex Thompson</option>
+                <option value="sarah">Sarah Mitchell</option>
+                <option value="marcus">Marcus Chen</option>
+            </select>
+            <select class="filter-select" id="type-filter">
+                <option value="">All Types</option>
+                <option value="short">Shorts</option>
+                <option value="long">Long-Form</option>
+            </select>
+        </div>
+
+        <!-- Pipeline Board -->
+        <div class="pipeline-board">
+            <!-- Late Column (Alert) -->
+            <div class="pipeline-column" style="border-color: var(--danger);">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-dot late"></span>
+                        🔥 LATE
+                    </div>
+                    <span class="column-count" style="background: var(--danger); color: white;">5</span>
+                </div>
+                <div class="column-cards">
+                    <div class="project-card late">
+                        <div class="project-header">
+                            <div class="project-title">Weekly Vlog #47</div>
+                            <span class="project-type long">Long</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny gold">AT</div>
+                                Alex Thompson
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">JM</div>
+                                Jake M
+                            </div>
+                            <span class="time-badge late">2 days late</span>
+                        </div>
+                    </div>
+                    <div class="project-card late">
+                        <div class="project-header">
+                            <div class="project-title">Product Launch Reel</div>
+                            <span class="project-type short">Short</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny pro">SM</div>
+                                Sarah Mitchell
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">JM</div>
+                                Jake M
+                            </div>
+                            <span class="time-badge late">1 day late</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Queue Column -->
+            <div class="pipeline-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-dot queue"></span>
+                        Queue
+                    </div>
+                    <span class="column-count">24</span>
+                </div>
+                <div class="column-cards">
+                    <div class="project-card warning">
+                        <div class="project-header">
+                            <div class="project-title">BTS Studio Tour</div>
+                            <span class="project-type long">Long</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny silver">JW</div>
+                                Jessica Wong
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">SK</div>
+                                Sarah K
+                            </div>
+                            <span class="time-badge warning">Due tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">Podcast Clip #12</div>
+                            <span class="project-type short">Short</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny basic">DP</div>
+                                David Park
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">AL</div>
+                                Anna L
+                            </div>
+                            <span class="time-badge ok">3 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Column -->
+            <div class="pipeline-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-dot active"></span>
+                        Active
+                    </div>
+                    <span class="column-count">18</span>
+                </div>
+                <div class="column-cards">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">Tutorial: Camera Settings</div>
+                            <span class="project-type long">Long</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny gold">MC</div>
+                                Marcus Chen
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">SK</div>
+                                Sarah K
+                            </div>
+                            <span class="time-badge ok">2 days</span>
+                        </div>
+                    </div>
+                    <div class="project-card warning">
+                        <div class="project-header">
+                            <div class="project-title">Workout Montage</div>
+                            <span class="project-type short">Short</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny pro">SM</div>
+                                Sarah Mitchell
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">ME</div>
+                                Mike E
+                            </div>
+                            <span class="time-badge warning">Due today</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Column -->
+            <div class="pipeline-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-dot review"></span>
+                        Review
+                    </div>
+                    <span class="column-count">12</span>
+                </div>
+                <div class="column-cards">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">Q4 Recap Video</div>
+                            <span class="project-type long">Long</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny gold">AT</div>
+                                Alex Thompson
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">AL</div>
+                                Anna L
+                            </div>
+                            <span class="time-badge ok">Waiting review</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revisions Column -->
+            <div class="pipeline-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-dot revisions"></span>
+                        Revisions
+                    </div>
+                    <span class="column-count">6</span>
+                </div>
+                <div class="column-cards">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">Brand Story</div>
+                            <span class="project-type long">Long</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny silver">LH</div>
+                                Lisa Hernandez
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">SK</div>
+                                Sarah K
+                            </div>
+                            <span class="time-badge warning">2 revisions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approved Column -->
+            <div class="pipeline-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-dot approved"></span>
+                        Approved
+                    </div>
+                    <span class="column-count">32</span>
+                </div>
+                <div class="column-cards">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">Holiday Special</div>
+                            <span class="project-type long">Long</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="client-mini">
+                                <div class="client-avatar-tiny pro">RJ</div>
+                                Robert James
+                            </div>
+                        </div>
+                        <div class="project-footer">
+                            <div class="editor-mini">
+                                <div class="editor-dot">ME</div>
+                                Mike E
+                            </div>
+                            <span class="time-badge ok">Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DASHBOARD TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="dashboard-tab">
+        <!-- Late Projects Alert -->
+        <div class="late-alert">
+            <div class="late-alert-icon">🔥</div>
+            <div class="late-alert-content">
+                <div class="late-alert-title">5 Projects Are Late!</div>
+                <div class="late-alert-desc">These projects have passed their due date and need immediate attention.</div>
+            </div>
+            <button class="late-alert-btn">View Late Projects</button>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card alert">
+                <div class="stat-value red">5</div>
+                <div class="stat-label">Late</div>
+            </div>
+            <div class="stat-card warning-card">
+                <div class="stat-value orange">8</div>
+                <div class="stat-label">Due Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue">92</div>
+                <div class="stat-label">Total Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">1.8d</div>
+                <div class="stat-label">Avg Turnaround</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple">342</div>
+                <div class="stat-label">Completed MTD</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <div class="dashboard-card-title">🔥 Late & Due Soon</div>
+                </div>
+                <div class="table-wrapper" style="border: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Client</th>
+                                <th>Editor</th>
+                                <th>Status</th>
+                                <th>Due</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="late-row">
+                                <td>Weekly Vlog #47</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <div class="client-avatar-tiny gold">AT</div>
+                                        Alex Thompson
+                                    </div>
+                                </td>
+                                <td>Jake M</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="time-badge late">2 days late</span></td>
+                            </tr>
+                            <tr class="late-row">
+                                <td>Product Launch Reel</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <div class="client-avatar-tiny pro">SM</div>
+                                        Sarah Mitchell
+                                    </div>
+                                </td>
+                                <td>Jake M</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="time-badge late">1 day late</span></td>
+                            </tr>
+                            <tr class="warning-row">
+                                <td>BTS Studio Tour</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <div class="client-avatar-tiny silver">JW</div>
+                                        Jessica Wong
+                                    </div>
+                                </td>
+                                <td>Sarah K</td>
+                                <td><span class="status-badge queue">Queue</span></td>
+                                <td><span class="time-badge warning">Due tomorrow</span></td>
+                            </tr>
+                            <tr class="warning-row">
+                                <td>Workout Montage</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <div class="client-avatar-tiny pro">SM</div>
+                                        Sarah Mitchell
+                                    </div>
+                                </td>
+                                <td>Mike E</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td><span class="time-badge warning">Due today</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <div class="dashboard-card-title">📊 By Editor</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--dark-surface); border-radius: 10px; border-left: 3px solid var(--danger);">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="editor-dot" style="width: 28px; height: 28px; font-size: 10px;">JM</div>
+                            <span style="font-weight: 600;">Jake Martinez</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--danger); font-weight: 700;">3 late</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">24 active</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--dark-surface); border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="editor-dot" style="width: 28px; height: 28px; font-size: 10px;">SK</div>
+                            <span style="font-weight: 600;">Sarah Kim</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--success); font-weight: 700;">0 late</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">18 active</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--dark-surface); border-radius: 10px; border-left: 3px solid var(--warning);">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="editor-dot" style="width: 28px; height: 28px; font-size: 10px;">ME</div>
+                            <span style="font-weight: 600;">Mike Edwards</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--warning); font-weight: 700;">1 due today</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">28 active</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--dark-surface); border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="editor-dot" style="width: 28px; height: 28px; font-size: 10px;">AL</div>
+                            <span style="font-weight: 600;">Anna Lopez</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: var(--success); font-weight: 700;">0 late</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">12 active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ALL PROJECTS TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="all-tab">
+        <div class="filters-bar">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" placeholder="Search projects..." id="all-search">
+            </div>
+            <div class="status-filters">
+                <button class="status-filter active">All <span class="count">92</span></button>
+                <button class="status-filter">Queue <span class="count">24</span></button>
+                <button class="status-filter">Active <span class="count">18</span></button>
+                <button class="status-filter">Review <span class="count">12</span></button>
+                <button class="status-filter">Revisions <span class="count">6</span></button>
+                <button class="status-filter">Approved <span class="count">32</span></button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Client</th>
+                        <th>Type</th>
+                        <th>Editor</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="late-row">
+                        <td style="font-weight: 600;">Weekly Vlog #47</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="client-avatar-tiny gold">AT</div>
+                                <div>
+                                    <div style="font-weight: 500;">Alex Thompson</div>
+                                    <span class="tier-badge gold">Gold</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="project-type long">Long</span></td>
+                        <td>Jake Martinez</td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td><span class="time-badge late">2 days late</span></td>
+                        <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">View</button></td>
+                    </tr>
+                    <tr class="late-row">
+                        <td style="font-weight: 600;">Product Launch Reel</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="client-avatar-tiny pro">SM</div>
+                                <div>
+                                    <div style="font-weight: 500;">Sarah Mitchell</div>
+                                    <span class="tier-badge pro">Pro</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="project-type short">Short</span></td>
+                        <td>Jake Martinez</td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td><span class="time-badge late">1 day late</span></td>
+                        <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">View</button></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;">Tutorial: Camera Settings</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="client-avatar-tiny gold">MC</div>
+                                <div>
+                                    <div style="font-weight: 500;">Marcus Chen</div>
+                                    <span class="tier-badge gold">Gold</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="project-type long">Long</span></td>
+                        <td>Sarah Kim</td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td><span class="time-badge ok">Jan 4</span></td>
+                        <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">View</button></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;">Q4 Recap Video</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="client-avatar-tiny gold">AT</div>
+                                <div>
+                                    <div style="font-weight: 500;">Alex Thompson</div>
+                                    <span class="tier-badge gold">Gold</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="project-type long">Long</span></td>
+                        <td>Anna Lopez</td>
+                        <td><span class="status-badge review">Review</span></td>
+                        <td><span class="time-badge ok">Waiting</span></td>
+                        <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">View</button></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;">Brand Story</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="client-avatar-tiny silver">LH</div>
+                                <div>
+                                    <div style="font-weight: 500;">Lisa Hernandez</div>
+                                    <span class="tier-badge silver">Silver</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="project-type long">Long</span></td>
+                        <td>Sarah Kim</td>
+                        <td><span class="status-badge revisions">Revisions</span></td>
+                        <td><span class="time-badge warning">Jan 3</span></td>
+                        <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 12px;">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Sub-nav switching
+        document.querySelectorAll('.sub-nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.sub-nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                item.classList.add('active');
+                const tabId = item.dataset.tab + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Status filters
+        document.querySelectorAll('.status-filter').forEach(filter => {
+            filter.addEventListener('click', () => {
+                document.querySelectorAll('.status-filter').forEach(f => f.classList.remove('active'));
+                filter.classList.add('active');
+                // Filter logic would go here
+            });
+        });
+
+        // Search functionality
+        document.getElementById('pipeline-search')?.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.project-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('all-search')?.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.data-table tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // Filter selects
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', () => {
+                console.log('Filter:', select.id, select.value);
+            });
+        });
+
+        // Late alert button
+        document.querySelector('.late-alert-btn')?.addEventListener('click', () => {
+            // Switch to pipeline tab and scroll to late column
+            document.querySelector('[data-tab="pipeline"]').click();
+        });
+    </script>
+</body>
+</html>

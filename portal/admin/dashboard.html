@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Company-Wide Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .stat-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .stat-icon.red { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-value.green { color: var(--green); }
+        .stat-value.red { color: var(--red); }
+        .stat-value.orange { color: var(--orange); }
+
+        .stat-change {
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.up { color: var(--green); }
+        .stat-change.down { color: var(--red); }
+        .stat-change.neutral { color: var(--text-muted); }
+
+        .stat-change svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Overall Scores Section */
+        .scores-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 24px;
+            background: var(--dark-surface);
+            border-radius: 12px;
+            border: 1px solid var(--dark-border);
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .score-value.excellent { color: var(--green); }
+        .score-value.good { color: var(--accent); }
+        .score-value.warning { color: var(--orange); }
+        .score-value.bad { color: var(--red); }
+
+        .score-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .score-benchmark {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .score-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .score-trend.up {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        .score-trend.down {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+        }
+
+        .score-trend svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .panel {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .panel-link {
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .panel-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Editor Mini Cards */
+        .editor-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--dark-surface);
+            border-radius: 8px;
+            border: 1px solid var(--dark-border);
+        }
+
+        .editor-mini.alert {
+            border-left: 3px solid var(--red);
+        }
+
+        .editor-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .editor-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .editor-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .editor-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .editor-stats {
+            display: flex;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .editor-stat {
+            min-width: 50px;
+        }
+
+        .editor-stat-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .editor-stat-value.good { color: var(--green); }
+        .editor-stat-value.warning { color: var(--orange); }
+        .editor-stat-value.bad { color: var(--red); }
+
+        .editor-stat-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Client Health Mini */
+        .client-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .client-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--dark-surface);
+            border-radius: 8px;
+        }
+
+        .health-score-mini {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .health-score-mini.critical {
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid var(--red);
+            color: var(--red);
+        }
+
+        .health-score-mini.warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 2px solid var(--orange);
+            color: var(--orange);
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .client-issue {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .client-editor {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Pipeline Summary */
+        .pipeline-summary {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .pipeline-col {
+            background: var(--dark-surface);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .pipeline-count {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .pipeline-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pipeline-col.queue .pipeline-count { color: var(--text-light); }
+        .pipeline-col.active .pipeline-count { color: var(--accent); }
+        .pipeline-col.review .pipeline-count { color: var(--orange); }
+        .pipeline-col.revision .pipeline-count { color: var(--red); }
+        .pipeline-col.approved .pipeline-count { color: var(--green); }
+
+        /* Alerts Banner */
+        .alerts-banner {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .alerts-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--red);
+            flex-shrink: 0;
+        }
+
+        .alerts-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .alerts-content {
+            flex: 1;
+        }
+
+        .alerts-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        .alerts-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .alerts-btn {
+            padding: 8px 16px;
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .alerts-btn:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 1024px) {
+            .scores-grid {
+                grid-template-columns: 1fr;
+            }
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            .pipeline-summary {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .pipeline-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Alerts Banner -->
+    <div class="alerts-banner">
+        <div class="alerts-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+        </div>
+        <div class="alerts-content">
+            <div class="alerts-title">2 Editors Behind Schedule</div>
+            <div class="alerts-desc">Casey Martinez and Jordan Park have late projects that need attention</div>
+        </div>
+        <button class="alerts-btn" onclick="window.parent.loadPage('editors')">View Editors</button>
+    </div>
+
+    <!-- Company Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Total Clients</span>
+                <div class="stat-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">48</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                +6 this month
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Active Editors</span>
+                <div class="stat-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">8</div>
+            <div class="stat-change neutral">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                No change
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Active Projects</span>
+                <div class="stat-icon orange">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M9 3v18"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">47</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                +12 this week
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Free Trials</span>
+                <div class="stat-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value green">3</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                New today
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">At-Risk Clients</span>
+                <div class="stat-icon red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value red">7</div>
+            <div class="stat-change down">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+                2 critical
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Total Payouts</span>
+                <div class="stat-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value green">$18,420</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                +$2,340 from last month
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall Company Scores -->
+    <div class="scores-section">
+        <div class="section-header">
+            <div>
+                <div class="section-title">Company Performance Scores</div>
+                <div class="section-subtitle">Averages across all editors and clients</div>
+            </div>
+        </div>
+        <div class="scores-grid">
+            <div class="score-card">
+                <div class="score-value excellent">1.9</div>
+                <div class="score-label">Avg. Turnaround</div>
+                <div class="score-benchmark">Target: 2.0 days</div>
+                <div class="score-trend up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="18 15 12 9 6 15"/>
+                    </svg>
+                    0.2 faster than last month
+                </div>
+            </div>
+            <div class="score-card">
+                <div class="score-value excellent">0.4</div>
+                <div class="score-label">Avg. Revisions</div>
+                <div class="score-benchmark">Target: < 0.5</div>
+                <div class="score-trend up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="18 15 12 9 6 15"/>
+                    </svg>
+                    Down from 0.6 last month
+                </div>
+            </div>
+            <div class="score-card">
+                <div class="score-value excellent">8.8</div>
+                <div class="score-label">Avg. Quality Score</div>
+                <div class="score-benchmark">Target: 8.5+</div>
+                <div class="score-trend up">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="18 15 12 9 6 15"/>
+                    </svg>
+                    +0.3 from last month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline Summary -->
+    <div class="panel" style="margin-bottom: 24px;">
+        <div class="panel-header">
+            <span class="panel-title">Pipeline Overview</span>
+            <a class="panel-link" onclick="window.parent.loadPage('admin-pipeline')">View All Projects</a>
+        </div>
+        <div class="pipeline-summary">
+            <div class="pipeline-col queue">
+                <div class="pipeline-count">12</div>
+                <div class="pipeline-label">Queue</div>
+            </div>
+            <div class="pipeline-col active">
+                <div class="pipeline-count">18</div>
+                <div class="pipeline-label">Active</div>
+            </div>
+            <div class="pipeline-col review">
+                <div class="pipeline-count">8</div>
+                <div class="pipeline-label">Review</div>
+            </div>
+            <div class="pipeline-col revision">
+                <div class="pipeline-count">6</div>
+                <div class="pipeline-label">Revision</div>
+            </div>
+            <div class="pipeline-col approved">
+                <div class="pipeline-count">3</div>
+                <div class="pipeline-label">Approved</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Column: Editors & Clients -->
+    <div class="two-col">
+        <!-- Editors Needing Attention -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">Editors Needing Attention</span>
+                <a class="panel-link" onclick="window.parent.loadPage('editors')">View All</a>
+            </div>
+            <div class="editor-list">
+                <div class="editor-mini alert">
+                    <div class="editor-avatar">CM</div>
+                    <div class="editor-info">
+                        <div class="editor-name">Casey Martinez</div>
+                        <div class="editor-meta">3 late projects • 120% workload</div>
+                    </div>
+                    <div class="editor-stats">
+                        <div class="editor-stat">
+                            <div class="editor-stat-value bad">7.8</div>
+                            <div class="editor-stat-label">Score</div>
+                        </div>
+                        <div class="editor-stat">
+                            <div class="editor-stat-value bad">2.8d</div>
+                            <div class="editor-stat-label">Turn.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-mini alert">
+                    <div class="editor-avatar">JP</div>
+                    <div class="editor-info">
+                        <div class="editor-name">Jordan Park</div>
+                        <div class="editor-meta">2 late projects • 95% workload</div>
+                    </div>
+                    <div class="editor-stats">
+                        <div class="editor-stat">
+                            <div class="editor-stat-value warning">8.5</div>
+                            <div class="editor-stat-label">Score</div>
+                        </div>
+                        <div class="editor-stat">
+                            <div class="editor-stat-value warning">2.4d</div>
+                            <div class="editor-stat-label">Turn.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-mini">
+                    <div class="editor-avatar">RN</div>
+                    <div class="editor-info">
+                        <div class="editor-name">Riley Nguyen</div>
+                        <div class="editor-meta">1 late project • 60% workload</div>
+                    </div>
+                    <div class="editor-stats">
+                        <div class="editor-stat">
+                            <div class="editor-stat-value good">8.3</div>
+                            <div class="editor-stat-label">Score</div>
+                        </div>
+                        <div class="editor-stat">
+                            <div class="editor-stat-value good">1.7d</div>
+                            <div class="editor-stat-label">Turn.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- At-Risk Clients -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">At-Risk Clients</span>
+                <a class="panel-link" onclick="window.parent.loadPage('health')">View All</a>
+            </div>
+            <div class="client-list">
+                <div class="client-mini">
+                    <div class="health-score-mini critical">4.2</div>
+                    <div class="client-info">
+                        <div class="client-name">Startup Inc.</div>
+                        <div class="client-issue">4.2d turnaround, 2.3 revisions avg</div>
+                        <div class="client-editor">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Casey Martinez
+                        </div>
+                    </div>
+                </div>
+
+                <div class="client-mini">
+                    <div class="health-score-mini critical">5.1</div>
+                    <div class="client-info">
+                        <div class="client-name">GrowthFirst Media</div>
+                        <div class="client-issue">No projects in 14 days</div>
+                        <div class="client-editor">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Jordan Park
+                        </div>
+                    </div>
+                </div>
+
+                <div class="client-mini">
+                    <div class="health-score-mini warning">6.8</div>
+                    <div class="client-info">
+                        <div class="client-name">Tech Academy</div>
+                        <div class="client-issue">1.5 revisions avg, 7.8 quality</div>
+                        <div class="client-editor">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Mike Edwards
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

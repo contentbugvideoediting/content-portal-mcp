@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager KPIs | Content Bug Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --fire: #ff6b35;
+            --purple: #a855f7;
+            --gold: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title .icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .current-time {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-white);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .current-date {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .shift-indicator {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .shift-indicator.morning { background: rgba(245, 158, 11, 0.2); color: var(--gold); }
+        .shift-indicator.afternoon { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
+        .shift-indicator.evening { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+
+        /* Health Score Banner */
+        .health-banner {
+            background: linear-gradient(135deg, var(--dark-card), var(--dark-surface));
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .health-score {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            padding: 4px;
+            background: conic-gradient(var(--score-color) var(--score-pct), var(--dark-border) 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .score-circle.excellent { --score-color: var(--success); color: var(--success); }
+        .score-circle.good { --score-color: var(--accent); color: var(--accent); }
+        .score-circle.warning { --score-color: var(--warning); color: var(--warning); }
+        .score-circle.critical { --score-color: var(--danger); color: var(--danger); }
+
+        .health-info h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .health-info p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .health-alerts {
+            display: flex;
+            gap: 12px;
+        }
+
+        .alert-badge {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .alert-badge:hover {
+            transform: translateY(-2px);
+        }
+
+        .alert-badge.critical {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            animation: alertPulse 1.5s infinite;
+        }
+
+        .alert-badge.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .alert-badge.info {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Main Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 24px;
+        }
+
+        /* KPI Checklist Sections */
+        .checklist-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .checklist-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .frequency {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .frequency.hourly { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .frequency.daily { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .frequency.weekly { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
+
+        .section-progress {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .section-progress .done { color: var(--success); }
+
+        .checklist-items {
+            padding: 8px;
+        }
+
+        /* Checklist Item */
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .check-item:hover {
+            background: var(--dark-surface);
+        }
+
+        .check-item.completed {
+            opacity: 0.5;
+        }
+
+        .check-item.completed .check-title {
+            text-decoration: line-through;
+        }
+
+        .check-item.urgent {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 3px solid var(--danger);
+        }
+
+        .check-item.urgent::before {
+            content: '🔥';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 14px;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--dark-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .check-item:hover .checkbox {
+            border-color: var(--accent);
+        }
+
+        .check-item.completed .checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .check-content {
+            flex: 1;
+        }
+
+        .check-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 4px;
+        }
+
+        .check-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .check-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .check-stat {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--dark-border);
+        }
+
+        .check-stat.good { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .check-stat.warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .check-stat.bad { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        .check-action {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .check-action.primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .check-action.primary:hover {
+            background: #2563eb;
+        }
+
+        .check-action.secondary {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        /* Right Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Real-Time Pulse */
+        .pulse-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .pulse-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pulse-title .live-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+        }
+
+        .pulse-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .pulse-item {
+            background: var(--dark-surface);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .pulse-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .pulse-value.good { color: var(--success); }
+        .pulse-value.warning { color: var(--warning); }
+        .pulse-value.bad { color: var(--danger); }
+        .pulse-value.neutral { color: var(--text-white); }
+
+        .pulse-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Problems Queue */
+        .problems-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .problems-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .problems-count {
+            background: var(--danger);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .problems-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .problem-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .problem-item:hover {
+            background: var(--dark-surface);
+        }
+
+        .problem-item:last-child {
+            border-bottom: none;
+        }
+
+        .problem-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .problem-icon.critical { background: rgba(239, 68, 68, 0.15); }
+        .problem-icon.warning { background: rgba(245, 158, 11, 0.15); }
+
+        .problem-content {
+            flex: 1;
+        }
+
+        .problem-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .problem-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .problem-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .stat-value.good { color: var(--success); }
+        .stat-value.warning { color: var(--warning); }
+        .stat-value.bad { color: var(--danger); }
+
+        /* Notes Section */
+        .notes-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-white);
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            margin-top: 12px;
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .notes-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .health-banner {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .health-alerts {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .header-right {
+                flex-direction: column;
+            }
+
+            .pulse-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <span class="icon">🎯</span>
+            Manager KPI Dashboard
+        </h1>
+        <div class="header-right">
+            <div>
+                <div class="current-time" id="currentTime">10:45 AM</div>
+                <div class="current-date" id="currentDate">Monday, December 16, 2024</div>
+            </div>
+            <div class="shift-indicator morning" id="shiftIndicator">Morning Shift</div>
+        </div>
+    </div>
+
+    <!-- Health Score Banner -->
+    <div class="health-banner">
+        <div class="health-score">
+            <div class="score-circle good" style="--score-pct: 78%;">78</div>
+            <div class="health-info">
+                <h2>Operations Health Score</h2>
+                <p>Based on 12 KPIs across leads, clients, editors, and projects</p>
+            </div>
+        </div>
+        <div class="health-alerts">
+            <div class="alert-badge critical">
+                <span>⚠️</span> 3 Critical
+            </div>
+            <div class="alert-badge warning">
+                <span>⏰</span> 5 Warnings
+            </div>
+            <div class="alert-badge info">
+                <span>📋</span> 8 Pending
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <!-- KPI Checklists -->
+        <div class="checklist-column">
+            <!-- HOURLY CHECKS -->
+            <div class="checklist-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        ⚡ Hourly Pulse Checks
+                        <span class="frequency hourly">Every Hour</span>
+                    </h2>
+                    <span class="section-progress"><span class="done">2</span>/5 done</span>
+                </div>
+                <div class="checklist-items">
+                    <div class="check-item urgent" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Check New Lead Queue</div>
+                            <div class="check-desc">Any new leads in the last hour that need immediate contact?</div>
+                            <div class="check-meta">
+                                <span class="check-stat bad">3 new, 0 contacted</span>
+                            </div>
+                        </div>
+                        <button class="check-action primary">View Leads →</button>
+                    </div>
+
+                    <div class="check-item completed" onclick="toggleCheck(this)">
+                        <div class="checkbox">✓</div>
+                        <div class="check-content">
+                            <div class="check-title">Review Project Status Board</div>
+                            <div class="check-desc">Any projects stuck? Late? Needs attention?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">All on track</span>
+                            </div>
+                        </div>
+                        <button class="check-action secondary">View Projects</button>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Check Editor Availability</div>
+                            <div class="check-desc">Are all editors active? Anyone overloaded or idle?</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">2 at capacity</span>
+                            </div>
+                        </div>
+                        <button class="check-action secondary">View Editors</button>
+                    </div>
+
+                    <div class="check-item completed" onclick="toggleCheck(this)">
+                        <div class="checkbox">✓</div>
+                        <div class="check-content">
+                            <div class="check-title">Review Unread Messages</div>
+                            <div class="check-desc">Any client messages waiting > 1 hour?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">0 waiting</span>
+                            </div>
+                        </div>
+                        <button class="check-action secondary">View Inbox</button>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Check Revision Queue</div>
+                            <div class="check-desc">Any revision requests sitting > 2 hours?</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">1 waiting 3h</span>
+                            </div>
+                        </div>
+                        <button class="check-action primary">View Revisions →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY CHECKS - MORNING -->
+            <div class="checklist-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        🌅 Morning Standup (9 AM)
+                        <span class="frequency daily">Daily</span>
+                    </h2>
+                    <span class="section-progress"><span class="done">1</span>/6 done</span>
+                </div>
+                <div class="checklist-items">
+                    <div class="check-item completed" onclick="toggleCheck(this)">
+                        <div class="checkbox">✓</div>
+                        <div class="check-content">
+                            <div class="check-title">Review Yesterday's Deliveries</div>
+                            <div class="check-desc">How many projects delivered? Quality scores? Any issues?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">12 delivered, 9.2 avg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item urgent" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Check At-Risk Clients</div>
+                            <div class="check-desc">Any clients showing churn signals? Low engagement? Complaints?</div>
+                            <div class="check-meta">
+                                <span class="check-stat bad">4 at-risk</span>
+                            </div>
+                        </div>
+                        <button class="check-action primary">View At-Risk →</button>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Review Today's Delivery Queue</div>
+                            <div class="check-desc">What's due today? Is workload balanced across editors?</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">14 due today</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Follow Up on Cold Leads</div>
+                            <div class="check-desc">Leads with no contact in 48+ hours need attention</div>
+                            <div class="check-meta">
+                                <span class="check-stat bad">7 cold leads</span>
+                            </div>
+                        </div>
+                        <button class="check-action primary">View Cold →</button>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Check Trial Expirations</div>
+                            <div class="check-desc">Any trials expiring today or tomorrow?</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">2 expiring tomorrow</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Review Editor Performance</div>
+                            <div class="check-desc">Check turnaround times, quality scores, revision rates</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">Team avg: 8.7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY CHECKS - AFTERNOON -->
+            <div class="checklist-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        ☀️ Afternoon Check-In (2 PM)
+                        <span class="frequency daily">Daily</span>
+                    </h2>
+                    <span class="section-progress"><span class="done">0</span>/4 done</span>
+                </div>
+                <div class="checklist-items">
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Mid-Day Lead Follow-Up</div>
+                            <div class="check-desc">Any morning leads still not contacted?</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">2 pending</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Check Project ETA Accuracy</div>
+                            <div class="check-desc">Are projects tracking to promised delivery times?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">92% on track</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Review Client Feedback</div>
+                            <div class="check-desc">Any negative feedback today? Praise? Suggestions?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">3 positive, 0 negative</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Sales Pipeline Check</div>
+                            <div class="check-desc">Where are we vs daily/weekly sales goals?</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">68% to daily goal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY CHECKS - EOD -->
+            <div class="checklist-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        🌙 End of Day Wrap (6 PM)
+                        <span class="frequency daily">Daily</span>
+                    </h2>
+                    <span class="section-progress"><span class="done">0</span>/5 done</span>
+                </div>
+                <div class="checklist-items">
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Final Lead Sweep</div>
+                            <div class="check-desc">NO lead should go overnight without contact</div>
+                            <div class="check-meta">
+                                <span class="check-stat warning">1 needs contact</span>
+                            </div>
+                        </div>
+                        <button class="check-action primary">Contact Now →</button>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Confirm Tomorrow's Queue</div>
+                            <div class="check-desc">Is tomorrow's workload assigned? Any gaps?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">All assigned</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Log Daily Metrics</div>
+                            <div class="check-desc">Deliveries, new clients, churn, revenue, quality scores</div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Review Any Escalations</div>
+                            <div class="check-desc">Any issues that need owner attention?</div>
+                            <div class="check-meta">
+                                <span class="check-stat good">None today</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Prep Night Shift Notes</div>
+                            <div class="check-desc">Handoff notes for overnight coverage (if applicable)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEKLY CHECKS -->
+            <div class="checklist-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        📅 Weekly Review (Monday)
+                        <span class="frequency weekly">Weekly</span>
+                    </h2>
+                    <span class="section-progress"><span class="done">0</span>/6 done</span>
+                </div>
+                <div class="checklist-items">
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Weekly Revenue vs Goal</div>
+                            <div class="check-desc">Did we hit target? What was the gap? Why?</div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Churn Analysis</div>
+                            <div class="check-desc">Who churned? Why? Could we have prevented it?</div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Editor Leaderboard Update</div>
+                            <div class="check-desc">Update rankings, identify top performers, coach stragglers</div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Client Health Audit</div>
+                            <div class="check-desc">Review all at-risk clients, make save plans</div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Lead Source Analysis</div>
+                            <div class="check-desc">Which channels are performing? Where to double down?</div>
+                        </div>
+                    </div>
+
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="checkbox"></div>
+                        <div class="check-content">
+                            <div class="check-title">Process Improvement Ideas</div>
+                            <div class="check-desc">What broke this week? How do we prevent it?</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <!-- Real-Time Pulse -->
+            <div class="pulse-section">
+                <h3 class="pulse-title">
+                    <span class="live-dot"></span>
+                    Real-Time Pulse
+                </h3>
+                <div class="pulse-grid">
+                    <div class="pulse-item">
+                        <div class="pulse-value bad">3</div>
+                        <div class="pulse-label">Leads Waiting</div>
+                    </div>
+                    <div class="pulse-item">
+                        <div class="pulse-value good">0</div>
+                        <div class="pulse-label">Late Projects</div>
+                    </div>
+                    <div class="pulse-item">
+                        <div class="pulse-value warning">2</div>
+                        <div class="pulse-label">In Revision</div>
+                    </div>
+                    <div class="pulse-item">
+                        <div class="pulse-value neutral">8</div>
+                        <div class="pulse-label">Active Edits</div>
+                    </div>
+                    <div class="pulse-item">
+                        <div class="pulse-value good">5</div>
+                        <div class="pulse-label">Ready Review</div>
+                    </div>
+                    <div class="pulse-item">
+                        <div class="pulse-value neutral">127</div>
+                        <div class="pulse-label">Active Clients</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Problems Queue -->
+            <div class="problems-section">
+                <div class="problems-header">
+                    <h3 class="section-title">🚨 Problems Queue</h3>
+                    <span class="problems-count">5</span>
+                </div>
+                <div class="problems-list">
+                    <div class="problem-item">
+                        <div class="problem-icon critical">🔥</div>
+                        <div class="problem-content">
+                            <div class="problem-title">Alex Thompson trial expires tomorrow</div>
+                            <div class="problem-detail">No contact in 3 days, Gold tier interest</div>
+                        </div>
+                        <div class="problem-time">2h ago</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-icon critical">🔥</div>
+                        <div class="problem-content">
+                            <div class="problem-title">Editor Jake at 120% capacity</div>
+                            <div class="problem-detail">6 active projects, 2 due today</div>
+                        </div>
+                        <div class="problem-time">1h ago</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-icon warning">⚠️</div>
+                        <div class="problem-content">
+                            <div class="problem-title">Client @fitnessbrand low engagement</div>
+                            <div class="problem-detail">No submissions in 2 weeks</div>
+                        </div>
+                        <div class="problem-time">Today</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-icon warning">⚠️</div>
+                        <div class="problem-content">
+                            <div class="problem-title">3 revision requests pending > 2 hrs</div>
+                            <div class="problem-detail">Clients waiting for responses</div>
+                        </div>
+                        <div class="problem-time">2h ago</div>
+                    </div>
+                    <div class="problem-item">
+                        <div class="problem-icon warning">⚠️</div>
+                        <div class="problem-content">
+                            <div class="problem-title">Weekly goal at 68%</div>
+                            <div class="problem-detail">Need 4 more conversions by Friday</div>
+                        </div>
+                        <div class="problem-time">Today</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <h3 class="section-title" style="margin-bottom: 12px;">📊 Today's Numbers</h3>
+                <div class="stat-row">
+                    <span class="stat-label">New Leads</span>
+                    <span class="stat-value good">7</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Leads Contacted</span>
+                    <span class="stat-value warning">4</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Projects Delivered</span>
+                    <span class="stat-value good">9</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Avg Quality Score</span>
+                    <span class="stat-value good">9.1</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Avg Turnaround</span>
+                    <span class="stat-value good">18.5 hrs</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Response Time</span>
+                    <span class="stat-value warning">47 min</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Conversions</span>
+                    <span class="stat-value good">2</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Revenue Added</span>
+                    <span class="stat-value good">+$1,494</span>
+                </div>
+            </div>
+
+            <!-- Shift Notes -->
+            <div class="notes-section">
+                <h3 class="section-title">📝 Shift Notes</h3>
+                <textarea class="notes-textarea" placeholder="Log important notes for the next shift or tomorrow...
+
+Example:
+- Alex Thompson needs urgent call, trial expiring
+- Jake needs workload balanced
+- New lead Marcus very interested in Pro tier"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('currentTime').textContent = timeStr;
+            document.getElementById('currentDate').textContent = dateStr;
+
+            // Update shift indicator
+            const hour = now.getHours();
+            const shiftEl = document.getElementById('shiftIndicator');
+            if (hour >= 6 && hour < 12) {
+                shiftEl.textContent = 'Morning Shift';
+                shiftEl.className = 'shift-indicator morning';
+            } else if (hour >= 12 && hour < 18) {
+                shiftEl.textContent = 'Afternoon Shift';
+                shiftEl.className = 'shift-indicator afternoon';
+            } else {
+                shiftEl.textContent = 'Evening Shift';
+                shiftEl.className = 'shift-indicator evening';
+            }
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Toggle checkbox
+        function toggleCheck(item) {
+            item.classList.toggle('completed');
+            const checkbox = item.querySelector('.checkbox');
+            if (item.classList.contains('completed')) {
+                checkbox.textContent = '✓';
+            } else {
+                checkbox.textContent = '';
+            }
+            updateProgress();
+        }
+
+        // Update progress counts
+        function updateProgress() {
+            document.querySelectorAll('.checklist-section').forEach(section => {
+                const items = section.querySelectorAll('.check-item');
+                const completed = section.querySelectorAll('.check-item.completed');
+                const progressEl = section.querySelector('.section-progress');
+                if (progressEl) {
+                    progressEl.innerHTML = `<span class="done">${completed.length}</span>/${items.length} done`;
+                }
+            });
+
+            // Update health score based on completion
+            const allItems = document.querySelectorAll('.check-item');
+            const allCompleted = document.querySelectorAll('.check-item.completed');
+            const pct = Math.round((allCompleted.length / allItems.length) * 100);
+
+            const scoreCircle = document.querySelector('.score-circle');
+            scoreCircle.textContent = pct;
+            scoreCircle.style.setProperty('--score-pct', pct + '%');
+
+            if (pct >= 80) {
+                scoreCircle.className = 'score-circle excellent';
+            } else if (pct >= 60) {
+                scoreCircle.className = 'score-circle good';
+            } else if (pct >= 40) {
+                scoreCircle.className = 'score-circle warning';
+            } else {
+                scoreCircle.className = 'score-circle critical';
+            }
+        }
+
+        // Problem items click
+        document.querySelectorAll('.problem-item').forEach(item => {
+            item.addEventListener('click', () => {
+                console.log('Navigate to problem:', item.querySelector('.problem-title').textContent);
+            });
+        });
+
+        // Initial progress update
+        updateProgress();
+    </script>
+</body>
+</html>

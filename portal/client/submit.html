@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --dark-input: #08080c;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --red: #ef4444;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            background: var(--dark-surface);
+            border: 2px solid var(--dark-border);
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .step.active .step-dot {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .step.completed .step-dot {
+            background: var(--green);
+            border-color: var(--green);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: var(--text-white);
+        }
+
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: var(--dark-border);
+        }
+
+        /* Form Section */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .section-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        /* Content Format Toggle */
+        .format-toggle {
+            display: flex;
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 6px;
+            margin-bottom: 32px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .format-btn {
+            flex: 1;
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .format-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .format-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Style Grid */
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .style-card {
+            background: var(--dark-card);
+            border: 2px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .style-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .style-card.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .style-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .style-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--dark-surface);
+            border-radius: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            overflow: hidden;
+        }
+
+        .style-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .style-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .style-creator {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Tier Selection */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .tier-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 500px) {
+            .tier-grid { grid-template-columns: 1fr; }
+        }
+
+        .tier-card {
+            background: var(--dark-card);
+            border: 2px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            text-align: center;
+        }
+
+        .tier-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .tier-card.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .tier-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .tier-1 .tier-badge { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .tier-2 .tier-badge { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .tier-3 .tier-badge { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .tier-4 .tier-badge { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+
+        .tier-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tier-turnaround {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .tier-turnaround-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .tier-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .tier-features li {
+            font-size: 12px;
+            color: var(--text-light);
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tier-features li::before {
+            content: '✓';
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-light);
+        }
+
+        .form-label .required {
+            color: var(--red);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 18px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea.form-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* File Upload */
+        .upload-area {
+            border: 2px dashed var(--dark-border);
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.02);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--dark-surface);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .upload-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent);
+        }
+
+        .upload-text {
+            font-size: 15px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .upload-text strong {
+            color: var(--accent);
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--dark-surface);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--dark-card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .file-remove {
+            padding: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .file-remove:hover {
+            color: var(--red);
+        }
+
+        /* Blueprint Selection */
+        .blueprint-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .blueprint-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--dark-card);
+            border: 2px solid var(--dark-border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .blueprint-card:hover {
+            border-color: var(--accent);
+        }
+
+        .blueprint-card.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .blueprint-radio {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .blueprint-card.selected .blueprint-radio {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        .blueprint-card.selected .blueprint-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .blueprint-info {
+            flex: 1;
+        }
+
+        .blueprint-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .blueprint-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .blueprint-format {
+            padding: 4px 10px;
+            background: var(--dark-surface);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Navigation */
+        .form-nav {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 24px;
+            border-top: 1px solid var(--dark-border);
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-secondary {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark-border);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: var(--green);
+            border: none;
+            color: white;
+        }
+
+        .btn-success:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Summary */
+        .summary-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .summary-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .summary-row.highlight {
+            margin-top: 12px;
+            padding-top: 16px;
+            border-top: 2px solid var(--dark-border);
+        }
+
+        .summary-row.highlight .summary-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .summary-row.highlight .summary-value {
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        /* Success State */
+        .success-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--green);
+        }
+
+        .success-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .success-text {
+            font-size: 15px;
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto 32px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step active" data-step="1">
+                <div class="step-dot">1</div>
+                <span class="step-label">Style</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="2">
+                <div class="step-dot">2</div>
+                <span class="step-label">Tier</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="3">
+                <div class="step-dot">3</div>
+                <span class="step-label">Upload</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="4">
+                <div class="step-dot">4</div>
+                <span class="step-label">Details</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="5">
+                <div class="step-dot">5</div>
+                <span class="step-label">Submit</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Content Format & Style -->
+        <div class="form-section active" id="step1">
+            <div class="section-header">
+                <div class="section-icon">🎬</div>
+                <h2 class="section-title">Choose Your Edit Style</h2>
+                <p class="section-subtitle">Select the content format and editing style for your project</p>
+            </div>
+
+            <div class="format-toggle">
+                <button class="format-btn active" data-format="short" onclick="setFormat('short')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="3" width="12" height="18" rx="2"/>
+                        <line x1="12" y1="18" x2="12" y2="18"/>
+                    </svg>
+                    Short-Form
+                </button>
+                <button class="format-btn" data-format="long" onclick="setFormat('long')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    Long-Form
+                </button>
+            </div>
+
+            <div class="style-grid" id="styleGrid">
+                <!-- Styles will be populated by JS -->
+            </div>
+
+            <div class="form-nav">
+                <div></div>
+                <button class="btn btn-primary" onclick="nextStep()" id="step1Next" disabled>
+                    Continue
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Tier Selection -->
+        <div class="form-section" id="step2">
+            <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <h2 class="section-title">Select Edit Tier</h2>
+                <p class="section-subtitle" id="tierSubtitle">Choose the complexity and turnaround time for your short-form edit</p>
+            </div>
+
+            <div class="tier-grid" id="tierGrid">
+                <!-- Tiers will be populated by JS -->
+            </div>
+
+            <div class="form-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back
+                </button>
+                <button class="btn btn-primary" onclick="nextStep()" id="step2Next" disabled>
+                    Continue
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: File Upload -->
+        <div class="form-section" id="step3">
+            <div class="section-header">
+                <div class="section-icon">📤</div>
+                <h2 class="section-title">Upload Your Footage</h2>
+                <p class="section-subtitle">Drop your raw footage files or paste a link to your Google Drive</p>
+            </div>
+
+            <div class="form-group">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <p class="upload-text">Drag & drop files here or <strong>browse</strong></p>
+                    <p class="upload-hint">MP4, MOV, MKV up to 10GB per file</p>
+                </div>
+                <input type="file" id="fileInput" multiple accept="video/*" style="display: none;">
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Or paste a Google Drive link</label>
+                <input type="url" class="form-input" id="driveLink" placeholder="https://drive.google.com/...">
+            </div>
+
+            <div class="form-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back
+                </button>
+                <button class="btn btn-primary" onclick="nextStep()" id="step3Next">
+                    Continue
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Project Details -->
+        <div class="form-section" id="step4">
+            <div class="section-header">
+                <div class="section-icon">📝</div>
+                <h2 class="section-title">Project Details</h2>
+                <p class="section-subtitle">Help us understand your vision for this edit</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Project Title <span class="required">*</span></label>
+                <input type="text" class="form-input" id="projectTitle" placeholder="e.g., Weekly Vlog #42, Product Launch Announcement">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select Blueprint</label>
+                <div class="blueprint-list" id="blueprintList">
+                    <div class="blueprint-card selected" data-blueprint="default">
+                        <div class="blueprint-radio"></div>
+                        <div class="blueprint-info">
+                            <div class="blueprint-name">Default Style Blueprint</div>
+                            <div class="blueprint-desc">Your saved editing preferences</div>
+                        </div>
+                        <span class="blueprint-format">Short-Form</span>
+                    </div>
+                    <div class="blueprint-card" data-blueprint="cinematic">
+                        <div class="blueprint-radio"></div>
+                        <div class="blueprint-info">
+                            <div class="blueprint-name">Cinematic YouTube</div>
+                            <div class="blueprint-desc">Documentary-style with smooth transitions</div>
+                        </div>
+                        <span class="blueprint-format">Long-Form</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Special Instructions</label>
+                <textarea class="form-input" id="instructions" placeholder="Any specific requests, timestamps to focus on, music preferences, etc."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Hook Preference</label>
+                <input type="text" class="form-input" id="hookPreference" placeholder="e.g., Start with the transformation reveal, Begin with the question">
+            </div>
+
+            <div class="form-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back
+                </button>
+                <button class="btn btn-primary" onclick="nextStep()" id="step4Next">
+                    Review & Submit
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 5: Review & Submit -->
+        <div class="form-section" id="step5">
+            <div class="section-header">
+                <div class="section-icon">✅</div>
+                <h2 class="section-title">Review Your Project</h2>
+                <p class="section-subtitle">Make sure everything looks good before submitting</p>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Content Format</span>
+                    <span class="summary-value" id="summaryFormat">Short-Form</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Edit Style</span>
+                    <span class="summary-value" id="summaryStyle">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Edit Tier</span>
+                    <span class="summary-value" id="summaryTier">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Project Title</span>
+                    <span class="summary-value" id="summaryTitle">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Files/Link</span>
+                    <span class="summary-value" id="summaryFiles">-</span>
+                </div>
+                <div class="summary-row highlight">
+                    <span class="summary-label">Estimated Delivery</span>
+                    <span class="summary-value" id="summaryEta">-</span>
+                </div>
+            </div>
+
+            <div class="form-nav">
+                <button class="btn btn-secondary" onclick="prevStep()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back
+                </button>
+                <button class="btn btn-success" onclick="submitProject()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Submit Project
+                </button>
+            </div>
+        </div>
+
+        <!-- Success State -->
+        <div class="form-section" id="successState">
+            <div class="success-state">
+                <div class="success-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h2 class="success-title">Project Submitted!</h2>
+                <p class="success-text">Your project is now in the queue. We'll notify you when your editor starts working on it.</p>
+                <button class="btn btn-primary" onclick="window.parent.loadPage('pipeline')">
+                    View Pipeline
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 8 Edit Styles from Airtable
+        const editStyles = [
+            { id: 'coursecreatorpro', name: 'CourseCreatorPro Style', creator: '@coursecreatorpro', emoji: '🎓' },
+            { id: 'hormozi', name: 'Alex Hormozi Style', creator: '@hormozi', emoji: '💪' },
+            { id: 'aliabdaal', name: 'Ali Abdaal Style', creator: '@aliabdaal', emoji: '📚' },
+            { id: 'contentcreatorclub', name: 'ContentCreatorClub Style', creator: '@contentcreatorclub', emoji: '🎯' },
+            { id: 'benkaluza', name: 'Ben Kaluza Style', creator: '@benkaluza', emoji: '🔥' },
+            { id: 'austinschneider', name: 'Austin Schneider Style', creator: '@austinschneider', emoji: '⚡' },
+            { id: 'brianmark', name: 'Brian Mark Style', creator: '@brianmark', emoji: '🎥' },
+            { id: 'goldenstandard', name: 'My Golden Standard', creator: 'Your saved style', emoji: '✨' }
+        ];
+
+        // Tier configurations with turnaround times
+        const tiers = {
+            short: [
+                {
+                    id: 'tier-1',
+                    name: 'Tier 1',
+                    title: 'Quick Cut',
+                    turnaround: '1 day',
+                    turnaroundDays: 1,
+                    features: ['Basic cuts & transitions', 'Simple captions', 'Background music', 'Color correction']
+                },
+                {
+                    id: 'tier-2',
+                    name: 'Tier 2',
+                    title: 'Standard',
+                    turnaround: '2 days',
+                    turnaroundDays: 2,
+                    features: ['Dynamic transitions', 'Styled captions', 'B-roll integration', 'Sound effects']
+                },
+                {
+                    id: 'tier-3',
+                    name: 'Tier 3',
+                    title: 'Premium',
+                    turnaround: '3 days',
+                    turnaroundDays: 3,
+                    features: ['Advanced motion graphics', 'Custom animations', 'Multi-layer audio', 'Color grading']
+                },
+                {
+                    id: 'tier-4',
+                    name: 'Tier 4',
+                    title: 'Elite',
+                    turnaround: '5 days',
+                    turnaroundDays: 5,
+                    features: ['Cinematic storytelling', 'VFX & compositing', 'Pro color grade', 'Full sound design']
+                }
+            ],
+            long: [
+                {
+                    id: 'tier-1',
+                    name: 'Tier 1',
+                    title: 'Quick Cut',
+                    turnaround: '1 day',
+                    turnaroundDays: 1,
+                    features: ['Basic assembly edit', 'Simple cuts', 'Background music', 'Basic audio leveling']
+                },
+                {
+                    id: 'tier-2',
+                    name: 'Tier 2',
+                    title: 'Standard',
+                    turnaround: '2 days',
+                    turnaroundDays: 2,
+                    features: ['Structured storytelling', 'Transitions & pacing', 'B-roll integration', 'Caption styling']
+                },
+                {
+                    id: 'tier-3',
+                    name: 'Tier 3',
+                    title: 'Premium',
+                    turnaround: '4 days',
+                    turnaroundDays: 4,
+                    features: ['Advanced narrative flow', 'Motion graphics', 'Multi-cam editing', 'Pro color grading']
+                },
+                {
+                    id: 'tier-4',
+                    name: 'Tier 4',
+                    title: 'Elite',
+                    turnaround: '6 days',
+                    turnaroundDays: 6,
+                    features: ['Documentary-style', 'VFX & compositing', 'Sound design', 'Thumbnail creation']
+                }
+            ]
+        };
+
+        // State
+        let currentStep = 1;
+        let selectedFormat = 'short';
+        let selectedStyle = null;
+        let selectedTier = null;
+        let uploadedFiles = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStyles();
+            renderTiers();
+            setupUpload();
+            setupBlueprints();
+        });
+
+        function setFormat(format) {
+            selectedFormat = format;
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.format === format);
+            });
+
+            // Update tier subtitle
+            document.getElementById('tierSubtitle').textContent =
+                `Choose the complexity and turnaround time for your ${format}-form edit`;
+
+            // Reset selections
+            selectedStyle = null;
+            selectedTier = null;
+            document.getElementById('step1Next').disabled = true;
+            document.getElementById('step2Next').disabled = true;
+
+            renderStyles();
+            renderTiers();
+        }
+
+        function renderStyles() {
+            const grid = document.getElementById('styleGrid');
+            grid.innerHTML = editStyles.map(style => `
+                <div class="style-card ${selectedStyle === style.id ? 'selected' : ''}"
+                     onclick="selectStyle('${style.id}')"
+                     data-style="${style.id}">
+                    <div class="style-preview">${style.emoji}</div>
+                    <div class="style-name">${style.name}</div>
+                    <div class="style-creator">${style.creator}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectStyle(styleId) {
+            selectedStyle = styleId;
+            document.querySelectorAll('.style-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.style === styleId);
+            });
+            document.getElementById('step1Next').disabled = false;
+        }
+
+        function renderTiers() {
+            const grid = document.getElementById('tierGrid');
+            const tierList = tiers[selectedFormat];
+
+            grid.innerHTML = tierList.map((tier, idx) => `
+                <div class="tier-card tier-${idx + 1} ${selectedTier === tier.id ? 'selected' : ''}"
+                     onclick="selectTier('${tier.id}')"
+                     data-tier="${tier.id}">
+                    <span class="tier-badge">${tier.name}</span>
+                    <div class="tier-name">${tier.title}</div>
+                    <div class="tier-turnaround">${tier.turnaround}</div>
+                    <div class="tier-turnaround-label">turnaround</div>
+                    <ul class="tier-features">
+                        ${tier.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        function selectTier(tierId) {
+            selectedTier = tierId;
+            document.querySelectorAll('.tier-card').forEach(card => {
+                card.classList.toggle('selected', card.dataset.tier === tierId);
+            });
+            document.getElementById('step2Next').disabled = false;
+        }
+
+        function setupUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('video/')) {
+                    uploadedFiles.push(file);
+                }
+            });
+            renderFileList();
+        }
+
+        function renderFileList() {
+            const list = document.getElementById('fileList');
+            list.innerHTML = uploadedFiles.map((file, idx) => `
+                <div class="file-item">
+                    <div class="file-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="file-remove" onclick="removeFile(${idx})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeFile(idx) {
+            uploadedFiles.splice(idx, 1);
+            renderFileList();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+        }
+
+        function setupBlueprints() {
+            document.querySelectorAll('.blueprint-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.blueprint-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                });
+            });
+        }
+
+        function nextStep() {
+            if (currentStep < 5) {
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('completed');
+                currentStep++;
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+
+                document.getElementById(`step${currentStep - 1}`).classList.remove('active');
+                document.getElementById(`step${currentStep}`).classList.add('active');
+
+                if (currentStep === 5) {
+                    updateSummary();
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                currentStep--;
+                document.querySelector(`[data-step="${currentStep}"]`).classList.remove('completed');
+                document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+
+                document.getElementById(`step${currentStep + 1}`).classList.remove('active');
+                document.getElementById(`step${currentStep}`).classList.add('active');
+            }
+        }
+
+        function updateSummary() {
+            const style = editStyles.find(s => s.id === selectedStyle);
+            const tierList = tiers[selectedFormat];
+            const tier = tierList.find(t => t.id === selectedTier);
+
+            document.getElementById('summaryFormat').textContent =
+                selectedFormat === 'short' ? 'Short-Form' : 'Long-Form';
+            document.getElementById('summaryStyle').textContent = style ? style.name : '-';
+            document.getElementById('summaryTier').textContent = tier ? `${tier.name} - ${tier.title}` : '-';
+            document.getElementById('summaryTitle').textContent =
+                document.getElementById('projectTitle').value || 'Untitled Project';
+
+            const driveLink = document.getElementById('driveLink').value;
+            if (driveLink) {
+                document.getElementById('summaryFiles').textContent = 'Google Drive link provided';
+            } else if (uploadedFiles.length > 0) {
+                document.getElementById('summaryFiles').textContent = `${uploadedFiles.length} file(s) uploaded`;
+            } else {
+                document.getElementById('summaryFiles').textContent = 'No files';
+            }
+
+            // Calculate ETA
+            if (tier) {
+                const eta = new Date();
+                eta.setDate(eta.getDate() + tier.turnaroundDays);
+                const options = { weekday: 'short', month: 'short', day: 'numeric' };
+                document.getElementById('summaryEta').textContent = eta.toLocaleDateString('en-US', options);
+            }
+        }
+
+        async function submitProject() {
+            const style = editStyles.find(s => s.id === selectedStyle);
+            const tierList = tiers[selectedFormat];
+            const tier = tierList.find(t => t.id === selectedTier);
+
+            const projectData = {
+                title: document.getElementById('projectTitle').value || 'Untitled Project',
+                format: selectedFormat === 'short' ? 'Short-Form' : 'Long-Form',
+                style: style ? style.name : '',
+                tier: tier ? `${tier.name} - ${tier.title}` : '',
+                instructions: document.getElementById('instructions').value || '',
+                driveLink: document.getElementById('driveLink').value || '',
+                hookPreference: document.getElementById('hookPreference').value || ''
+            };
+
+            // Check if embedded in iframe
+            const urlParams = new URLSearchParams(window.location.search);
+            const isEmbedded = window.parent !== window && urlParams.get('embed') === 'true';
+            const userEmail = urlParams.get('email') || localStorage.getItem('cb_email') || '';
+
+            // Save to MCP server
+            let projectId = 'project_' + Date.now();
+            try {
+                const response = await fetch('https://portalv2.contentbug.io/api/project/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...projectData,
+                        email: userEmail,
+                        created_at: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    projectId = result.id || projectId;
+                }
+            } catch (err) {
+                console.error('Failed to save project to MCP:', err);
+            }
+
+            // Hide step 5, show success
+            document.getElementById('step5').classList.remove('active');
+            document.getElementById('successState').classList.add('active');
+
+            // Hide progress steps
+            document.querySelector('.progress-steps').style.display = 'none';
+
+            // Mark project submitted and update trial step
+            localStorage.setItem('cb_project_submitted', 'true');
+            const currentTrialStep = parseInt(localStorage.getItem('cb_trial_step') || '1');
+            if (currentTrialStep < 4) {
+                localStorage.setItem('cb_trial_step', '4'); // Submit = step 3, advance to step 4 (review)
+            }
+
+            // If embedded, notify parent iframe
+            if (isEmbedded) {
+                window.parent.postMessage({
+                    type: 'project_submitted',
+                    step: 3, // Submit is step 3 of onboarding
+                    project_id: projectId,
+                    title: projectData.title,
+                    email: userEmail
+                }, '*');
+                // Also send step_complete for onboarding tracking
+                window.parent.postMessage({
+                    type: 'step_complete',
+                    step: 3
+                }, '*');
+            }
+        }
+    </script>
+</body>
+</html>

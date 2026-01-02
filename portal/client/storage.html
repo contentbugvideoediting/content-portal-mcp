@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage - Content Bug</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #050508;
+            --bg-secondary: #0a0a0f;
+            --bg-tertiary: #0f0f14;
+            --bg-hover: #16161d;
+            --bg-active: #1e1e28;
+            --border: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+        }
+
+        body {
+            background: var(--bg-primary);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-primary);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .storage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .header-left h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-btn {
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .header-btn:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .header-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .header-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .header-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Google Drive Connection */
+        .drive-connection {
+            background: linear-gradient(135deg, rgba(66, 133, 244, 0.1) 0%, rgba(52, 168, 83, 0.1) 100%);
+            border: 1px solid rgba(66, 133, 244, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .drive-icon {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .drive-icon svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .drive-info {
+            flex: 1;
+        }
+
+        .drive-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drive-info h3 .connected-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 8px;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+            border-radius: 4px;
+        }
+
+        .drive-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .drive-link {
+            padding: 10px 16px;
+            background: rgba(66, 133, 244, 0.15);
+            border: 1px solid rgba(66, 133, 244, 0.3);
+            border-radius: 8px;
+            color: #4285F4;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .drive-link:hover {
+            background: rgba(66, 133, 244, 0.25);
+        }
+
+        .drive-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-card .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .stat-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+        }
+
+        .stat-card .stat-icon.green svg { color: var(--green); }
+        .stat-card .stat-icon.orange svg { color: var(--orange); }
+        .stat-card .stat-icon.red svg { color: var(--red); }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Storage Bar */
+        .storage-bar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .storage-bar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .storage-bar-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .storage-bar-value {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* Files Grid */
+        .files-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .file-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .file-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .file-thumbnail {
+            height: 140px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .file-thumbnail .file-type-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--bg-active);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-thumbnail .file-type-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .file-thumbnail .file-type-icon.video svg { color: var(--red); }
+        .file-thumbnail .file-type-icon.image svg { color: var(--green); }
+        .file-thumbnail .file-type-icon.audio svg { color: var(--orange); }
+        .file-thumbnail .file-type-icon.doc svg { color: var(--accent); }
+
+        .file-duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .file-status {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .file-status.approved {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        .file-status.pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--orange);
+        }
+
+        .file-status.new {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+        }
+
+        .file-content {
+            padding: 16px;
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .file-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .file-btn {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .file-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .file-btn.secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .file-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .upload-zone-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .upload-zone-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--accent);
+        }
+
+        .upload-zone h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone p {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .upload-zone .browse-link {
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .empty-state-icon svg {
+            width: 36px;
+            height: 36px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Loading */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .drive-connection {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="storage-header">
+        <div class="header-left">
+            <h1>Your Storage</h1>
+            <p>Access all your completed edits and assets</p>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="refreshFiles()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Refresh
+            </button>
+            <button class="header-btn primary" onclick="openUploadModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Upload Assets
+            </button>
+        </div>
+    </div>
+
+    <!-- Google Drive Connection -->
+    <div class="drive-connection" id="driveConnection">
+        <div class="drive-icon">
+            <svg viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066da"/>
+                <path d="M43.65 25l-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3L1.2 43.45c-.8 1.4-1.2 2.95-1.2 4.5h27.5L43.65 25z" fill="#00ac47"/>
+                <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.85 10.15 7.9 13.65z" fill="#ea4335"/>
+                <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2L43.65 25z" fill="#00832d"/>
+                <path d="M59.8 48H27.5L13.75 71.8c1.35.8 2.9 1.2 4.5 1.2h36.8c1.6 0 3.15-.45 4.5-1.2L59.8 48z" fill="#2684fc"/>
+                <path d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25l16.15 28h27.5c0-1.55-.4-3.1-1.2-4.5l-12.7-22z" fill="#ffba00"/>
+            </svg>
+        </div>
+        <div class="drive-info">
+            <h3>
+                Google Drive
+                <span class="connected-badge" id="driveBadge" style="display: none;">Connected</span>
+            </h3>
+            <p id="driveStatus">Your files are synced with your personal Google Drive folder for easy access</p>
+        </div>
+        <a href="#" class="drive-link" id="driveBtn" onclick="openDriveFolder()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            Open in Drive
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="totalFiles">0</div>
+            <div class="stat-label">Total Files</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="totalVideos">0</div>
+            <div class="stat-label">Videos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="totalImages">0</div>
+            <div class="stat-label">Images</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="totalOther">0</div>
+            <div class="stat-label">Other Files</div>
+        </div>
+    </div>
+
+    <!-- Storage Bar -->
+    <div class="storage-bar">
+        <div class="storage-bar-header">
+            <span class="storage-bar-label">Storage Used</span>
+            <span class="storage-bar-value" id="storageValue">0 GB of 50 GB</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="storageFill" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" data-tab="all" onclick="switchTab('all')">All Files</button>
+        <button class="tab" data-tab="videos" onclick="switchTab('videos')">Videos</button>
+        <button class="tab" data-tab="assets" onclick="switchTab('assets')">Brand Assets</button>
+        <button class="tab" data-tab="recent" onclick="switchTab('recent')">Recent</button>
+    </div>
+
+    <!-- Completed Edits Section -->
+    <div class="files-section" id="videosSection">
+        <div class="section-header">
+            <span class="section-title">Completed Edits</span>
+            <span class="section-count" id="videosCount">0 files</span>
+        </div>
+        <div class="files-grid" id="videosGrid">
+            <!-- Videos populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Brand Assets Section -->
+    <div class="files-section" id="assetsSection">
+        <div class="section-header">
+            <span class="section-title">Brand Assets</span>
+            <span class="section-count" id="assetsCount">0 files</span>
+        </div>
+        <div class="files-grid" id="assetsGrid">
+            <!-- Assets populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+        </div>
+        <h3>No files yet</h3>
+        <p>Your completed edits and uploaded assets will appear here</p>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const MCP_SERVER = 'https://portalv2.contentbug.io';
+
+        // ============================================
+        // STATE
+        // ============================================
+        let currentUser = {
+            email: '',
+            name: '',
+            airtableId: '',
+            driveFolderId: null
+        };
+
+        let files = {
+            videos: [],
+            assets: []
+        };
+
+        let currentTab = 'all';
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser.email = localStorage.getItem('cb_email') || '';
+            currentUser.name = localStorage.getItem('cb_name') || 'User';
+            currentUser.airtableId = localStorage.getItem('cb_airtable_id') || '';
+            currentUser.driveFolderId = localStorage.getItem('cb_drive_folder_id') || null;
+
+            checkDriveConnection();
+            await loadFiles();
+        });
+
+        // ============================================
+        // GOOGLE DRIVE
+        // ============================================
+        function checkDriveConnection() {
+            if (currentUser.driveFolderId) {
+                document.getElementById('driveBadge').style.display = 'inline-block';
+                document.getElementById('driveStatus').textContent = 'Your files are synced with your personal Google Drive folder';
+            } else {
+                document.getElementById('driveBadge').style.display = 'none';
+                document.getElementById('driveStatus').textContent = 'Connect to sync your files with Google Drive';
+                document.getElementById('driveBtn').textContent = 'Connect Drive';
+            }
+        }
+
+        async function openDriveFolder() {
+            if (currentUser.driveFolderId) {
+                window.open(`https://drive.google.com/drive/folders/${currentUser.driveFolderId}`, '_blank');
+            } else {
+                // Trigger Google Drive connection flow
+                try {
+                    const response = await fetch(`${MCP_SERVER}/api/drive/connect`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-User-Email': currentUser.email
+                        },
+                        body: JSON.stringify({
+                            email: currentUser.email,
+                            airtable_id: currentUser.airtableId
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.folder_id) {
+                            currentUser.driveFolderId = data.folder_id;
+                            localStorage.setItem('cb_drive_folder_id', data.folder_id);
+                            checkDriveConnection();
+                            window.open(`https://drive.google.com/drive/folders/${data.folder_id}`, '_blank');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Failed to connect Drive:', err);
+                    // For demo, open a placeholder
+                    window.open('https://drive.google.com', '_blank');
+                }
+            }
+        }
+
+        // ============================================
+        // LOAD FILES
+        // ============================================
+        async function loadFiles() {
+            try {
+                const response = await fetch(`${MCP_SERVER}/api/storage/files`, {
+                    headers: { 'X-User-Email': currentUser.email }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    files.videos = data.videos || [];
+                    files.assets = data.assets || [];
+                } else {
+                    loadDemoFiles();
+                }
+            } catch (err) {
+                console.error('Failed to load files:', err);
+                loadDemoFiles();
+            }
+
+            updateStats();
+            renderFiles();
+        }
+
+        function loadDemoFiles() {
+            files.videos = [
+                {
+                    id: 'v1',
+                    name: 'YouTube Tutorial - Complete Setup Guide (Final)',
+                    type: 'video',
+                    size: '524 MB',
+                    duration: '12:34',
+                    date: '2024-12-27',
+                    status: 'approved',
+                    thumbnail: null,
+                    url: '#'
+                },
+                {
+                    id: 'v2',
+                    name: 'Instagram Reel - Top 5 Tips Series',
+                    type: 'video',
+                    size: '48 MB',
+                    duration: '0:59',
+                    date: '2024-12-26',
+                    status: 'approved',
+                    thumbnail: null,
+                    url: '#'
+                },
+                {
+                    id: 'v3',
+                    name: 'TikTok Ad - Holiday Sale Promo',
+                    type: 'video',
+                    size: '32 MB',
+                    duration: '0:30',
+                    date: '2024-12-25',
+                    status: 'approved',
+                    thumbnail: null,
+                    url: '#'
+                },
+                {
+                    id: 'v4',
+                    name: 'YouTube Shorts - Behind the Scenes',
+                    type: 'video',
+                    size: '68 MB',
+                    duration: '0:58',
+                    date: '2024-12-24',
+                    status: 'new',
+                    thumbnail: null,
+                    url: '#'
+                }
+            ];
+
+            files.assets = [
+                {
+                    id: 'a1',
+                    name: 'logo-primary.svg',
+                    type: 'image',
+                    size: '24 KB',
+                    date: '2024-12-20',
+                    thumbnail: null,
+                    url: '#'
+                },
+                {
+                    id: 'a2',
+                    name: 'intro-music.mp3',
+                    type: 'audio',
+                    size: '2.4 MB',
+                    date: '2024-12-18',
+                    thumbnail: null,
+                    url: '#'
+                },
+                {
+                    id: 'a3',
+                    name: 'brand-fonts.zip',
+                    type: 'doc',
+                    size: '1.2 MB',
+                    date: '2024-12-15',
+                    thumbnail: null,
+                    url: '#'
+                },
+                {
+                    id: 'a4',
+                    name: 'lower-thirds.png',
+                    type: 'image',
+                    size: '156 KB',
+                    date: '2024-12-12',
+                    thumbnail: null,
+                    url: '#'
+                }
+            ];
+        }
+
+        function updateStats() {
+            const totalVideos = files.videos.length;
+            const totalImages = files.assets.filter(f => f.type === 'image').length;
+            const totalOther = files.assets.filter(f => f.type !== 'image').length;
+            const totalFiles = totalVideos + files.assets.length;
+
+            document.getElementById('totalFiles').textContent = totalFiles;
+            document.getElementById('totalVideos').textContent = totalVideos;
+            document.getElementById('totalImages').textContent = totalImages;
+            document.getElementById('totalOther').textContent = totalOther;
+
+            // Calculate storage (demo values)
+            const usedGB = 3.5;
+            const totalGB = 50;
+            const percentage = (usedGB / totalGB) * 100;
+
+            document.getElementById('storageValue').textContent = `${usedGB} GB of ${totalGB} GB`;
+            document.getElementById('storageFill').style.width = `${percentage}%`;
+
+            document.getElementById('videosCount').textContent = `${totalVideos} files`;
+            document.getElementById('assetsCount').textContent = `${files.assets.length} files`;
+        }
+
+        // ============================================
+        // RENDER FILES
+        // ============================================
+        function renderFiles() {
+            renderVideoGrid();
+            renderAssetGrid();
+            checkEmptyState();
+        }
+
+        function renderVideoGrid() {
+            const grid = document.getElementById('videosGrid');
+            const visibleVideos = currentTab === 'assets' ? [] :
+                                  currentTab === 'recent' ? files.videos.slice(0, 4) :
+                                  files.videos;
+
+            if (visibleVideos.length === 0) {
+                grid.innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = visibleVideos.map(file => `
+                <div class="file-card" data-id="${file.id}">
+                    <div class="file-thumbnail">
+                        ${file.thumbnail ?
+                            `<img src="${file.thumbnail}" alt="">` :
+                            `<div class="file-type-icon video">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="23 7 16 12 23 17 23 7"/>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                </svg>
+                            </div>`
+                        }
+                        ${file.duration ? `<span class="file-duration">${file.duration}</span>` : ''}
+                        ${file.status ? `<span class="file-status ${file.status}">${file.status}</span>` : ''}
+                    </div>
+                    <div class="file-content">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">
+                            <span>${file.size}</span>
+                            <span>•</span>
+                            <span>${formatDate(file.date)}</span>
+                        </div>
+                        <div class="file-actions">
+                            <button class="file-btn" onclick="downloadFile('${file.id}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                            <button class="file-btn secondary" onclick="previewFile('${file.id}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAssetGrid() {
+            const grid = document.getElementById('assetsGrid');
+            const section = document.getElementById('assetsSection');
+
+            if (currentTab === 'videos') {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            const visibleAssets = currentTab === 'recent' ? files.assets.slice(0, 4) : files.assets;
+
+            if (visibleAssets.length === 0) {
+                grid.innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = visibleAssets.map(file => `
+                <div class="file-card" data-id="${file.id}">
+                    <div class="file-thumbnail">
+                        ${file.thumbnail ?
+                            `<img src="${file.thumbnail}" alt="">` :
+                            `<div class="file-type-icon ${file.type}">
+                                ${getFileTypeIcon(file.type)}
+                            </div>`
+                        }
+                    </div>
+                    <div class="file-content">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">
+                            <span>${file.size}</span>
+                            <span>•</span>
+                            <span>${formatDate(file.date)}</span>
+                        </div>
+                        <div class="file-actions">
+                            <button class="file-btn" onclick="downloadFile('${file.id}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFileTypeIcon(type) {
+            const icons = {
+                video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                </svg>`,
+                image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>`,
+                audio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="16" r="3"/>
+                </svg>`,
+                doc: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>`
+            };
+            return icons[type] || icons.doc;
+        }
+
+        function checkEmptyState() {
+            const hasFiles = files.videos.length > 0 || files.assets.length > 0;
+            document.getElementById('emptyState').style.display = hasFiles ? 'none' : 'block';
+            document.getElementById('videosSection').style.display = hasFiles && currentTab !== 'assets' ? 'block' : 'none';
+        }
+
+        // ============================================
+        // TABS
+        // ============================================
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            renderFiles();
+        }
+
+        // ============================================
+        // ACTIONS
+        // ============================================
+        async function downloadFile(fileId) {
+            const file = [...files.videos, ...files.assets].find(f => f.id === fileId);
+            if (!file) return;
+
+            if (file.url && file.url !== '#') {
+                window.open(file.url, '_blank');
+            } else {
+                // Request download URL from server
+                try {
+                    const response = await fetch(`${MCP_SERVER}/api/storage/download/${fileId}`, {
+                        headers: { 'X-User-Email': currentUser.email }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.open(data.download_url, '_blank');
+                    }
+                } catch (err) {
+                    console.error('Download failed:', err);
+                    alert('Download will be available shortly');
+                }
+            }
+        }
+
+        function previewFile(fileId) {
+            // Navigate to review page with this file
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'navigate',
+                    page: 'review',
+                    fileId: fileId
+                }, '*');
+            }
+        }
+
+        async function refreshFiles() {
+            await loadFiles();
+        }
+
+        function openUploadModal() {
+            // This would open an upload modal or redirect to submit page
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'navigate', page: 'submit' }, '*');
+            } else {
+                alert('Upload assets coming soon!');
+            }
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / 86400000);
+
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return `${days} days ago`;
+
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Listen for messages from parent
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            if (!data || typeof data !== 'object') return;
+
+            if (data.type === 'file_ready') {
+                // A new file is ready for download
+                loadFiles();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Storefront — Content Bug</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-dark: #0a0a0c;
+            --bg-sidebar: #111114;
+            --bg-main: #18181b;
+            --bg-hover: #27272a;
+            --bg-active: #3b82f6;
+            --bg-card: #1a1a1f;
+            --bg-card-hover: #222228;
+            --text-white: #ffffff;
+            --text-gray: #a1a1aa;
+            --text-muted: #71717a;
+            --border: rgba(255,255,255,0.1);
+            --border-subtle: rgba(255,255,255,0.06);
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.15);
+            --green: #22c55e;
+            --green-glow: rgba(34, 197, 94, 0.15);
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+            --purple-glow: rgba(139, 92, 246, 0.15);
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.15);
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-white);
+            overflow-x: hidden;
+        }
+
+        /* === BACKGROUND EFFECTS === */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 600px;
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--accent-glow), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* === MAIN CONTAINER === */
+        .store-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 32px 80px;
+        }
+
+        /* === HEADER === */
+        .store-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .store-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .store-title {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, #fff 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .store-subtitle {
+            font-size: 18px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* === VERIFIED ROW === */
+        .verified-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            padding: 16px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .verified-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .verified-label svg {
+            width: 16px;
+            height: 16px;
+            color: var(--green);
+        }
+
+        .verified-logos {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .verified-logo {
+            height: 24px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .verified-logo:hover {
+            opacity: 1;
+        }
+
+        /* === TAB SWITCH === */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .tab-switch {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .tab-btn {
+            position: relative;
+            padding: 12px 28px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 10px;
+        }
+
+        .tab-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-gray);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+        }
+
+        .tab-btn.active::before {
+            opacity: 1;
+        }
+
+        /* === PRODUCT GRID === */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1100px) {
+            .product-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 700px) {
+            .product-grid { grid-template-columns: 1fr; }
+            .store-container { padding: 24px 16px 60px; }
+            .store-title { font-size: 32px; }
+        }
+
+        /* === PRODUCT CARD === */
+        .product-card {
+            position: relative;
+            background: linear-gradient(165deg, var(--bg-card) 0%, rgba(20, 20, 24, 0.95) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow:
+                0 20px 60px -15px rgba(0, 0, 0, 0.5),
+                0 0 40px -10px var(--accent-glow);
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-card.locked {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .product-card.locked::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.5);
+            border-radius: 20px;
+        }
+
+        .product-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px -8px rgba(59, 130, 246, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover .product-icon {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px -8px rgba(59, 130, 246, 0.5);
+        }
+
+        .product-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #fff;
+        }
+
+        .product-icon.purple {
+            background: linear-gradient(135deg, var(--purple) 0%, #7c3aed 100%);
+            box-shadow: 0 8px 24px -8px rgba(139, 92, 246, 0.4);
+        }
+
+        .product-icon.green {
+            background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+            box-shadow: 0 8px 24px -8px rgba(34, 197, 94, 0.4);
+        }
+
+        .product-icon.gold {
+            background: linear-gradient(135deg, var(--gold) 0%, #d97706 100%);
+            box-shadow: 0 8px 24px -8px rgba(245, 158, 11, 0.4);
+        }
+
+        .product-icon.mystery {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+            box-shadow: 0 8px 24px -8px rgba(236, 72, 153, 0.4);
+            animation: mysteryGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes mysteryGlow {
+            0%, 100% { box-shadow: 0 8px 24px -8px rgba(236, 72, 153, 0.4); }
+            50% { box-shadow: 0 12px 32px -8px rgba(139, 92, 246, 0.5); }
+        }
+
+        .product-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            line-height: 1.3;
+        }
+
+        .product-badge {
+            flex-shrink: 0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-badge.included {
+            background: var(--green-glow);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--green);
+        }
+
+        .product-badge.annual {
+            background: var(--gold-glow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--gold);
+        }
+
+        .product-outcome {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .product-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .product-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 6px 0;
+        }
+
+        .product-features li svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .product-price {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .product-price strong {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        .product-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            padding: 14px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-white);
+        }
+
+        /* === LOCK OVERLAY === */
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .product-card.locked .lock-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lock-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-hover);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lock-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-muted);
+        }
+
+        .lock-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        /* === MYSTERY CARD === */
+        .product-card.mystery {
+            background: linear-gradient(165deg, rgba(30, 20, 40, 0.9) 0%, rgba(20, 15, 30, 0.95) 100%);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .product-card.mystery:hover {
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow:
+                0 20px 60px -15px rgba(0, 0, 0, 0.5),
+                0 0 40px -10px var(--purple-glow);
+        }
+
+        .mystery-teaser {
+            font-size: 14px;
+            color: #c084fc;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .btn-mystery {
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* === LOCKED STATE PAGE === */
+        .locked-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .locked-state.active {
+            display: flex;
+        }
+
+        .locked-state-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .locked-state-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--text-muted);
+        }
+
+        .locked-state h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .locked-state p {
+            font-size: 16px;
+            color: var(--text-gray);
+            max-width: 400px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .locked-state .btn-primary {
+            padding: 16px 32px;
+            font-size: 16px;
+        }
+
+        /* === SKELETON LOADING === */
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+
+        .skeleton::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: skeleton-shimmer 1.5s infinite;
+        }
+
+        @keyframes skeleton-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .skeleton-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 70%;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            width: 100%;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-text.short {
+            width: 60%;
+        }
+
+        .skeleton-button {
+            height: 48px;
+            width: 100%;
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+
+        /* === TOAST NOTIFICATIONS === */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: linear-gradient(165deg, rgba(30, 30, 38, 0.95) 0%, rgba(20, 20, 26, 0.98) 100%);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 320px;
+            max-width: 400px;
+            box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.5);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .toast-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+        }
+
+        .toast-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .toast-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .toast-body {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        /* === MYSTERY MODAL === */
+        .mystery-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+        }
+
+        .mystery-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mystery-content {
+            background: linear-gradient(165deg, rgba(30, 20, 45, 0.98) 0%, rgba(15, 12, 25, 0.99) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 500px;
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mystery-modal.active .mystery-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .mystery-reveal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px 10px rgba(139, 92, 246, 0.2); }
+        }
+
+        .mystery-reveal-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .mystery-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mystery-description {
+            font-size: 16px;
+            color: var(--text-gray);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .mystery-perks {
+            list-style: none;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .mystery-perks li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-white);
+        }
+
+        .mystery-perks li svg {
+            width: 20px;
+            height: 20px;
+            color: #c084fc;
+        }
+
+        .mystery-close {
+            padding: 14px 32px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mystery-close:hover {
+            background: var(--bg-card);
+            color: var(--text-white);
+        }
+
+        /* === BACK BUTTON === */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 32px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            border-color: var(--accent);
+            color: var(--text-white);
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Main Container -->
+    <div class="store-container" id="storeContent">
+        <!-- Back Link -->
+        <a href="client-portal.html" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Portal
+        </a>
+
+        <!-- Header -->
+        <header class="store-header">
+            <div class="store-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                Client Storefront
+            </div>
+            <h1 class="store-title">Build Your Studio</h1>
+            <p class="store-subtitle" id="storeSubtitle">Fuel Your Content Engine</p>
+        </header>
+
+        <!-- Verified Row -->
+        <div class="verified-row">
+            <div class="verified-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Verified Integrations
+            </div>
+            <div class="verified-logos">
+                <!-- Dropbox SVG -->
+                <svg class="verified-logo" viewBox="0 0 43 40" height="24" fill="#fff">
+                    <path d="M12.6 0L0 8l8.6 6.5 12.6-7.7L12.6 0zM0 21l12.6 8 8.6-6.8-12.6-7.7L0 21zm21.2 1.2l8.6 6.8L42.4 21l-8.6-6.5-12.6 7.7zm21.2-14.4L30 0l-8.6 6.8 12.6 7.7 8.4-6.7zM21.3 23.5L12.6 30 0 22v8.3l21.2 9.7 21.2-9.7V22L30 30l-8.7-6.5z"/>
+                </svg>
+                <!-- Google Drive SVG -->
+                <svg class="verified-logo" viewBox="0 0 87.3 78" height="24" fill="#fff">
+                    <path d="M6.6 66.85L28.8 29h29.7l22.2 37.85H6.6z"/>
+                    <path d="M58.5 29h29.7L66 66.85 43.5 29h15z"/>
+                    <path d="M28.8 0l22.2 29H21.3L0 29 28.8 0z"/>
+                    <path d="M28.8 0l22.2 29-22.2 37.85L6.6 29 28.8 0z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Tab Switch -->
+        <div class="tab-container">
+            <div class="tab-switch">
+                <button class="tab-btn active" onclick="switchTab('addons')"><span>Add-Ons</span></button>
+                <button class="tab-btn" onclick="switchTab('included')"><span>Included With Your Plan</span></button>
+            </div>
+        </div>
+
+        <!-- Product Grid - Add-Ons -->
+        <div class="product-grid" id="addonsGrid">
+            <!-- Done-For-You Scripts - Short Form -->
+            <div class="product-card" data-addon="dfy-scripts-short">
+                <div class="product-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">DFY Scripts - Short Form</h3>
+                    <span class="product-badge annual">Annual Pass</span>
+                </div>
+                <p class="product-outcome">Scroll-stopping scripts for Reels, TikToks, and Shorts written in your voice.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Hook-first structure
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Platform-optimized for shorts
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Based on your blueprint
+                    </li>
+                </ul>
+                <p class="product-price"><strong>$997</strong> / year</p>
+                <div class="product-actions">
+                    <button class="btn-primary" onclick="requestAddon('DFY Scripts - Short Form', '$997/year')">Add Annual Pass</button>
+                    <button class="btn-secondary">Learn more</button>
+                </div>
+            </div>
+
+            <!-- Done-For-You Scripts - Long Form -->
+            <div class="product-card" data-addon="dfy-scripts-long">
+                <div class="product-icon gold">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <line x1="10" y1="9" x2="8" y2="9"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">DFY Scripts - Long Form</h3>
+                    <span class="product-badge annual">Annual Pass</span>
+                </div>
+                <p class="product-outcome">In-depth scripts for YouTube videos, podcasts, and long-form content.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Full narrative structure
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        YouTube & podcast ready
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Research & outline included
+                    </li>
+                </ul>
+                <p class="product-price"><strong>$1,994</strong> / year</p>
+                <div class="product-actions">
+                    <button class="btn-primary" onclick="requestAddon('DFY Scripts - Long Form', '$1,994/year')">Add Annual Pass</button>
+                    <button class="btn-secondary">Learn more</button>
+                </div>
+            </div>
+
+            <!-- Viral Thumbnail Digital Designer -->
+            <div class="product-card" data-addon="thumbnail-designer">
+                <div class="product-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">Viral Thumbnail Designer</h3>
+                    <span class="product-badge annual">Annual Pass</span>
+                </div>
+                <p class="product-outcome">High-CTR thumbnails modeled after the best creators on social media.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Shorts & long-form formats
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Proven CTR templates
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        A/B variations included
+                    </li>
+                </ul>
+                <p class="product-price"><strong>$797</strong> / year</p>
+                <div class="product-actions">
+                    <button class="btn-primary" onclick="requestAddon('Viral Thumbnail Designer', '$797/year')">Add Annual Pass</button>
+                    <button class="btn-secondary">Learn more</button>
+                </div>
+            </div>
+
+            <!-- Virtual Film Studio -->
+            <div class="product-card" data-addon="virtual-studio">
+                <div class="product-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">Virtual Film Studio</h3>
+                    <span class="product-badge annual">Annual Pass</span>
+                </div>
+                <p class="product-outcome">Record podcasts, interviews, and collabs in our virtual studio room.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        HD/4K recording
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Separate audio tracks
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Auto-upload to portal
+                    </li>
+                </ul>
+                <p class="product-price"><strong>$1,788</strong> / year</p>
+                <div class="product-actions">
+                    <button class="btn-primary" onclick="requestAddon('Virtual Film Studio', '$1,788/year')">Add Annual Pass</button>
+                    <button class="btn-secondary">Learn more</button>
+                </div>
+            </div>
+
+            <!-- White Label Portal -->
+            <div class="product-card" data-addon="white-label">
+                <div class="product-icon gold">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">White Label Portal</h3>
+                    <span class="product-badge annual">Annual Pass</span>
+                </div>
+                <p class="product-outcome">Offer Content Bug editing to your clients under your own brand.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Custom branding
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Multi-client dashboard
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Revenue share model
+                    </li>
+                </ul>
+                <p class="product-price">Contact for pricing</p>
+                <div class="product-actions">
+                    <button class="btn-primary" onclick="requestAddon('White Label Portal', 'Custom pricing')">Request Access</button>
+                    <button class="btn-secondary">Learn more</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Grid - Included (hidden by default) -->
+        <div class="product-grid" id="includedGrid" style="display: none;">
+            <!-- Included items would go here -->
+            <div class="product-card">
+                <div class="product-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">Unlimited Video Editing</h3>
+                    <span class="product-badge included">Included</span>
+                </div>
+                <p class="product-outcome">Submit as many projects as you want. We handle the queue.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Shorts & long-form
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Custom style blueprint
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Unlimited revisions
+                    </li>
+                </ul>
+                <p class="product-price"><strong>Included</strong> with your plan</p>
+                <div class="product-actions">
+                    <button class="btn-primary" disabled>Active</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">Direct Chat Support</h3>
+                    <span class="product-badge included">Included</span>
+                </div>
+                <p class="product-outcome">Chat directly with your editing team in the portal.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Real-time messaging
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        File sharing
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Response within hours
+                    </li>
+                </ul>
+                <p class="product-price"><strong>Included</strong> with your plan</p>
+                <div class="product-actions">
+                    <button class="btn-primary" disabled>Active</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                        <polyline points="2 17 12 22 22 17"/>
+                        <polyline points="2 12 12 17 22 12"/>
+                    </svg>
+                </div>
+                <div class="product-header">
+                    <h3 class="product-name">Style Blueprint</h3>
+                    <span class="product-badge included">Included</span>
+                </div>
+                <p class="product-outcome">Define your unique editing style once, we follow it forever.</p>
+                <ul class="product-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Caption styles
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Music & SFX preferences
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        B-roll selections
+                    </li>
+                </ul>
+                <p class="product-price"><strong>Included</strong> with your plan</p>
+                <div class="product-actions">
+                    <button class="btn-primary" disabled>Active</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Locked State (shown for non-active clients) -->
+    <div class="locked-state" id="lockedState">
+        <div class="locked-state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+        </div>
+        <h2>Storefront Locked</h2>
+        <p>The Client Storefront is available for active subscribers only. Upgrade your plan to unlock exclusive add-ons and perks.</p>
+        <a href="https://contentbug.io/pricing" class="btn-primary">View Plans</a>
+    </div>
+
+    <script>
+        // ============ CLIENT DATA ============
+        let clientId = null;
+        let clientName = 'Client';
+        let clientStatus = 'active'; // Default for demo
+
+        // Parse URL params
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            clientId = params.get('clientId') || localStorage.getItem('cb_airtable_id');
+            clientName = params.get('clientName') || localStorage.getItem('cb_name') || 'Client';
+            clientStatus = params.get('status') || localStorage.getItem('cb_status') || 'active';
+
+            // Update subtitle with client name
+            document.getElementById('storeSubtitle').textContent = `Fuel Your Content Engine, ${clientName.split(' ')[0]}`;
+        }
+
+        // Check if client is active
+        function checkAccess() {
+            if (clientStatus !== 'active') {
+                document.getElementById('storeContent').style.display = 'none';
+                document.getElementById('lockedState').classList.add('active');
+            }
+        }
+
+        // ============ TAB SWITCHING ============
+        function switchTab(tab) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Switch grids
+            if (tab === 'addons') {
+                document.getElementById('addonsGrid').style.display = 'grid';
+                document.getElementById('includedGrid').style.display = 'none';
+            } else {
+                document.getElementById('addonsGrid').style.display = 'none';
+                document.getElementById('includedGrid').style.display = 'grid';
+            }
+        }
+
+        // ============ REQUEST ADDON ============
+        function requestAddon(addonKey, addonName) {
+            const request = {
+                clientId: clientId,
+                clientName: clientName,
+                addonKey: addonKey,
+                addonName: addonName,
+                timestamp: Date.now()
+            };
+
+            // Log to console
+            console.log('Addon Request:', request);
+
+            // Store in localStorage queue
+            let requests = JSON.parse(localStorage.getItem('cb_addon_requests') || '[]');
+            requests.push(request);
+            localStorage.setItem('cb_addon_requests', JSON.stringify(requests));
+
+            // Future: POST to MCP endpoint
+            /*
+            fetch('https://portalv2.contentbug.io/api/addon/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request)
+            });
+            */
+
+            // Show success toast
+            showToast('Request Sent', `We'll follow up about ${addonName} in chat.`);
+        }
+
+        // ============ TOAST NOTIFICATIONS ============
+        function showToast(title, body) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <div class="toast-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="toast-title">${title}</div>
+                </div>
+                <div class="toast-body">${body}</div>
+            `;
+            container.appendChild(toast);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Remove after 5s
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 5000);
+        }
+
+        // ============ SKELETON LOADING ============
+        function showSkeletons() {
+            const grid = document.getElementById('addonsGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="skeleton skeleton-icon"></div>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                        <div class="skeleton skeleton-button"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', function() {
+            getUrlParams();
+            checkAccess();
+
+            // Optional: show skeleton for 500ms on load for polish
+            // showSkeletons();
+            // setTimeout(loadProducts, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule | Content Bug Team</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --accent: #3b82f6;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+
+            /* Subscription Tier Colors */
+            --tier-trial: #6366f1;
+            --tier-basic: #3b82f6;
+            --tier-silver: #94a3b8;
+            --tier-gold: #f59e0b;
+            --tier-pro: #a855f7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .current-date {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            color: var(--text-light);
+        }
+
+        .view-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Urgency Stats */
+        .urgency-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .urgency-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .urgency-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .urgency-card.active {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .urgency-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .urgency-card.overdue::before { background: var(--danger); }
+        .urgency-card.today::before { background: var(--warning); }
+        .urgency-card.tomorrow::before { background: var(--accent); }
+        .urgency-card.week::before { background: var(--success); }
+
+        .urgency-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .urgency-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .urgency-card.overdue .urgency-value { color: var(--danger); }
+        .urgency-card.today .urgency-value { color: var(--warning); }
+        .urgency-card.tomorrow .urgency-value { color: var(--accent); }
+        .urgency-card.week .urgency-value { color: var(--success); }
+
+        .urgency-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .urgency-sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Main Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        /* Timeline View */
+        .timeline-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .filter-select {
+            padding: 8px 16px;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Day Group */
+        .day-group {
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .day-group:last-child {
+            border-bottom: none;
+        }
+
+        .day-header {
+            padding: 16px 24px;
+            background: var(--dark-surface);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .day-title {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .day-title .date {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .day-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .day-badge.overdue { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .day-badge.today { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .day-badge.tomorrow { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .day-badge.upcoming { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+
+        .day-count {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .day-projects {
+            padding: 12px;
+        }
+
+        /* Project Row */
+        .project-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            background: var(--dark-surface);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .project-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .project-row:hover {
+            background: var(--dark-border);
+        }
+
+        /* Tier border colors */
+        .project-row.tier-trial { border-left-color: var(--tier-trial); }
+        .project-row.tier-basic { border-left-color: var(--tier-basic); }
+        .project-row.tier-silver { border-left-color: var(--tier-silver); }
+        .project-row.tier-gold { border-left-color: var(--tier-gold); }
+        .project-row.tier-pro { border-left-color: var(--tier-pro); }
+
+        .project-time {
+            min-width: 60px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .project-type-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .project-type-badge.short { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .project-type-badge.long { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .project-client {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .project-editor {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .editor-avatar-small {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .editor-name {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .project-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .project-status.queue { background: rgba(148, 163, 184, 0.15); color: var(--text-light); }
+        .project-status.active { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .project-status.review { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
+        .project-status.revision { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+
+        .project-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn-small {
+            padding: 6px 10px;
+            background: var(--dark-border);
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn-small:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Editor Workload */
+        .workload-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .workload-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .editor-workload {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .workload-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .workload-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+        }
+
+        .workload-info {
+            flex: 1;
+        }
+
+        .workload-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .workload-bar {
+            height: 6px;
+            background: var(--dark-border);
+            border-radius: 3px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .workload-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .workload-fill.green { background: var(--success); }
+        .workload-fill.yellow { background: var(--warning); }
+        .workload-fill.red { background: var(--danger); }
+
+        .workload-count {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-white);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Priority Queue */
+        .priority-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .priority-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .priority-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--dark-surface);
+            border-radius: 10px;
+            border-left: 3px solid;
+        }
+
+        .priority-item.urgent { border-left-color: var(--danger); }
+        .priority-item.high { border-left-color: var(--warning); }
+        .priority-item.normal { border-left-color: var(--accent); }
+
+        .priority-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        .priority-rank.urgent { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .priority-info {
+            flex: 1;
+        }
+
+        .priority-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .priority-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .priority-due {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .priority-due.late { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .priority-due.today { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .priority-due.soon { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+
+        /* Tier Legend */
+        .tier-legend-section {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .tier-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .tier-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .tier-color.trial { background: var(--tier-trial); }
+        .tier-color.basic { background: var(--tier-basic); }
+        .tier-color.silver { background: var(--tier-silver); }
+        .tier-color.gold { background: var(--tier-gold); }
+        .tier-color.pro { background: var(--tier-pro); }
+
+        .tier-name {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .tier-count {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .urgency-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .project-row {
+                flex-wrap: wrap;
+            }
+
+            .project-editor,
+            .project-actions {
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <span class="icon">📅</span>
+                Schedule
+            </h1>
+            <p class="current-date">Monday, December 16, 2024</p>
+        </div>
+        <div class="header-actions">
+            <div class="view-toggle">
+                <button class="view-btn active">Timeline</button>
+                <button class="view-btn">Calendar</button>
+                <button class="view-btn">Kanban</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Urgency Stats -->
+    <div class="urgency-bar">
+        <div class="urgency-card overdue active" onclick="filterByUrgency('overdue')">
+            <div class="urgency-icon">🔥</div>
+            <div class="urgency-value">3</div>
+            <div class="urgency-label">Overdue</div>
+            <div class="urgency-sublabel">Need immediate action</div>
+        </div>
+        <div class="urgency-card today" onclick="filterByUrgency('today')">
+            <div class="urgency-icon">⚡</div>
+            <div class="urgency-value">8</div>
+            <div class="urgency-label">Due Today</div>
+            <div class="urgency-sublabel">Must finish today</div>
+        </div>
+        <div class="urgency-card tomorrow" onclick="filterByUrgency('tomorrow')">
+            <div class="urgency-icon">📌</div>
+            <div class="urgency-value">12</div>
+            <div class="urgency-label">Due Tomorrow</div>
+            <div class="urgency-sublabel">Start working now</div>
+        </div>
+        <div class="urgency-card week" onclick="filterByUrgency('week')">
+            <div class="urgency-icon">📋</div>
+            <div class="urgency-value">24</div>
+            <div class="urgency-label">This Week</div>
+            <div class="urgency-sublabel">Plan your time</div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <!-- Timeline -->
+        <div class="timeline-section">
+            <div class="section-header">
+                <h2 class="section-title">Project Timeline</h2>
+                <select class="filter-select">
+                    <option value="all">All Editors</option>
+                    <option value="jake">Jake M</option>
+                    <option value="sarah">Sarah K</option>
+                    <option value="mike">Mike T</option>
+                    <option value="anna">Anna L</option>
+                </select>
+            </div>
+
+            <!-- Overdue -->
+            <div class="day-group">
+                <div class="day-header">
+                    <div class="day-title">
+                        🔥 OVERDUE
+                        <span class="day-badge overdue">LATE</span>
+                    </div>
+                    <span class="day-count">3 projects</span>
+                </div>
+                <div class="day-projects">
+                    <div class="project-row tier-pro">
+                        <span class="project-time">2 days</span>
+                        <span class="project-type-badge long">Long</span>
+                        <div class="project-info">
+                            <div class="project-title">Course Promo Video</div>
+                            <div class="project-client">@coursecreator • Pro</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">AL</div>
+                            <span class="editor-name">Anna L</span>
+                        </div>
+                        <span class="project-status revision">Revision</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                            <button class="action-btn-small">⚡</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-gold">
+                        <span class="project-time">1 day</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Brand Intro Video</div>
+                            <div class="project-client">@newstartup • Gold</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">SK</div>
+                            <span class="editor-name">Sarah K</span>
+                        </div>
+                        <span class="project-status revision">Revision</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                            <button class="action-btn-small">⚡</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-silver">
+                        <span class="project-time">1 day</span>
+                        <span class="project-type-badge long">Long</span>
+                        <div class="project-info">
+                            <div class="project-title">Podcast Episode 87</div>
+                            <div class="project-client">@podcastpro • Silver</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">JM</div>
+                            <span class="editor-name">Jake M</span>
+                        </div>
+                        <span class="project-status active">Active</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                            <button class="action-btn-small">⚡</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today -->
+            <div class="day-group">
+                <div class="day-header">
+                    <div class="day-title">
+                        Today
+                        <span class="date">Mon, Dec 16</span>
+                        <span class="day-badge today">8 due</span>
+                    </div>
+                    <span class="day-count">8 projects</span>
+                </div>
+                <div class="day-projects">
+                    <div class="project-row tier-pro">
+                        <span class="project-time">EOD</span>
+                        <span class="project-type-badge long">Long</span>
+                        <div class="project-info">
+                            <div class="project-title">Podcast Episode 89 - Guest Interview</div>
+                            <div class="project-client">@podcastking • Pro</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">JM</div>
+                            <span class="editor-name">Jake M</span>
+                        </div>
+                        <span class="project-status active">Active</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-gold">
+                        <span class="project-time">5 PM</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Gaming Highlight Clip</div>
+                            <div class="project-client">@gamingpro • Gold</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">MT</div>
+                            <span class="editor-name">Mike T</span>
+                        </div>
+                        <span class="project-status active">Active</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-trial">
+                        <span class="project-time">3 PM</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Trial Edit - Intro Reel</div>
+                            <div class="project-client">@newcreator • Trial</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">AL</div>
+                            <span class="editor-name">Anna L</span>
+                        </div>
+                        <span class="project-status active">Active</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-basic">
+                        <span class="project-time">EOD</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Recipe Tutorial Reel</div>
+                            <div class="project-client">@cookingwithemma • Basic</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">AL</div>
+                            <span class="editor-name">Anna L</span>
+                        </div>
+                        <span class="project-status active">Active</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tomorrow -->
+            <div class="day-group">
+                <div class="day-header">
+                    <div class="day-title">
+                        Tomorrow
+                        <span class="date">Tue, Dec 17</span>
+                        <span class="day-badge tomorrow">12 due</span>
+                    </div>
+                    <span class="day-count">12 projects</span>
+                </div>
+                <div class="day-projects">
+                    <div class="project-row tier-gold">
+                        <span class="project-time">10 AM</span>
+                        <span class="project-type-badge long">Long</span>
+                        <div class="project-info">
+                            <div class="project-title">Tech Review - New iPhone</div>
+                            <div class="project-client">@techstartup • Gold</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">SK</div>
+                            <span class="editor-name">Sarah K</span>
+                        </div>
+                        <span class="project-status active">Active</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-silver">
+                        <span class="project-time">2 PM</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Fitness Motivation Reel</div>
+                            <div class="project-client">@fitnessbrand • Silver</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">JM</div>
+                            <span class="editor-name">Jake M</span>
+                        </div>
+                        <span class="project-status queue">Queue</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-basic">
+                        <span class="project-time">EOD</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Product Showcase</div>
+                            <div class="project-client">@shopsmall • Basic</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">MT</div>
+                            <span class="editor-name">Mike T</span>
+                        </div>
+                        <span class="project-status queue">Queue</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- This Week -->
+            <div class="day-group">
+                <div class="day-header">
+                    <div class="day-title">
+                        Wed - Fri
+                        <span class="date">Dec 18-20</span>
+                        <span class="day-badge upcoming">24 due</span>
+                    </div>
+                    <span class="day-count">24 projects</span>
+                </div>
+                <div class="day-projects">
+                    <div class="project-row tier-pro">
+                        <span class="project-time">Wed</span>
+                        <span class="project-type-badge long">Long</span>
+                        <div class="project-info">
+                            <div class="project-title">YouTube Documentary</div>
+                            <div class="project-client">@creatorstudio • Pro</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">MT</div>
+                            <span class="editor-name">Mike T</span>
+                        </div>
+                        <span class="project-status queue">Queue</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-silver">
+                        <span class="project-time">Thu</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">Travel Vlog Teaser</div>
+                            <div class="project-client">@travelwithme • Silver</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">SK</div>
+                            <span class="editor-name">Sarah K</span>
+                        </div>
+                        <span class="project-status review">Review</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+
+                    <div class="project-row tier-gold">
+                        <span class="project-time">Fri</span>
+                        <span class="project-type-badge short">Short</span>
+                        <div class="project-info">
+                            <div class="project-title">IG Story Series</div>
+                            <div class="project-client">@beautybyjess • Gold</div>
+                        </div>
+                        <div class="project-editor">
+                            <div class="editor-avatar-small">JM</div>
+                            <span class="editor-name">Jake M</span>
+                        </div>
+                        <span class="project-status queue">Queue</span>
+                        <div class="project-actions">
+                            <button class="action-btn-small">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Editor Workload -->
+            <div class="workload-section">
+                <h3 class="workload-title">👥 Editor Workload Today</h3>
+                <div class="editor-workload">
+                    <div class="workload-item">
+                        <div class="workload-avatar">JM</div>
+                        <div class="workload-info">
+                            <div class="workload-name">Jake Martinez</div>
+                            <div class="workload-bar">
+                                <div class="workload-fill yellow" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="workload-count">6</div>
+                    </div>
+
+                    <div class="workload-item">
+                        <div class="workload-avatar">SK</div>
+                        <div class="workload-info">
+                            <div class="workload-name">Sarah Kim</div>
+                            <div class="workload-bar">
+                                <div class="workload-fill green" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="workload-count">4</div>
+                    </div>
+
+                    <div class="workload-item">
+                        <div class="workload-avatar">MT</div>
+                        <div class="workload-info">
+                            <div class="workload-name">Mike Torres</div>
+                            <div class="workload-bar">
+                                <div class="workload-fill green" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div class="workload-count">3</div>
+                    </div>
+
+                    <div class="workload-item">
+                        <div class="workload-avatar">AL</div>
+                        <div class="workload-info">
+                            <div class="workload-name">Anna Lopez</div>
+                            <div class="workload-bar">
+                                <div class="workload-fill red" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div class="workload-count">7</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority Queue -->
+            <div class="priority-section">
+                <h3 class="workload-title">🔥 Priority Queue</h3>
+                <div class="priority-list">
+                    <div class="priority-item urgent">
+                        <div class="priority-rank urgent">1</div>
+                        <div class="priority-info">
+                            <div class="priority-title">Course Promo Video</div>
+                            <div class="priority-meta">@coursecreator • Pro • Anna L</div>
+                        </div>
+                        <span class="priority-due late">2d late</span>
+                    </div>
+
+                    <div class="priority-item urgent">
+                        <div class="priority-rank urgent">2</div>
+                        <div class="priority-info">
+                            <div class="priority-title">Brand Intro Video</div>
+                            <div class="priority-meta">@newstartup • Gold • Sarah K</div>
+                        </div>
+                        <span class="priority-due late">1d late</span>
+                    </div>
+
+                    <div class="priority-item high">
+                        <div class="priority-rank">3</div>
+                        <div class="priority-info">
+                            <div class="priority-title">Podcast Episode 89</div>
+                            <div class="priority-meta">@podcastking • Pro • Jake M</div>
+                        </div>
+                        <span class="priority-due today">Today</span>
+                    </div>
+
+                    <div class="priority-item high">
+                        <div class="priority-rank">4</div>
+                        <div class="priority-info">
+                            <div class="priority-title">Gaming Highlight</div>
+                            <div class="priority-meta">@gamingpro • Gold • Mike T</div>
+                        </div>
+                        <span class="priority-due today">Today</span>
+                    </div>
+
+                    <div class="priority-item normal">
+                        <div class="priority-rank">5</div>
+                        <div class="priority-info">
+                            <div class="priority-title">Trial Edit - Intro Reel</div>
+                            <div class="priority-meta">@newcreator • Trial • Anna L</div>
+                        </div>
+                        <span class="priority-due today">Today</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tier Legend -->
+            <div class="tier-legend-section">
+                <h3 class="workload-title">📊 By Subscription Tier</h3>
+                <div class="tier-row">
+                    <span class="tier-color pro"></span>
+                    <span class="tier-name">Pro ($1,497/mo)</span>
+                    <span class="tier-count">8</span>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-color gold"></span>
+                    <span class="tier-name">Gold ($997/mo)</span>
+                    <span class="tier-count">12</span>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-color silver"></span>
+                    <span class="tier-name">Silver ($697/mo)</span>
+                    <span class="tier-count">15</span>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-color basic"></span>
+                    <span class="tier-name">Basic ($497/mo)</span>
+                    <span class="tier-count">9</span>
+                </div>
+                <div class="tier-row">
+                    <span class="tier-color trial"></span>
+                    <span class="tier-name">Free Trial</span>
+                    <span class="tier-count">3</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter by urgency
+        function filterByUrgency(type) {
+            document.querySelectorAll('.urgency-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.urgency-card').classList.add('active');
+            console.log('Filter by:', type);
+        }
+
+        // View toggle
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Editor filter
+        document.querySelector('.filter-select').addEventListener('change', (e) => {
+            console.log('Filter by editor:', e.target.value);
+        });
+
+        // Update current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.querySelector('.current-date').textContent = now.toLocaleDateString('en-US', options);
+    </script>
+</body>
+</html>

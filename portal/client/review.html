@@ -1,0 +1,4087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Blue Spectrum */
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            /* Dark Theme */
+            --bg-base: #050508;
+            --bg-elevated: #0a0a0f;
+            --bg-surface: #0f0f14;
+            --bg-hover: #151520;
+            --bg-active: #1a1a2e;
+
+            --border-subtle: rgba(59, 130, 246, 0.08);
+            --border-default: rgba(59, 130, 246, 0.12);
+            --border-strong: rgba(59, 130, 246, 0.2);
+
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            --accent-blue: #3b82f6;
+            --accent-blue-soft: rgba(59, 130, 246, 0.15);
+            --accent-green: #22c55e;
+            --accent-green-soft: rgba(34, 197, 94, 0.15);
+            --accent-orange: #f59e0b;
+            --accent-orange-soft: rgba(245, 158, 11, 0.15);
+            --accent-red: #ef4444;
+            --accent-red-soft: rgba(239, 68, 68, 0.15);
+
+            --header-height: 52px;
+            --panel-width: 380px;
+            --toolbar-height: 48px;
+            --timeline-height: 80px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ==================== LAYOUT ==================== */
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            height: var(--header-height);
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ==================== HEADER ==================== */
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: transparent;
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .back-btn svg { width: 16px; height: 16px; }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .version-selector {
+            display: flex;
+            align-items: center;
+            background: var(--bg-surface);
+            border-radius: 8px;
+            padding: 4px;
+            gap: 2px;
+        }
+
+        .version-btn {
+            padding: 6px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .version-btn:hover { color: var(--text-secondary); }
+        .version-btn.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn svg { width: 16px; height: 16px; }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--accent-green);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        /* ==================== VIDEO AREA ==================== */
+        .video-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            position: relative;
+        }
+
+        .video-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-player {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        /* Annotation Canvas Overlay */
+        .annotation-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .annotation-canvas.drawing {
+            pointer-events: all;
+            cursor: crosshair;
+        }
+
+        /* Comment Anchors on Video */
+        .video-comment-anchor {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: var(--accent-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+        }
+
+        .video-comment-anchor:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        /* ==================== ANNOTATION TOOLBAR ==================== */
+        .annotation-toolbar {
+            height: var(--toolbar-height);
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 16px;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 4px;
+            background: var(--bg-surface);
+            border-radius: 8px;
+        }
+
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+        }
+
+        .tool-btn.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .tool-btn svg { width: 18px; height: 18px; }
+
+        .tool-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-default);
+            margin: 0 8px;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg-surface);
+            border-radius: 8px;
+        }
+
+        .color-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-btn:hover { transform: scale(1.1); }
+        .color-btn.active { border-color: white; }
+
+        .color-red { background: #ff3b30; }
+        .color-orange { background: #ff9500; }
+        .color-yellow { background: #ffcc00; }
+        .color-green { background: #00d084; }
+        .color-blue { background: #7b61ff; }
+        .color-white { background: #ffffff; }
+
+        /* ==================== TIMELINE ==================== */
+        .timeline-container {
+            height: var(--timeline-height);
+            background: var(--bg-elevated);
+            border-top: 1px solid var(--border-subtle);
+            padding: 8px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .timeline-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .play-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-btn svg { width: 14px; height: 14px; margin-left: 2px; }
+
+        .time-display {
+            font-size: 12px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-secondary);
+            min-width: 100px;
+        }
+
+        .timeline-track {
+            flex: 1;
+            height: 40px;
+            background: var(--bg-surface);
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue-soft), transparent);
+            border-radius: 6px;
+            pointer-events: none;
+        }
+
+        .timeline-playhead {
+            position: absolute;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .timeline-playhead::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 11px;
+            height: 11px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        /* Timeline Markers */
+        .timeline-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--accent-orange);
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+
+        .timeline-marker:hover {
+            transform: translateY(-50%) scale(1.3);
+        }
+
+        .timeline-marker.cut { background: var(--accent-red); }
+        .timeline-marker.note { background: var(--accent-blue); }
+        .timeline-marker.love { background: var(--accent-green); }
+
+        .timeline-marker-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .timeline-marker:hover .timeline-marker-tooltip {
+            opacity: 1;
+        }
+
+        /* ==================== CHAT PANEL (Slide-in) ==================== */
+        .comments-panel {
+            width: var(--panel-width);
+            background: var(--bg-elevated);
+            border-left: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: relative;
+            transition: transform 0.3s ease, width 0.3s ease;
+        }
+
+        .comments-panel.collapsed {
+            width: 0;
+            transform: translateX(100%);
+            border-left: none;
+        }
+
+        .chat-toggle-btn {
+            position: fixed;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            box-shadow: 0 4px 16px rgba(123, 97, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .chat-toggle-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .chat-toggle-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .comments-panel.collapsed + .chat-toggle-btn {
+            display: flex;
+        }
+
+        .panel-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .panel-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .client-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .client-name {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: lowercase;
+            letter-spacing: -0.5px;
+        }
+
+        .client-name span {
+            color: var(--text-muted);
+        }
+
+        .client-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .client-status.active {
+            background: var(--accent-green-soft);
+            color: var(--accent-green);
+        }
+
+        .client-status.trial {
+            background: var(--accent-orange-soft);
+            color: var(--accent-orange);
+        }
+
+        .client-status.paused {
+            background: var(--accent-red-soft);
+            color: var(--accent-red);
+        }
+
+        .client-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .panel-action-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .panel-action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .panel-action-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .comment-count {
+            padding: 4px 10px;
+            background: var(--accent-blue-soft);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        /* Chat Customization Dropdown */
+        .chat-customize-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 16px;
+            width: 200px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 8px;
+            display: none;
+            z-index: 50;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-customize-dropdown.active {
+            display: block;
+        }
+
+        .customize-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .customize-option:hover {
+            background: var(--bg-hover);
+        }
+
+        .customize-option-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .customize-toggle {
+            width: 36px;
+            height: 20px;
+            background: var(--bg-active);
+            border-radius: 10px;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        .customize-toggle.active {
+            background: var(--accent-blue);
+        }
+
+        .customize-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.2s ease;
+        }
+
+        .customize-toggle.active::after {
+            left: 18px;
+        }
+
+        .comments-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Comment Card */
+        .comment-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .comment-card:hover {
+            border-color: var(--border-default);
+            background: var(--bg-hover);
+        }
+
+        .comment-card.active {
+            border-color: var(--accent-blue);
+        }
+
+        .comment-header {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .comment-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .comment-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .comment-time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: var(--accent-blue-soft);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin-top: 4px;
+        }
+
+        .comment-time-badge svg { width: 10px; height: 10px; }
+
+        .comment-body {
+            padding: 0 14px 14px;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        /* Comment with annotation thumbnail */
+        .comment-annotation-preview {
+            margin-top: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .comment-annotation-preview img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Voice/Video Note */
+        .comment-media {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--bg-active);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .media-play-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .media-play-btn svg { width: 12px; height: 12px; margin-left: 1px; }
+
+        .media-waveform {
+            flex: 1;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .media-waveform span {
+            width: 3px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            opacity: 0.5;
+        }
+
+        .media-duration {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .media-type-badge {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 6px;
+            background: var(--bg-surface);
+            border-radius: 4px;
+            color: var(--text-muted);
+        }
+
+        /* Comment Resolved State */
+        .comment-card.resolved {
+            opacity: 0.5;
+        }
+
+        .comment-card.resolved .comment-text {
+            text-decoration: line-through;
+        }
+
+        /* ==================== ADD COMMENT AREA ==================== */
+        .add-comment-area {
+            padding: 16px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+        }
+
+        .comment-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 12px 14px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-default);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .comment-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { filter: brightness(1.1); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .send-btn svg { width: 18px; height: 18px; }
+
+        .comment-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-active);
+            color: var(--text-secondary);
+            border-color: var(--border-default);
+        }
+
+        .action-btn.active {
+            background: var(--accent-blue-soft);
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .action-btn.recording {
+            background: var(--accent-red-soft);
+            color: var(--accent-red);
+            border-color: var(--accent-red);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .action-btn svg { width: 14px; height: 14px; }
+
+        /* Recording Timer */
+        .recording-timer {
+            display: none;
+            padding: 10px 14px;
+            background: var(--accent-red-soft);
+            border: 1px solid var(--accent-red);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recording-timer.visible { display: flex; }
+
+        .recording-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-red);
+        }
+
+        .recording-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        .stop-recording-btn {
+            padding: 6px 12px;
+            background: var(--accent-red);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ==================== CLICK TO COMMENT HINT ==================== */
+        .click-to-comment {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 16px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 30;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .click-to-comment.visible { opacity: 1; }
+        .click-to-comment svg { width: 16px; height: 16px; }
+
+        /* ==================== APPROVAL MODAL ==================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .modal-icon svg { width: 32px; height: 32px; color: white; }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .rating-star {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .rating-star:hover, .rating-star.active {
+            color: #ffcc00;
+            transform: scale(1.1);
+        }
+
+        .rating-star svg { width: 100%; height: 100%; }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-actions .btn { flex: 1; justify-content: center; }
+
+        /* ==================== SUBMIT REVISIONS BUTTON ==================== */
+        .submit-revisions-bar {
+            padding: 16px 20px;
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.95), rgba(5, 5, 8, 0.98));
+            border-top: 1px solid var(--border-default);
+        }
+
+        .submit-revisions-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+        }
+
+        .submit-revisions-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(245, 158, 11, 0.4);
+        }
+
+        .submit-revisions-btn:active {
+            transform: scale(0.98);
+        }
+
+        .submit-revisions-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-revisions-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .revision-count-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        /* ==================== REVISION SUMMARY MODAL ==================== */
+        .revision-modal {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            padding: 0;
+            max-width: 520px;
+            width: 95%;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .revision-modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: linear-gradient(180deg, var(--accent-orange-soft), transparent);
+        }
+
+        .revision-modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .revision-modal-title svg {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-orange);
+        }
+
+        .revision-modal-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .revision-summary-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 28px;
+            max-height: 350px;
+        }
+
+        .revision-summary-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .revision-summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .revision-item-time {
+            flex-shrink: 0;
+            padding: 4px 10px;
+            background: var(--accent-blue-soft);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .revision-item-content {
+            flex: 1;
+        }
+
+        .revision-item-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .revision-item-type {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .revision-item-type svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .revision-modal-footer {
+            padding: 20px 28px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+        }
+
+        .revision-modal-note {
+            margin-bottom: 16px;
+        }
+
+        .revision-modal-note label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .revision-modal-note textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-default);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            resize: none;
+            transition: border-color 0.2s;
+        }
+
+        .revision-modal-note textarea:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .revision-modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .revision-modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--accent-orange), #ea580c);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Empty state when no revisions */
+        .no-revisions-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-revisions-message svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .no-revisions-message h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .no-revisions-message p {
+            font-size: 12px;
+        }
+
+        /* ==================== SCROLLBAR ==================== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+        /* ==================== EDITOR REVISION CHECKLIST ==================== */
+        .editor-panel {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 360px;
+            height: calc(100vh - var(--header-height));
+            background: var(--bg-elevated);
+            border-right: 1px solid var(--border-subtle);
+            display: none;
+            flex-direction: column;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .editor-panel.visible {
+            display: flex;
+            transform: translateX(0);
+        }
+
+        .editor-panel-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .editor-panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .editor-panel-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .revision-checklist {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .checklist-item:hover {
+            border-color: var(--border-default);
+        }
+
+        .checklist-item.completed {
+            border-color: var(--accent-green);
+            background: var(--accent-green-soft);
+        }
+
+        .checklist-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border-default);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .checklist-checkbox:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .checklist-item.completed .checklist-checkbox {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .checklist-checkbox svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+            opacity: 0;
+        }
+
+        .checklist-item.completed .checklist-checkbox svg {
+            opacity: 1;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .checklist-item.completed .checklist-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .checklist-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist-timestamp {
+            font-size: 11px;
+            color: var(--accent-blue);
+            cursor: pointer;
+            padding: 2px 8px;
+            background: var(--accent-blue-soft);
+            border-radius: 4px;
+        }
+
+        .checklist-timestamp:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .checklist-type {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-hover);
+            color: var(--text-muted);
+        }
+
+        .checklist-progress {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+        }
+
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-active);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .upload-version-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #5b4de0 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .upload-version-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(123, 97, 255, 0.4);
+        }
+
+        .upload-version-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .upload-version-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Version History Sidebar */
+        .version-history {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .version-history-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .version-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .version-item:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .version-item.current {
+            border-color: var(--accent-green);
+            background: var(--accent-green-soft);
+        }
+
+        .version-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .version-item.current .version-badge {
+            background: var(--accent-green);
+        }
+
+        .version-info {
+            flex: 1;
+        }
+
+        .version-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .version-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .version-status {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .version-status.current {
+            background: var(--accent-green-soft);
+            color: var(--accent-green);
+        }
+
+        .version-status.previous {
+            background: var(--bg-hover);
+            color: var(--text-muted);
+        }
+
+        /* Editor Toggle Button */
+        .editor-panel-toggle {
+            position: fixed;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 49;
+            box-shadow: 0 4px 16px rgba(123, 97, 255, 0.4);
+            transition: all 0.2s;
+        }
+
+        .editor-panel-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .editor-panel-toggle svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .editor-panel-toggle.visible {
+            display: flex;
+        }
+
+        /* Shift video container when editor panel is open */
+        .main.editor-panel-open .video-container {
+            margin-left: 360px;
+        }
+
+        /* Upload Modal */
+        .upload-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .upload-modal-overlay.visible {
+            display: flex;
+        }
+
+        .upload-modal {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            padding: 32px;
+            width: 500px;
+            max-width: 90vw;
+        }
+
+        .upload-modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .upload-modal-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-blue-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .upload-modal-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--accent-blue);
+        }
+
+        .upload-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .upload-modal-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .upload-dropzone {
+            border: 2px dashed var(--border-default);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .upload-dropzone:hover,
+        .upload-dropzone.dragover {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-soft);
+        }
+
+        .upload-dropzone-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            color: var(--text-muted);
+        }
+
+        .upload-dropzone-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .upload-dropzone-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .upload-file-selected {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg-surface);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .upload-file-selected.visible {
+            display: flex;
+        }
+
+        .upload-file-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue-soft);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-file-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-blue);
+        }
+
+        .upload-file-info {
+            flex: 1;
+        }
+
+        .upload-file-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .upload-file-size {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .upload-file-remove {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-red-soft);
+            border: none;
+            border-radius: 6px;
+            color: var(--accent-red);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-file-remove svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .upload-notes {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 20px;
+        }
+
+        .upload-notes:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .upload-notes::placeholder {
+            color: var(--text-muted);
+        }
+
+        .upload-modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .upload-modal-actions button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-cancel-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+        }
+
+        .upload-cancel-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .upload-submit-btn {
+            background: var(--accent-green);
+            border: none;
+            color: white;
+        }
+
+        .upload-submit-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .upload-submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ==================== BOOKING GATE OVERLAY ==================== */
+        .booking-gate-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .booking-gate-overlay.hidden {
+            display: none;
+        }
+
+        .booking-gate-container {
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        }
+
+        @media (max-width: 800px) {
+            .booking-gate-container {
+                grid-template-columns: 1fr;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
+        .booking-gate-left {
+            padding: 48px 40px;
+            background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .booking-gate-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-blue-soft);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .booking-gate-icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-blue);
+        }
+
+        .booking-gate-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .booking-gate-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .booking-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .booking-benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .benefit-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--accent-green-soft);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .benefit-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--accent-green);
+        }
+
+        .benefit-text {
+            flex: 1;
+        }
+
+        .benefit-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .benefit-text span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .booking-gate-right {
+            padding: 24px;
+            background: var(--bg-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .booking-gate-right iframe {
+            flex: 1;
+            width: 100%;
+            min-height: 500px;
+            border: none;
+            border-radius: 12px;
+        }
+
+        /* ==================== CELEBRATION OVERLAY ==================== */
+        .celebration-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .celebration-overlay.visible {
+            display: flex;
+        }
+
+        .celebration-card {
+            max-width: 520px;
+            width: 100%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-default);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .celebration-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 200px;
+            background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+            filter: blur(60px);
+        }
+
+        .celebration-confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='10' cy='20' r='3' fill='%2322c55e'/%3E%3Ccircle cx='30' cy='40' r='2' fill='%233b82f6'/%3E%3Ccircle cx='50' cy='15' r='3' fill='%23f59e0b'/%3E%3Ccircle cx='70' cy='35' r='2' fill='%23ec4899'/%3E%3Ccircle cx='90' cy='25' r='3' fill='%238b5cf6'/%3E%3C/svg%3E") repeat-x;
+            animation: confettiFall 2s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100%); opacity: 1; }
+            100% { transform: translateY(100px); opacity: 0; }
+        }
+
+        .celebration-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            position: relative;
+            z-index: 1;
+            animation: celebrationPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes celebrationPop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .celebration-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .celebration-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .celebration-message {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-offer {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .offer-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--accent-green);
+            color: #000;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .offer-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .offer-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .offer-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: var(--accent-green);
+            color: #000;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .offer-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
+        }
+
+        .offer-cta svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .celebration-skip {
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        .celebration-skip:hover {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- BOOKING GATE OVERLAY - Forces trial users to book Creative Review call first -->
+    <div class="booking-gate-overlay" id="bookingGateOverlay">
+        <div class="booking-gate-container">
+            <div class="booking-gate-left">
+                <div class="booking-gate-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 10l5 5-5 5"/>
+                        <path d="M4 4v7a4 4 0 0 0 4 4h12"/>
+                    </svg>
+                </div>
+                <h2 class="booking-gate-title">One Last Step Before Your Review</h2>
+                <p class="booking-gate-subtitle">Book a quick 15-minute call with our Creative Director. We'll review your edit together, fine-tune your style blueprint, and answer any questions live.</p>
+
+                <div class="booking-benefits">
+                    <div class="booking-benefit">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="benefit-text">
+                            <strong>Watch Your Edit Together</strong>
+                            <span>Get real-time feedback and insights on your edit</span>
+                        </div>
+                    </div>
+                    <div class="booking-benefit">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="benefit-text">
+                            <strong>Refine Your Blueprint</strong>
+                            <span>We'll adjust your style preferences on the spot</span>
+                        </div>
+                    </div>
+                    <div class="booking-benefit">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="benefit-text">
+                            <strong>Clear Up Any Questions</strong>
+                            <span>No grey areas - know exactly what to expect going forward</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="booking-gate-right">
+                <iframe
+                    src="https://links.contentbug.io/widget/booking/content-bug-creative-review"
+                    id="creativeReviewCalendar"
+                    scrolling="no">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- CELEBRATION OVERLAY - Shows after approval/revisions with welcome offer -->
+    <div class="celebration-overlay" id="celebrationOverlay">
+        <div class="celebration-card">
+            <div class="celebration-confetti"></div>
+            <div class="celebration-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <h2 class="celebration-title" id="celebrationTitle">You're All Set!</h2>
+            <p class="celebration-message" id="celebrationMessage">
+                Your free trial is complete. You've experienced exactly how Content Bug works — from blueprint to final edit.
+            </p>
+
+            <div class="welcome-offer">
+                <span class="offer-badge">Welcome Offer</span>
+                <h3 class="offer-title">Get 20% Off Your First Month</h3>
+                <p class="offer-desc">Start your subscription today and save. Your style blueprint is ready — we can start editing immediately.</p>
+                <a href="https://contentbug.io/pricing?offer=welcome20" class="offer-cta">
+                    View Plans
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+            </div>
+
+            <span class="celebration-skip" onclick="closeCelebration()">Maybe later</span>
+        </div>
+    </div>
+
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <a href="https://portalv2.contentbug.io/dashboard" class="back-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                Back
+            </a>
+            <h1 class="project-title">Behind the Scenes: My Morning Routine</h1>
+
+            <div class="version-selector">
+                <button class="version-btn" onclick="switchVersion(1)">V1</button>
+                <button class="version-btn" onclick="switchVersion(2)">V2</button>
+                <button class="version-btn active" onclick="switchVersion(3)">V3</button>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="requestRevisions()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Request Revisions
+                </button>
+                <button class="btn btn-primary" onclick="openApprovalModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Approve
+                </button>
+            </div>
+        </header>
+
+        <div class="main" id="mainContent">
+            <!-- Editor Panel (Left Side - For Editors Only) -->
+            <aside class="editor-panel" id="editorPanel">
+                <div class="editor-panel-header">
+                    <div class="editor-panel-title">Revision Checklist</div>
+                    <div class="editor-panel-subtitle">Complete all items before uploading new version</div>
+                </div>
+
+                <div class="revision-checklist" id="revisionChecklist">
+                    <!-- Populated by JavaScript based on client feedback -->
+                </div>
+
+                <div class="version-history" id="versionHistory">
+                    <div class="version-history-title">Version History</div>
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <div class="checklist-progress">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" id="checklistProgress" style="width: 0%;"></div>
+                        </div>
+                        <span class="progress-text" id="checklistProgressText">0/0</span>
+                    </div>
+                    <button class="upload-version-btn" id="uploadVersionBtn" onclick="openUploadModal()" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Upload New Version
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Editor Panel Toggle Button -->
+            <button class="editor-panel-toggle" id="editorPanelToggle" onclick="toggleEditorPanel()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </button>
+
+            <!-- Video Area -->
+            <div class="video-container">
+                <div class="video-wrapper" id="videoWrapper">
+                    <!-- Sample video placeholder -->
+                    <video class="video-player" id="videoPlayer" poster="https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=1280&h=720&fit=crop">
+                        <!-- Video source loaded dynamically from project data -->
+                        <source src="about:blank" type="video/mp4">
+                    </video>
+
+                    <!-- Annotation Canvas -->
+                    <canvas class="annotation-canvas" id="annotationCanvas"></canvas>
+
+                    <!-- Comment Anchors -->
+                    <div class="video-comment-anchor" style="left: 45%; top: 30%;" onclick="jumpToComment(1)">1</div>
+                    <div class="video-comment-anchor" style="left: 70%; top: 60%;" onclick="jumpToComment(2)">2</div>
+
+                    <!-- Click to Comment Hint -->
+                    <div class="click-to-comment" id="clickHint">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Click anywhere on the video to add a comment
+                    </div>
+                </div>
+
+                <!-- Annotation Toolbar -->
+                <div class="annotation-toolbar">
+                    <div class="tool-group">
+                        <button class="tool-btn" id="selectTool" onclick="setTool('select')" title="Select">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+                        </button>
+                        <button class="tool-btn active" id="arrowTool" onclick="setTool('arrow')" title="Arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+                        <button class="tool-btn" id="circleTool" onclick="setTool('circle')" title="Circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                        </button>
+                        <button class="tool-btn" id="rectTool" onclick="setTool('rect')" title="Rectangle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                        </button>
+                        <button class="tool-btn" id="penTool" onclick="setTool('pen')" title="Freehand Draw">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="tool-divider"></div>
+
+                    <div class="color-picker">
+                        <button class="color-btn color-red active" onclick="setColor('#ff3b30')"></button>
+                        <button class="color-btn color-orange" onclick="setColor('#ff9500')"></button>
+                        <button class="color-btn color-yellow" onclick="setColor('#ffcc00')"></button>
+                        <button class="color-btn color-green" onclick="setColor('#00d084')"></button>
+                        <button class="color-btn color-blue" onclick="setColor('#7b61ff')"></button>
+                        <button class="color-btn color-white" onclick="setColor('#ffffff')"></button>
+                    </div>
+
+                    <div class="tool-divider"></div>
+
+                    <div class="tool-group">
+                        <button class="tool-btn" onclick="undoAnnotation()" title="Undo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                        </button>
+                        <button class="tool-btn" onclick="redoAnnotation()" title="Redo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+                        </button>
+                        <button class="tool-btn" onclick="clearAnnotations()" title="Clear All">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="timeline-container">
+                    <div class="timeline-controls">
+                        <button class="play-btn" id="playBtn" onclick="togglePlay()">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </button>
+                        <span class="time-display"><span id="currentTime">0:00</span> / <span id="duration">15:42</span></span>
+
+                        <div class="timeline-track" id="timelineTrack" onclick="seekTimeline(event)">
+                            <div class="timeline-progress" id="timelineProgress" style="width: 15%;"></div>
+                            <div class="timeline-playhead" id="timelinePlayhead" style="left: 15%;"></div>
+
+                            <!-- Comment Markers -->
+                            <div class="timeline-markers" id="timelineMarkers">
+                                <div class="timeline-marker cut" style="left: 15%;" onclick="seekToTime(142)">
+                                    <div class="timeline-marker-tooltip">2:22 - Cut the awkward pause</div>
+                                </div>
+                                <div class="timeline-marker" style="left: 35%;" onclick="seekToTime(330)">
+                                    <div class="timeline-marker-tooltip">5:30 - Change music here</div>
+                                </div>
+                                <div class="timeline-marker love" style="left: 65%;" onclick="seekToTime(612)">
+                                    <div class="timeline-marker-tooltip">10:12 - Love this transition!</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Panel -->
+            <aside class="comments-panel" id="chatPanel">
+                <div class="panel-header">
+                    <div class="panel-header-row">
+                        <div class="client-title">
+                            <div class="client-name" id="clientName">sean<span>-</span>conley</div>
+                            <span class="client-status active" id="clientStatus">Active</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button class="panel-action-btn" onclick="toggleChatCustomize()" title="Customize">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            </button>
+                            <button class="panel-action-btn" onclick="toggleChatPanel()" title="Hide Chat">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-header-row">
+                        <span class="comment-count" id="commentCount">3 comments</span>
+                    </div>
+                </div>
+
+                <!-- Chat Customization Dropdown -->
+                <div class="chat-customize-dropdown" id="chatCustomize">
+                    <div class="customize-option" onclick="toggleOption('timestamps')">
+                        <span class="customize-option-label">Show Timestamps</span>
+                        <div class="customize-toggle active" id="toggleTimestamps"></div>
+                    </div>
+                    <div class="customize-option" onclick="toggleOption('avatars')">
+                        <span class="customize-option-label">Show Avatars</span>
+                        <div class="customize-toggle active" id="toggleAvatars"></div>
+                    </div>
+                    <div class="customize-option" onclick="toggleOption('annotations')">
+                        <span class="customize-option-label">Show Annotations</span>
+                        <div class="customize-toggle active" id="toggleAnnotations"></div>
+                    </div>
+                </div>
+
+                <div class="comments-list" id="commentsList">
+                    <!-- Comment 1 - With annotation -->
+                    <div class="comment-card" data-time="142" onclick="seekToTime(142)">
+                        <div class="comment-header">
+                            <div class="comment-avatar">SC</div>
+                            <div class="comment-meta">
+                                <div class="comment-author">Sean Conley</div>
+                                <div class="comment-time-badge">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    2:22
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-body">
+                            <p class="comment-text">Cut the awkward pause here, feels too long. The energy drops.</p>
+                            <div class="comment-annotation-preview">
+                                <img src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=225&fit=crop" alt="Annotation">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment 2 - With voice note -->
+                    <div class="comment-card" data-time="330" onclick="seekToTime(330)">
+                        <div class="comment-header">
+                            <div class="comment-avatar" style="background: var(--accent-green);">SW</div>
+                            <div class="comment-meta">
+                                <div class="comment-author">Stockton Walbeck</div>
+                                <div class="comment-time-badge">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    5:30
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-body">
+                            <p class="comment-text">Change the background music to something more upbeat here.</p>
+                            <div class="comment-media">
+                                <button class="media-play-btn" onclick="event.stopPropagation(); playVoiceNote(this)">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                </button>
+                                <div class="media-waveform">
+                                    <span style="height: 8px;"></span>
+                                    <span style="height: 16px;"></span>
+                                    <span style="height: 12px;"></span>
+                                    <span style="height: 20px;"></span>
+                                    <span style="height: 14px;"></span>
+                                    <span style="height: 18px;"></span>
+                                    <span style="height: 10px;"></span>
+                                    <span style="height: 22px;"></span>
+                                    <span style="height: 16px;"></span>
+                                    <span style="height: 12px;"></span>
+                                    <span style="height: 8px;"></span>
+                                </div>
+                                <span class="media-duration">0:24</span>
+                                <span class="media-type-badge">Voice</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment 3 - Positive -->
+                    <div class="comment-card" data-time="612" onclick="seekToTime(612)">
+                        <div class="comment-header">
+                            <div class="comment-avatar">SC</div>
+                            <div class="comment-meta">
+                                <div class="comment-author">Sean Conley</div>
+                                <div class="comment-time-badge" style="background: var(--accent-green-soft); color: var(--accent-green);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                    10:12
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-body">
+                            <p class="comment-text">Love this transition! Perfect. Keep this exactly as is.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Comment Area -->
+                <div class="add-comment-area">
+                    <div class="recording-timer" id="recordingTimer">
+                        <div class="recording-indicator">
+                            <div class="recording-dot"></div>
+                            <span id="recordingLabel">Recording...</span>
+                            <span id="recordingTime">0:00</span>
+                        </div>
+                        <button class="stop-recording-btn" onclick="stopRecording()">Stop</button>
+                    </div>
+
+                    <div class="comment-input-row">
+                        <textarea class="comment-input" id="commentInput" placeholder="Add a comment at current time..." rows="1"></textarea>
+                        <button class="send-btn" id="sendBtn" onclick="addComment()" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="comment-actions">
+                        <button class="action-btn" id="drawBtn" onclick="toggleDrawMode()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                            Draw
+                        </button>
+                        <button class="action-btn" id="voiceBtn" onclick="toggleVoiceRecording()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+                            Voice
+                        </button>
+                        <button class="action-btn" id="screenBtn" onclick="toggleScreenRecording()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            Screen
+                        </button>
+                        <button class="action-btn" id="videoBtn" onclick="toggleVideoRecording()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                            Video
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit All Revisions Button -->
+                <div class="submit-revisions-bar" id="submitRevisionsBar">
+                    <button class="submit-revisions-btn" id="submitRevisionsBtn" onclick="openRevisionSummary()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="18" x2="12" y2="12"/>
+                            <polyline points="9 15 12 12 15 15"/>
+                        </svg>
+                        Submit Revisions
+                        <span class="revision-count-badge" id="revisionCountBadge">0</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Chat Toggle Button (visible when collapsed) -->
+            <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChatPanel()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Upload Version Modal (Editor Only) -->
+    <div class="upload-modal-overlay" id="uploadModal">
+        <div class="upload-modal">
+            <div class="upload-modal-header">
+                <div class="upload-modal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h3 class="upload-modal-title">Upload New Version</h3>
+                <p class="upload-modal-subtitle">Upload the revised edit for client review</p>
+            </div>
+
+            <div class="upload-dropzone" id="uploadDropzone" onclick="document.getElementById('videoFileInput').click()">
+                <svg class="upload-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div class="upload-dropzone-text">Drop video file here or click to browse</div>
+                <div class="upload-dropzone-hint">MP4, MOV, or WebM • Max 10GB</div>
+            </div>
+            <input type="file" id="videoFileInput" accept="video/*" style="display: none;" onchange="handleFileSelect(event)">
+
+            <div class="upload-file-selected" id="uploadFileSelected">
+                <div class="upload-file-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                </div>
+                <div class="upload-file-info">
+                    <div class="upload-file-name" id="uploadFileName">video.mp4</div>
+                    <div class="upload-file-size" id="uploadFileSize">0 MB</div>
+                </div>
+                <button class="upload-file-remove" onclick="removeSelectedFile()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <textarea class="upload-notes" id="uploadNotes" placeholder="Add notes about what changed in this version..."></textarea>
+
+            <div class="upload-modal-actions">
+                <button class="upload-cancel-btn" onclick="closeUploadModal()">Cancel</button>
+                <button class="upload-submit-btn" id="uploadSubmitBtn" onclick="submitNewVersion()" disabled>Upload & Send to Review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval Modal -->
+    <div class="modal-overlay" id="approvalModal">
+        <div class="modal">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3 class="modal-title">Approve This Edit?</h3>
+            <p class="modal-subtitle">Rate your experience with this edit</p>
+            <div class="rating-stars">
+                <button class="rating-star" onclick="setRating(1)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                <button class="rating-star" onclick="setRating(2)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                <button class="rating-star" onclick="setRating(3)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                <button class="rating-star" onclick="setRating(4)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                <button class="rating-star" onclick="setRating(5)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeApprovalModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmApproval()">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revision Summary Modal -->
+    <div class="modal-overlay" id="revisionSummaryModal">
+        <div class="revision-modal">
+            <div class="revision-modal-header">
+                <h3 class="revision-modal-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    Review Your Revisions
+                </h3>
+                <p class="revision-modal-subtitle">These comments will be sent to your editor</p>
+            </div>
+
+            <div class="revision-summary-list" id="revisionSummaryList">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <div class="revision-modal-footer">
+                <div class="revision-modal-note">
+                    <label>Additional notes for your editor (optional)</label>
+                    <textarea id="revisionNotes" rows="2" placeholder="Any extra context or priority information..."></textarea>
+                </div>
+                <div class="revision-modal-actions">
+                    <button class="btn btn-secondary" onclick="closeRevisionSummary()">Cancel</button>
+                    <button class="btn btn-warning" id="confirmRevisionsBtn" onclick="confirmAndSubmitRevisions()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                        </svg>
+                        Send to Editor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // MCP SERVER & EMBED DETECTION
+        // ============================================
+        const MCP_SERVER_URL = 'https://portalv2.contentbug.io';
+        const urlParams = new URLSearchParams(window.location.search);
+        const isEmbedded = window.parent !== window && urlParams.get('embed') === 'true';
+        const userEmail = urlParams.get('email') || localStorage.getItem('cb_email') || '';
+        const isTrial = urlParams.get('mode') === 'trial' || localStorage.getItem('cb_trial_user') === 'true';
+
+        // ============================================
+        // BOOKING GATE LOGIC (Trial Users Only)
+        // ============================================
+        let reviewCallBooked = localStorage.getItem('cb_review_call_booked') === 'true';
+
+        function initBookingGate() {
+            const overlay = document.getElementById('bookingGateOverlay');
+
+            // Only show booking gate for trial users who haven't booked yet
+            if (isTrial && !reviewCallBooked) {
+                overlay.classList.remove('hidden');
+
+                // Listen for GHL calendar booking confirmation
+                window.addEventListener('message', function(event) {
+                    // GHL sends postMessage on booking
+                    if (event.data && (event.data.type === 'hsFormCallback' ||
+                        event.data.event === 'booking_confirmed' ||
+                        event.data.type === 'booking_completed')) {
+                        handleBookingConfirmed();
+                    }
+                });
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function handleBookingConfirmed() {
+            reviewCallBooked = true;
+            localStorage.setItem('cb_review_call_booked', 'true');
+
+            // Hide the booking gate
+            const overlay = document.getElementById('bookingGateOverlay');
+            overlay.classList.add('hidden');
+
+            // Notify MCP server
+            fetch(MCP_SERVER_URL + '/api/trial/review-booked', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    booked_at: new Date().toISOString()
+                })
+            }).catch(err => console.error('Failed to record booking:', err));
+
+            showNotification('Review call booked! You can now explore your edit.', 'success');
+        }
+
+        // Allow manual bypass for testing (remove in production or keep for edge cases)
+        function bypassBookingGate() {
+            handleBookingConfirmed();
+        }
+
+        // ============================================
+        // CELEBRATION / WELCOME OFFER LOGIC
+        // ============================================
+        function showCelebration(type) {
+            const overlay = document.getElementById('celebrationOverlay');
+            const title = document.getElementById('celebrationTitle');
+            const message = document.getElementById('celebrationMessage');
+
+            if (type === 'approved') {
+                title.textContent = "You're All Set!";
+                message.textContent = "Your free trial is complete. You've experienced exactly how Content Bug works — from blueprint to final edit.";
+            } else if (type === 'revisions') {
+                title.textContent = "Revisions Requested!";
+                message.textContent = "Your feedback is on its way to our editors. Want to skip the wait next time? Upgrade to get priority turnaround.";
+            }
+
+            overlay.classList.add('visible');
+
+            // Trigger confetti animation
+            const confetti = overlay.querySelector('.celebration-confetti');
+            confetti.style.opacity = '1';
+        }
+
+        function closeCelebration() {
+            const overlay = document.getElementById('celebrationOverlay');
+            overlay.classList.remove('visible');
+
+            // Redirect to dashboard if embedded, otherwise close
+            if (isEmbedded) {
+                window.parent.postMessage({ type: 'celebration_closed' }, '*');
+            } else {
+                window.location.href = 'https://portalv2.contentbug.io/dashboard';
+            }
+        }
+
+        // Initialize booking gate on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initBookingGate();
+        });
+
+        // ============================================
+        // ROLE-BASED ACCESS CONTROL
+        // ============================================
+        const ROLE = localStorage.getItem('cb_role') || 'client';
+        const CURRENT_USER_ID = localStorage.getItem('cb_airtable_id') || null;
+        const CURRENT_CLIENT_ID = localStorage.getItem('cb_client_id') || null;
+        const PROJECT_ID = urlParams.get('project') || 'proj-002';
+
+        // Mock project data - in production, fetched from Airtable
+        let currentProject = {
+            id: PROJECT_ID,
+            title: 'Instagram Reel: Product Launch',
+            client_id: 'client-001',
+            editor_id: 'editor-001',
+            status: 'review',
+            feedbackSaved: false,
+            feedback: [],
+            revisionChecklist: []
+        };
+
+        // Role-based permissions for review page
+        const reviewPermissions = {
+            canAddFeedback: ROLE === 'client' && currentProject.status === 'review',
+            canEditFeedback: ROLE === 'client' && currentProject.status === 'review' && !currentProject.feedbackSaved,
+            canSaveFeedback: ROLE === 'client' && currentProject.status === 'review',
+            canViewFeedback: ROLE === 'editor' || ROLE === 'admin' || ROLE === 'owner',
+            canEditChecklist: ROLE === 'editor' && currentProject.status === 'revisions',
+            canUploadVersion: ROLE === 'editor',
+            canApprove: ROLE === 'client' && currentProject.status === 'review' && currentProject.feedbackSaved,
+            canOverride: ROLE === 'admin' || ROLE === 'owner'
+        };
+
+        // ==================== STATE ====================
+        let currentTool = 'arrow';
+        let currentColor = '#ff3b30';
+        let isDrawing = false;
+        let isRecording = false;
+        let recordingType = null;
+        let recordingSeconds = 0;
+        let recordingInterval = null;
+        let selectedRating = 0;
+        let currentTime = 142; // 2:22 in seconds
+        let duration = 942; // 15:42 in seconds
+        let annotations = [];
+        let annotationHistory = [];
+        let feedbackItems = [];
+
+        // Canvas setup
+        const canvas = document.getElementById('annotationCanvas');
+        const ctx = canvas.getContext('2d');
+        let startX, startY;
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('videoWrapper');
+            canvas.width = wrapper.offsetWidth;
+            canvas.height = wrapper.offsetHeight;
+            redrawAnnotations();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // ==================== TOOLS ====================
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tool + 'Tool')?.classList.add('active');
+
+            if (tool !== 'select') {
+                canvas.classList.add('drawing');
+                document.getElementById('clickHint').classList.add('visible');
+            } else {
+                canvas.classList.remove('drawing');
+                document.getElementById('clickHint').classList.remove('visible');
+            }
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // ==================== DRAWING ====================
+        canvas.addEventListener('mousedown', (e) => {
+            if (currentTool === 'select') return;
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+
+            if (currentTool === 'pen') {
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.strokeStyle = currentColor;
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (currentTool === 'pen') {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            } else {
+                redrawAnnotations();
+                drawShape(startX, startY, x, y, currentTool, currentColor, false);
+            }
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            isDrawing = false;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            annotations.push({
+                tool: currentTool,
+                startX, startY, endX: x, endY: y,
+                color: currentColor
+            });
+            annotationHistory = [...annotations];
+        });
+
+        function drawShape(x1, y1, x2, y2, tool, color, saved) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            if (tool === 'arrow') {
+                // Line
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+
+                // Arrowhead
+                const angle = Math.atan2(y2 - y1, x2 - x1);
+                const headLength = 15;
+                ctx.beginPath();
+                ctx.moveTo(x2, y2);
+                ctx.lineTo(x2 - headLength * Math.cos(angle - Math.PI / 6), y2 - headLength * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(x2, y2);
+                ctx.lineTo(x2 - headLength * Math.cos(angle + Math.PI / 6), y2 - headLength * Math.sin(angle + Math.PI / 6));
+                ctx.stroke();
+            } else if (tool === 'circle') {
+                const rx = Math.abs(x2 - x1) / 2;
+                const ry = Math.abs(y2 - y1) / 2;
+                const cx = Math.min(x1, x2) + rx;
+                const cy = Math.min(y1, y2) + ry;
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI);
+                ctx.stroke();
+            } else if (tool === 'rect') {
+                ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+            }
+        }
+
+        function redrawAnnotations() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            annotations.forEach(a => {
+                if (a.tool === 'pen') {
+                    // Pen strokes stored differently - skip for now
+                } else {
+                    drawShape(a.startX, a.startY, a.endX, a.endY, a.tool, a.color, true);
+                }
+            });
+        }
+
+        function undoAnnotation() {
+            if (annotations.length > 0) {
+                annotations.pop();
+                redrawAnnotations();
+            }
+        }
+
+        function redoAnnotation() {
+            // Simple redo - would need proper history for full implementation
+        }
+
+        function clearAnnotations() {
+            annotations = [];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // ==================== DRAW MODE TOGGLE ====================
+        function toggleDrawMode() {
+            const btn = document.getElementById('drawBtn');
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                setTool('select');
+            } else {
+                btn.classList.add('active');
+                setTool('arrow');
+            }
+        }
+
+        // ==================== RECORDING ====================
+        function toggleVoiceRecording() {
+            if (isRecording && recordingType === 'voice') {
+                stopRecording();
+            } else {
+                startRecording('voice');
+            }
+        }
+
+        function toggleScreenRecording() {
+            if (isRecording && recordingType === 'screen') {
+                stopRecording();
+            } else {
+                startRecording('screen');
+            }
+        }
+
+        function toggleVideoRecording() {
+            if (isRecording && recordingType === 'video') {
+                stopRecording();
+            } else {
+                startRecording('video');
+            }
+        }
+
+        function startRecording(type) {
+            isRecording = true;
+            recordingType = type;
+            recordingSeconds = 0;
+
+            document.getElementById('recordingTimer').classList.add('visible');
+            document.getElementById('recordingLabel').textContent = `Recording ${type}...`;
+            document.getElementById(`${type}Btn`).classList.add('recording');
+
+            recordingInterval = setInterval(() => {
+                recordingSeconds++;
+                const mins = Math.floor(recordingSeconds / 60);
+                const secs = recordingSeconds % 60;
+                document.getElementById('recordingTime').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            clearInterval(recordingInterval);
+            document.getElementById('recordingTimer').classList.remove('visible');
+            document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('recording'));
+
+            // Add the recorded note to comments (demo)
+            const duration = document.getElementById('recordingTime').textContent;
+            alert(`${recordingType} note recorded (${duration}). In production, this would be uploaded and attached to your comment.`);
+            recordingType = null;
+        }
+
+        // ==================== CHAT PANEL ====================
+        function toggleChatPanel() {
+            const panel = document.getElementById('chatPanel');
+            const toggleBtn = document.getElementById('chatToggleBtn');
+            panel.classList.toggle('collapsed');
+
+            // Save preference
+            localStorage.setItem('cb_chat_collapsed', panel.classList.contains('collapsed'));
+        }
+
+        function toggleChatCustomize() {
+            const dropdown = document.getElementById('chatCustomize');
+            dropdown.classList.toggle('active');
+        }
+
+        function toggleOption(option) {
+            const toggle = document.getElementById('toggle' + option.charAt(0).toUpperCase() + option.slice(1));
+            toggle.classList.toggle('active');
+
+            // Save preference
+            const prefs = JSON.parse(localStorage.getItem('cb_chat_prefs') || '{}');
+            prefs[option] = toggle.classList.contains('active');
+            localStorage.setItem('cb_chat_prefs', JSON.stringify(prefs));
+
+            // Apply visual change
+            if (option === 'avatars') {
+                document.querySelectorAll('.comment-avatar').forEach(el => {
+                    el.style.display = toggle.classList.contains('active') ? 'flex' : 'none';
+                });
+            }
+            if (option === 'annotations') {
+                document.querySelectorAll('.comment-annotation-preview').forEach(el => {
+                    el.style.display = toggle.classList.contains('active') ? 'block' : 'none';
+                });
+            }
+        }
+
+        function loadClientInfo() {
+            // Get client info from localStorage or URL params
+            const firstName = localStorage.getItem('cb_first_name') || 'sean';
+            const lastName = localStorage.getItem('cb_last_name') || 'conley';
+            const plan = localStorage.getItem('cb_plan') || 'active';
+
+            const clientNameEl = document.getElementById('clientName');
+            const clientStatusEl = document.getElementById('clientStatus');
+
+            if (clientNameEl) {
+                clientNameEl.innerHTML = `${firstName.toLowerCase()}<span>-</span>${lastName.toLowerCase()}`;
+            }
+
+            if (clientStatusEl) {
+                clientStatusEl.textContent = plan;
+                clientStatusEl.className = 'client-status';
+                if (plan.toLowerCase() === 'active' || plan.toLowerCase() === 'pro' || plan.toLowerCase() === 'gold') {
+                    clientStatusEl.classList.add('active');
+                } else if (plan.toLowerCase() === 'trial' || plan.toLowerCase() === 'free') {
+                    clientStatusEl.classList.add('trial');
+                } else if (plan.toLowerCase() === 'paused' || plan.toLowerCase() === 'inactive') {
+                    clientStatusEl.classList.add('paused');
+                } else {
+                    clientStatusEl.classList.add('active');
+                }
+            }
+        }
+
+        // Close customize dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.panel-actions') && !e.target.closest('.chat-customize-dropdown')) {
+                document.getElementById('chatCustomize').classList.remove('active');
+            }
+        });
+
+        // ==================== COMMENTS ====================
+        const commentInput = document.getElementById('commentInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        commentInput.addEventListener('input', () => {
+            sendBtn.disabled = commentInput.value.trim() === '';
+            commentInput.style.height = 'auto';
+            commentInput.style.height = Math.min(commentInput.scrollHeight, 120) + 'px';
+        });
+
+        function addComment() {
+            const text = commentInput.value.trim();
+            if (!text) return;
+
+            const time = formatTime(currentTime);
+            const commentHTML = `
+                <div class="comment-card" data-time="${currentTime}" onclick="seekToTime(${currentTime})">
+                    <div class="comment-header">
+                        <div class="comment-avatar">YO</div>
+                        <div class="comment-meta">
+                            <div class="comment-author">You</div>
+                            <div class="comment-time-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ${time}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        <p class="comment-text">${escapeHTML(text)}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('commentsList').insertAdjacentHTML('beforeend', commentHTML);
+            commentInput.value = '';
+            sendBtn.disabled = true;
+            commentInput.style.height = 'auto';
+
+            // Add marker to timeline
+            addTimelineMarker(currentTime, text);
+            updateCommentCount();
+        }
+
+        function addTimelineMarker(time, text) {
+            const percent = (time / duration) * 100;
+            const markerHTML = `
+                <div class="timeline-marker" style="left: ${percent}%;" onclick="seekToTime(${time})">
+                    <div class="timeline-marker-tooltip">${formatTime(time)} - ${text.substring(0, 30)}...</div>
+                </div>
+            `;
+            document.getElementById('timelineMarkers').insertAdjacentHTML('beforeend', markerHTML);
+        }
+
+        function updateCommentCount() {
+            const count = document.querySelectorAll('.comment-card').length;
+            document.getElementById('commentCount').textContent = count;
+        }
+
+        function escapeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== TIMELINE ====================
+        function seekToTime(seconds) {
+            currentTime = seconds;
+            updatePlayhead();
+            // Highlight the comment
+            document.querySelectorAll('.comment-card').forEach(card => {
+                card.classList.toggle('active', parseInt(card.dataset.time) === seconds);
+            });
+        }
+
+        function seekTimeline(e) {
+            const track = document.getElementById('timelineTrack');
+            const rect = track.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            currentTime = Math.floor(percent * duration);
+            updatePlayhead();
+        }
+
+        function updatePlayhead() {
+            const percent = (currentTime / duration) * 100;
+            document.getElementById('timelineProgress').style.width = percent + '%';
+            document.getElementById('timelinePlayhead').style.left = percent + '%';
+            document.getElementById('currentTime').textContent = formatTime(currentTime);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function togglePlay() {
+            // Demo only - would control actual video
+            const btn = document.getElementById('playBtn');
+            const isPlaying = btn.classList.toggle('playing');
+            btn.innerHTML = isPlaying
+                ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+        }
+
+        function jumpToComment(num) {
+            const cards = document.querySelectorAll('.comment-card');
+            if (cards[num - 1]) {
+                const time = parseInt(cards[num - 1].dataset.time);
+                seekToTime(time);
+            }
+        }
+
+        // ==================== VERSION ====================
+        function switchVersion(v) {
+            document.querySelectorAll('.version-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i + 1 === v);
+            });
+        }
+
+        // ==================== MODAL ====================
+        function openApprovalModal() {
+            document.getElementById('approvalModal').classList.add('visible');
+        }
+
+        function closeApprovalModal() {
+            document.getElementById('approvalModal').classList.remove('visible');
+            selectedRating = 0;
+            document.querySelectorAll('.rating-star').forEach(s => s.classList.remove('active'));
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+            document.querySelectorAll('.rating-star').forEach((s, i) => {
+                s.classList.toggle('active', i < rating);
+            });
+        }
+
+        function confirmApproval() {
+            alert('Edit approved! Thank you for your feedback.');
+            closeApprovalModal();
+        }
+
+        function requestRevisions() {
+            // Open the revision summary modal instead of just alerting
+            openRevisionSummary();
+        }
+
+        // ============================================
+        // REVISION SUMMARY & SUBMISSION SYSTEM
+        // ============================================
+        let collectedRevisions = [];
+
+        function collectAllRevisions() {
+            collectedRevisions = [];
+            const commentCards = document.querySelectorAll('.comment-card:not(.resolved)');
+
+            commentCards.forEach((card, index) => {
+                const timeElement = card.querySelector('.comment-time-badge');
+                const textElement = card.querySelector('.comment-text');
+                const authorElement = card.querySelector('.comment-author');
+                const hasVoice = card.querySelector('.media-play-btn');
+                const hasAnnotation = card.querySelector('.comment-annotation-preview');
+
+                const timestamp = timeElement ? timeElement.textContent.trim() : '0:00';
+                const text = textElement ? textElement.textContent.trim() : '';
+                const author = authorElement ? authorElement.textContent.trim() : 'Client';
+
+                let type = 'text';
+                if (hasVoice) type = 'voice';
+                if (hasAnnotation) type = 'annotation';
+
+                collectedRevisions.push({
+                    id: `rev_${Date.now()}_${index}`,
+                    timestamp: timestamp,
+                    timeSeconds: card.dataset.time || 0,
+                    text: text,
+                    author: author,
+                    type: type,
+                    hasVoice: !!hasVoice,
+                    hasAnnotation: !!hasAnnotation
+                });
+            });
+
+            return collectedRevisions;
+        }
+
+        function updateRevisionCount() {
+            const count = document.querySelectorAll('.comment-card:not(.resolved)').length;
+            const badge = document.getElementById('revisionCountBadge');
+            const submitBtn = document.getElementById('submitRevisionsBtn');
+
+            if (badge) {
+                badge.textContent = count;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = count === 0;
+            }
+        }
+
+        function openRevisionSummary() {
+            const revisions = collectAllRevisions();
+            const listContainer = document.getElementById('revisionSummaryList');
+
+            if (revisions.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="no-revisions-message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 12l2 2 4-4"/>
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        <h4>No revisions to submit</h4>
+                        <p>Add comments on the video to request changes</p>
+                    </div>
+                `;
+            } else {
+                listContainer.innerHTML = revisions.map(rev => `
+                    <div class="revision-summary-item">
+                        <span class="revision-item-time">${rev.timestamp}</span>
+                        <div class="revision-item-content">
+                            <p class="revision-item-text">${rev.text}</p>
+                            <div class="revision-item-type">
+                                ${rev.type === 'voice' ? `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                    </svg>
+                                    Voice note attached
+                                ` : rev.type === 'annotation' ? `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                                    </svg>
+                                    Screen annotation attached
+                                ` : `
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    Text comment
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('revisionSummaryModal').classList.add('visible');
+        }
+
+        function closeRevisionSummary() {
+            document.getElementById('revisionSummaryModal').classList.remove('visible');
+            document.getElementById('revisionNotes').value = '';
+        }
+
+        async function confirmAndSubmitRevisions() {
+            if (collectedRevisions.length === 0) {
+                showNotification('No revisions to submit', 'warning');
+                return;
+            }
+
+            const additionalNotes = document.getElementById('revisionNotes').value.trim();
+            const confirmBtn = document.getElementById('confirmRevisionsBtn');
+
+            // Show loading state
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = `
+                <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="50" stroke-dashoffset="20"/>
+                </svg>
+                Sending...
+            `;
+
+            try {
+                // Send revisions to MCP server
+                const response = await fetch(MCP_SERVER_URL + '/api/project/revisions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_id: currentProject.id,
+                        project_title: currentProject.title,
+                        client_email: userEmail,
+                        client_name: localStorage.getItem('cb_name') || 'Client',
+                        editor_email: currentProject.editor_email || null,
+                        revisions: collectedRevisions,
+                        additional_notes: additionalNotes,
+                        submitted_at: new Date().toISOString(),
+                        version: currentProject.version || 1
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update project status
+                    currentProject.status = 'revisions';
+                    currentProject.feedback = collectedRevisions;
+
+                    // Close modal
+                    closeRevisionSummary();
+
+                    // Show success notification
+                    showNotification(`${collectedRevisions.length} revision(s) sent to your editor!`, 'success');
+
+                    // Notify parent iframe if embedded
+                    if (isEmbedded) {
+                        window.parent.postMessage({
+                            type: 'revisions_submitted',
+                            project_id: currentProject.id,
+                            project_title: currentProject.title,
+                            revision_count: collectedRevisions.length,
+                            email: userEmail
+                        }, '*');
+                    }
+
+                    // Show celebration for trial users
+                    if (isTrial) {
+                        showCelebration('revisions');
+                        return;
+                    }
+
+                    // Redirect after short delay
+                    setTimeout(() => {
+                        window.location.href = 'client-dashboard.html';
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || 'Failed to submit revisions');
+                }
+            } catch (err) {
+                console.error('[Revision Submit Error]', err);
+                showNotification('Failed to submit revisions. Please try again.', 'error');
+
+                // Reset button
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                    </svg>
+                    Send to Editor
+                `;
+            }
+        }
+
+        // Update revision count when comments change
+        const commentObserver = new MutationObserver(() => {
+            updateRevisionCount();
+        });
+
+        // Initialize observer when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const commentsList = document.getElementById('commentsList');
+            if (commentsList) {
+                commentObserver.observe(commentsList, { childList: true, subtree: true });
+                updateRevisionCount();
+            }
+        });
+
+        function playVoiceNote(btn) {
+            const isPlaying = btn.classList.toggle('playing');
+            btn.innerHTML = isPlaying
+                ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+        }
+
+        // ============================================
+        // FEEDBACK SAVE FUNCTION (Client Only)
+        // ============================================
+        function saveFeedbackAndUnlock() {
+            if (!reviewPermissions.canSaveFeedback) {
+                showNotification('You cannot save feedback for this project', 'error');
+                return false;
+            }
+
+            // Collect all feedback items (comments, annotations, etc.)
+            currentProject.feedback = feedbackItems;
+            currentProject.feedbackSaved = true;
+
+            // Update permissions
+            reviewPermissions.canEditFeedback = false;
+            reviewPermissions.canApprove = true;
+
+            // Update UI
+            const saveBtn = document.getElementById('saveFeedbackBtn');
+            if (saveBtn) {
+                saveBtn.textContent = '✓ Feedback Saved';
+                saveBtn.classList.add('saved');
+                saveBtn.disabled = true;
+            }
+
+            // Show action buttons
+            const actionBtns = document.getElementById('feedbackActionBtns');
+            if (actionBtns) {
+                actionBtns.style.display = 'flex';
+            }
+
+            showNotification('Feedback saved! You can now send to Revisions or Approve.', 'success');
+
+            // Post system message to chat
+            console.log(`[SYSTEM] Feedback saved for project ${currentProject.id}`);
+
+            return true;
+        }
+
+        function sendToRevisions() {
+            if (!currentProject.feedbackSaved) {
+                showNotification('Save your feedback first', 'warning');
+                return;
+            }
+
+            currentProject.status = 'revisions';
+            showNotification('Project sent to Revisions! Your editor will address your feedback.', 'success');
+
+            // Send revision request to MCP server
+            fetch(MCP_SERVER_URL + '/api/project/revisions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: currentProject.id,
+                    feedback: currentProject.feedback,
+                    email: userEmail,
+                    requested_at: new Date().toISOString()
+                })
+            }).catch(err => console.error('Failed to save revision request:', err));
+
+            // Notify parent iframe if embedded (for free trial dashboard)
+            if (isEmbedded) {
+                window.parent.postMessage({
+                    type: 'revisions_requested',
+                    project_id: currentProject.id,
+                    project_title: currentProject.title,
+                    feedback: currentProject.feedback,
+                    email: userEmail
+                }, '*');
+            }
+
+            // Show celebration overlay for trial users
+            if (isTrial) {
+                showCelebration('revisions');
+                return;
+            }
+
+            // Redirect back to dashboard after short delay
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+
+        function approveProject() {
+            if (!currentProject.feedbackSaved) {
+                showNotification('Save your feedback first', 'warning');
+                return;
+            }
+
+            // Show rating modal (same as dashboard)
+            showRatingModal();
+        }
+
+        function showRatingModal() {
+            const modal = document.createElement('div');
+            modal.className = 'rating-modal-overlay';
+            modal.innerHTML = `
+                <div class="rating-modal">
+                    <h3>Rate Your Edit</h3>
+                    <p>${currentProject.title}</p>
+                    <div class="star-rating">
+                        ${[1,2,3,4,5].map(i => `<button class="star-btn" onclick="setRating(${i})">★</button>`).join('')}
+                    </div>
+                    <p id="ratingLabel">Select a rating</p>
+                    <div class="rating-actions">
+                        <button onclick="closeRatingModal()" class="btn-cancel">Cancel</button>
+                        <button onclick="confirmApproval()" class="btn-approve" id="approveBtn" disabled>Approve</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function setRating(rating) {
+            selectedRating = rating;
+            document.querySelectorAll('.star-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i < rating);
+            });
+            document.getElementById('ratingLabel').textContent = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'][rating];
+            document.getElementById('approveBtn').disabled = false;
+        }
+
+        function closeRatingModal() {
+            document.querySelector('.rating-modal-overlay')?.remove();
+        }
+
+        function confirmApproval() {
+            if (selectedRating === 0) return;
+
+            currentProject.status = 'approved';
+            currentProject.rating = selectedRating;
+
+            closeRatingModal();
+            showNotification(`Project approved with ${selectedRating} stars!`, 'success');
+
+            // Send approval to MCP server
+            fetch(MCP_SERVER_URL + '/api/project/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: currentProject.id,
+                    rating: selectedRating,
+                    email: userEmail,
+                    approved_at: new Date().toISOString()
+                })
+            }).catch(err => console.error('Failed to save approval:', err));
+
+            // Mark review complete and update trial step
+            localStorage.setItem('cb_review_complete', 'true');
+            const currentTrialStep = parseInt(localStorage.getItem('cb_trial_step') || '1');
+            if (currentTrialStep < 5) {
+                localStorage.setItem('cb_trial_step', '5'); // Review = step 4, advance to done
+            }
+
+            // Notify parent iframe if embedded (for free trial dashboard)
+            if (isEmbedded) {
+                window.parent.postMessage({
+                    type: 'review_complete',
+                    step: 4, // Review is step 4 of onboarding
+                    project_id: currentProject.id,
+                    project_title: currentProject.title,
+                    rating: selectedRating,
+                    status: 'approved',
+                    email: userEmail
+                }, '*');
+                // Also send step_complete for onboarding tracking
+                window.parent.postMessage({
+                    type: 'step_complete',
+                    step: 4
+                }, '*');
+            }
+
+            // Show celebration overlay for trial users
+            if (isTrial) {
+                showCelebration('approved');
+                return;
+            }
+
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `review-notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // ============================================
+        // ROLE-BASED UI ENFORCEMENT
+        // ============================================
+        function enforceRolePermissions() {
+            // Client: Show feedback tools, hide editor controls
+            if (ROLE === 'client') {
+                document.querySelectorAll('.editor-only').forEach(el => el.style.display = 'none');
+                if (!reviewPermissions.canAddFeedback) {
+                    document.querySelectorAll('.feedback-tool').forEach(el => el.style.display = 'none');
+                }
+            }
+
+            // Editor: Show revision checklist, hide approve button
+            if (ROLE === 'editor') {
+                document.querySelectorAll('.client-only').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.editor-controls').forEach(el => el.style.display = 'flex');
+            }
+
+            // Admin: Read-only by default
+            if (ROLE === 'admin' || ROLE === 'owner') {
+                // Can see everything but doesn't use client/editor flows
+            }
+
+            console.log(`[Review Page] Role: ${ROLE}, Can Add Feedback: ${reviewPermissions.canAddFeedback}, Feedback Saved: ${currentProject.feedbackSaved}`);
+        }
+
+        // ============================================
+        // EDITOR REVISION CHECKLIST SYSTEM
+        // ============================================
+
+        // Mock version history - in production, fetched from project data
+        let projectVersions = [
+            { version: 1, date: '2024-12-20', status: 'previous', notes: 'Initial edit' },
+            { version: 2, date: '2024-12-22', status: 'previous', notes: 'Fixed audio sync issues' },
+            { version: 3, date: '2024-12-24', status: 'current', notes: 'Added requested transitions' }
+        ];
+
+        // Mock revision checklist items - built from client feedback
+        let revisionChecklist = [
+            { id: 1, text: 'Cut the awkward pause at 2:22', timestamp: 142, type: 'cut', completed: false },
+            { id: 2, text: 'Change background music at 5:30 to something more upbeat', timestamp: 330, type: 'audio', completed: false },
+            { id: 3, text: 'Add text overlay at intro', timestamp: 5, type: 'text', completed: false }
+        ];
+
+        let selectedFile = null;
+
+        function initEditorPanel() {
+            if (ROLE !== 'editor') return;
+
+            // Only show if project is in revisions status
+            if (currentProject.status === 'revisions') {
+                document.getElementById('editorPanelToggle').classList.add('visible');
+                renderRevisionChecklist();
+                renderVersionHistory();
+                updateChecklistProgress();
+            }
+        }
+
+        function toggleEditorPanel() {
+            const panel = document.getElementById('editorPanel');
+            const mainContent = document.getElementById('mainContent');
+
+            panel.classList.toggle('visible');
+            mainContent.classList.toggle('editor-panel-open');
+        }
+
+        function renderRevisionChecklist() {
+            const container = document.getElementById('revisionChecklist');
+            if (!container) return;
+
+            container.innerHTML = revisionChecklist.map(item => `
+                <div class="checklist-item ${item.completed ? 'completed' : ''}" data-id="${item.id}">
+                    <div class="checklist-checkbox" onclick="toggleChecklistItem(${item.id})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="checklist-content">
+                        <div class="checklist-text">${item.text}</div>
+                        <div class="checklist-meta">
+                            <span class="checklist-timestamp" onclick="seekToTime(${item.timestamp})">${formatTime(item.timestamp)}</span>
+                            <span class="checklist-type">${item.type}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleChecklistItem(id) {
+            if (!reviewPermissions.canEditChecklist) {
+                showNotification('Only editors can update the checklist', 'error');
+                return;
+            }
+
+            const item = revisionChecklist.find(i => i.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                renderRevisionChecklist();
+                updateChecklistProgress();
+            }
+        }
+
+        function updateChecklistProgress() {
+            const total = revisionChecklist.length;
+            const completed = revisionChecklist.filter(i => i.completed).length;
+            const percent = total > 0 ? (completed / total) * 100 : 0;
+
+            document.getElementById('checklistProgress').style.width = `${percent}%`;
+            document.getElementById('checklistProgressText').textContent = `${completed}/${total}`;
+
+            // Enable upload button only when all items are completed
+            const uploadBtn = document.getElementById('uploadVersionBtn');
+            if (uploadBtn) {
+                uploadBtn.disabled = completed < total;
+            }
+        }
+
+        function renderVersionHistory() {
+            const container = document.getElementById('versionHistory');
+            if (!container) return;
+
+            const versionsHTML = projectVersions.map(v => `
+                <div class="version-item ${v.status === 'current' ? 'current' : ''}" onclick="switchVersion(${v.version})">
+                    <div class="version-badge">V${v.version}</div>
+                    <div class="version-info">
+                        <div class="version-label">Version ${v.version}</div>
+                        <div class="version-date">${v.date}</div>
+                    </div>
+                    <span class="version-status ${v.status}">${v.status === 'current' ? 'Current' : 'Previous'}</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="version-history-title">Version History</div>
+                ${versionsHTML}
+            `;
+        }
+
+        // ============================================
+        // UPLOAD NEW VERSION SYSTEM
+        // ============================================
+
+        function openUploadModal() {
+            if (!reviewPermissions.canUploadVersion) {
+                showNotification('Only editors can upload new versions', 'error');
+                return;
+            }
+
+            // Check if all checklist items are completed
+            const allCompleted = revisionChecklist.every(i => i.completed);
+            if (!allCompleted) {
+                showNotification('Complete all checklist items first', 'warning');
+                return;
+            }
+
+            document.getElementById('uploadModal').classList.add('visible');
+            setupDragDrop();
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('visible');
+            removeSelectedFile();
+            document.getElementById('uploadNotes').value = '';
+        }
+
+        function setupDragDrop() {
+            const dropzone = document.getElementById('uploadDropzone');
+
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('video/')) {
+                    handleFile(files[0]);
+                } else {
+                    showNotification('Please select a video file', 'error');
+                }
+            });
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                handleFile(file);
+            } else {
+                showNotification('Please select a video file', 'error');
+            }
+        }
+
+        function handleFile(file) {
+            selectedFile = file;
+
+            // Show file info
+            document.getElementById('uploadFileName').textContent = file.name;
+            document.getElementById('uploadFileSize').textContent = formatFileSize(file.size);
+            document.getElementById('uploadFileSelected').classList.add('visible');
+            document.getElementById('uploadDropzone').style.display = 'none';
+            document.getElementById('uploadSubmitBtn').disabled = false;
+        }
+
+        function removeSelectedFile() {
+            selectedFile = null;
+            document.getElementById('uploadFileSelected').classList.remove('visible');
+            document.getElementById('uploadDropzone').style.display = 'block';
+            document.getElementById('uploadSubmitBtn').disabled = true;
+            document.getElementById('videoFileInput').value = '';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function submitNewVersion() {
+            if (!selectedFile) {
+                showNotification('Please select a video file', 'error');
+                return;
+            }
+
+            const notes = document.getElementById('uploadNotes').value;
+            const newVersion = projectVersions.length + 1;
+
+            // In production, this would upload to Google Drive/Cloud Storage
+            // and update Airtable with new version info
+
+            // Mark current version as previous
+            projectVersions.forEach(v => v.status = 'previous');
+
+            // Add new version
+            const today = new Date().toISOString().split('T')[0];
+            projectVersions.push({
+                version: newVersion,
+                date: today,
+                status: 'current',
+                notes: notes || 'Revision update'
+            });
+
+            // Update project status to review
+            currentProject.status = 'review';
+
+            // Reset checklist for next round
+            revisionChecklist.forEach(item => item.completed = false);
+
+            // Update version selector in header
+            updateVersionSelector();
+
+            // Close modal and show success
+            closeUploadModal();
+            showNotification(`Version ${newVersion} uploaded! Sending to client for review...`, 'success');
+
+            // Post system message to chat
+            console.log(`[SYSTEM] New version V${newVersion} uploaded by editor. Status changed to Review.`);
+
+            // Redirect back to dashboard after delay
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
+
+        function updateVersionSelector() {
+            const selector = document.querySelector('.version-selector');
+            if (!selector) return;
+
+            selector.innerHTML = projectVersions.map((v, i) => `
+                <button class="version-btn ${v.status === 'current' ? 'active' : ''}" onclick="switchVersion(${v.version})">V${v.version}</button>
+            `).join('');
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePlayhead();
+            setTool('arrow');
+            loadClientInfo();
+            enforceRolePermissions();
+            initEditorPanel();
+
+            // Restore chat panel collapsed state
+            if (localStorage.getItem('cb_chat_collapsed') === 'true') {
+                document.getElementById('chatPanel').classList.add('collapsed');
+            }
+
+            // Restore chat preferences
+            const prefs = JSON.parse(localStorage.getItem('cb_chat_prefs') || '{}');
+            if (prefs.timestamps === false) {
+                document.getElementById('toggleTimestamps').classList.remove('active');
+            }
+            if (prefs.avatars === false) {
+                document.getElementById('toggleAvatars').classList.remove('active');
+                document.querySelectorAll('.comment-avatar').forEach(el => el.style.display = 'none');
+            }
+            if (prefs.annotations === false) {
+                document.getElementById('toggleAnnotations').classList.remove('active');
+                document.querySelectorAll('.comment-annotation-preview').forEach(el => el.style.display = 'none');
+            }
+        });
+    </script>
+
+    <style>
+        /* Rating Modal Styles */
+        .rating-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .rating-modal {
+            background: var(--bg-elevated);
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .rating-modal h3 { margin-bottom: 8px; }
+        .rating-modal p { color: var(--text-secondary); margin-bottom: 24px; }
+        .star-rating { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+        .star-btn {
+            font-size: 32px;
+            background: none;
+            border: none;
+            color: var(--border-default);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .star-btn:hover { transform: scale(1.2); }
+        .star-btn.active { color: #f59e0b; text-shadow: 0 0 20px rgba(245,158,11,0.5); }
+        .rating-actions { display: flex; gap: 12px; justify-content: center; margin-top: 24px; }
+        .btn-cancel, .btn-approve {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-cancel { background: var(--bg-surface); color: var(--text-secondary); }
+        .btn-approve { background: var(--accent-green); color: #000; }
+        .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Notification Toast */
+        .review-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 10001;
+            animation: slideUp 0.3s ease;
+        }
+        .review-notification.success { background: var(--accent-green); color: #000; }
+        .review-notification.warning { background: var(--accent-orange); color: #000; }
+        .review-notification.error { background: var(--accent-red); color: #fff; }
+        .review-notification.info { background: var(--accent-blue); color: #fff; }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</body>
+</html>

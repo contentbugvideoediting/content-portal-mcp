@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Content Bug</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --green: #22c55e;
+            --orange: #f59e0b;
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           PREMIUM HERO WITH ANIMATED SMOKE
+           ============================================ */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            padding: 60px 24px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Smoke background container */
+        .smoke-background {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        /* Individual smoke layers */
+        .smoke-layer {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            opacity: 0.15;
+            filter: blur(80px);
+        }
+
+        .smoke-layer-1 {
+            background: radial-gradient(ellipse 60% 40% at 30% 50%,
+                rgba(30, 58, 138, 0.6) 0%,
+                rgba(37, 99, 235, 0.3) 30%,
+                transparent 60%);
+            animation: smokeFlow1 25s ease-in-out infinite;
+        }
+
+        .smoke-layer-2 {
+            background: radial-gradient(ellipse 50% 60% at 70% 40%,
+                rgba(59, 130, 246, 0.5) 0%,
+                rgba(96, 165, 250, 0.2) 40%,
+                transparent 70%);
+            animation: smokeFlow2 30s ease-in-out infinite;
+        }
+
+        .smoke-layer-3 {
+            background: radial-gradient(ellipse 70% 50% at 50% 60%,
+                rgba(15, 23, 42, 0.8) 0%,
+                rgba(30, 58, 138, 0.4) 30%,
+                transparent 60%);
+            animation: smokeFlow3 35s ease-in-out infinite;
+        }
+
+        .smoke-layer-4 {
+            background: radial-gradient(circle at 40% 30%,
+                rgba(59, 130, 246, 0.3) 0%,
+                transparent 50%);
+            animation: smokeFlow4 20s ease-in-out infinite;
+        }
+
+        @keyframes smokeFlow1 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 0.12;
+            }
+            25% {
+                transform: translate(5%, 3%) scale(1.05) rotate(2deg);
+                opacity: 0.18;
+            }
+            50% {
+                transform: translate(-3%, 5%) scale(1.1) rotate(-1deg);
+                opacity: 0.15;
+            }
+            75% {
+                transform: translate(-5%, -2%) scale(1.02) rotate(1deg);
+                opacity: 0.2;
+            }
+        }
+
+        @keyframes smokeFlow2 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 0.1;
+            }
+            33% {
+                transform: translate(-4%, 4%) scale(1.08) rotate(-2deg);
+                opacity: 0.16;
+            }
+            66% {
+                transform: translate(3%, -3%) scale(0.95) rotate(3deg);
+                opacity: 0.12;
+            }
+        }
+
+        @keyframes smokeFlow3 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.08;
+            }
+            50% {
+                transform: translate(2%, 2%) scale(1.1);
+                opacity: 0.14;
+            }
+        }
+
+        @keyframes smokeFlow4 {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                transform: translate(-3%, 2%) rotate(180deg);
+                opacity: 0.18;
+            }
+        }
+
+        /* Dark overlay gradient */
+        .smoke-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center top,
+                transparent 0%,
+                rgba(5, 5, 8, 0.3) 50%,
+                rgba(5, 5, 8, 0.8) 100%);
+            z-index: 1;
+        }
+
+        /* Premium logo container */
+        .logo-container {
+            position: relative;
+            z-index: 10;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        /* Logo glow ring */
+        .logo-glow {
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                rgba(59, 130, 246, 0.15) 0%,
+                rgba(59, 130, 246, 0.05) 40%,
+                transparent 70%);
+            animation: logoGlowPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes logoGlowPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .logo-image {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 8px 32px rgba(59, 130, 246, 0.3))
+                    drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5))
+                    brightness(1.1);
+            animation: logoBreathe 6s ease-in-out infinite;
+        }
+
+        @keyframes logoBreathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* Welcome text */
+        .welcome-section {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .welcome-greeting {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue-glow);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-name {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #e2e8f0 50%, var(--blue-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 15px;
+            color: var(--text-light);
+            max-width: 400px;
+        }
+
+        /* ============================================
+           STATS CARDS
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 0 24px 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: linear-gradient(165deg, rgba(15, 15, 25, 0.9), rgba(10, 10, 18, 0.95));
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: var(--blue-bright); }
+        .stat-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           QUICK ACTIONS
+           ============================================ */
+        .actions-section {
+            padding: 0 24px 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--blue-bright);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--dark-surface);
+            border-color: var(--blue-bright);
+            transform: translateY(-2px);
+        }
+
+        .action-btn svg {
+            width: 20px;
+            height: 20px;
+            color: var(--blue-glow);
+        }
+
+        /* ============================================
+           RECENT PROJECTS
+           ============================================ */
+        .projects-section {
+            padding: 0 24px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .project-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: var(--dark-surface);
+        }
+
+        .project-thumb {
+            width: 64px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--dark-surface), var(--dark-border));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-thumb svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-muted);
+        }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .project-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .project-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-status.review {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--blue-bright);
+        }
+
+        .project-status.progress {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--orange);
+        }
+
+        .project-status.complete {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .empty-state h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px 30px;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .logo-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .welcome-name {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section with Animated Smoke -->
+    <section class="hero-section">
+        <!-- Animated Smoke Background -->
+        <div class="smoke-background">
+            <div class="smoke-layer smoke-layer-1"></div>
+            <div class="smoke-layer smoke-layer-2"></div>
+            <div class="smoke-layer smoke-layer-3"></div>
+            <div class="smoke-layer smoke-layer-4"></div>
+        </div>
+        <div class="smoke-overlay"></div>
+
+        <!-- Premium Logo -->
+        <div class="logo-container">
+            <div class="logo-glow"></div>
+            <img class="logo-image" src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug">
+        </div>
+
+        <!-- Welcome Text -->
+        <div class="welcome-section">
+            <div class="welcome-greeting">Welcome back</div>
+            <h1 class="welcome-name" id="welcomeName">Creator</h1>
+            <p class="welcome-subtitle">Your editing team is ready to help you create amazing content</p>
+        </div>
+    </section>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="activeProjects">0</div>
+            <div class="stat-label">Active Projects</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="pendingReview">0</div>
+            <div class="stat-label">Pending Review</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <div class="stat-value" id="completedProjects">0</div>
+            <div class="stat-label">Completed This Month</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <section class="actions-section">
+        <h2 class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Quick Actions
+        </h2>
+        <div class="actions-grid">
+            <button class="action-btn" onclick="parent.loadPage('submit')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Submit Project
+            </button>
+            <button class="action-btn" onclick="parent.loadPage('pipeline')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M9 3v18"/>
+                </svg>
+                View Pipeline
+            </button>
+            <button class="action-btn" onclick="parent.loadPage('blueprint')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                Edit Blueprint
+            </button>
+            <button class="action-btn" onclick="parent.toggleChat()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Chat with Team
+            </button>
+        </div>
+    </section>
+
+    <!-- Recent Projects -->
+    <section class="projects-section">
+        <h2 class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Recent Activity
+        </h2>
+        <div id="recentProjects">
+            <!-- Populated by JavaScript -->
+        </div>
+    </section>
+
+    <script>
+        const MCP_SERVER = 'https://portalv2.contentbug.io';
+        const userEmail = localStorage.getItem('cb_email') || '';
+        const userName = localStorage.getItem('cb_name') || localStorage.getItem('cb_first_name') || 'Creator';
+
+        // Set welcome name
+        document.getElementById('welcomeName').textContent = userName;
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // For now, show demo data
+                // In production, fetch from MCP server
+                document.getElementById('activeProjects').textContent = '2';
+                document.getElementById('pendingReview').textContent = '1';
+                document.getElementById('completedProjects').textContent = '5';
+
+                // Demo recent projects
+                const projectsContainer = document.getElementById('recentProjects');
+                projectsContainer.innerHTML = `
+                    <div class="project-card" onclick="parent.loadPage('review')">
+                        <div class="project-thumb">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2"/>
+                            </svg>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Morning Routine Vlog</div>
+                            <div class="project-meta">Ready for your review</div>
+                        </div>
+                        <span class="project-status review">Review</span>
+                    </div>
+
+                    <div class="project-card" onclick="parent.loadPage('pipeline')">
+                        <div class="project-thumb">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2"/>
+                            </svg>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Product Launch Promo</div>
+                            <div class="project-meta">Editing in progress</div>
+                        </div>
+                        <span class="project-status progress">In Progress</span>
+                    </div>
+
+                    <div class="project-card" onclick="parent.loadPage('storage')">
+                        <div class="project-thumb">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2"/>
+                            </svg>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Weekly Podcast Episode 12</div>
+                            <div class="project-meta">Completed Dec 28</div>
+                        </div>
+                        <span class="project-status complete">Complete</span>
+                    </div>
+                `;
+
+            } catch (err) {
+                console.error('[Dashboard Error]', err);
+            }
+        }
+
+        // Ensure chat channel exists for this client
+        async function ensureChatChannel() {
+            if (!userEmail) return;
+
+            try {
+                const response = await fetch(`${MCP_SERVER}/chat/channels/${encodeURIComponent(userEmail)}`, {
+                    headers: {
+                        'X-User-Email': userEmail,
+                        'X-User-Role': 'client'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!data.channels || data.channels.length === 0) {
+                    // Create channel for this client
+                    await fetch(`${MCP_SERVER}/chat/channels`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-User-Email': userEmail,
+                            'X-User-Role': 'client'
+                        },
+                        body: JSON.stringify({
+                            type: 'client',
+                            name: userName,
+                            client_email: userEmail
+                        })
+                    });
+                    console.log('[Chat] Created channel for client');
+                }
+            } catch (err) {
+                console.log('[Chat] Channel check failed, will retry on chat open');
+            }
+        }
+
+        // Initialize
+        loadDashboardData();
+        ensureChatChannel();
+    </script>
+</body>
+</html>

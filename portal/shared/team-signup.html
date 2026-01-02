@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Our Team — Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-base: #050508;
+            --bg-card: #0a0a0f;
+            --bg-input: #08080c;
+            --border-subtle: #1a1a2e;
+            --border-active: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+        }
+
+        html, body {
+            min-height: 100%;
+            background: var(--bg-base);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+        }
+
+        /* Background */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: -1;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250vw;
+            height: 200vh;
+            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.06) 0%, rgba(30, 58, 138, 0.03) 40%, transparent 70%);
+            filter: blur(100px);
+        }
+
+        /* Container */
+        .signup-container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* Card */
+        .signup-card {
+            background: linear-gradient(165deg, rgba(15, 15, 25, 0.98) 0%, rgba(8, 8, 15, 0.99) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 640px;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.08), 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Logo */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(59, 130, 246, 0.3));
+        }
+
+        .signup-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .signup-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 32px 0;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            background: var(--bg-input);
+            border: 2px solid var(--border-subtle);
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .step-circle.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .step-circle.completed {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: none;
+        }
+
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: var(--border-subtle);
+        }
+
+        .step-line.completed {
+            background: var(--accent-green);
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 24px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .section-header:first-child {
+            margin-top: 0;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--accent-red);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+            padding-right: 44px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* File Upload */
+        .file-upload {
+            position: relative;
+            border: 2px dashed var(--border-subtle);
+            border-radius: 12px;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-input);
+        }
+
+        .file-upload:hover {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .file-upload.has-file {
+            border-color: var(--accent-green);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .file-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            color: var(--text-muted);
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .file-preview {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .file-preview.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .file-preview img {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .file-preview-name {
+            font-size: 12px;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        /* ID Verification Box */
+        .id-verification-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .id-verification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .id-verification-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Contract Section */
+        .contract-section {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .contract-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .contract-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contract-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-red);
+        }
+
+        .contract-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border-radius: 4px;
+        }
+
+        .contract-body {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .contract-body h4 {
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 700;
+            margin: 16px 0 8px;
+        }
+
+        .contract-body h4:first-child {
+            margin-top: 0;
+        }
+
+        .contract-body p {
+            margin-bottom: 12px;
+        }
+
+        .contract-body ul {
+            margin: 8px 0 12px 20px;
+        }
+
+        .contract-body li {
+            margin-bottom: 4px;
+        }
+
+        .contract-body strong {
+            color: var(--text-primary);
+        }
+
+        .contract-body .warning {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid var(--accent-red);
+            padding: 12px 16px;
+            margin: 16px 0;
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        .contract-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-subtle);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-subtle);
+            border-radius: 4px;
+            background: var(--bg-input);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-input:checked {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .checkbox-label strong {
+            color: var(--text-primary);
+        }
+
+        /* Signature */
+        .signature-section {
+            margin-top: 16px;
+        }
+
+        .signature-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .signature-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-family: 'Brush Script MT', cursive;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .signature-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .signature-date {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 50%, #22c55e 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Message */
+        .message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--accent-red);
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--accent-green);
+        }
+
+        /* Success Screen */
+        .success-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--accent-green);
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .success-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .signup-card {
+                padding: 32px 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .step-label {
+                display: none;
+            }
+        }
+
+        /* Scrollbar */
+        .contract-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .contract-body::-webkit-scrollbar-track {
+            background: var(--bg-base);
+            border-radius: 3px;
+        }
+
+        .contract-body::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 3px;
+        }
+
+        .contract-body::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer">
+        <div class="bg-gradient"></div>
+    </div>
+
+    <div class="signup-container">
+        <div class="signup-card">
+            <!-- Logo -->
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg" alt="Content Bug">
+                </div>
+                <h1 class="signup-title">Join the Team</h1>
+                <p class="signup-subtitle">Complete your application to become a Content Bug editor</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="progress-step">
+                    <div class="step-circle active" data-step="1">1</div>
+                    <span class="step-label">Info</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle" data-step="2">2</div>
+                    <span class="step-label">Payment</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle" data-step="3">3</div>
+                    <span class="step-label">ID</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle" data-step="4">4</div>
+                    <span class="step-label">NDA</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle" data-step="5">5</div>
+                    <span class="step-label">Contract</span>
+                </div>
+            </div>
+
+            <div id="messageBox" class="message"></div>
+
+            <!-- STEP 1: Personal Information -->
+            <div class="form-step active" data-step="1">
+                <p class="section-header">Personal Information</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="firstName" placeholder="Juan" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="lastName" placeholder="Dela Cruz" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="email" placeholder="you@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="phone" placeholder="+63 917 123 4567" required>
+                </div>
+
+                <p class="section-header">Home Address</p>
+
+                <div class="form-group">
+                    <label class="form-label">Street Address <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="streetAddress" placeholder="123 Main Street, Barangay" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="city" placeholder="Manila" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Province/Region <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="province" placeholder="Metro Manila" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Postal Code <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="postalCode" placeholder="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <input type="text" class="form-input" id="country" value="Philippines" readonly>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-primary" onclick="nextStep(1)">Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Payment Information -->
+            <div class="form-step" data-step="2">
+                <p class="section-header">Payment Information</p>
+                <p class="form-hint" style="margin-top: -8px; margin-bottom: 20px;">We pay editors via Wise or PayPal. Please provide your payment details.</p>
+
+                <div class="form-group">
+                    <label class="form-label">Wise Email <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="wiseEmail" placeholder="your-wise@email.com" required>
+                    <p class="form-hint">The email linked to your Wise account</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Wise Cashtag / Username</label>
+                    <input type="text" class="form-input" id="wiseCashtag" placeholder="@yourcashtag">
+                    <p class="form-hint">Optional - your Wise username for faster transfers</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">PayPal Email (Backup)</label>
+                    <input type="email" class="form-input" id="paypalEmail" placeholder="your-paypal@email.com">
+                    <p class="form-hint">Backup payment method if Wise is unavailable</p>
+                </div>
+
+                <p class="section-header">Account Security</p>
+
+                <div class="form-group">
+                    <label class="form-label">Create Password <span class="required">*</span></label>
+                    <input type="password" class="form-input" id="password" placeholder="Min. 8 characters" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password <span class="required">*</span></label>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter password" required>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(2)">Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: ID Verification -->
+            <div class="form-step" data-step="3">
+                <div class="id-verification-box">
+                    <div class="id-verification-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        Identity Verification Required
+                    </div>
+                    <p class="id-verification-text">
+                        For legal and security purposes, we require a valid government-issued ID. Your information is encrypted and stored securely. This is required for contract enforcement and tax compliance.
+                    </p>
+                </div>
+
+                <p class="section-header">Government ID (Front)</p>
+                <div class="form-group">
+                    <div class="file-upload" id="idFrontUpload">
+                        <input type="file" accept="image/*" id="idFrontInput" onchange="handleFileUpload('front', this)">
+                        <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="4" width="18" height="16" rx="2"/>
+                            <circle cx="9" cy="10" r="2"/>
+                            <path d="M21 15l-5-5L5 21"/>
+                        </svg>
+                        <p class="file-upload-text">Upload Front of ID</p>
+                        <p class="file-upload-hint">Philippine National ID, Driver's License, Passport, or UMID</p>
+                        <div class="file-preview" id="idFrontPreview">
+                            <img id="idFrontImg" src="" alt="ID Front">
+                            <span class="file-preview-name" id="idFrontName"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="section-header">Government ID (Back)</p>
+                <div class="form-group">
+                    <div class="file-upload" id="idBackUpload">
+                        <input type="file" accept="image/*" id="idBackInput" onchange="handleFileUpload('back', this)">
+                        <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="4" width="18" height="16" rx="2"/>
+                            <line x1="7" y1="9" x2="17" y2="9"/>
+                            <line x1="7" y1="13" x2="14" y2="13"/>
+                            <line x1="7" y1="17" x2="11" y2="17"/>
+                        </svg>
+                        <p class="file-upload-text">Upload Back of ID</p>
+                        <p class="file-upload-hint">Clear photo showing all text and barcodes</p>
+                        <div class="file-preview" id="idBackPreview">
+                            <img id="idBackImg" src="" alt="ID Back">
+                            <span class="file-preview-name" id="idBackName"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="section-header">Selfie with ID</p>
+                <div class="form-group">
+                    <div class="file-upload" id="selfieUpload">
+                        <input type="file" accept="image/*" id="selfieInput" onchange="handleFileUpload('selfie', this)">
+                        <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <p class="file-upload-text">Upload Selfie Holding Your ID</p>
+                        <p class="file-upload-hint">Face must be visible next to your ID</p>
+                        <div class="file-preview" id="selfiePreview">
+                            <img id="selfieImg" src="" alt="Selfie">
+                            <span class="file-preview-name" id="selfieName"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(3)">Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 4: NDA Agreement -->
+            <div class="form-step" data-step="4">
+                <div class="contract-section">
+                    <div class="contract-header">
+                        <div class="contract-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            Non-Disclosure Agreement (NDA)
+                        </div>
+                        <span class="contract-badge">Legally Binding</span>
+                    </div>
+                    <div class="contract-body">
+                        <h4>CONFIDENTIALITY AND NON-DISCLOSURE AGREEMENT</h4>
+                        <p>This Non-Disclosure Agreement ("Agreement") is entered into as of the date of electronic signature below, by and between:</p>
+                        <p><strong>Content Bug Video Editing, LLC</strong> ("Company"), a Utah Limited Liability Company with principal offices in the United States, and the undersigned individual ("Contractor").</p>
+
+                        <h4>1. DEFINITION OF CONFIDENTIAL INFORMATION</h4>
+                        <p>"Confidential Information" includes, but is not limited to:</p>
+                        <ul>
+                            <li>Client lists, contact information, and business relationships</li>
+                            <li>Proprietary editing workflows, templates, and processes</li>
+                            <li>Software systems, login credentials, and technical infrastructure</li>
+                            <li>Business strategies, pricing models, and financial information</li>
+                            <li>Training materials, documentation, and internal communications</li>
+                            <li>Any information marked or reasonably understood to be confidential</li>
+                        </ul>
+
+                        <h4>2. OBLIGATIONS OF CONTRACTOR</h4>
+                        <p>Contractor agrees to:</p>
+                        <ul>
+                            <li>Hold all Confidential Information in strict confidence</li>
+                            <li>Not disclose any Confidential Information to third parties without prior written consent</li>
+                            <li>Not use Confidential Information for any purpose other than performing contracted services</li>
+                            <li>Take all reasonable precautions to prevent unauthorized disclosure</li>
+                            <li>Immediately notify Company of any suspected breach</li>
+                        </ul>
+
+                        <h4>3. DURATION</h4>
+                        <p>This Agreement remains in effect <strong>indefinitely</strong>. Confidentiality obligations survive termination of any working relationship and continue for as long as the information remains confidential.</p>
+
+                        <h4>4. RETURN OF MATERIALS</h4>
+                        <p>Upon termination of engagement or upon Company's request, Contractor shall immediately:</p>
+                        <ul>
+                            <li>Return all documents, files, and materials containing Confidential Information</li>
+                            <li>Delete all electronic copies from personal devices and cloud storage</li>
+                            <li>Certify in writing that all materials have been returned or destroyed</li>
+                        </ul>
+
+                        <h4>5. REMEDIES AND ENFORCEMENT</h4>
+                        <div class="warning">
+                            CONTRACTOR ACKNOWLEDGES THAT BREACH OF THIS AGREEMENT MAY CAUSE IRREPARABLE HARM TO COMPANY. IN ADDITION TO MONETARY DAMAGES, COMPANY SHALL BE ENTITLED TO SEEK INJUNCTIVE RELIEF, SPECIFIC PERFORMANCE, AND ANY OTHER REMEDIES AVAILABLE AT LAW OR IN EQUITY.
+                        </div>
+                        <p>Contractor agrees to pay all attorneys' fees and costs incurred by Company in enforcing this Agreement.</p>
+
+                        <h4>6. GOVERNING LAW</h4>
+                        <p>This Agreement shall be governed by and construed in accordance with the laws of the State of Utah, United States. Any disputes shall be resolved in the courts of Salt Lake County, Utah, and Contractor consents to personal jurisdiction in such courts.</p>
+
+                        <h4>7. ACKNOWLEDGMENT</h4>
+                        <p>Contractor acknowledges that they have read this Agreement, understand its terms, and agree to be bound by its provisions. Contractor further acknowledges that they have had the opportunity to seek independent legal counsel.</p>
+                    </div>
+                    <div class="contract-footer">
+                        <label class="checkbox-group">
+                            <input type="checkbox" class="checkbox-input" id="ndaAgree">
+                            <span class="checkbox-label">I have read, understand, and agree to be legally bound by this <strong>Non-Disclosure Agreement</strong>. I understand that violation may result in legal action and financial penalties.</span>
+                        </label>
+                        <div class="signature-section">
+                            <label class="signature-label">Type your full legal name as your electronic signature:</label>
+                            <input type="text" class="signature-input" id="ndaSignature" placeholder="Your Full Legal Name">
+                            <p class="signature-date">Date: <span id="ndaDate"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(4)" id="ndaContinueBtn" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 5: Independent Contractor Agreement -->
+            <div class="form-step" data-step="5">
+                <div class="contract-section">
+                    <div class="contract-header">
+                        <div class="contract-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                            Exclusive Independent Contractor Agreement
+                        </div>
+                        <span class="contract-badge">Legally Binding</span>
+                    </div>
+                    <div class="contract-body">
+                        <h4>EXCLUSIVE INDEPENDENT CONTRACTOR AGREEMENT</h4>
+                        <p>This Exclusive Independent Contractor Agreement ("Agreement") is entered into as of the date of electronic signature below, by and between:</p>
+                        <p><strong>Content Bug Video Editing, LLC</strong> ("Company"), and the undersigned individual ("Contractor").</p>
+
+                        <h4>1. ENGAGEMENT AND SERVICES</h4>
+                        <p>Company engages Contractor to provide video editing and related services. Contractor agrees to perform services in accordance with Company's standards, guidelines, and deadlines.</p>
+
+                        <h4>2. EXCLUSIVE ENGAGEMENT</h4>
+                        <div class="warning">
+                            CONTRACTOR AGREES TO WORK EXCLUSIVELY FOR CONTENT BUG VIDEO EDITING, LLC. CONTRACTOR SHALL NOT PROVIDE VIDEO EDITING, CONTENT CREATION, OR SIMILAR SERVICES TO ANY OTHER COMPANY, AGENCY, OR INDIVIDUAL DURING THE TERM OF THIS AGREEMENT.
+                        </div>
+                        <p>This exclusivity provision applies to:</p>
+                        <ul>
+                            <li>Direct competitors in the video editing industry</li>
+                            <li>Any third-party clients obtained through or related to Company's business</li>
+                            <li>Freelance platforms (Upwork, Fiverr, Freelancer, etc.)</li>
+                            <li>Personal video editing services offered for compensation</li>
+                        </ul>
+
+                        <h4>3. NON-COMPETE AND NON-SOLICITATION</h4>
+                        <div class="warning">
+                            FOR A PERIOD OF TWO (2) YEARS FOLLOWING TERMINATION OF THIS AGREEMENT, CONTRACTOR SHALL NOT:
+                        </div>
+                        <ul>
+                            <li><strong>Solicit, contact, or provide services to any client</strong> of Content Bug Video Editing, LLC, whether current or former</li>
+                            <li><strong>Recruit, solicit, or hire any employee or contractor</strong> of the Company</li>
+                            <li><strong>Establish or work for any competing business</strong> that provides video editing services to social media creators, influencers, or businesses</li>
+                            <li><strong>Use any client relationships, leads, or contacts</strong> obtained during engagement with Company</li>
+                        </ul>
+
+                        <h4>4. INTELLECTUAL PROPERTY</h4>
+                        <p>All work product, including but not limited to edited videos, graphics, templates, presets, and any other materials created during engagement, shall be the exclusive property of Company. Contractor hereby assigns all rights, title, and interest in such work product to Company.</p>
+
+                        <h4>5. COMPANY ASSETS AND RESOURCES</h4>
+                        <p>Contractor acknowledges that:</p>
+                        <ul>
+                            <li>All software licenses, accounts, and tools provided by Company remain Company property</li>
+                            <li>Login credentials shall not be shared with any third party</li>
+                            <li>Company systems shall only be used for authorized Company business</li>
+                            <li>All assets must be returned immediately upon termination</li>
+                        </ul>
+
+                        <h4>6. COMPENSATION</h4>
+                        <p>Contractor shall be compensated according to the rate schedule provided separately. Payment shall be made via Wise or PayPal within 14 days of invoice approval. Contractor is responsible for all applicable taxes in their jurisdiction.</p>
+
+                        <h4>7. TERMINATION</h4>
+                        <p>Either party may terminate this Agreement with 14 days written notice. Company may terminate immediately for cause, including breach of this Agreement, poor performance, or misconduct.</p>
+
+                        <h4>8. PENALTIES FOR BREACH</h4>
+                        <div class="warning">
+                            CONTRACTOR ACKNOWLEDGES AND AGREES THAT BREACH OF THE EXCLUSIVITY, NON-COMPETE, OR NON-SOLICITATION PROVISIONS WILL RESULT IN:
+                        </div>
+                        <ul>
+                            <li><strong>Liquidated damages of $25,000 USD</strong> per violation, plus actual damages</li>
+                            <li><strong>Injunctive relief</strong> to prevent further violations</li>
+                            <li><strong>Recovery of all profits</strong> earned from prohibited activities</li>
+                            <li><strong>Payment of all legal fees</strong> and costs incurred by Company</li>
+                            <li><strong>Criminal referral</strong> if theft of trade secrets is involved</li>
+                        </ul>
+                        <p>Contractor acknowledges that these remedies are reasonable given the harm that would result from breach.</p>
+
+                        <h4>9. REPRESENTATIONS AND WARRANTIES</h4>
+                        <p>Contractor represents and warrants that:</p>
+                        <ul>
+                            <li>Contractor has the legal right to enter into this Agreement</li>
+                            <li>Contractor is not bound by any other agreement that would prevent performance</li>
+                            <li>All information provided to Company is true and accurate</li>
+                            <li>Contractor will comply with all applicable laws and regulations</li>
+                        </ul>
+
+                        <h4>10. GOVERNING LAW AND JURISDICTION</h4>
+                        <p>This Agreement shall be governed by the laws of the State of Utah, United States. Contractor irrevocably consents to the exclusive jurisdiction of state and federal courts in Salt Lake County, Utah for any disputes arising from this Agreement.</p>
+
+                        <h4>11. ENTIRE AGREEMENT</h4>
+                        <p>This Agreement, together with the NDA, constitutes the entire agreement between the parties. Any modifications must be in writing and signed by both parties.</p>
+
+                        <h4>12. ACKNOWLEDGMENT</h4>
+                        <p>CONTRACTOR ACKNOWLEDGES THAT THEY HAVE READ THIS AGREEMENT IN ITS ENTIRETY, UNDERSTAND ALL OF ITS TERMS AND CONDITIONS, AND VOLUNTARILY AGREE TO BE LEGALLY BOUND BY ITS PROVISIONS. CONTRACTOR ACKNOWLEDGES THAT THEY HAVE HAD THE OPPORTUNITY TO CONSULT WITH INDEPENDENT LEGAL COUNSEL BEFORE SIGNING.</p>
+                    </div>
+                    <div class="contract-footer">
+                        <label class="checkbox-group">
+                            <input type="checkbox" class="checkbox-input" id="contractAgree">
+                            <span class="checkbox-label">I have read, understand, and agree to be legally bound by this <strong>Exclusive Independent Contractor Agreement</strong>. I understand the exclusivity requirements and penalties for breach.</span>
+                        </label>
+                        <div class="signature-section">
+                            <label class="signature-label">Type your full legal name as your electronic signature:</label>
+                            <input type="text" class="signature-input" id="contractSignature" placeholder="Your Full Legal Name">
+                            <p class="signature-date">Date: <span id="contractDate"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(5)">Back</button>
+                    <button type="button" class="btn btn-success" onclick="submitApplication()" id="submitBtn" disabled>Submit Application</button>
+                </div>
+            </div>
+
+            <!-- SUCCESS SCREEN -->
+            <div class="form-step" data-step="success">
+                <div class="success-screen">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <h2 class="success-title">Application Submitted!</h2>
+                    <p class="success-text">
+                        Thank you for applying to join the Content Bug team. We'll review your application and documents within 2-3 business days. You'll receive an email with next steps.
+                    </p>
+                    <div class="btn-row" style="justify-content: center; margin-top: 32px;">
+                        <a href="/login" class="btn btn-primary" style="max-width: 200px; text-decoration: none; text-align: center;">Go to Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MCP_SERVER = 'https://portalv2.contentbug.io';
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        // File storage
+        let uploadedFiles = {
+            front: null,
+            back: null,
+            selfie: null
+        };
+
+        // Initialize dates
+        document.getElementById('ndaDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('contractDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Enable/disable continue buttons based on checkbox and signature
+        document.getElementById('ndaAgree').addEventListener('change', validateNDA);
+        document.getElementById('ndaSignature').addEventListener('input', validateNDA);
+        document.getElementById('contractAgree').addEventListener('change', validateContract);
+        document.getElementById('contractSignature').addEventListener('input', validateContract);
+
+        function validateNDA() {
+            const checked = document.getElementById('ndaAgree').checked;
+            const signed = document.getElementById('ndaSignature').value.trim().length > 3;
+            document.getElementById('ndaContinueBtn').disabled = !(checked && signed);
+        }
+
+        function validateContract() {
+            const checked = document.getElementById('contractAgree').checked;
+            const signed = document.getElementById('contractSignature').value.trim().length > 3;
+            document.getElementById('submitBtn').disabled = !(checked && signed);
+        }
+
+        function handleFileUpload(type, input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please upload an image file', 'error');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                showMessage('File too large. Maximum 10MB allowed.', 'error');
+                return;
+            }
+
+            uploadedFiles[type] = file;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const uploadBox = document.getElementById(`id${type.charAt(0).toUpperCase() + type.slice(1)}Upload`);
+                const preview = document.getElementById(`id${type.charAt(0).toUpperCase() + type.slice(1)}Preview`) || document.getElementById(`${type}Preview`);
+                const img = document.getElementById(`id${type.charAt(0).toUpperCase() + type.slice(1)}Img`) || document.getElementById(`${type}Img`);
+                const name = document.getElementById(`id${type.charAt(0).toUpperCase() + type.slice(1)}Name`) || document.getElementById(`${type}Name`);
+
+                if (uploadBox) uploadBox.classList.add('has-file');
+                if (preview) preview.classList.add('visible');
+                if (img) img.src = e.target.result;
+                if (name) name.textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showMessage(text, type) {
+            const box = document.getElementById('messageBox');
+            box.textContent = text;
+            box.className = `message ${type}`;
+            setTimeout(() => box.className = 'message', 5000);
+        }
+
+        function updateProgress() {
+            document.querySelectorAll('.step-circle').forEach((circle, idx) => {
+                const stepNum = idx + 1;
+                circle.classList.remove('active', 'completed');
+                if (stepNum < currentStep) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+                } else if (stepNum === currentStep) {
+                    circle.classList.add('active');
+                    circle.textContent = stepNum;
+                } else {
+                    circle.textContent = stepNum;
+                }
+            });
+
+            document.querySelectorAll('.step-line').forEach((line, idx) => {
+                line.classList.toggle('completed', idx < currentStep - 1);
+            });
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            const targetStep = document.querySelector(`.form-step[data-step="${step}"]`);
+            if (targetStep) targetStep.classList.add('active');
+            updateProgress();
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const required = ['firstName', 'lastName', 'email', 'phone', 'streetAddress', 'city', 'province', 'postalCode'];
+                for (const id of required) {
+                    if (!document.getElementById(id).value.trim()) {
+                        showMessage('Please fill in all required fields', 'error');
+                        document.getElementById(id).focus();
+                        return false;
+                    }
+                }
+                // Validate email
+                const email = document.getElementById('email').value;
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    showMessage('Please enter a valid email address', 'error');
+                    return false;
+                }
+            }
+
+            if (step === 2) {
+                const wiseEmail = document.getElementById('wiseEmail').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (!wiseEmail.trim()) {
+                    showMessage('Wise email is required for payment', 'error');
+                    return false;
+                }
+
+                if (password.length < 8) {
+                    showMessage('Password must be at least 8 characters', 'error');
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    showMessage('Passwords do not match', 'error');
+                    return false;
+                }
+            }
+
+            if (step === 3) {
+                if (!uploadedFiles.front || !uploadedFiles.back || !uploadedFiles.selfie) {
+                    showMessage('Please upload all required ID documents', 'error');
+                    return false;
+                }
+            }
+
+            if (step === 4) {
+                if (!document.getElementById('ndaAgree').checked || !document.getElementById('ndaSignature').value.trim()) {
+                    showMessage('Please agree to the NDA and sign', 'error');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function nextStep(current) {
+            if (!validateStep(current)) return;
+            currentStep = current + 1;
+            showStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevStep(current) {
+            currentStep = current - 1;
+            showStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function submitApplication() {
+            if (!validateStep(5)) return;
+
+            if (!document.getElementById('contractAgree').checked || !document.getElementById('contractSignature').value.trim()) {
+                showMessage('Please agree to the contract and sign', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                // Collect all data
+                const formData = {
+                    // Personal Info
+                    firstName: document.getElementById('firstName').value.trim(),
+                    lastName: document.getElementById('lastName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    // Address
+                    streetAddress: document.getElementById('streetAddress').value.trim(),
+                    city: document.getElementById('city').value.trim(),
+                    province: document.getElementById('province').value.trim(),
+                    postalCode: document.getElementById('postalCode').value.trim(),
+                    country: 'Philippines',
+                    // Payment
+                    wiseEmail: document.getElementById('wiseEmail').value.trim(),
+                    wiseCashtag: document.getElementById('wiseCashtag').value.trim(),
+                    paypalEmail: document.getElementById('paypalEmail').value.trim(),
+                    password: document.getElementById('password').value,
+                    // Contracts
+                    ndaSignature: document.getElementById('ndaSignature').value.trim(),
+                    ndaSignedDate: new Date().toISOString(),
+                    contractSignature: document.getElementById('contractSignature').value.trim(),
+                    contractSignedDate: new Date().toISOString(),
+                    // Meta
+                    role: 'editor',
+                    status: 'pending_review',
+                    applicationDate: new Date().toISOString()
+                };
+
+                // TODO: Upload ID files to secure storage
+                // TODO: Submit to MCP server / Airtable
+                console.log('Application data:', formData);
+                console.log('Uploaded files:', uploadedFiles);
+
+                // For now, show success
+                showStep('success');
+                document.querySelector('.progress-steps').style.display = 'none';
+
+            } catch (error) {
+                console.error('Submission error:', error);
+                showMessage('Something went wrong. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        }
+    </script>
+</body>
+</html>

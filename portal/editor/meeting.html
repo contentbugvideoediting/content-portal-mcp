@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Meeting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meeting-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        /* Meeting Header */
+        .meeting-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .meeting-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .meeting-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        .meeting-schedule {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .meeting-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+        }
+
+        .action-btn.primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .action-btn.primary:hover {
+            background: var(--blue-mid);
+        }
+
+        .action-btn.secondary {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            color: var(--text-light);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--dark-surface);
+            color: var(--text-white);
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Zoom Embed Container */
+        .zoom-container {
+            flex: 1;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        .zoom-placeholder {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .zoom-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2D8CFF, #0B5CFF);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(45, 140, 255, 0.3);
+        }
+
+        .zoom-icon svg {
+            width: 40px;
+            height: 40px;
+            color: #fff;
+        }
+
+        .zoom-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .zoom-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 400px;
+            margin-bottom: 32px;
+        }
+
+        .join-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #2D8CFF, #0B5CFF);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(45, 140, 255, 0.3);
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(45, 140, 255, 0.4);
+        }
+
+        .join-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Meeting Schedule Info */
+        .schedule-card {
+            background: var(--dark-surface);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            max-width: 500px;
+            text-align: left;
+        }
+
+        .schedule-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .schedule-title svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent);
+        }
+
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .schedule-day {
+            font-weight: 600;
+            color: var(--text-white);
+            min-width: 100px;
+        }
+
+        /* Upcoming Meetings */
+        .upcoming-section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .upcoming-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .upcoming-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .upcoming-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .upcoming-icon.weekly {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+        }
+
+        .upcoming-icon.standup {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        .upcoming-icon.review {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--purple);
+        }
+
+        .upcoming-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .upcoming-info {
+            flex: 1;
+        }
+
+        .upcoming-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .upcoming-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .upcoming-btn {
+            padding: 8px 14px;
+            background: var(--dark-surface);
+            border: none;
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .upcoming-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .meeting-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            .meeting-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .meeting-actions {
+                flex-direction: column;
+            }
+            .action-btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="meeting-container">
+        <!-- Meeting Header -->
+        <div class="meeting-header">
+            <div class="meeting-info">
+                <div class="meeting-status">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Meeting Room Active</span>
+                </div>
+                <span class="meeting-schedule">Next scheduled: Team Standup - Today at 10:00 AM</span>
+            </div>
+            <div class="meeting-actions">
+                <button class="action-btn secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Schedule Meeting
+                </button>
+                <button class="action-btn secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Zoom Container -->
+        <div class="zoom-container">
+            <div class="zoom-placeholder">
+                <div class="zoom-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                </div>
+                <h2 class="zoom-title">Team Meeting Room</h2>
+                <p class="zoom-subtitle">Join the team video call to collaborate with other editors and discuss projects in real-time.</p>
+
+                <button class="join-btn" onclick="window.open('https://zoom.us/join', '_blank')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                    Join Meeting
+                </button>
+
+                <div class="schedule-card">
+                    <div class="schedule-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Regular Meeting Schedule
+                    </div>
+                    <div class="schedule-list">
+                        <div class="schedule-item">
+                            <span class="schedule-day">Monday</span>
+                            <span>10:00 AM - Weekly Team Standup</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-day">Wednesday</span>
+                            <span>2:00 PM - Project Review</span>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-day">Friday</span>
+                            <span>4:00 PM - Week Wrap-up</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Meetings -->
+        <div class="upcoming-section">
+            <h3 class="section-title">Upcoming Meetings</h3>
+            <div class="upcoming-list">
+                <div class="upcoming-card">
+                    <div class="upcoming-icon standup">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div class="upcoming-info">
+                        <div class="upcoming-name">Team Standup</div>
+                        <div class="upcoming-time">Today at 10:00 AM</div>
+                    </div>
+                    <button class="upcoming-btn">Join</button>
+                </div>
+
+                <div class="upcoming-card">
+                    <div class="upcoming-icon review">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </div>
+                    <div class="upcoming-info">
+                        <div class="upcoming-name">Project Review</div>
+                        <div class="upcoming-time">Wed, Dec 30 at 2:00 PM</div>
+                    </div>
+                    <button class="upcoming-btn">Remind Me</button>
+                </div>
+
+                <div class="upcoming-card">
+                    <div class="upcoming-icon weekly">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="upcoming-info">
+                        <div class="upcoming-name">Week Wrap-up</div>
+                        <div class="upcoming-time">Fri, Jan 3 at 4:00 PM</div>
+                    </div>
+                    <button class="upcoming-btn">Remind Me</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

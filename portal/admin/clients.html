@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients | Content Bug Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        /* Main Tabs */
+        .main-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--dark-card);
+            padding: 6px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--dark-border);
+        }
+
+        .main-tab {
+            flex: 1;
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .main-tab:hover {
+            color: var(--text-light);
+            background: var(--dark-surface);
+        }
+
+        .main-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .main-tab .badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .main-tab.active .badge {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-tab:not(.active) .badge {
+            background: var(--dark-border);
+        }
+
+        .main-tab .badge.urgent {
+            background: var(--danger);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.critical {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), transparent);
+        }
+
+        .stat-card.warning {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.green { color: var(--success); }
+        .stat-value.blue { color: var(--accent); }
+        .stat-value.orange { color: var(--warning); }
+        .stat-value.red { color: var(--danger); }
+        .stat-value.purple { color: var(--purple); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Content Sections */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Filters */
+        .filters-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 18px 14px 48px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        .search-box svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            padding: 14px 18px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-tab {
+            padding: 10px 16px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-tab:hover {
+            color: var(--text-light);
+            border-color: var(--accent);
+        }
+
+        .filter-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Table Wrapper */
+        .table-wrapper {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--dark-border);
+            font-size: 14px;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: var(--dark-surface); }
+
+        /* User Info Cell */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .user-avatar.basic { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
+        .user-avatar.silver { background: rgba(148, 163, 184, 0.2); color: var(--text-light); }
+        .user-avatar.gold { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .user-avatar.pro { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+        .user-avatar.trial { background: linear-gradient(135deg, var(--success), var(--accent)); }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Badges */
+        .tier-badge, .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-badge.basic { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .tier-badge.silver { background: rgba(148, 163, 184, 0.15); color: var(--text-light); }
+        .tier-badge.gold { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .tier-badge.pro { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .status-badge.active { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .status-badge.trial { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .status-badge.at-risk { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .status-badge.churned { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+        .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-badge.assigned { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .status-badge.completed { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+
+        /* Health Score */
+        .health-score {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .health-bar {
+            width: 60px;
+            height: 6px;
+            background: var(--dark-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .health-fill.good { background: var(--success); }
+        .health-fill.warning { background: var(--warning); }
+        .health-fill.bad { background: var(--danger); }
+
+        .health-value {
+            font-size: 13px;
+            font-weight: 700;
+            min-width: 30px;
+        }
+
+        .health-value.good { color: var(--success); }
+        .health-value.warning { color: var(--warning); }
+        .health-value.bad { color: var(--danger); }
+
+        /* Editor Tag */
+        .editor-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: var(--dark-surface);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .editor-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* MRR Value */
+        .mrr-value {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Actions */
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        .action-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        /* Blueprint Progress */
+        .blueprint-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .blueprint-progress {
+            width: 60px;
+            height: 6px;
+            background: var(--dark-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .blueprint-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 3px;
+        }
+
+        /* Issue Tags */
+        .issue-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .issue-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .issue-tag.turnaround { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .issue-tag.revisions { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .issue-tag.quality { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .issue-tag.inactive { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+
+        /* Health Card (for critical view) */
+        .health-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .health-card.critical { border-left: 4px solid var(--danger); }
+        .health-card.warning { border-left: 4px solid var(--warning); }
+
+        .health-score-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .health-score-circle.critical {
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid var(--danger);
+        }
+
+        .health-score-circle.warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 2px solid var(--warning);
+        }
+
+        .score-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .health-score-circle.critical .score-value { color: var(--danger); }
+        .health-score-circle.warning .score-value { color: var(--warning); }
+
+        .score-label {
+            font-size: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .health-info {
+            flex: 1;
+        }
+
+        .health-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .health-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .health-stats {
+            display: flex;
+            gap: 24px;
+            margin-left: auto;
+        }
+
+        .health-stat {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .health-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .health-stat-value.bad { color: var(--danger); }
+        .health-stat-value.warning { color: var(--warning); }
+        .health-stat-value.good { color: var(--success); }
+
+        .health-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Trial Card */
+        .trial-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .trial-card.new {
+            border-left: 3px solid var(--success);
+        }
+
+        .new-badge {
+            padding: 2px 8px;
+            background: var(--success);
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 14px;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover {
+            background: var(--dark-border);
+            color: var(--text-white);
+        }
+
+        .page-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .table-wrapper { overflow-x: auto; }
+            .data-table { min-width: 900px; }
+            .health-stats { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .main-tabs { flex-wrap: wrap; }
+            .main-tab { min-width: calc(50% - 2px); }
+            .filters-bar { flex-direction: column; }
+            .search-box { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="page-title">
+            <span class="icon">👥</span>
+            Clients
+        </h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary">
+                <span>📊</span> Export
+            </button>
+            <button class="btn btn-primary">
+                <span>➕</span> Add Client
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Tabs -->
+    <div class="main-tabs">
+        <button class="main-tab active" data-tab="clients">
+            👥 All Clients
+            <span class="badge">127</span>
+        </button>
+        <button class="main-tab" data-tab="trials">
+            🎯 Free Trials
+            <span class="badge">16</span>
+        </button>
+        <button class="main-tab" data-tab="health">
+            ❤️ Health Monitor
+            <span class="badge urgent">7</span>
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CLIENTS TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content active" id="clients-tab">
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value blue">127</div>
+                <div class="stat-label">Total Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">118</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple">4</div>
+                <div class="stat-label">In Trial</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value red">5</div>
+                <div class="stat-label">At Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">$47,850</div>
+                <div class="stat-label">Total MRR</div>
+            </div>
+        </div>
+
+        <div class="filters-bar">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" placeholder="Search by name, email, or company..." id="client-search">
+            </div>
+            <select class="filter-select" id="tier-filter">
+                <option value="">All Tiers</option>
+                <option value="basic">Basic</option>
+                <option value="silver">Silver</option>
+                <option value="gold">Gold</option>
+                <option value="pro">Pro</option>
+            </select>
+            <select class="filter-select" id="status-filter">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="trial">Trial</option>
+                <option value="at-risk">At Risk</option>
+                <option value="churned">Churned</option>
+            </select>
+            <select class="filter-select" id="editor-filter">
+                <option value="">All Editors</option>
+                <option value="jake">Jake M</option>
+                <option value="sarah">Sarah K</option>
+                <option value="mike">Mike T</option>
+                <option value="anna">Anna L</option>
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Tier</th>
+                        <th>Status</th>
+                        <th>Health</th>
+                        <th>Editor</th>
+                        <th>MRR</th>
+                        <th>Last Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clients-tbody">
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar gold">AT</div>
+                                <div>
+                                    <div class="user-name">Alex Thompson</div>
+                                    <div class="user-email">alex@creatorstudio.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge gold">Gold</span></td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td>
+                            <div class="health-score">
+                                <div class="health-bar"><div class="health-fill good" style="width: 92%"></div></div>
+                                <span class="health-value good">92</span>
+                            </div>
+                        </td>
+                        <td><span class="editor-tag"><span class="editor-dot"></span>Jake M</span></td>
+                        <td><span class="mrr-value">$997</span></td>
+                        <td>2 hours ago</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn secondary">View</button>
+                                <button class="action-btn secondary">Message</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar pro">SM</div>
+                                <div>
+                                    <div class="user-name">Sarah Mitchell</div>
+                                    <div class="user-email">sarah@fitnessbrand.co</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge pro">Pro</span></td>
+                        <td><span class="status-badge at-risk">At Risk</span></td>
+                        <td>
+                            <div class="health-score">
+                                <div class="health-bar"><div class="health-fill bad" style="width: 45%"></div></div>
+                                <span class="health-value bad">45</span>
+                            </div>
+                        </td>
+                        <td><span class="editor-tag"><span class="editor-dot"></span>Sarah K</span></td>
+                        <td><span class="mrr-value">$1,497</span></td>
+                        <td>2 weeks ago</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn danger">Urgent</button>
+                                <button class="action-btn secondary">View</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar silver">JW</div>
+                                <div>
+                                    <div class="user-name">Jessica Wong</div>
+                                    <div class="user-email">jess@beautybyjess.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge silver">Silver</span></td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td>
+                            <div class="health-score">
+                                <div class="health-bar"><div class="health-fill good" style="width: 88%"></div></div>
+                                <span class="health-value good">88</span>
+                            </div>
+                        </td>
+                        <td><span class="editor-tag"><span class="editor-dot"></span>Mike T</span></td>
+                        <td><span class="mrr-value">$697</span></td>
+                        <td>1 day ago</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn secondary">View</button>
+                                <button class="action-btn secondary">Message</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar basic">DP</div>
+                                <div>
+                                    <div class="user-name">David Park</div>
+                                    <div class="user-email">david@podcastking.fm</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge basic">Basic</span></td>
+                        <td><span class="status-badge trial">Trial</span></td>
+                        <td>
+                            <div class="health-score">
+                                <div class="health-bar"><div class="health-fill warning" style="width: 72%"></div></div>
+                                <span class="health-value warning">72</span>
+                            </div>
+                        </td>
+                        <td><span class="editor-tag"><span class="editor-dot"></span>Anna L</span></td>
+                        <td><span class="mrr-value">$0</span></td>
+                        <td>Today</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn primary">Convert</button>
+                                <button class="action-btn secondary">View</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar gold">MC</div>
+                                <div>
+                                    <div class="user-name">Marcus Chen</div>
+                                    <div class="user-email">marcus@techstartup.io</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge gold">Gold</span></td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td>
+                            <div class="health-score">
+                                <div class="health-bar"><div class="health-fill good" style="width: 95%"></div></div>
+                                <span class="health-value good">95</span>
+                            </div>
+                        </td>
+                        <td><span class="editor-tag"><span class="editor-dot"></span>Jake M</span></td>
+                        <td><span class="mrr-value">$997</span></td>
+                        <td>5 hours ago</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn secondary">View</button>
+                                <button class="action-btn secondary">Message</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <div class="pagination-info">Showing 1-5 of 127 clients</div>
+                <div class="pagination-controls">
+                    <button class="page-btn">←</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">26</button>
+                    <button class="page-btn">→</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TRIALS TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="trials-tab">
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value green">3</div>
+                <div class="stat-label">New This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orange">5</div>
+                <div class="stat-label">Awaiting Assignment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple">8</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">67%</div>
+                <div class="stat-label">Conversion Rate</div>
+            </div>
+        </div>
+
+        <div class="filters-bar">
+            <div class="filter-tabs">
+                <button class="filter-tab active">All (16)</button>
+                <button class="filter-tab">Needs Assignment (5)</button>
+                <button class="filter-tab">In Progress (8)</button>
+                <button class="filter-tab">Completed (3)</button>
+            </div>
+        </div>
+
+        <!-- Trial Cards -->
+        <div class="trial-card new">
+            <div class="user-avatar trial">JD</div>
+            <div style="flex: 1;">
+                <div class="user-name" style="display: flex; align-items: center; gap: 8px;">
+                    Jessica Davis
+                    <span class="new-badge">New Today</span>
+                </div>
+                <div class="user-email">jessica@fitcoach.com • Signed up 2 hours ago</div>
+                <div class="blueprint-status" style="margin-top: 8px;">
+                    Blueprint:
+                    <div class="blueprint-progress"><div class="blueprint-fill" style="width: 100%;"></div></div>
+                    Complete
+                </div>
+            </div>
+            <span class="status-badge pending">Needs Assignment</span>
+            <div class="actions-cell">
+                <button class="action-btn primary">Assign</button>
+                <button class="action-btn secondary">View</button>
+            </div>
+        </div>
+
+        <div class="trial-card new">
+            <div class="user-avatar trial">MT</div>
+            <div style="flex: 1;">
+                <div class="user-name" style="display: flex; align-items: center; gap: 8px;">
+                    Marcus Thompson
+                    <span class="new-badge">New Today</span>
+                </div>
+                <div class="user-email">marcus@realestate.io • Signed up 5 hours ago</div>
+                <div class="blueprint-status" style="margin-top: 8px;">
+                    Blueprint:
+                    <div class="blueprint-progress"><div class="blueprint-fill" style="width: 100%;"></div></div>
+                    Complete
+                </div>
+            </div>
+            <span class="status-badge pending">Needs Assignment</span>
+            <div class="actions-cell">
+                <button class="action-btn primary">Assign</button>
+                <button class="action-btn secondary">View</button>
+            </div>
+        </div>
+
+        <div class="trial-card">
+            <div class="user-avatar trial">AW</div>
+            <div style="flex: 1;">
+                <div class="user-name">Amanda Wilson</div>
+                <div class="user-email">amanda@beautybrand.co • Signed up Dec 26</div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Assigned to Sarah Kim</div>
+            </div>
+            <span class="status-badge assigned">Edit In Progress</span>
+            <div class="actions-cell">
+                <button class="action-btn secondary">View Project</button>
+            </div>
+        </div>
+
+        <div class="trial-card">
+            <div class="user-avatar trial">BL</div>
+            <div style="flex: 1;">
+                <div class="user-name">Brian Lee</div>
+                <div class="user-email">brian@techstartup.io • Signed up Dec 25</div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Assigned to Mike Edwards</div>
+            </div>
+            <span class="status-badge assigned">In Review</span>
+            <div class="actions-cell">
+                <button class="action-btn secondary">View Project</button>
+            </div>
+        </div>
+
+        <div class="trial-card">
+            <div class="user-avatar trial">KM</div>
+            <div style="flex: 1;">
+                <div class="user-name">Katie Martinez</div>
+                <div class="user-email">katie@yogastudio.com • Signed up Dec 20</div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Completed by Jake Rodriguez</div>
+            </div>
+            <span class="status-badge completed">Converted to Gold</span>
+            <div class="actions-cell">
+                <button class="action-btn secondary">View Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- HEALTH TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="health-tab">
+        <div class="stats-bar">
+            <div class="stat-card critical">
+                <div class="stat-value red">2</div>
+                <div class="stat-label">Critical (&lt; 6)</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-value orange">5</div>
+                <div class="stat-label">At Risk (6-7.5)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">41</div>
+                <div class="stat-label">Healthy (&gt; 7.5)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8.4</div>
+                <div class="stat-label">Avg. Health Score</div>
+            </div>
+        </div>
+
+        <div class="filters-bar">
+            <div class="filter-tabs">
+                <button class="filter-tab active">Critical (2)</button>
+                <button class="filter-tab">At Risk (5)</button>
+                <button class="filter-tab">All Clients (48)</button>
+            </div>
+        </div>
+
+        <!-- Health Cards -->
+        <div class="health-card critical">
+            <div class="health-score-circle critical">
+                <div class="score-value">4.2</div>
+                <div class="score-label">Score</div>
+            </div>
+            <div class="health-info">
+                <div class="health-header">
+                    <div class="user-avatar basic">SI</div>
+                    <div class="health-name">Startup Inc.</div>
+                    <span class="tier-badge basic">Basic</span>
+                </div>
+                <div class="issue-tags">
+                    <span class="issue-tag turnaround">Avg. 4.2 day turnaround</span>
+                    <span class="issue-tag revisions">2.3 avg revisions</span>
+                    <span class="issue-tag quality">6.5 quality score</span>
+                </div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Casey Martinez</div>
+            </div>
+            <div class="health-stats">
+                <div class="health-stat">
+                    <div class="health-stat-value bad">4.2d</div>
+                    <div class="health-stat-label">Turnaround</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value bad">2.3</div>
+                    <div class="health-stat-label">Revisions</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value bad">6.5</div>
+                    <div class="health-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="actions-cell" style="flex-direction: column; gap: 8px;">
+                <button class="action-btn primary">Reassign</button>
+                <button class="action-btn secondary">Contact</button>
+            </div>
+        </div>
+
+        <div class="health-card critical">
+            <div class="health-score-circle critical">
+                <div class="score-value">5.1</div>
+                <div class="score-label">Score</div>
+            </div>
+            <div class="health-info">
+                <div class="health-header">
+                    <div class="user-avatar silver">GF</div>
+                    <div class="health-name">GrowthFirst Media</div>
+                    <span class="tier-badge silver">Silver</span>
+                </div>
+                <div class="issue-tags">
+                    <span class="issue-tag turnaround">Avg. 3.8 day turnaround</span>
+                    <span class="issue-tag inactive">No projects in 14 days</span>
+                </div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Jordan Park</div>
+            </div>
+            <div class="health-stats">
+                <div class="health-stat">
+                    <div class="health-stat-value bad">3.8d</div>
+                    <div class="health-stat-label">Turnaround</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value warning">1.1</div>
+                    <div class="health-stat-label">Revisions</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value warning">7.2</div>
+                    <div class="health-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="actions-cell" style="flex-direction: column; gap: 8px;">
+                <button class="action-btn danger">Call Client</button>
+                <button class="action-btn secondary">View</button>
+            </div>
+        </div>
+
+        <div class="health-card warning">
+            <div class="health-score-circle warning">
+                <div class="score-value">6.8</div>
+                <div class="score-label">Score</div>
+            </div>
+            <div class="health-info">
+                <div class="health-header">
+                    <div class="user-avatar pro">TA</div>
+                    <div class="health-name">Tech Academy</div>
+                    <span class="tier-badge pro">Pro</span>
+                </div>
+                <div class="issue-tags">
+                    <span class="issue-tag revisions">1.5 avg revisions</span>
+                    <span class="issue-tag quality">7.8 quality score</span>
+                </div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Mike Edwards</div>
+            </div>
+            <div class="health-stats">
+                <div class="health-stat">
+                    <div class="health-stat-value warning">2.8d</div>
+                    <div class="health-stat-label">Turnaround</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value warning">1.5</div>
+                    <div class="health-stat-label">Revisions</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value warning">7.8</div>
+                    <div class="health-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="actions-cell" style="flex-direction: column; gap: 8px;">
+                <button class="action-btn secondary">Message</button>
+            </div>
+        </div>
+
+        <div class="health-card warning">
+            <div class="health-score-circle warning">
+                <div class="score-value">7.1</div>
+                <div class="score-label">Score</div>
+            </div>
+            <div class="health-info">
+                <div class="health-header">
+                    <div class="user-avatar gold">DF</div>
+                    <div class="health-name">Digital Fitness</div>
+                    <span class="tier-badge gold">Gold</span>
+                </div>
+                <div class="issue-tags">
+                    <span class="issue-tag turnaround">Avg. 2.6 day turnaround</span>
+                </div>
+                <div class="editor-tag" style="margin-top: 8px;"><span class="editor-dot"></span>Riley Nguyen</div>
+            </div>
+            <div class="health-stats">
+                <div class="health-stat">
+                    <div class="health-stat-value warning">2.6d</div>
+                    <div class="health-stat-label">Turnaround</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value good">0.4</div>
+                    <div class="health-stat-label">Revisions</div>
+                </div>
+                <div class="health-stat">
+                    <div class="health-stat-value good">8.5</div>
+                    <div class="health-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="actions-cell" style="flex-direction: column; gap: 8px;">
+                <button class="action-btn secondary">View</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.main-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active from all tabs
+                document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked tab
+                tab.classList.add('active');
+                const tabId = tab.dataset.tab + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Search functionality
+        document.getElementById('client-search')?.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('#clients-tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // Filter tabs for trials/health
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const parent = tab.closest('.filter-tabs');
+                parent.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Filter selects
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', () => {
+                console.log('Filter:', select.id, select.value);
+                // Filter logic would integrate with data source
+            });
+        });
+    </script>
+</body>
+</html>

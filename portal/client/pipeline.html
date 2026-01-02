@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Pipeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --red: #ef4444;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .pipeline-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .project-count {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .project-count span {
+            color: var(--text-white);
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+        }
+
+        .submit-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Drag instruction */
+        .drag-hint {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .drag-hint svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .drag-hint strong {
+            color: var(--text-white);
+        }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+        }
+
+        .column {
+            flex: 0 0 280px;
+            background: var(--dark-card);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 200px);
+        }
+
+        .column-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .column-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-title .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .column.queue .dot { background: var(--text-muted); }
+        .column.active .dot { background: var(--accent); }
+        .column.review .dot { background: var(--cyan); }
+        .column.revisions .dot { background: var(--orange); }
+        .column.approved .dot { background: var(--green); }
+
+        .column.queue .column-title { color: var(--text-light); }
+        .column.active .column-title { color: var(--accent); }
+        .column.review .column-title { color: var(--cyan); }
+        .column.revisions .column-title { color: var(--orange); }
+        .column.approved .column-title { color: var(--green); }
+
+        .column-count {
+            background: var(--dark-surface);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .column-cards {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 100px;
+        }
+
+        .column-cards.drag-over {
+            background: rgba(59, 130, 246, 0.05);
+            border: 2px dashed var(--accent);
+            border-radius: 12px;
+            margin: 8px;
+            padding: 8px;
+        }
+
+        /* Project Card */
+        .project-card {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .project-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-card.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+        }
+
+        /* Only review cards are draggable */
+        .column.review .project-card {
+            cursor: grab;
+        }
+
+        .column.review .project-card:active {
+            cursor: grabbing;
+        }
+
+        .card-badges {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .type-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .type-badge.short { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .type-badge.long { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
+
+        .tier-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .tier-badge.tier-1 { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .tier-badge.tier-2 { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .tier-badge.tier-3 { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .tier-badge.tier-4 { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-white);
+            line-height: 1.4;
+        }
+
+        .project-style {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .project-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-row svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .meta-row.due-soon {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        /* Review card specific */
+        .review-action {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .review-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--cyan);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .review-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .review-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Revisions indicator */
+        .revision-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: rgba(245, 158, 11, 0.15);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--orange);
+            margin-top: 8px;
+        }
+
+        /* Approved card */
+        .download-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--green);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+            margin-top: 12px;
+        }
+
+        .download-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .download-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .quality-score {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        /* Empty state */
+        .empty-column {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .empty-column svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--green);
+        }
+
+        .toast-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.cancel {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            color: var(--text-light);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--dark-border);
+        }
+
+        .modal-btn.confirm {
+            background: var(--orange);
+            border: none;
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .column { flex: 0 0 260px; }
+            .drag-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="pipeline-header">
+        <div class="header-left">
+            <div class="project-count">
+                <span>5</span> active projects
+            </div>
+        </div>
+        <button class="submit-btn" onclick="window.parent.loadPage('submit')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Submit New Project
+        </button>
+    </div>
+
+    <div class="drag-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span><strong>Review your edits:</strong> Click any card in "Review" to watch and leave feedback. When done, drag it to "Revisions" to send back for changes, or approve it directly.</span>
+    </div>
+
+    <div class="pipeline">
+        <!-- Queue -->
+        <div class="column queue">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Queue
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card" data-id="proj-001">
+                    <div class="card-badges">
+                        <span class="type-badge long">Long-form</span>
+                        <span class="tier-badge tier-2">Tier 2</span>
+                    </div>
+                    <div class="project-title">Q4 Product Launch Video</div>
+                    <div class="project-style">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                        </svg>
+                        CourseCreatorPro Style
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Submitted Dec 28
+                        </div>
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Est. delivery: Dec 30
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active -->
+        <div class="column active">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Active
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card" data-id="proj-002">
+                    <div class="card-badges">
+                        <span class="type-badge short">Short-form</span>
+                        <span class="tier-badge tier-1">Tier 1</span>
+                    </div>
+                    <div class="project-title">Instagram Reel - Tips Series #4</div>
+                    <div class="project-style">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                        </svg>
+                        Alex Hormozi Style
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Editor: Mike E.
+                        </div>
+                        <div class="meta-row due-soon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Due today by 5 PM
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review -->
+        <div class="column review" id="reviewColumn">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Review
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards" id="reviewCards">
+                <div class="project-card" draggable="true" data-id="proj-003" onclick="openReview(this)">
+                    <div class="card-badges">
+                        <span class="type-badge long">Long-form</span>
+                        <span class="tier-badge tier-3">Tier 3</span>
+                    </div>
+                    <div class="project-title">YouTube Tutorial - Setup Guide</div>
+                    <div class="project-style">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                        </svg>
+                        Ali Abdaal Style
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Delivered Dec 26
+                        </div>
+                    </div>
+                    <div class="review-action">
+                        <button class="review-btn" onclick="event.stopPropagation(); openReview(this.closest('.project-card'))">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            Watch & Review
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revisions -->
+        <div class="column revisions" id="revisionsColumn">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Revisions
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards" id="revisionsCards">
+                <div class="project-card" data-id="proj-004">
+                    <div class="card-badges">
+                        <span class="type-badge short">Short-form</span>
+                        <span class="tier-badge tier-2">Tier 2</span>
+                    </div>
+                    <div class="project-title">TikTok Series - Behind the Scenes</div>
+                    <div class="project-style">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                        </svg>
+                        Ben Kaluza Style
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            3 revision notes sent
+                        </div>
+                    </div>
+                    <span class="revision-count">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Revision #1
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approved -->
+        <div class="column approved">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Approved
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card" data-id="proj-005">
+                    <div class="card-badges">
+                        <span class="type-badge long">Long-form</span>
+                        <span class="tier-badge tier-4">Tier 4</span>
+                    </div>
+                    <div class="project-title">Recipe Video - Holiday Cookies</div>
+                    <div class="project-style">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                        </svg>
+                        My Golden Standard
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-row" style="color: var(--green);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Approved Dec 27
+                        </div>
+                    </div>
+                    <div class="quality-score">
+                        ⭐ 9/10 Quality Score
+                    </div>
+                    <button class="download-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Revisions Modal -->
+    <div class="modal-overlay" id="revisionsModal">
+        <div class="modal">
+            <h3>Send for Revisions?</h3>
+            <p>This will move the project back to your editor for changes. Make sure you've saved all your feedback in the review player first.</p>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="confirmRevisions()">Send for Revisions</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span class="toast-text" id="toastText">Project sent for revisions</span>
+    </div>
+
+    <script>
+        let draggedCard = null;
+        let pendingCard = null;
+
+        // Drag and drop for Review column cards only
+        document.querySelectorAll('.column.review .project-card').forEach(card => {
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+        });
+
+        // Only Revisions column accepts drops
+        const revisionsCards = document.getElementById('revisionsCards');
+        revisionsCards.addEventListener('dragover', handleDragOver);
+        revisionsCards.addEventListener('dragleave', handleDragLeave);
+        revisionsCards.addEventListener('drop', handleDrop);
+
+        function handleDragStart(e) {
+            draggedCard = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedCard = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+
+            if (draggedCard) {
+                pendingCard = draggedCard;
+                document.getElementById('revisionsModal').classList.add('show');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('revisionsModal').classList.remove('show');
+            pendingCard = null;
+        }
+
+        function confirmRevisions() {
+            if (pendingCard) {
+                // Move card to revisions
+                const revisionsCards = document.getElementById('revisionsCards');
+
+                // Remove drag functionality
+                pendingCard.removeAttribute('draggable');
+                pendingCard.classList.remove('dragging');
+
+                // Update card appearance for revisions
+                const reviewAction = pendingCard.querySelector('.review-action');
+                if (reviewAction) {
+                    reviewAction.innerHTML = '';
+                }
+
+                // Add revision indicator
+                const revisionCount = document.createElement('span');
+                revisionCount.className = 'revision-count';
+                revisionCount.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Revision #1
+                `;
+                pendingCard.appendChild(revisionCount);
+
+                revisionsCards.appendChild(pendingCard);
+
+                // Update counts
+                updateColumnCounts();
+
+                // Show toast
+                showToast('Project sent for revisions');
+            }
+
+            closeModal();
+        }
+
+        function updateColumnCounts() {
+            document.querySelectorAll('.column').forEach(column => {
+                const count = column.querySelectorAll('.project-card').length;
+                column.querySelector('.column-count').textContent = count;
+            });
+        }
+
+        function openReview(card) {
+            const projectId = card.dataset.id;
+            // Open review page
+            if (window.parent && window.parent.loadPage) {
+                window.parent.loadPage('review');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Style Blueprint | Content Bug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- CSS variables are inlined below -->
+    <style>
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-card-hover: #0f0f18;
+            --dark-border: #1a1a2e;
+            --dark-input: #08080c;
+            --text-white: #ffffff;
+            --text-light: #e0e0e0;
+            --text-muted: #6b7280;
+            --success-green: #22c55e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Background Effects */
+        .bg-effects { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+        .top-glow {
+            position: absolute; top: -300px; left: 50%; transform: translateX(-50%);
+            width: 1000px; height: 600px;
+            background: radial-gradient(ellipse, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+            animation: ambientPulse 4s ease-in-out infinite;
+        }
+        @keyframes ambientPulse {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 24px 100px; position: relative; z-index: 1; }
+
+        /* Progress Bar */
+        .progress-container { margin-bottom: 48px; }
+        .progress-label { 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            color: var(--text-muted); 
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .progress-bars { display: flex; gap: 6px; }
+        .progress-bar {
+            flex: 1; height: 4px; border-radius: 2px;
+            background: var(--dark-border);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar.filled {
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright));
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+        .progress-bar.active {
+            background: var(--dark-card);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .progress-bar.active::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 50%;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright));
+            animation: progressPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes progressPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Page Container */
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Page Header */
+        .page-header { text-align: center; margin-bottom: 48px; }
+        .page-icon { font-size: 56px; margin-bottom: 20px; filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.3)); }
+        .page-title { 
+            font-size: 32px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .page-subtitle { font-size: 15px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
+
+        /* User Info Banner */
+        .user-banner {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--blue-dark), var(--blue-bright));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .user-info { flex: 1; }
+        .user-name { font-weight: 600; font-size: 14px; }
+        .user-email { font-size: 12px; color: var(--text-muted); }
+
+        /* Form Elements */
+        .form-group { margin-bottom: 32px; }
+        .form-label { 
+            display: block; 
+            font-size: 13px; 
+            font-weight: 600; 
+            color: var(--text-light); 
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+        .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+
+        .form-input {
+            width: 100%; padding: 16px 20px; 
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border); 
+            border-radius: 12px;
+            color: var(--text-white); 
+            font-size: 15px; 
+            font-family: inherit; 
+            transition: all 0.2s ease;
+        }
+        .form-input:focus { 
+            outline: none; 
+            border-color: var(--blue-bright); 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 0 20px rgba(59, 130, 246, 0.1); 
+        }
+        .form-input::placeholder { color: #444; }
+        .form-input.with-icon { padding-left: 52px; }
+
+        /* Dropdown Select */
+        .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+            padding-right: 48px;
+            cursor: pointer;
+        }
+        .form-select option {
+            background: var(--dark-card);
+            color: var(--text-white);
+            padding: 12px;
+        }
+
+        /* Input with Icon */
+        .input-with-icon {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .input-icon.youtube-icon { color: #FF0000; }
+        .input-icon.instagram-icon { color: #E4405F; }
+        .input-icon.tiktok-icon { color: #00F2EA; }
+        .input-icon.twitter-icon { color: #1DA1F2; }
+
+        /* Profiles Skip Note */
+        .profiles-skip-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        /* Visual Option Cards */
+        .option-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .option-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .option-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        
+        .option-card {
+            background: var(--dark-card);
+            border: 2px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+        .option-card:hover { 
+            border-color: rgba(59, 130, 246, 0.3); 
+            background: var(--dark-card-hover);
+            transform: translateY(-2px);
+        }
+        .option-card.selected {
+            border-color: var(--blue-bright);
+            background: rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+        }
+        .option-card.selected::before { background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright)); }
+        .option-card input { display: none; }
+
+        .option-icon { font-size: 36px; margin-bottom: 12px; }
+        .option-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .option-card.selected .option-title { 
+            background: linear-gradient(135deg, var(--blue-light), var(--blue-glow)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .option-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+        .option-meta { font-size: 10px; color: var(--blue-glow); margin-top: 8px; font-weight: 600; }
+
+        /* Slider Control */
+        .slider-container { padding: 20px 0; }
+        .slider-labels { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .slider-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .slider-label.active { color: var(--blue-glow); font-weight: 600; }
+        
+        .slider-track {
+            position: relative;
+            height: 8px;
+            background: var(--dark-border);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .slider-fill {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            background: linear-gradient(90deg, var(--blue-dark), var(--blue-bright));
+            border-radius: 4px;
+            transition: width 0.2s ease;
+        }
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transition: transform 0.2s ease;
+        }
+        .slider-thumb:hover { transform: translate(-50%, -50%) scale(1.1); }
+        .slider-thumb:active { cursor: grabbing; transform: translate(-50%, -50%) scale(0.95); }
+        
+        .slider-value {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue-glow);
+        }
+
+        /* Button */
+        .btn-container { margin-top: 48px; }
+        .btn-continue {
+            width: 100%;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            background-size: 200% 200%;
+            animation: btnBreath 3s ease-in-out infinite;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+        }
+        @keyframes btnBreath {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .btn-continue .btn-arrow {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4), 0 0 60px rgba(59, 130, 246, 0.2);
+        }
+        .btn-continue:hover .btn-arrow { transform: translateX(4px); }
+        .btn-continue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-continue::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-continue:hover::before { left: 100%; }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .btn-back:hover { color: var(--blue-glow); }
+
+        /* Footer */
+        .footer { text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--dark-border); }
+        .footer-text { font-size: 12px; color: var(--text-muted); }
+
+        /* Success Overlay */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 8, 0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .success-checkmark {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--blue-mid), var(--blue-bright));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            animation: checkPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 0 60px rgba(59, 130, 246, 0.5);
+        }
+        @keyframes checkPop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .success-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blue-light), var(--blue-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) {
+            .container { padding: 24px 16px 80px; }
+            .page-title { font-size: 26px; }
+            .option-grid, .option-grid-3, .option-grid-4 { grid-template-columns: 1fr; }
+            .option-card { padding: 20px 16px; }
+        }
+
+        /* Portal Navigation Header */
+        .portal-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(8, 8, 12, 0.95) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+        }
+
+        .portal-nav .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .portal-nav .back-link:hover {
+            color: var(--blue-glow);
+        }
+
+        .portal-nav .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .portal-nav .nav-logo {
+            height: 28px;
+            filter: drop-shadow(0 2px 8px rgba(59, 130, 246, 0.3));
+        }
+
+        .portal-nav .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Adjust container padding for fixed nav */
+        .container { padding-top: 80px; }
+
+        /* Blueprint Tier Estimate Display */
+        .tier-estimate {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(15, 15, 25, 0.95) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 16px 20px;
+            min-width: 220px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.1);
+            z-index: 100;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .tier-estimate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tier-estimate-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tier-estimate-icon {
+            font-size: 18px;
+        }
+
+        .tier-estimate-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .tier-estimate-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tier-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .tier-badge.tier-1 {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .tier-badge.tier-2 {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        .tier-badge.tier-3 {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #a855f7;
+        }
+
+        .tier-details {
+            flex: 1;
+        }
+
+        .tier-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .tier-description {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .tier-points {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .points-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .points-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e 0%, #3b82f6 50%, #a855f7 100%);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .points-value {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .tier-estimate {
+                right: 16px;
+                left: 16px;
+                bottom: 16px;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-effects"><div class="top-glow"></div></div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="success-overlay">
+        <div class="success-checkmark">✓</div>
+        <div class="success-text">Blueprint Saved!</div>
+    </div>
+
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-label">Edit Style Blueprint</div>
+            <div class="progress-bars" id="progress-bars">
+                <div class="progress-bar active"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- Hidden fields for tracking -->
+        <input type="hidden" id="user_email" value="">
+        <input type="hidden" id="user_name" value="">
+        <input type="hidden" id="user_phone" value="">
+        <input type="hidden" id="airtable_client_id" value="">
+
+        <!-- PAGE 1: Blueprint Name & Format -->
+        <div class="page active" id="page-1">
+            <div class="page-header">
+                <div class="page-icon">🎬</div>
+                <h1 class="page-title">Blueprint Settings</h1>
+                <p class="page-subtitle">Update your editing style preferences anytime</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Blueprint Name</label>
+                <input type="text" class="form-input" id="blueprint_name" placeholder="e.g., My YouTube Style, TikTok Bangers, Podcast Clips..." required>
+                <p class="form-hint">Name this style to identify it later</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">What format is this blueprint for?</label>
+                <div class="option-grid">
+                    <label class="option-card" onclick="selectOption(this, 'content_format')">
+                        <input type="radio" name="content_format" value="Short-Form">
+                        <div class="option-icon">📱</div>
+                        <div class="option-title">Short-Form</div>
+                        <div class="option-desc">TikTok, Reels, YouTube Shorts</div>
+                        <div class="option-meta">Under 60 seconds</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'content_format')">
+                        <input type="radio" name="content_format" value="Long-Form">
+                        <div class="option-icon">🖥️</div>
+                        <div class="option-title">Long-Form</div>
+                        <div class="option-desc">YouTube videos, Podcasts, Courses</div>
+                        <div class="option-meta">Over 60 seconds</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-1" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+
+            <div class="footer">
+                <p class="footer-text">Your changes are saved automatically</p>
+            </div>
+        </div>
+
+        <!-- PAGE 2: Cut Speed -->
+        <div class="page" id="page-2">
+            <div class="page-header">
+                <div class="page-icon">⚡</div>
+                <h1 class="page-title">Edit Pacing & Cut Speed</h1>
+                <p class="page-subtitle">How fast should your cuts feel?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Average time between cuts</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'cut_speed')">
+                        <input type="radio" name="cut_speed" value="Slow (4-6 sec)">
+                        <div class="option-icon">🐢</div>
+                        <div class="option-title">Slow</div>
+                        <div class="option-desc">Cinematic, documentary feel</div>
+                        <div class="option-meta">4-6 seconds per cut</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'cut_speed')">
+                        <input type="radio" name="cut_speed" value="Medium (2-4 sec)">
+                        <div class="option-icon">⚖️</div>
+                        <div class="option-title">Medium</div>
+                        <div class="option-desc">Balanced, natural pacing</div>
+                        <div class="option-meta">2-4 seconds per cut</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'cut_speed')">
+                        <input type="radio" name="cut_speed" value="Fast (0.5-2 sec)">
+                        <div class="option-icon">🚀</div>
+                        <div class="option-title">Fast</div>
+                        <div class="option-desc">High energy, TikTok style</div>
+                        <div class="option-meta">0.5-2 seconds per cut</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-2" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 3: Captions -->
+        <div class="page" id="page-3">
+            <div class="page-header">
+                <div class="page-icon">💬</div>
+                <h1 class="page-title">Caption Style</h1>
+                <p class="page-subtitle">How should your captions look and feel?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Caption Animation Style</label>
+                <div class="option-grid option-grid-4">
+                    <label class="option-card" onclick="selectOption(this, 'caption_style')">
+                        <input type="radio" name="caption_style" value="Word-by-word highlight">
+                        <div class="option-icon">🔤</div>
+                        <div class="option-title">Word Highlight</div>
+                        <div class="option-desc">Each word highlights</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_style')">
+                        <input type="radio" name="caption_style" value="Full sentence">
+                        <div class="option-icon">📝</div>
+                        <div class="option-title">Full Sentence</div>
+                        <div class="option-desc">Classic subtitle style</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_style')">
+                        <input type="radio" name="caption_style" value="Karaoke bounce">
+                        <div class="option-icon">🎤</div>
+                        <div class="option-title">Karaoke</div>
+                        <div class="option-desc">Bouncy, animated</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_style')">
+                        <input type="radio" name="caption_style" value="Minimal / None">
+                        <div class="option-icon">✨</div>
+                        <div class="option-title">Minimal</div>
+                        <div class="option-desc">Little to none</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Caption Font</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'caption_font')">
+                        <input type="radio" name="caption_font" value="Bold Sans (Montserrat)">
+                        <div class="option-icon" style="font-family: sans-serif; font-weight: 900;">Aa</div>
+                        <div class="option-title">Bold Sans</div>
+                        <div class="option-desc">Montserrat</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_font')">
+                        <input type="radio" name="caption_font" value="Clean Modern (Inter)">
+                        <div class="option-icon" style="font-family: Inter;">Aa</div>
+                        <div class="option-title">Clean Modern</div>
+                        <div class="option-desc">Inter</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_font')">
+                        <input type="radio" name="caption_font" value="Rounded (Poppins)">
+                        <div class="option-icon" style="font-family: sans-serif; font-weight: 500;">Aa</div>
+                        <div class="option-title">Rounded</div>
+                        <div class="option-desc">Poppins</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Caption Position</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'caption_position')">
+                        <input type="radio" name="caption_position" value="Top">
+                        <div class="option-icon">⬆️</div>
+                        <div class="option-title">Top</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_position')">
+                        <input type="radio" name="caption_position" value="Center">
+                        <div class="option-icon">⏺️</div>
+                        <div class="option-title">Center</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_position')">
+                        <input type="radio" name="caption_position" value="Bottom">
+                        <div class="option-icon">⬇️</div>
+                        <div class="option-title">Bottom</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Caption Size</label>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span class="slider-label">Small</span>
+                        <span class="slider-label active">Medium</span>
+                        <span class="slider-label">Large</span>
+                    </div>
+                    <div class="slider-track" id="caption-size-slider">
+                        <div class="slider-fill" style="width: 50%;"></div>
+                        <div class="slider-thumb" style="left: 50%;"></div>
+                    </div>
+                    <div class="slider-value" id="caption-size-value">Medium</div>
+                    <input type="hidden" name="caption_size" id="caption_size" value="Medium">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Lines of Text</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'caption_lines')">
+                        <input type="radio" name="caption_lines" value="1 line">
+                        <div class="option-title">1 Line</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_lines')">
+                        <input type="radio" name="caption_lines" value="2 lines">
+                        <div class="option-title">2 Lines</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'caption_lines')">
+                        <input type="radio" name="caption_lines" value="3+ lines">
+                        <div class="option-title">3+ Lines</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-3" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 4: B-Roll -->
+        <div class="page" id="page-4">
+            <div class="page-header">
+                <div class="page-icon">🎥</div>
+                <h1 class="page-title">B-Roll & Visuals</h1>
+                <p class="page-subtitle">How should we enhance your footage?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">B-Roll Frequency</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'broll_frequency')">
+                        <input type="radio" name="broll_frequency" value="Light (every 30-60 sec)">
+                        <div class="option-icon">🌿</div>
+                        <div class="option-title">Light</div>
+                        <div class="option-desc">Every 30-60 sec</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_frequency')">
+                        <input type="radio" name="broll_frequency" value="Medium (every 15-30 sec)">
+                        <div class="option-icon">⚖️</div>
+                        <div class="option-title">Medium</div>
+                        <div class="option-desc">Every 15-30 sec</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_frequency')">
+                        <input type="radio" name="broll_frequency" value="Heavy (every 5-15 sec)">
+                        <div class="option-icon">🔥</div>
+                        <div class="option-title">Heavy</div>
+                        <div class="option-desc">Every 5-15 sec</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">B-Roll Type</label>
+                <div class="option-grid option-grid-4">
+                    <label class="option-card" onclick="selectOption(this, 'broll_type')">
+                        <input type="radio" name="broll_type" value="Stock footage">
+                        <div class="option-icon">🎬</div>
+                        <div class="option-title">Stock</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_type')">
+                        <input type="radio" name="broll_type" value="Screen recordings">
+                        <div class="option-icon">🖥️</div>
+                        <div class="option-title">Screen</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_type')">
+                        <input type="radio" name="broll_type" value="Memes & pop culture">
+                        <div class="option-icon">😂</div>
+                        <div class="option-title">Memes</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_type')">
+                        <input type="radio" name="broll_type" value="Mixed">
+                        <div class="option-icon">🎨</div>
+                        <div class="option-title">Mixed</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">B-Roll Source</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'broll_source')">
+                        <input type="radio" name="broll_source" value="Free (Pexels/Unsplash)">
+                        <div class="option-title">Free</div>
+                        <div class="option-desc">Pexels/Unsplash</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_source')">
+                        <input type="radio" name="broll_source" value="Premium (Storyblocks)">
+                        <div class="option-title">Premium</div>
+                        <div class="option-desc">Storyblocks</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_source')">
+                        <input type="radio" name="broll_source" value="I'll provide my own">
+                        <div class="option-title">My Own</div>
+                        <div class="option-desc">I'll provide</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">B-Roll Style</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'broll_style')">
+                        <input type="radio" name="broll_style" value="Clean & Professional">
+                        <div class="option-icon">💼</div>
+                        <div class="option-title">Professional</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_style')">
+                        <input type="radio" name="broll_style" value="Trendy & Dynamic">
+                        <div class="option-icon">✨</div>
+                        <div class="option-title">Trendy</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'broll_style')">
+                        <input type="radio" name="broll_style" value="Meme-heavy & Fun">
+                        <div class="option-icon">🎉</div>
+                        <div class="option-title">Fun & Meme</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">B-Roll Ratio</label>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span class="slider-label">20%</span>
+                        <span class="slider-label active">40%</span>
+                        <span class="slider-label">60%</span>
+                        <span class="slider-label">80%</span>
+                    </div>
+                    <div class="slider-track" id="broll-ratio-slider">
+                        <div class="slider-fill" style="width: 33%;"></div>
+                        <div class="slider-thumb" style="left: 33%;"></div>
+                    </div>
+                    <div class="slider-value" id="broll-ratio-value">40% B-Roll</div>
+                    <input type="hidden" name="broll_ratio" id="broll_ratio" value="40% B-Roll">
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-4" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 5: Title Animations & Overlays -->
+        <div class="page" id="page-5">
+            <div class="page-header">
+                <div class="page-icon">✨</div>
+                <h1 class="page-title">Titles & Overlays</h1>
+                <p class="page-subtitle">How should text and graphics appear?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Title Animation Style</label>
+                <div class="option-grid option-grid-4">
+                    <label class="option-card" onclick="selectOption(this, 'title_animation_style')">
+                        <input type="radio" name="title_animation_style" value="Pop & Scale">
+                        <div class="option-icon">💥</div>
+                        <div class="option-title">Pop & Scale</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'title_animation_style')">
+                        <input type="radio" name="title_animation_style" value="Slide In">
+                        <div class="option-icon">➡️</div>
+                        <div class="option-title">Slide In</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'title_animation_style')">
+                        <input type="radio" name="title_animation_style" value="Typewriter">
+                        <div class="option-icon">⌨️</div>
+                        <div class="option-title">Typewriter</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'title_animation_style')">
+                        <input type="radio" name="title_animation_style" value="Glitch / Tech">
+                        <div class="option-icon">🔧</div>
+                        <div class="option-title">Glitch</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Title Frequency</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'title_frequency')">
+                        <input type="radio" name="title_frequency" value="Key points only (every 60+ sec)">
+                        <div class="option-icon">🎯</div>
+                        <div class="option-title">Key Points</div>
+                        <div class="option-desc">Every 60+ sec</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'title_frequency')">
+                        <input type="radio" name="title_frequency" value="Regular (every 20-60 sec)">
+                        <div class="option-icon">⏱️</div>
+                        <div class="option-title">Regular</div>
+                        <div class="option-desc">Every 20-60 sec</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'title_frequency')">
+                        <input type="radio" name="title_frequency" value="Heavy (every 10-20 sec)">
+                        <div class="option-icon">📊</div>
+                        <div class="option-title">Heavy</div>
+                        <div class="option-desc">Every 10-20 sec</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">PNG/Graphic Overlays</label>
+                <div class="option-grid option-grid-4">
+                    <label class="option-card" onclick="selectOption(this, 'png_overlays')">
+                        <input type="radio" name="png_overlays" value="None">
+                        <div class="option-icon">🚫</div>
+                        <div class="option-title">None</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'png_overlays')">
+                        <input type="radio" name="png_overlays" value="Minimal (arrows, circles)">
+                        <div class="option-icon">↗️</div>
+                        <div class="option-title">Minimal</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'png_overlays')">
+                        <input type="radio" name="png_overlays" value="Moderate (emojis, icons)">
+                        <div class="option-icon">😊</div>
+                        <div class="option-title">Moderate</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'png_overlays')">
+                        <input type="radio" name="png_overlays" value="Heavy (full meme style)">
+                        <div class="option-icon">🤪</div>
+                        <div class="option-title">Heavy</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-5" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 6: Music & Sound -->
+        <div class="page" id="page-6">
+            <div class="page-header">
+                <div class="page-icon">🎵</div>
+                <h1 class="page-title">Music & Sound</h1>
+                <p class="page-subtitle">Set the audio vibe for your content</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Music Type</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'music_type')">
+                        <input type="radio" name="music_type" value="Upbeat & Energetic">
+                        <div class="option-icon">🔥</div>
+                        <div class="option-title">Upbeat</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_type')">
+                        <input type="radio" name="music_type" value="Chill & Lo-fi">
+                        <div class="option-icon">☁️</div>
+                        <div class="option-title">Chill</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_type')">
+                        <input type="radio" name="music_type" value="Cinematic & Epic">
+                        <div class="option-icon">🎬</div>
+                        <div class="option-title">Cinematic</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_type')">
+                        <input type="radio" name="music_type" value="Corporate & Professional">
+                        <div class="option-icon">💼</div>
+                        <div class="option-title">Corporate</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_type')">
+                        <input type="radio" name="music_type" value="Trending / Viral">
+                        <div class="option-icon">📈</div>
+                        <div class="option-title">Trending</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_type')">
+                        <input type="radio" name="music_type" value="No music">
+                        <div class="option-icon">🔇</div>
+                        <div class="option-title">No Music</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Music Source</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'music_source')">
+                        <input type="radio" name="music_source" value="Royalty-free library">
+                        <div class="option-title">Royalty-Free</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_source')">
+                        <input type="radio" name="music_source" value="Epidemic Sound">
+                        <div class="option-title">Epidemic Sound</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'music_source')">
+                        <input type="radio" name="music_source" value="I'll provide">
+                        <div class="option-title">I'll Provide</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Music Volume</label>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span class="slider-label">Very Low</span>
+                        <span class="slider-label active">Low</span>
+                        <span class="slider-label">Medium</span>
+                        <span class="slider-label">Loud</span>
+                    </div>
+                    <div class="slider-track" id="music-volume-slider">
+                        <div class="slider-fill" style="width: 33%;"></div>
+                        <div class="slider-thumb" style="left: 33%;"></div>
+                    </div>
+                    <div class="slider-value" id="music-volume-value">Low (-15dB)</div>
+                    <input type="hidden" name="music_volume" id="music_volume" value="Low (-15dB)">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Sound Effects Frequency</label>
+                <div class="option-grid option-grid-4">
+                    <label class="option-card" onclick="selectOption(this, 'sfx_frequency')">
+                        <input type="radio" name="sfx_frequency" value="None">
+                        <div class="option-icon">🔇</div>
+                        <div class="option-title">None</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'sfx_frequency')">
+                        <input type="radio" name="sfx_frequency" value="Subtle (transitions only)">
+                        <div class="option-icon">🔈</div>
+                        <div class="option-title">Subtle</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'sfx_frequency')">
+                        <input type="radio" name="sfx_frequency" value="Moderate (emphasis moments)">
+                        <div class="option-icon">🔉</div>
+                        <div class="option-title">Moderate</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'sfx_frequency')">
+                        <input type="radio" name="sfx_frequency" value="Heavy (meme sounds)">
+                        <div class="option-icon">🔊</div>
+                        <div class="option-title">Heavy</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-6" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 7: Color Grading -->
+        <div class="page" id="page-7">
+            <div class="page-header">
+                <div class="page-icon">🎨</div>
+                <h1 class="page-title">Color Grading</h1>
+                <p class="page-subtitle">What color treatment do you want?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Color Grade Style</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'color_grading')">
+                        <input type="radio" name="color_grading" value="Natural (no grade)">
+                        <div class="option-icon">🌿</div>
+                        <div class="option-title">Natural</div>
+                        <div class="option-desc">No color grade</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'color_grading')">
+                        <input type="radio" name="color_grading" value="Warm & Vibrant">
+                        <div class="option-icon">🌅</div>
+                        <div class="option-title">Warm</div>
+                        <div class="option-desc">Warm & Vibrant</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'color_grading')">
+                        <input type="radio" name="color_grading" value="Cool & Clean">
+                        <div class="option-icon">❄️</div>
+                        <div class="option-title">Cool</div>
+                        <div class="option-desc">Cool & Clean</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'color_grading')">
+                        <input type="radio" name="color_grading" value="Cinematic Film">
+                        <div class="option-icon">🎞️</div>
+                        <div class="option-title">Cinematic</div>
+                        <div class="option-desc">Film look</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'color_grading')">
+                        <input type="radio" name="color_grading" value="High Contrast">
+                        <div class="option-icon">⚫</div>
+                        <div class="option-title">High Contrast</div>
+                        <div class="option-desc">Bold & punchy</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'color_grading')">
+                        <input type="radio" name="color_grading" value="Vintage / Retro">
+                        <div class="option-icon">📼</div>
+                        <div class="option-title">Vintage</div>
+                        <div class="option-desc">Retro vibes</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-7" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 8: Export Settings & Submit -->
+        <div class="page" id="page-8">
+            <div class="page-header">
+                <div class="page-icon">📤</div>
+                <h1 class="page-title">Export Settings</h1>
+                <p class="page-subtitle">Final technical preferences</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Export Resolution</label>
+                <div class="option-grid">
+                    <label class="option-card" onclick="selectOption(this, 'export_resolution')">
+                        <input type="radio" name="export_resolution" value="1080p (1920x1080)">
+                        <div class="option-icon">📺</div>
+                        <div class="option-title">1080p HD</div>
+                        <div class="option-desc">1920x1080</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'export_resolution')">
+                        <input type="radio" name="export_resolution" value="4K (3840x2160)">
+                        <div class="option-icon">🎬</div>
+                        <div class="option-title">4K Ultra HD</div>
+                        <div class="option-desc">3840x2160</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Frame Rate</label>
+                <div class="option-grid option-grid-3">
+                    <label class="option-card" onclick="selectOption(this, 'export_frame_rate')">
+                        <input type="radio" name="export_frame_rate" value="24fps">
+                        <div class="option-title">24fps</div>
+                        <div class="option-desc">Cinematic</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'export_frame_rate')">
+                        <input type="radio" name="export_frame_rate" value="30fps">
+                        <div class="option-title">30fps</div>
+                        <div class="option-desc">Standard</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'export_frame_rate')">
+                        <input type="radio" name="export_frame_rate" value="60fps">
+                        <div class="option-title">60fps</div>
+                        <div class="option-desc">Smooth</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Export Format</label>
+                <div class="option-grid">
+                    <label class="option-card" onclick="selectOption(this, 'export_format')">
+                        <input type="radio" name="export_format" value="MP4 (H.264)">
+                        <div class="option-icon">📁</div>
+                        <div class="option-title">MP4</div>
+                        <div class="option-desc">H.264 - Universal</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'export_format')">
+                        <input type="radio" name="export_format" value="MOV (ProRes)">
+                        <div class="option-icon">🎥</div>
+                        <div class="option-title">MOV</div>
+                        <div class="option-desc">ProRes - High Quality</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-8" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+
+            <div class="footer">
+                <p class="footer-text">Just a few quick questions to help us serve you better.</p>
+            </div>
+        </div>
+
+        <!-- PAGE 9: Social Profiles (for Creator Performance tracking) -->
+        <div class="page" id="page-9">
+            <div class="page-header">
+                <div class="page-icon">📱</div>
+                <h1 class="page-title">Your Social Profiles</h1>
+                <p class="page-subtitle">Connect your accounts to track performance and get personalized insights</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">YouTube Channel URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon youtube-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><path fill="#fff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <input type="url" class="form-input with-icon" id="youtube_url" name="youtube_url" placeholder="https://youtube.com/@yourchannel" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Enter your YouTube channel URL to track subscriber growth and video performance</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Instagram Profile URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon instagram-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <input type="url" class="form-input with-icon" id="instagram_url" name="instagram_url" placeholder="https://instagram.com/yourprofile" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Track followers, engagement, and Reels performance</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">TikTok Profile URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon tiktok-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                    <input type="url" class="form-input with-icon" id="tiktok_url" name="tiktok_url" placeholder="https://tiktok.com/@yourprofile" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Monitor TikTok growth and video trends</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">X (Twitter) Profile URL</label>
+                <div class="input-with-icon">
+                    <svg class="input-icon twitter-icon" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    <input type="url" class="form-input with-icon" id="twitter_url" name="twitter_url" placeholder="https://x.com/yourprofile" oninput="validateProfileInputs()">
+                </div>
+                <p class="form-hint">Track X engagement and impressions</p>
+            </div>
+
+            <p class="profiles-skip-note">Skip this step if you'd prefer to add these later from your dashboard.</p>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-9">
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 10: Qualifying - Videos Per Month -->
+        <div class="page" id="page-10">
+            <div class="page-header">
+                <div class="page-icon">📊</div>
+                <h1 class="page-title">Monthly Content Volume</h1>
+                <p class="page-subtitle">How many videos do you need edited per month?</p>
+            </div>
+
+            <div class="form-group">
+                <div class="option-grid">
+                    <label class="option-card" onclick="selectOption(this, 'videos_per_month')">
+                        <input type="radio" name="videos_per_month" value="1-4 videos">
+                        <div class="option-icon">📹</div>
+                        <div class="option-title">1-4 Videos</div>
+                        <div class="option-desc">Light content creator</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'videos_per_month')">
+                        <input type="radio" name="videos_per_month" value="5-10 videos">
+                        <div class="option-icon">🎬</div>
+                        <div class="option-title">5-10 Videos</div>
+                        <div class="option-desc">Regular creator</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'videos_per_month')">
+                        <input type="radio" name="videos_per_month" value="11-20 videos">
+                        <div class="option-icon">🚀</div>
+                        <div class="option-title">11-20 Videos</div>
+                        <div class="option-desc">Serious creator</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'videos_per_month')">
+                        <input type="radio" name="videos_per_month" value="20+ videos">
+                        <div class="option-icon">🏆</div>
+                        <div class="option-title">20+ Videos</div>
+                        <div class="option-desc">High-volume creator</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-10" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 11: Qualifying - Budget Range -->
+        <div class="page" id="page-11">
+            <div class="page-header">
+                <div class="page-icon">💰</div>
+                <h1 class="page-title">Investment Range</h1>
+                <p class="page-subtitle">What's your monthly budget for video editing?</p>
+            </div>
+
+            <div class="form-group">
+                <div class="option-grid">
+                    <label class="option-card" onclick="selectOption(this, 'budget_range')">
+                        <input type="radio" name="budget_range" value="Under $500">
+                        <div class="option-icon">💵</div>
+                        <div class="option-title">Under $500</div>
+                        <div class="option-desc">Getting started</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'budget_range')">
+                        <input type="radio" name="budget_range" value="$500-$1,500">
+                        <div class="option-icon">💎</div>
+                        <div class="option-title">$500 - $1,500</div>
+                        <div class="option-desc">Growing creator</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'budget_range')">
+                        <input type="radio" name="budget_range" value="$1,500-$3,000">
+                        <div class="option-icon">🎯</div>
+                        <div class="option-title">$1,500 - $3,000</div>
+                        <div class="option-desc">Serious investment</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'budget_range')">
+                        <input type="radio" name="budget_range" value="$3,000+">
+                        <div class="option-icon">👑</div>
+                        <div class="option-title">$3,000+</div>
+                        <div class="option-desc">Premium creator</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-11" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 12: Qualifying - Timeline -->
+        <div class="page" id="page-12">
+            <div class="page-header">
+                <div class="page-icon">⏰</div>
+                <h1 class="page-title">Timeline</h1>
+                <p class="page-subtitle">When are you looking to get started?</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Select your timeline</label>
+                <select class="form-input form-select" id="start_timeline" name="start_timeline" onchange="handleTimelineSelect(this)">
+                    <option value="" disabled selected>Choose an option...</option>
+                    <option value="I'm ready now!">I'm ready now!</option>
+                    <option value="1-2 weeks">1-2 weeks</option>
+                    <option value="1 month">1 month</option>
+                    <option value="Just looking around">Just looking around</option>
+                </select>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="nextPage()" id="btn-12" disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+        </div>
+
+        <!-- PAGE 13: Qualifying - Editing Experience -->
+        <div class="page" id="page-13">
+            <div class="page-header">
+                <div class="page-icon">🎓</div>
+                <h1 class="page-title">Previous Experience</h1>
+                <p class="page-subtitle">Have you worked with video editors before?</p>
+            </div>
+
+            <div class="form-group">
+                <div class="option-grid">
+                    <label class="option-card" onclick="selectOption(this, 'editing_experience')">
+                        <input type="radio" name="editing_experience" value="First time">
+                        <div class="option-icon">🌱</div>
+                        <div class="option-title">First Time</div>
+                        <div class="option-desc">Never hired an editor</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'editing_experience')">
+                        <input type="radio" name="editing_experience" value="Tried freelancers">
+                        <div class="option-icon">👤</div>
+                        <div class="option-title">Tried Freelancers</div>
+                        <div class="option-desc">Used Fiverr/Upwork</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'editing_experience')">
+                        <input type="radio" name="editing_experience" value="Used agency before">
+                        <div class="option-icon">🏢</div>
+                        <div class="option-title">Used Agency</div>
+                        <div class="option-desc">Worked with a team</div>
+                    </label>
+                    <label class="option-card" onclick="selectOption(this, 'editing_experience')">
+                        <input type="radio" name="editing_experience" value="Have in-house editor">
+                        <div class="option-icon">🎬</div>
+                        <div class="option-title">In-House Editor</div>
+                        <div class="option-desc">Looking to supplement</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn-continue" onclick="submitBlueprint()" id="btn-13" disabled>
+                    <span class="btn-text">Save Blueprint & Continue</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+                <a class="btn-back" onclick="prevPage()">← Go Back</a>
+            </div>
+
+            <div class="footer">
+                <p class="footer-text">Almost done! Just one more step to complete your setup.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tier Estimate Display -->
+    <div class="tier-estimate" id="tierEstimate">
+        <div class="tier-estimate-header">
+            <span class="tier-estimate-icon">📊</span>
+            <span class="tier-estimate-label">Estimated Complexity</span>
+        </div>
+        <div class="tier-estimate-content">
+            <div class="tier-badge tier-1" id="tierBadge">1</div>
+            <div class="tier-details">
+                <div class="tier-name" id="tierName">Standard Edit</div>
+                <div class="tier-description" id="tierDesc">Clean, focused editing</div>
+            </div>
+        </div>
+        <div class="tier-points">
+            <div class="points-bar">
+                <div class="points-fill" id="pointsFill" style="width: 0%"></div>
+            </div>
+            <span class="points-value" id="pointsValue">0 pts</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONTENT PORTAL CONFIGURATION
+        // ============================================
+        const MCP_SERVER_URL = 'https://portalv2.contentbug.io';
+
+        // Local file testing bypass
+        const isLocalFile = window.location.protocol === 'file:';
+
+        // Demo mode for local file testing
+        if (isLocalFile) {
+            // Set demo user data if not already set
+            if (!localStorage.getItem('cb_email')) {
+                localStorage.setItem('cb_email', 'demo@contentbug.io');
+                localStorage.setItem('cb_name', 'Demo User');
+                localStorage.setItem('cb_first_name', 'Demo');
+                localStorage.setItem('cb_role', 'client');
+                localStorage.setItem('cb_plan', 'Creator');
+            }
+        }
+
+        // Get user data from URL params and localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const userEmail = urlParams.get('email') || localStorage.getItem('cb_email') || '';
+        const userName = urlParams.get('name') || localStorage.getItem('cb_name') || '';
+        const userPhone = localStorage.getItem('cb_phone') || '';
+        const airtableClientId = localStorage.getItem('cb_airtable_id') || '';
+
+        // Check if qualifying questions have been completed
+        const qualifyingComplete = localStorage.getItem('cb_qualifying_complete') === 'true';
+
+        // If qualifying questions done, we'll skip pages 10-13 and go straight to submit
+        const QUALIFYING_START_PAGE = 10;
+        const QUALIFYING_END_PAGE = 13;
+        const skipQualifyingPages = qualifyingComplete;
+
+        // Store in hidden fields
+        document.getElementById('user_email').value = userEmail;
+        document.getElementById('user_name').value = userName;
+        document.getElementById('user_phone').value = userPhone;
+        document.getElementById('airtable_client_id').value = airtableClientId;
+
+        // Update user banner
+        if (userName) {
+            document.getElementById('display-name').textContent = userName;
+            document.getElementById('user-avatar').textContent = userName.charAt(0).toUpperCase();
+        }
+        if (userEmail) {
+            document.getElementById('display-email').textContent = userEmail;
+        }
+
+        let currentPage = 1;
+        const totalPages = 13;
+        let blueprintData = {};
+
+        // ============================================
+        // BLUEPRINT TIER SCORING SYSTEM
+        // ============================================
+        const tierScoring = {
+            // Point values for each option (complexity score)
+            pointMap: {
+                // Cut Speed - Fast = more work
+                cut_speed: {
+                    'Slow (4-6 sec)': 0,
+                    'Medium (2-4 sec)': 1,
+                    'Fast (0.5-2 sec)': 3
+                },
+                // Caption Style - Complex animations = more work
+                caption_style: {
+                    'Minimal / None': 0,
+                    'Full sentence': 1,
+                    'Word-by-word highlight': 2,
+                    'Karaoke bounce': 3
+                },
+                // B-Roll Frequency - More frequent = more work
+                broll_frequency: {
+                    'Light (every 30-60 sec)': 0,
+                    'Medium (every 15-30 sec)': 2,
+                    'Heavy (every 5-15 sec)': 4
+                },
+                // B-Roll Type - Memes/mixed = more curation
+                broll_type: {
+                    'Stock footage': 1,
+                    'Screen recordings': 1,
+                    'Memes & pop culture': 3,
+                    'Mixed': 2
+                },
+                // Title Animation Style
+                title_animation_style: {
+                    'None / Minimal': 0,
+                    'Simple Text Pop': 1,
+                    'Kinetic Text': 2,
+                    'Full Motion Graphics': 4
+                },
+                // Title Frequency
+                title_frequency: {
+                    'Rarely (intro/outro only)': 0,
+                    'Sometimes (key points)': 1,
+                    'Often (most sections)': 3
+                },
+                // PNG Overlays
+                png_overlays: {
+                    'None': 0,
+                    'Light (reactions/emotes)': 1,
+                    'Medium (infographics)': 2,
+                    'Heavy (YouTube style)': 4
+                },
+                // SFX Frequency
+                sfx_frequency: {
+                    'None': 0,
+                    'Subtle (transitions)': 1,
+                    'Moderate (emphasis)': 2,
+                    'Heavy (comedy/energy)': 3
+                },
+                // Color Grading
+                color_grading: {
+                    'Match my footage': 0,
+                    'Light & Natural': 1,
+                    'Cinematic': 2,
+                    'High Contrast': 2,
+                    'Moody & Dark': 2,
+                    'Vintage / Retro': 3
+                }
+            },
+
+            // Tier thresholds
+            thresholds: {
+                tier_1: { max: 10, name: 'Standard Edit', desc: 'Clean, focused editing' },
+                tier_2: { max: 20, name: 'Enhanced Edit', desc: 'Creative elements & polish' },
+                tier_3: { max: 999, name: 'Premium Edit', desc: 'Full production value' }
+            },
+
+            // Calculate total points from current selections
+            calculatePoints() {
+                let total = 0;
+                for (const [field, valueMap] of Object.entries(this.pointMap)) {
+                    const selectedValue = blueprintData[field];
+                    if (selectedValue && valueMap[selectedValue] !== undefined) {
+                        total += valueMap[selectedValue];
+                    }
+                }
+                return total;
+            },
+
+            // Get tier from points
+            getTier(points) {
+                if (points <= this.thresholds.tier_1.max) return 1;
+                if (points <= this.thresholds.tier_2.max) return 2;
+                return 3;
+            },
+
+            // Get tier info
+            getTierInfo(tier) {
+                return this.thresholds[`tier_${tier}`];
+            },
+
+            // Update the UI display
+            updateDisplay() {
+                const points = this.calculatePoints();
+                const tier = this.getTier(points);
+                const tierInfo = this.getTierInfo(tier);
+
+                // Show the estimate after page 2 (once selections start)
+                const estimateEl = document.getElementById('tierEstimate');
+                if (currentPage >= 2) {
+                    estimateEl.classList.add('visible');
+                }
+
+                // Update badge
+                const badgeEl = document.getElementById('tierBadge');
+                badgeEl.textContent = tier;
+                badgeEl.className = `tier-badge tier-${tier}`;
+
+                // Update tier name and description
+                document.getElementById('tierName').textContent = tierInfo.name;
+                document.getElementById('tierDesc').textContent = tierInfo.desc;
+
+                // Update points bar (max 30 for visual, capped)
+                const maxPoints = 30;
+                const percentage = Math.min((points / maxPoints) * 100, 100);
+                document.getElementById('pointsFill').style.width = `${percentage}%`;
+                document.getElementById('pointsValue').textContent = `${points} pts`;
+            }
+        };
+
+        function selectOption(card, fieldName) {
+            const container = card.parentElement;
+            container.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.querySelector('input').checked = true;
+            blueprintData[fieldName] = card.querySelector('input').value;
+            validatePage();
+            tierScoring.updateDisplay();
+        }
+
+        function handleTimelineSelect(select) {
+            blueprintData.start_timeline = select.value;
+            validatePage();
+        }
+
+        function updateProgress() {
+            const bars = document.querySelectorAll('.progress-bar');
+            bars.forEach((bar, i) => {
+                bar.classList.remove('filled', 'active');
+                if (i < currentPage - 1) bar.classList.add('filled');
+                else if (i === currentPage - 1) bar.classList.add('active');
+            });
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                document.getElementById('page-' + currentPage).classList.remove('active');
+                currentPage++;
+
+                // Skip qualifying pages (9-12) if already completed
+                if (skipQualifyingPages && currentPage >= QUALIFYING_START_PAGE && currentPage <= QUALIFYING_END_PAGE) {
+                    // Jump to the last page (submit page)
+                    currentPage = QUALIFYING_END_PAGE;
+                }
+
+                document.getElementById('page-' + currentPage).classList.add('active');
+                updateProgress();
+                validatePage();
+                tierScoring.updateDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                document.getElementById('page-' + currentPage).classList.remove('active');
+
+                // If skipping qualifying and we're on the last page, go back to page 8
+                if (skipQualifyingPages && currentPage === QUALIFYING_END_PAGE) {
+                    currentPage = QUALIFYING_START_PAGE - 1; // Go to page 8
+                } else {
+                    currentPage--;
+                }
+
+                document.getElementById('page-' + currentPage).classList.add('active');
+                updateProgress();
+                validatePage();
+                tierScoring.updateDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function validatePage() {
+            let isValid = false;
+            
+            if (currentPage === 1) {
+                const blueprintName = document.getElementById('blueprint_name').value.trim();
+                const format = document.querySelector('input[name="content_format"]:checked');
+                isValid = blueprintName.length >= 2 && format;
+                if (blueprintName) blueprintData.blueprint_name = blueprintName;
+            } else if (currentPage === 2) {
+                isValid = !!document.querySelector('input[name="cut_speed"]:checked');
+            } else if (currentPage === 3) {
+                isValid = document.querySelector('input[name="caption_style"]:checked') &&
+                          document.querySelector('input[name="caption_font"]:checked') &&
+                          document.querySelector('input[name="caption_position"]:checked') &&
+                          document.querySelector('input[name="caption_lines"]:checked');
+            } else if (currentPage === 4) {
+                isValid = document.querySelector('input[name="broll_frequency"]:checked') &&
+                          document.querySelector('input[name="broll_type"]:checked') &&
+                          document.querySelector('input[name="broll_source"]:checked') &&
+                          document.querySelector('input[name="broll_style"]:checked');
+            } else if (currentPage === 5) {
+                isValid = document.querySelector('input[name="title_animation_style"]:checked') &&
+                          document.querySelector('input[name="title_frequency"]:checked') &&
+                          document.querySelector('input[name="png_overlays"]:checked');
+            } else if (currentPage === 6) {
+                isValid = document.querySelector('input[name="music_type"]:checked') &&
+                          document.querySelector('input[name="music_source"]:checked') &&
+                          document.querySelector('input[name="sfx_frequency"]:checked');
+            } else if (currentPage === 7) {
+                isValid = !!document.querySelector('input[name="color_grading"]:checked');
+            } else if (currentPage === 8) {
+                isValid = document.querySelector('input[name="export_resolution"]:checked') &&
+                          document.querySelector('input[name="export_frame_rate"]:checked') &&
+                          document.querySelector('input[name="export_format"]:checked');
+            } else if (currentPage === 9) {
+                isValid = true; // Social profiles - optional
+            } else if (currentPage === 10) {
+                isValid = !!document.querySelector('input[name="videos_per_month"]:checked');
+            } else if (currentPage === 11) {
+                isValid = !!document.querySelector('input[name="budget_range"]:checked');
+            } else if (currentPage === 12) {
+                // Timeline dropdown
+                const timeline = document.getElementById('start_timeline');
+                isValid = timeline && timeline.value !== '';
+            } else if (currentPage === 13) {
+                // Page 13 is editing_experience OR skipped
+                if (skipQualifyingPages) {
+                    isValid = true;
+                } else {
+                    isValid = !!document.querySelector('input[name="editing_experience"]:checked');
+                }
+            }
+
+            document.getElementById('btn-' + currentPage).disabled = !isValid;
+        }
+
+        // Blueprint name input listener
+        document.getElementById('blueprint_name').addEventListener('input', validatePage);
+
+        // Slider functionality
+        function initSlider(sliderId, valueId, hiddenId, values) {
+            const track = document.getElementById(sliderId);
+            const fill = track.querySelector('.slider-fill');
+            const thumb = track.querySelector('.slider-thumb');
+            const valueDisplay = document.getElementById(valueId);
+            const hiddenInput = document.getElementById(hiddenId);
+            
+            let isDragging = false;
+            
+            function updateSlider(percent) {
+                percent = Math.max(0, Math.min(100, percent));
+                fill.style.width = percent + '%';
+                thumb.style.left = percent + '%';
+                
+                const index = Math.round(percent / (100 / (values.length - 1)));
+                valueDisplay.textContent = values[index];
+                hiddenInput.value = values[index];
+            }
+            
+            function getPercent(e) {
+                const rect = track.getBoundingClientRect();
+                const x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                return ((x - rect.left) / rect.width) * 100;
+            }
+            
+            track.addEventListener('mousedown', (e) => { isDragging = true; updateSlider(getPercent(e)); });
+            document.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(getPercent(e)); });
+            document.addEventListener('mouseup', () => { isDragging = false; });
+            
+            track.addEventListener('touchstart', (e) => { isDragging = true; updateSlider(getPercent(e)); });
+            document.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(getPercent(e)); });
+            document.addEventListener('touchend', () => { isDragging = false; });
+        }
+
+        // Initialize sliders
+        initSlider('caption-size-slider', 'caption-size-value', 'caption_size', ['Small', 'Medium', 'Large']);
+        initSlider('broll-ratio-slider', 'broll-ratio-value', 'broll_ratio', ['20% B-Roll', '40% B-Roll', '60% B-Roll', '80% B-Roll']);
+        initSlider('music-volume-slider', 'music-volume-value', 'music_volume', ['Very Low (-20dB)', 'Low (-15dB)', 'Medium (-10dB)', 'Loud (-5dB)']);
+
+        // Validate profile inputs (optional - always allow continue)
+        function validateProfileInputs() {
+            // Profiles are optional, no validation needed
+            // This function is called on input but doesn't block progression
+        }
+
+        // Submit blueprint
+        async function submitBlueprint() {
+            const btn = document.getElementById('btn-13');
+            btn.disabled = true;
+            btn.querySelector('.btn-text').innerHTML = '<span class="spinner"></span> Saving...';
+
+            // Collect all form data
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                blueprintData[input.name] = input.value;
+            });
+            document.querySelectorAll('input[type="hidden"]').forEach(input => {
+                if (input.value) blueprintData[input.name] = input.value;
+            });
+
+            // Collect social profile URLs
+            const youtubeUrl = document.getElementById('youtube_url')?.value?.trim() || '';
+            const instagramUrl = document.getElementById('instagram_url')?.value?.trim() || '';
+            const tiktokUrl = document.getElementById('tiktok_url')?.value?.trim() || '';
+            const twitterUrl = document.getElementById('twitter_url')?.value?.trim() || '';
+
+            blueprintData.youtube_url = youtubeUrl;
+            blueprintData.instagram_url = instagramUrl;
+            blueprintData.tiktok_url = tiktokUrl;
+            blueprintData.twitter_url = twitterUrl;
+
+            const contentFormat = blueprintData.content_format;
+            
+            // Payload for GHL
+            const ghlPayload = {
+                email: userEmail,
+                contact_name: userName,
+                phone: userPhone,
+                blueprint_name: blueprintData.blueprint_name,
+                content_format: contentFormat,
+                cut_speed: blueprintData.cut_speed,
+                caption_style: blueprintData.caption_style,
+                caption_font: blueprintData.caption_font,
+                caption_position: blueprintData.caption_position,
+                caption_size: blueprintData.caption_size || 'Medium',
+                caption_lines: blueprintData.caption_lines,
+                broll_frequency: blueprintData.broll_frequency,
+                broll_type: blueprintData.broll_type,
+                broll_source: blueprintData.broll_source,
+                broll_style: blueprintData.broll_style,
+                broll_ratio: blueprintData.broll_ratio || '40% B-Roll',
+                title_animation_style: blueprintData.title_animation_style,
+                title_frequency: blueprintData.title_frequency,
+                png_overlays: blueprintData.png_overlays,
+                music_type: blueprintData.music_type,
+                music_source: blueprintData.music_source,
+                music_volume: blueprintData.music_volume || 'Low (-15dB)',
+                sfx_frequency: blueprintData.sfx_frequency,
+                color_grading: blueprintData.color_grading,
+                export_resolution: blueprintData.export_resolution,
+                export_frame_rate: blueprintData.export_frame_rate,
+                export_format: blueprintData.export_format,
+                source: 'Free Trial Funnel - Style Blueprint',
+                // GHL Custom Fields for Portal Navigation
+                step_2_complete_yn: 'Y',
+                post_login_step: 'Step 2 Complete - Resume Step 3',
+                content_portal_status: 'Preview - Free Trial',
+                active_free_trial_yn: 'Y',
+                // Qualifying Questions
+                videos_per_month: blueprintData.videos_per_month,
+                budget_range: blueprintData.budget_range,
+                start_timeline: blueprintData.start_timeline,
+                editing_experience: blueprintData.editing_experience,
+                // Social Profiles
+                youtube_url: youtubeUrl,
+                instagram_url: instagramUrl,
+                tiktok_url: tiktokUrl,
+                twitter_url: twitterUrl
+            };
+
+            // Use single Style Blueprints table
+            const airtableTable = 'Style Blueprints';
+
+            // Airtable blueprint record
+            const airtableBlueprintData = {
+                records: [{
+                    fields: {
+                        "Contact Name": userName,
+                        "Email": userEmail,
+                        "Phone": userPhone,
+                        "Cut Speed": blueprintData.cut_speed,
+                        "Caption Font": blueprintData.caption_font,
+                        "Caption Position": blueprintData.caption_position,
+                        "Caption Style": blueprintData.caption_style,
+                        "Caption Size": blueprintData.caption_size || 'Medium',
+                        "Caption Lines": blueprintData.caption_lines,
+                        "B-Roll Frequency": blueprintData.broll_frequency,
+                        "B-Roll Style": blueprintData.broll_style,
+                        "B-Roll Type": blueprintData.broll_type,
+                        "B-Roll Source": blueprintData.broll_source,
+                        "B-Roll Ratio": blueprintData.broll_ratio || '40% B-Roll',
+                        "Title Animation Style": blueprintData.title_animation_style,
+                        "Title Frequency": blueprintData.title_frequency,
+                        "PNG Overlays": blueprintData.png_overlays,
+                        "Music Source": blueprintData.music_source,
+                        "Music Type": blueprintData.music_type,
+                        "Music Volume": blueprintData.music_volume || 'Low (-15dB)',
+                        "SFX Frequency": blueprintData.sfx_frequency,
+                        "Color Grading": blueprintData.color_grading,
+                        "Export Resolution": blueprintData.export_resolution,
+                        "Export Frame Rate": blueprintData.export_frame_rate,
+                        "Export Format": blueprintData.export_format,
+                        "YouTube URL": youtubeUrl,
+                        "Instagram URL": instagramUrl,
+                        "TikTok URL": tiktokUrl,
+                        "Twitter URL": twitterUrl
+                    }
+                }]
+            };
+
+            try {
+                // Send to GHL webhook
+                const ghlPromise = fetch('https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ghlPayload)
+                });
+
+                // Send to Airtable Style Blueprints table via MCP server (secure)
+                const airtableBlueprintPromise = fetch(`${MCP_SERVER_URL}/airtable/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        table: airtableTable,
+                        fields: airtableBlueprintData.records[0].fields
+                    })
+                });
+
+                // Update Airtable Contacts table - Step 2 Completed = Y via MCP server
+                const airtableClientId = localStorage.getItem('cb_airtable_id') || '';
+                let airtableClientPromise = Promise.resolve();
+                if (airtableClientId) {
+                    airtableClientPromise = fetch(`${MCP_SERVER_URL}/airtable/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            table: 'Contacts',
+                            recordId: airtableClientId,
+                            fields: { "Step 2 Completed": "Y" }
+                        })
+                    });
+                }
+
+                // Save social profiles to MCP server for Creator Performance tracking
+                let profilesPromise = Promise.resolve();
+                if (airtableClientId && (youtubeUrl || instagramUrl || tiktokUrl || twitterUrl)) {
+                    profilesPromise = fetch(`${MCP_SERVER_URL}/api/client/save-profiles`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            clientId: airtableClientId,
+                            profiles: {
+                                youtube: youtubeUrl,
+                                instagram: instagramUrl,
+                                tiktok: tiktokUrl,
+                                twitter: twitterUrl
+                            }
+                        })
+                    }).catch(err => {
+                        console.warn('Failed to save profiles to MCP server:', err);
+                        // Non-blocking - continue even if this fails
+                    });
+                }
+
+                // Wait for all requests
+                await Promise.all([ghlPromise, airtableBlueprintPromise, airtableClientPromise, profilesPromise]);
+
+                // Store in localStorage
+                localStorage.setItem('cb_blueprint', blueprintData.blueprint_name);
+                localStorage.setItem('cb_content_format', contentFormat);
+                localStorage.setItem('cb_blueprint_complete', 'true');
+
+                // Update trial step tracking for onboarding flow
+                const currentTrialStep = parseInt(localStorage.getItem('cb_trial_step') || '1');
+                if (currentTrialStep < 3) {
+                    localStorage.setItem('cb_trial_step', '3'); // Blueprint = step 2, advance to step 3
+                }
+
+                // Mark qualifying questions as complete (so they don't show again)
+                if (!skipQualifyingPages) {
+                    localStorage.setItem('cb_qualifying_complete', 'true');
+                }
+
+                // Show success overlay
+                document.getElementById('success-overlay').style.display = 'flex';
+
+                // Check if we're embedded in an iframe (trial dashboard)
+                const isEmbedded = window.parent !== window && urlParams.get('embed') === 'true';
+
+                if (isEmbedded) {
+                    // Send postMessage to parent instead of redirecting
+                    window.parent.postMessage({
+                        type: 'blueprint_complete',
+                        step: 2, // Blueprint is step 2 of onboarding
+                        blueprint_id: 'blueprint_' + Date.now(),
+                        blueprint_name: blueprintData.blueprint_name,
+                        content_format: contentFormat,
+                        email: userEmail
+                    }, '*');
+                    // Also send step_complete for onboarding tracking
+                    window.parent.postMessage({
+                        type: 'step_complete',
+                        step: 2
+                    }, '*');
+                    // Don't redirect - parent handles navigation
+                    return;
+                }
+
+                // Redirect after animation (use local path in demo mode)
+                const IS_LOCAL_DEMO = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const nextStepUrl = IS_LOCAL_DEMO
+                    ? 'client-submit.html?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName)
+                    : 'https://portalv2.contentbug.io/client-submit?email=' + encodeURIComponent(userEmail) + '&name=' + encodeURIComponent(userName);
+
+                setTimeout(() => {
+                    window.location.href = nextStepUrl;
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.querySelector('.btn-text').textContent = 'Save Blueprint & Continue';
+                alert('Something went wrong. Please try again.');
+            }
+        }
+
+        // Initial setup
+        updateProgress();
+    </script>
+    <!-- Shell Controller for persistence -->
+    <!-- Shell controller inlined - no external dependencies -->
+</body>
+</html>

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editors | Content Bug Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --accent: #3b82f6;
+            --accent-glow: #60a5fa;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #a855f7;
+            --tier-trial: #6366f1;
+            --tier-basic: #3b82f6;
+            --tier-silver: #94a3b8;
+            --tier-gold: #f59e0b;
+            --tier-pro: #a855f7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        /* Sub Navigation */
+        .sub-nav {
+            display: flex;
+            gap: 4px;
+            background: var(--dark-card);
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            border: 1px solid var(--dark-border);
+            width: fit-content;
+        }
+
+        .sub-nav-item {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sub-nav-item:hover {
+            color: var(--text-light);
+            background: var(--dark-surface);
+        }
+
+        .sub-nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .sub-nav-item .badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .sub-nav-item.active .badge {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .sub-nav-item:not(.active) .badge {
+            background: var(--dark-border);
+        }
+
+        .sub-nav-item .badge.alert {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.alert {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), transparent);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.green { color: var(--success); }
+        .stat-value.blue { color: var(--accent); }
+        .stat-value.orange { color: var(--warning); }
+        .stat-value.red { color: var(--danger); }
+        .stat-value.purple { color: var(--purple); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Editor Cards Grid */
+        .editors-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .editor-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.2s;
+        }
+
+        .editor-card:hover {
+            border-color: var(--accent);
+        }
+
+        .editor-card.behind {
+            border-left: 4px solid var(--danger);
+        }
+
+        .editor-card.overloaded {
+            border-left: 4px solid var(--warning);
+        }
+
+        .editor-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .editor-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .editor-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-badge.online { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .status-badge.offline { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+        .status-badge.behind { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        .editor-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+        }
+
+        /* Editor Stats */
+        .editor-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .editor-stat {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .editor-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .editor-stat-value.good { color: var(--success); }
+        .editor-stat-value.warning { color: var(--warning); }
+        .editor-stat-value.bad { color: var(--danger); }
+
+        .editor-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Workload Bar */
+        .workload-bar {
+            width: 100px;
+            height: 8px;
+            background: var(--dark-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .workload-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .workload-fill.light { background: var(--success); }
+        .workload-fill.moderate { background: var(--warning); }
+        .workload-fill.heavy { background: var(--danger); }
+
+        /* Actions */
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background: var(--dark-surface);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        .action-btn.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        /* Assignment Board */
+        .assignment-board {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .editor-column {
+            min-width: 300px;
+            max-width: 300px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .column-header {
+            padding: 16px 20px;
+            background: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .column-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .column-info {
+            flex: 1;
+        }
+
+        .column-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .column-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .column-cards {
+            padding: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .client-card {
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .client-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .client-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .client-avatar-mini {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .client-avatar-mini.basic { background: rgba(59, 130, 246, 0.2); color: var(--accent); }
+        .client-avatar-mini.silver { background: rgba(148, 163, 184, 0.2); color: var(--text-light); }
+        .client-avatar-mini.gold { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .client-avatar-mini.pro { background: rgba(168, 85, 247, 0.2); color: var(--purple); }
+
+        .client-card-name {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .tier-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-badge.basic { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .tier-badge.silver { background: rgba(148, 163, 184, 0.15); color: var(--text-light); }
+        .tier-badge.gold { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .tier-badge.pro { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .client-card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Payout Table */
+        .table-wrapper {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 16px 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--dark-border);
+            font-size: 14px;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover { background: var(--dark-surface); }
+
+        .payout-amount {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .payout-status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .payout-status.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .payout-status.paid { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .payout-status.processing { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+
+        /* Performance Section */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .performance-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .performance-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .performance-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .performance-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .performance-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 12px;
+            background: var(--dark-surface);
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-value.good { color: var(--success); }
+        .metric-value.warning { color: var(--warning); }
+        .metric-value.bad { color: var(--danger); }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Month Selector */
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 8px 16px;
+        }
+
+        .month-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 18px;
+            transition: color 0.2s;
+        }
+
+        .month-btn:hover { color: var(--text-white); }
+
+        .month-display {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+            .editor-stats { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .sub-nav { flex-wrap: wrap; width: 100%; }
+            .sub-nav-item { flex: 1; min-width: calc(50% - 4px); justify-content: center; }
+            .assignment-board { flex-direction: column; }
+            .editor-column { min-width: 100%; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="page-title">
+            <span class="icon">👨‍💻</span>
+            Editors
+        </h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary">
+                <span>📊</span> Export
+            </button>
+            <button class="btn btn-primary">
+                <span>➕</span> Add Editor
+            </button>
+        </div>
+    </div>
+
+    <!-- Sub Navigation -->
+    <div class="sub-nav">
+        <button class="sub-nav-item active" data-tab="dashboard">
+            📊 Dashboard
+        </button>
+        <button class="sub-nav-item" data-tab="assignments">
+            🔗 Assignments
+        </button>
+        <button class="sub-nav-item" data-tab="payouts">
+            💰 Payouts
+        </button>
+        <button class="sub-nav-item" data-tab="performance">
+            📈 Performance
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- DASHBOARD TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content active" id="dashboard-tab">
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value blue">12</div>
+                <div class="stat-label">Active Editors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">8</div>
+                <div class="stat-label">Online Now</div>
+            </div>
+            <div class="stat-card alert">
+                <div class="stat-value red">3</div>
+                <div class="stat-label">Behind Schedule</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orange">2</div>
+                <div class="stat-label">Overloaded</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">127</div>
+                <div class="stat-label">Total Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">8.7</div>
+                <div class="stat-label">Avg Quality</div>
+            </div>
+        </div>
+
+        <div class="editors-grid">
+            <!-- Editor 1 - Behind -->
+            <div class="editor-card behind">
+                <div class="editor-avatar">JM</div>
+                <div class="editor-info">
+                    <div class="editor-header">
+                        <div class="editor-name">Jake Martinez</div>
+                        <span class="status-badge behind">Behind</span>
+                    </div>
+                    <div class="editor-meta">18 clients • 24 active projects</div>
+                    <div class="workload-bar">
+                        <div class="workload-fill heavy" style="width: 95%"></div>
+                    </div>
+                </div>
+                <div class="editor-stats">
+                    <div class="editor-stat">
+                        <div class="editor-stat-value bad">3.2d</div>
+                        <div class="editor-stat-label">Turnaround</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value warning">1.4</div>
+                        <div class="editor-stat-label">Revisions</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">8.9</div>
+                        <div class="editor-stat-label">Quality</div>
+                    </div>
+                </div>
+                <div class="actions-cell">
+                    <button class="action-btn primary">Reassign</button>
+                    <button class="action-btn secondary">View</button>
+                </div>
+            </div>
+
+            <!-- Editor 2 - Online -->
+            <div class="editor-card">
+                <div class="editor-avatar">SK</div>
+                <div class="editor-info">
+                    <div class="editor-header">
+                        <div class="editor-name">Sarah Kim</div>
+                        <span class="status-badge online">Online</span>
+                    </div>
+                    <div class="editor-meta">15 clients • 18 active projects</div>
+                    <div class="workload-bar">
+                        <div class="workload-fill moderate" style="width: 65%"></div>
+                    </div>
+                </div>
+                <div class="editor-stats">
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">1.8d</div>
+                        <div class="editor-stat-label">Turnaround</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">0.8</div>
+                        <div class="editor-stat-label">Revisions</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">9.2</div>
+                        <div class="editor-stat-label">Quality</div>
+                    </div>
+                </div>
+                <div class="actions-cell">
+                    <button class="action-btn secondary">View</button>
+                    <button class="action-btn secondary">Message</button>
+                </div>
+            </div>
+
+            <!-- Editor 3 - Overloaded -->
+            <div class="editor-card overloaded">
+                <div class="editor-avatar">ME</div>
+                <div class="editor-info">
+                    <div class="editor-header">
+                        <div class="editor-name">Mike Edwards</div>
+                        <span class="status-badge online">Online</span>
+                    </div>
+                    <div class="editor-meta">22 clients • 28 active projects</div>
+                    <div class="workload-bar">
+                        <div class="workload-fill heavy" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div class="editor-stats">
+                    <div class="editor-stat">
+                        <div class="editor-stat-value warning">2.4d</div>
+                        <div class="editor-stat-label">Turnaround</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">0.9</div>
+                        <div class="editor-stat-label">Revisions</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">8.8</div>
+                        <div class="editor-stat-label">Quality</div>
+                    </div>
+                </div>
+                <div class="actions-cell">
+                    <button class="action-btn primary">Reassign</button>
+                    <button class="action-btn secondary">View</button>
+                </div>
+            </div>
+
+            <!-- Editor 4 - Good -->
+            <div class="editor-card">
+                <div class="editor-avatar">AL</div>
+                <div class="editor-info">
+                    <div class="editor-header">
+                        <div class="editor-name">Anna Lopez</div>
+                        <span class="status-badge online">Online</span>
+                    </div>
+                    <div class="editor-meta">10 clients • 12 active projects</div>
+                    <div class="workload-bar">
+                        <div class="workload-fill light" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div class="editor-stats">
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">1.5d</div>
+                        <div class="editor-stat-label">Turnaround</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">0.6</div>
+                        <div class="editor-stat-label">Revisions</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">9.4</div>
+                        <div class="editor-stat-label">Quality</div>
+                    </div>
+                </div>
+                <div class="actions-cell">
+                    <button class="action-btn secondary">View</button>
+                    <button class="action-btn secondary">Assign More</button>
+                </div>
+            </div>
+
+            <!-- Editor 5 - Offline -->
+            <div class="editor-card">
+                <div class="editor-avatar">RN</div>
+                <div class="editor-info">
+                    <div class="editor-header">
+                        <div class="editor-name">Riley Nguyen</div>
+                        <span class="status-badge offline">Offline</span>
+                    </div>
+                    <div class="editor-meta">14 clients • 16 active projects</div>
+                    <div class="workload-bar">
+                        <div class="workload-fill moderate" style="width: 55%"></div>
+                    </div>
+                </div>
+                <div class="editor-stats">
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">1.9d</div>
+                        <div class="editor-stat-label">Turnaround</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">0.7</div>
+                        <div class="editor-stat-label">Revisions</div>
+                    </div>
+                    <div class="editor-stat">
+                        <div class="editor-stat-value good">8.6</div>
+                        <div class="editor-stat-label">Quality</div>
+                    </div>
+                </div>
+                <div class="actions-cell">
+                    <button class="action-btn secondary">View</button>
+                    <button class="action-btn secondary">Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ASSIGNMENTS TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="assignments-tab">
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value blue">127</div>
+                <div class="stat-label">Total Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orange">5</div>
+                <div class="stat-label">Unassigned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">122</div>
+                <div class="stat-label">Assigned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">10.6</div>
+                <div class="stat-label">Avg per Editor</div>
+            </div>
+        </div>
+
+        <div class="assignment-board">
+            <!-- Unassigned Column -->
+            <div class="editor-column" style="border: 2px dashed var(--dark-border);">
+                <div class="column-header">
+                    <div class="column-avatar" style="background: var(--dark-border);">?</div>
+                    <div class="column-info">
+                        <div class="column-name">Unassigned</div>
+                        <div class="column-count">5 clients waiting</div>
+                    </div>
+                </div>
+                <div class="column-cards">
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini gold">AT</div>
+                            <div class="client-card-name">New Trial User</div>
+                            <span class="tier-badge gold">Gold</span>
+                        </div>
+                        <div class="client-card-meta">Just signed up • Blueprint complete</div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini silver">MT</div>
+                            <div class="client-card-name">Marcus Thompson</div>
+                            <span class="tier-badge silver">Silver</span>
+                        </div>
+                        <div class="client-card-meta">Waiting 2 hours</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jake's Column -->
+            <div class="editor-column">
+                <div class="column-header">
+                    <div class="column-avatar">JM</div>
+                    <div class="column-info">
+                        <div class="column-name">Jake Martinez</div>
+                        <div class="column-count">18 clients</div>
+                    </div>
+                </div>
+                <div class="column-cards">
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini gold">AT</div>
+                            <div class="client-card-name">Alex Thompson</div>
+                            <span class="tier-badge gold">Gold</span>
+                        </div>
+                        <div class="client-card-meta">3 active projects</div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini pro">MC</div>
+                            <div class="client-card-name">Marcus Chen</div>
+                            <span class="tier-badge pro">Pro</span>
+                        </div>
+                        <div class="client-card-meta">5 active projects</div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini basic">DP</div>
+                            <div class="client-card-name">David Park</div>
+                            <span class="tier-badge basic">Basic</span>
+                        </div>
+                        <div class="client-card-meta">1 active project</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sarah's Column -->
+            <div class="editor-column">
+                <div class="column-header">
+                    <div class="column-avatar">SK</div>
+                    <div class="column-info">
+                        <div class="column-name">Sarah Kim</div>
+                        <div class="column-count">15 clients</div>
+                    </div>
+                </div>
+                <div class="column-cards">
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini silver">JW</div>
+                            <div class="client-card-name">Jessica Wong</div>
+                            <span class="tier-badge silver">Silver</span>
+                        </div>
+                        <div class="client-card-meta">2 active projects</div>
+                    </div>
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini gold">LH</div>
+                            <div class="client-card-name">Lisa Hernandez</div>
+                            <span class="tier-badge gold">Gold</span>
+                        </div>
+                        <div class="client-card-meta">4 active projects</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anna's Column -->
+            <div class="editor-column">
+                <div class="column-header">
+                    <div class="column-avatar">AL</div>
+                    <div class="column-info">
+                        <div class="column-name">Anna Lopez</div>
+                        <div class="column-count">10 clients</div>
+                    </div>
+                </div>
+                <div class="column-cards">
+                    <div class="client-card">
+                        <div class="client-card-header">
+                            <div class="client-avatar-mini basic">EK</div>
+                            <div class="client-card-name">Emma Kim</div>
+                            <span class="tier-badge basic">Basic</span>
+                        </div>
+                        <div class="client-card-meta">1 active project</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PAYOUTS TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="payouts-tab">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div class="month-selector">
+                <button class="month-btn">←</button>
+                <span class="month-display">January 2026</span>
+                <button class="month-btn">→</button>
+            </div>
+            <button class="btn btn-primary">
+                <span>💳</span> Process All Payouts
+            </button>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value green">$24,850</div>
+                <div class="stat-label">Total This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue">$18,400</div>
+                <div class="stat-label">Paid</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value orange">$6,450</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Editors</div>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Editor</th>
+                        <th>Projects</th>
+                        <th>Base Pay</th>
+                        <th>Bonuses</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="editor-avatar" style="width: 36px; height: 36px; font-size: 12px;">JM</div>
+                                <div>
+                                    <div style="font-weight: 600;">Jake Martinez</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Senior Editor</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>48</td>
+                        <td>$2,400</td>
+                        <td style="color: var(--success);">+$350</td>
+                        <td><span class="payout-amount">$2,750</span></td>
+                        <td><span class="payout-status pending">Pending</span></td>
+                        <td>
+                            <button class="action-btn success">Pay Now</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="editor-avatar" style="width: 36px; height: 36px; font-size: 12px;">SK</div>
+                                <div>
+                                    <div style="font-weight: 600;">Sarah Kim</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Editor</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>42</td>
+                        <td>$2,100</td>
+                        <td style="color: var(--success);">+$420</td>
+                        <td><span class="payout-amount">$2,520</span></td>
+                        <td><span class="payout-status paid">Paid</span></td>
+                        <td>
+                            <button class="action-btn secondary">View</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="editor-avatar" style="width: 36px; height: 36px; font-size: 12px;">ME</div>
+                                <div>
+                                    <div style="font-weight: 600;">Mike Edwards</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Senior Editor</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>56</td>
+                        <td>$2,800</td>
+                        <td style="color: var(--success);">+$280</td>
+                        <td><span class="payout-amount">$3,080</span></td>
+                        <td><span class="payout-status pending">Pending</span></td>
+                        <td>
+                            <button class="action-btn success">Pay Now</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="editor-avatar" style="width: 36px; height: 36px; font-size: 12px;">AL</div>
+                                <div>
+                                    <div style="font-weight: 600;">Anna Lopez</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Editor</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>28</td>
+                        <td>$1,400</td>
+                        <td style="color: var(--success);">+$210</td>
+                        <td><span class="payout-amount">$1,610</span></td>
+                        <td><span class="payout-status paid">Paid</span></td>
+                        <td>
+                            <button class="action-btn secondary">View</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- PERFORMANCE TAB -->
+    <!-- ============================================ -->
+    <div class="tab-content" id="performance-tab">
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value green">8.7</div>
+                <div class="stat-label">Avg Quality Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue">1.9d</div>
+                <div class="stat-label">Avg Turnaround</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green">0.9</div>
+                <div class="stat-label">Avg Revisions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple">342</div>
+                <div class="stat-label">Projects This Month</div>
+            </div>
+        </div>
+
+        <div class="performance-grid">
+            <!-- Top Performer -->
+            <div class="performance-card" style="border: 2px solid var(--success);">
+                <div class="performance-header">
+                    <div class="performance-avatar">SK</div>
+                    <div>
+                        <div class="performance-name">Sarah Kim</div>
+                        <div class="performance-role">Top Performer</div>
+                    </div>
+                    <span style="margin-left: auto; background: var(--success); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🏆 #1</span>
+                </div>
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value good">9.2</div>
+                        <div class="metric-label">Quality</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value good">1.8d</div>
+                        <div class="metric-label">Turnaround</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value good">0.8</div>
+                        <div class="metric-label">Revisions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Good Performer -->
+            <div class="performance-card">
+                <div class="performance-header">
+                    <div class="performance-avatar">AL</div>
+                    <div>
+                        <div class="performance-name">Anna Lopez</div>
+                        <div class="performance-role">Editor</div>
+                    </div>
+                    <span style="margin-left: auto; background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">#2</span>
+                </div>
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value good">9.4</div>
+                        <div class="metric-label">Quality</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value good">1.5d</div>
+                        <div class="metric-label">Turnaround</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value good">0.6</div>
+                        <div class="metric-label">Revisions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Performer -->
+            <div class="performance-card">
+                <div class="performance-header">
+                    <div class="performance-avatar">ME</div>
+                    <div>
+                        <div class="performance-name">Mike Edwards</div>
+                        <div class="performance-role">Senior Editor</div>
+                    </div>
+                </div>
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value good">8.8</div>
+                        <div class="metric-label">Quality</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value warning">2.4d</div>
+                        <div class="metric-label">Turnaround</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value good">0.9</div>
+                        <div class="metric-label">Revisions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Needs Improvement -->
+            <div class="performance-card" style="border: 2px solid var(--danger);">
+                <div class="performance-header">
+                    <div class="performance-avatar">JM</div>
+                    <div>
+                        <div class="performance-name">Jake Martinez</div>
+                        <div class="performance-role">Senior Editor</div>
+                    </div>
+                    <span style="margin-left: auto; background: var(--danger); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">⚠️ Behind</span>
+                </div>
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value good">8.9</div>
+                        <div class="metric-label">Quality</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value bad">3.2d</div>
+                        <div class="metric-label">Turnaround</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value warning">1.4</div>
+                        <div class="metric-label">Revisions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sub-nav switching
+        document.querySelectorAll('.sub-nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.sub-nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                item.classList.add('active');
+                const tabId = item.dataset.tab + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Drag and drop for assignment cards (basic implementation)
+        document.querySelectorAll('.client-card').forEach(card => {
+            card.setAttribute('draggable', true);
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', 'client-card');
+                card.style.opacity = '0.5';
+            });
+            card.addEventListener('dragend', () => {
+                card.style.opacity = '1';
+            });
+        });
+
+        document.querySelectorAll('.column-cards').forEach(column => {
+            column.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                column.style.background = 'rgba(59, 130, 246, 0.1)';
+            });
+            column.addEventListener('dragleave', () => {
+                column.style.background = '';
+            });
+            column.addEventListener('drop', (e) => {
+                e.preventDefault();
+                column.style.background = '';
+                // In real app, would handle reassignment here
+            });
+        });
+
+        // Month selector
+        const monthDisplay = document.querySelector('.month-display');
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        let currentMonth = 0;
+        let currentYear = 2026;
+
+        document.querySelectorAll('.month-btn').forEach((btn, idx) => {
+            btn.addEventListener('click', () => {
+                if (idx === 0) {
+                    currentMonth--;
+                    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+                } else {
+                    currentMonth++;
+                    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                }
+                monthDisplay.textContent = `${months[currentMonth]} ${currentYear}`;
+            });
+        });
+    </script>
+</body>
+</html>

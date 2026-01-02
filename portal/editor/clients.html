@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Clients</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .clients-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            width: 280px;
+        }
+
+        .search-box svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+        }
+
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-tab:hover {
+            color: var(--text-light);
+            border-color: var(--accent);
+        }
+
+        .filter-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .clients-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .client-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+
+        .client-card:hover {
+            border-color: var(--accent);
+        }
+
+        .client-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .client-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .client-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .client-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+        }
+
+        .client-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .client-meta svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .client-plan {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .client-plan.basic { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .client-plan.silver { background: rgba(148, 163, 184, 0.15); color: var(--text-light); }
+        .client-plan.gold { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .client-plan.pro { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .client-stats {
+            display: flex;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .client-stat {
+            min-width: 60px;
+        }
+
+        .client-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .client-stat-value.good { color: var(--green); }
+        .client-stat-value.warning { color: var(--orange); }
+        .client-stat-value.bad { color: var(--red); }
+
+        .client-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .health-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .health-indicator.healthy { background: var(--green); }
+        .health-indicator.warning { background: var(--orange); }
+        .health-indicator.critical { background: var(--red); }
+
+        .client-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .client-btn {
+            padding: 8px 12px;
+            background: var(--dark-surface);
+            border: none;
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .client-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .client-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .clients-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .filter-tabs {
+                overflow-x: auto;
+            }
+            .client-stats {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clients-header">
+        <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" placeholder="Search clients...">
+        </div>
+        <div class="filter-tabs">
+            <button class="filter-tab active">All (8)</button>
+            <button class="filter-tab">Active (6)</button>
+            <button class="filter-tab">At Risk (2)</button>
+        </div>
+    </div>
+
+    <div class="clients-grid">
+        <div class="client-card">
+            <div class="health-indicator healthy"></div>
+            <div class="client-avatar">SJ</div>
+            <div class="client-info">
+                <div class="client-name">Sarah Johnson</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Oct 2024
+                    </span>
+                    <span>3 active projects</span>
+                </div>
+            </div>
+            <span class="client-plan gold">Gold</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value good">1.5d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">0.2</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">9.4</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator warning"></div>
+            <div class="client-avatar">TA</div>
+            <div class="client-info">
+                <div class="client-name">Tech Academy</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Aug 2024
+                    </span>
+                    <span>1 active project</span>
+                </div>
+            </div>
+            <span class="client-plan pro">Pro</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value warning">2.8d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value warning">1.5</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value warning">7.8</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator healthy"></div>
+            <div class="client-avatar">SC</div>
+            <div class="client-info">
+                <div class="client-name">Style Co.</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Nov 2024
+                    </span>
+                    <span>2 active projects</span>
+                </div>
+            </div>
+            <span class="client-plan silver">Silver</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value good">1.2d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">0.1</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">9.6</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator critical"></div>
+            <div class="client-avatar">SI</div>
+            <div class="client-info">
+                <div class="client-name">Startup Inc.</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Dec 2024
+                    </span>
+                    <span>1 active project</span>
+                </div>
+            </div>
+            <span class="client-plan basic">Basic</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value bad">4.2d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value bad">2.3</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value bad">6.5</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator healthy"></div>
+            <div class="client-avatar">MK</div>
+            <div class="client-info">
+                <div class="client-name">Mike's Kitchen</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Sep 2024
+                    </span>
+                    <span>0 active projects</span>
+                </div>
+            </div>
+            <span class="client-plan gold">Gold</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value good">1.8d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">0.4</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">9.1</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator healthy"></div>
+            <div class="client-avatar">FC</div>
+            <div class="client-info">
+                <div class="client-name">Fitness Coach Pro</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Jul 2024
+                    </span>
+                    <span>1 active project</span>
+                </div>
+            </div>
+            <span class="client-plan pro">Pro</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value good">1.4d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">0.3</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">9.3</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator healthy"></div>
+            <div class="client-avatar">BW</div>
+            <div class="client-info">
+                <div class="client-name">Beauty Wellness</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Nov 2024
+                    </span>
+                    <span>2 active projects</span>
+                </div>
+            </div>
+            <span class="client-plan silver">Silver</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value good">1.6d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">0.2</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">9.0</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <div class="health-indicator healthy"></div>
+            <div class="client-avatar">RM</div>
+            <div class="client-info">
+                <div class="client-name">Real Estate Maven</div>
+                <div class="client-meta">
+                    <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Client since Oct 2024
+                    </span>
+                    <span>0 active projects</span>
+                </div>
+            </div>
+            <span class="client-plan gold">Gold</span>
+            <div class="client-stats">
+                <div class="client-stat">
+                    <div class="client-stat-value good">1.9d</div>
+                    <div class="client-stat-label">Turnaround</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">0.5</div>
+                    <div class="client-stat-label">Revisions</div>
+                </div>
+                <div class="client-stat">
+                    <div class="client-stat-value good">8.9</div>
+                    <div class="client-stat-label">Quality</div>
+                </div>
+            </div>
+            <div class="client-actions">
+                <button class="client-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

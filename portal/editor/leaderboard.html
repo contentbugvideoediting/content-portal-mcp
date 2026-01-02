@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+            --gold: #fbbf24;
+            --silver: #9ca3af;
+            --bronze: #d97706;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Top 3 Podium */
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding: 20px;
+        }
+
+        .podium-place {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .podium-place:hover {
+            transform: translateY(-4px);
+        }
+
+        .podium-place.first {
+            order: 2;
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.05));
+        }
+
+        .podium-place.second {
+            order: 1;
+        }
+
+        .podium-place.third {
+            order: 3;
+        }
+
+        .podium-rank {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0 auto 16px;
+        }
+
+        .podium-place.first .podium-rank {
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            color: #000;
+        }
+
+        .podium-place.second .podium-rank {
+            background: linear-gradient(135deg, var(--silver), #6b7280);
+            color: #000;
+        }
+
+        .podium-place.third .podium-rank {
+            background: linear-gradient(135deg, var(--bronze), #b45309);
+            color: #000;
+        }
+
+        .podium-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            margin: 0 auto 12px;
+        }
+
+        .podium-place.first .podium-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 24px;
+        }
+
+        .podium-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .podium-place.first .podium-name {
+            font-size: 18px;
+        }
+
+        .podium-score {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--green);
+        }
+
+        .podium-place.first .podium-score {
+            font-size: 28px;
+        }
+
+        .podium-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Stats Row */
+        .podium-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--dark-border);
+        }
+
+        .podium-stat {
+            text-align: center;
+        }
+
+        .podium-stat-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .podium-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Full Leaderboard Table */
+        .leaderboard-section {
+            margin-top: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .period-select {
+            padding: 8px 16px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .leaderboard-table {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .leaderboard-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px 100px 100px 100px 100px;
+            padding: 14px 20px;
+            background: var(--dark-surface);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px 100px 100px 100px 100px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--dark-border);
+            align-items: center;
+            transition: background 0.15s;
+        }
+
+        .leaderboard-row:hover {
+            background: var(--dark-surface);
+        }
+
+        .leaderboard-row.you {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--accent);
+        }
+
+        .row-rank {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .row-rank.top3 {
+            color: var(--gold);
+        }
+
+        .row-editor {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .row-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .row-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .row-clients {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .row-score {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .row-score.excellent { color: var(--green); }
+        .row-score.good { color: var(--blue-glow); }
+        .row-score.warning { color: var(--orange); }
+
+        .row-stat {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .row-stat.good { color: var(--green); }
+        .row-stat.warning { color: var(--orange); }
+        .row-stat.bad { color: var(--red); }
+
+        .row-payout {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--green);
+        }
+
+        .you-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background: var(--accent);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 1024px) {
+            .leaderboard-header,
+            .leaderboard-row {
+                grid-template-columns: 50px 1fr 80px 80px 80px;
+            }
+            .leaderboard-header > *:nth-child(5),
+            .leaderboard-header > *:nth-child(6),
+            .leaderboard-row > *:nth-child(5),
+            .leaderboard-row > *:nth-child(6) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+            .podium-place {
+                width: 100%;
+                max-width: 280px;
+            }
+            .podium-place.first {
+                order: 1;
+            }
+            .podium-place.second {
+                order: 2;
+            }
+            .podium-place.third {
+                order: 3;
+            }
+            .leaderboard-header,
+            .leaderboard-row {
+                grid-template-columns: 40px 1fr 70px;
+            }
+            .leaderboard-header > *:nth-child(n+4),
+            .leaderboard-row > *:nth-child(n+4) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top 3 Podium -->
+    <div class="podium">
+        <!-- 2nd Place -->
+        <div class="podium-place second">
+            <div class="podium-rank">2</div>
+            <div class="podium-avatar">JR</div>
+            <div class="podium-name">Jake Rodriguez</div>
+            <div class="podium-score">9.4</div>
+            <div class="podium-label">Overall Score</div>
+            <div class="podium-stats">
+                <div class="podium-stat">
+                    <div class="podium-stat-value">1.6d</div>
+                    <div class="podium-stat-label">Turnaround</div>
+                </div>
+                <div class="podium-stat">
+                    <div class="podium-stat-value">0.2</div>
+                    <div class="podium-stat-label">Revisions</div>
+                </div>
+                <div class="podium-stat">
+                    <div class="podium-stat-value">$2,890</div>
+                    <div class="podium-stat-label">Payout</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1st Place -->
+        <div class="podium-place first">
+            <div class="podium-rank">1</div>
+            <div class="podium-avatar">SK</div>
+            <div class="podium-name">Sarah Kim</div>
+            <div class="podium-score">9.7</div>
+            <div class="podium-label">Overall Score</div>
+            <div class="podium-stats">
+                <div class="podium-stat">
+                    <div class="podium-stat-value">1.2d</div>
+                    <div class="podium-stat-label">Turnaround</div>
+                </div>
+                <div class="podium-stat">
+                    <div class="podium-stat-value">0.1</div>
+                    <div class="podium-stat-label">Revisions</div>
+                </div>
+                <div class="podium-stat">
+                    <div class="podium-stat-value">$3,240</div>
+                    <div class="podium-stat-label">Payout</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3rd Place -->
+        <div class="podium-place third">
+            <div class="podium-rank">3</div>
+            <div class="podium-avatar">ME</div>
+            <div class="podium-name">Mike Edwards</div>
+            <div class="podium-score">9.2</div>
+            <div class="podium-label">Overall Score</div>
+            <div class="podium-stats">
+                <div class="podium-stat">
+                    <div class="podium-stat-value">1.8d</div>
+                    <div class="podium-stat-label">Turnaround</div>
+                </div>
+                <div class="podium-stat">
+                    <div class="podium-stat-value">0.3</div>
+                    <div class="podium-stat-label">Revisions</div>
+                </div>
+                <div class="podium-stat">
+                    <div class="podium-stat-value">$2,450</div>
+                    <div class="podium-stat-label">Payout</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Rankings -->
+    <div class="leaderboard-section">
+        <div class="section-header">
+            <h3 class="section-title">Full Rankings</h3>
+            <select class="period-select">
+                <option>December 2024</option>
+                <option>November 2024</option>
+                <option>October 2024</option>
+                <option>All Time</option>
+            </select>
+        </div>
+
+        <div class="leaderboard-table">
+            <div class="leaderboard-header">
+                <span>Rank</span>
+                <span>Editor</span>
+                <span>Score</span>
+                <span>Turnaround</span>
+                <span>Revisions</span>
+                <span>Late</span>
+                <span>Payout</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank top3">1</span>
+                <div class="row-editor">
+                    <div class="row-avatar">SK</div>
+                    <div>
+                        <div class="row-name">Sarah Kim</div>
+                        <div class="row-clients">12 clients</div>
+                    </div>
+                </div>
+                <span class="row-score excellent">9.7</span>
+                <span class="row-stat good">1.2d</span>
+                <span class="row-stat good">0.1</span>
+                <span class="row-stat good">0</span>
+                <span class="row-payout">$3,240</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank top3">2</span>
+                <div class="row-editor">
+                    <div class="row-avatar">JR</div>
+                    <div>
+                        <div class="row-name">Jake Rodriguez</div>
+                        <div class="row-clients">10 clients</div>
+                    </div>
+                </div>
+                <span class="row-score excellent">9.4</span>
+                <span class="row-stat good">1.6d</span>
+                <span class="row-stat good">0.2</span>
+                <span class="row-stat good">0</span>
+                <span class="row-payout">$2,890</span>
+            </div>
+
+            <div class="leaderboard-row you">
+                <span class="row-rank top3">3</span>
+                <div class="row-editor">
+                    <div class="row-avatar">ME</div>
+                    <div>
+                        <div class="row-name">Mike Edwards <span class="you-badge">You</span></div>
+                        <div class="row-clients">8 clients</div>
+                    </div>
+                </div>
+                <span class="row-score excellent">9.2</span>
+                <span class="row-stat good">1.8d</span>
+                <span class="row-stat good">0.3</span>
+                <span class="row-stat good">0</span>
+                <span class="row-payout">$2,450</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank">4</span>
+                <div class="row-editor">
+                    <div class="row-avatar">AL</div>
+                    <div>
+                        <div class="row-name">Alex Lee</div>
+                        <div class="row-clients">9 clients</div>
+                    </div>
+                </div>
+                <span class="row-score good">8.9</span>
+                <span class="row-stat good">2.0d</span>
+                <span class="row-stat good">0.4</span>
+                <span class="row-stat good">1</span>
+                <span class="row-payout">$2,310</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank">5</span>
+                <div class="row-editor">
+                    <div class="row-avatar">TC</div>
+                    <div>
+                        <div class="row-name">Taylor Chen</div>
+                        <div class="row-clients">7 clients</div>
+                    </div>
+                </div>
+                <span class="row-score good">8.7</span>
+                <span class="row-stat good">1.9d</span>
+                <span class="row-stat warning">0.6</span>
+                <span class="row-stat good">0</span>
+                <span class="row-payout">$2,180</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank">6</span>
+                <div class="row-editor">
+                    <div class="row-avatar">JP</div>
+                    <div>
+                        <div class="row-name">Jordan Park</div>
+                        <div class="row-clients">6 clients</div>
+                    </div>
+                </div>
+                <span class="row-score good">8.5</span>
+                <span class="row-stat warning">2.4d</span>
+                <span class="row-stat good">0.3</span>
+                <span class="row-stat warning">2</span>
+                <span class="row-payout">$1,920</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank">7</span>
+                <div class="row-editor">
+                    <div class="row-avatar">RN</div>
+                    <div>
+                        <div class="row-name">Riley Nguyen</div>
+                        <div class="row-clients">5 clients</div>
+                    </div>
+                </div>
+                <span class="row-score good">8.3</span>
+                <span class="row-stat good">1.7d</span>
+                <span class="row-stat warning">0.8</span>
+                <span class="row-stat good">1</span>
+                <span class="row-payout">$1,640</span>
+            </div>
+
+            <div class="leaderboard-row">
+                <span class="row-rank">8</span>
+                <div class="row-editor">
+                    <div class="row-avatar">CM</div>
+                    <div>
+                        <div class="row-name">Casey Martinez</div>
+                        <div class="row-clients">4 clients</div>
+                    </div>
+                </div>
+                <span class="row-score warning">7.8</span>
+                <span class="row-stat warning">2.8d</span>
+                <span class="row-stat bad">1.2</span>
+                <span class="row-stat bad">3</span>
+                <span class="row-payout">$1,280</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

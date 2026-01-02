@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pipeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+
+            /* Subscription Tier Colors */
+            --tier-trial: #6366f1;
+            --tier-basic: #3b82f6;
+            --tier-silver: #94a3b8;
+            --tier-gold: #f59e0b;
+            --tier-pro: #a855f7;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Priority Header */
+        .priority-header {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .priority-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .priority-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .priority-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .priority-card.overdue::before { background: var(--red); }
+        .priority-card.today::before { background: var(--orange); }
+        .priority-card.tomorrow::before { background: var(--accent); }
+        .priority-card.week::before { background: var(--green); }
+
+        .priority-card.overdue { border-color: rgba(239, 68, 68, 0.3); }
+
+        .priority-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .priority-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .priority-card.overdue .priority-value { color: var(--red); }
+        .priority-card.today .priority-value { color: var(--orange); }
+        .priority-card.tomorrow .priority-value { color: var(--accent); }
+        .priority-card.week .priority-value { color: var(--green); }
+
+        .priority-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Tier Legend */
+        .tier-legend {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: var(--dark-card);
+            border-radius: 10px;
+            border: 1px solid var(--dark-border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.trial { background: var(--tier-trial); }
+        .legend-dot.basic { background: var(--tier-basic); }
+        .legend-dot.silver { background: var(--tier-silver); }
+        .legend-dot.gold { background: var(--tier-gold); }
+        .legend-dot.pro { background: var(--tier-pro); }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+        }
+
+        .column {
+            flex: 0 0 300px;
+            background: var(--dark-card);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 280px);
+        }
+
+        .column-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .column-title {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-title .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .column.queue .dot { background: var(--text-muted); }
+        .column.progress .dot { background: var(--accent); }
+        .column.review .dot { background: var(--cyan); }
+        .column.revision .dot { background: var(--orange); }
+        .column.completed .dot { background: var(--green); }
+
+        .column-count {
+            background: var(--dark-surface);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .column-cards {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .column-cards::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .column-cards::-webkit-scrollbar-thumb {
+            background: var(--dark-border);
+            border-radius: 2px;
+        }
+
+        /* Project Card */
+        .project-card {
+            background: var(--dark-surface);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Tier Border Colors */
+        .project-card.tier-trial { border-color: var(--tier-trial); }
+        .project-card.tier-basic { border-color: var(--tier-basic); }
+        .project-card.tier-silver { border-color: var(--tier-silver); }
+        .project-card.tier-gold { border-color: var(--tier-gold); }
+        .project-card.tier-pro { border-color: var(--tier-pro); }
+
+        /* Urgency Indicators */
+        .project-card.overdue {
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .project-card.overdue::before {
+            content: '🔥';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 16px;
+        }
+
+        .project-card.due-today {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .project-card.due-today::before {
+            content: '⚡';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 16px;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .tier-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tier-badge.trial { background: rgba(99, 102, 241, 0.2); color: var(--tier-trial); }
+        .tier-badge.basic { background: rgba(59, 130, 246, 0.2); color: var(--tier-basic); }
+        .tier-badge.silver { background: rgba(148, 163, 184, 0.2); color: var(--tier-silver); }
+        .tier-badge.gold { background: rgba(245, 158, 11, 0.2); color: var(--tier-gold); }
+        .tier-badge.pro { background: rgba(168, 85, 247, 0.2); color: var(--tier-pro); }
+
+        .type-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .type-badge.short { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .type-badge.long { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
+
+        .project-client {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .project-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .meta-row svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .meta-row.overdue {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .meta-row.today {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .meta-row.approved {
+            color: var(--green);
+        }
+
+        .due-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .due-badge.overdue { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        .due-badge.today { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .due-badge.tomorrow { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .due-badge.soon { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+
+        .revision-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+            margin-left: 8px;
+        }
+
+        .quality-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .empty-state svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           EDITOR FILTER SYSTEM
+           ============================================ */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 14px 20px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .editor-filter-dropdown {
+            position: relative;
+        }
+
+        .editor-filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: var(--dark-surface);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            color: var(--text-white);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .editor-filter-btn:hover {
+            border-color: var(--accent);
+            background: var(--dark-bg);
+        }
+
+        .editor-filter-btn.active {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .editor-filter-btn svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .editor-filter-btn .chevron {
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+
+        .editor-filter-dropdown.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .editor-avatar-small {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .editor-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 240px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 8px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .editor-filter-dropdown.open .editor-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .editor-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .editor-dropdown-item:hover {
+            background: var(--dark-surface);
+        }
+
+        .editor-dropdown-item.selected {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .editor-dropdown-item .editor-info {
+            flex: 1;
+        }
+
+        .editor-dropdown-item .editor-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .editor-dropdown-item .editor-stats {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .editor-dropdown-item .check-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--accent);
+            opacity: 0;
+        }
+
+        .editor-dropdown-item.selected .check-icon {
+            opacity: 1;
+        }
+
+        /* Quick Filter Buttons */
+        .quick-filters {
+            display: flex;
+            gap: 8px;
+        }
+
+        .quick-filter-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-filter-btn:hover {
+            border-color: var(--text-muted);
+            color: var(--text-light);
+        }
+
+        .quick-filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Projects filtered out animation */
+        .project-card.filtered-out {
+            display: none;
+        }
+
+        .project-card.highlight {
+            animation: highlightCard 1s ease-out;
+        }
+
+        @keyframes highlightCard {
+            0% { box-shadow: 0 0 0 2px var(--accent); }
+            100% { box-shadow: none; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .priority-header {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .priority-header {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .column {
+                flex: 0 0 280px;
+            }
+
+            .tier-legend {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Priority Header -->
+    <div class="priority-header">
+        <div class="priority-card overdue">
+            <div class="priority-icon">🔥</div>
+            <div class="priority-value">1</div>
+            <div class="priority-label">Overdue</div>
+        </div>
+        <div class="priority-card today">
+            <div class="priority-icon">⚡</div>
+            <div class="priority-value">2</div>
+            <div class="priority-label">Due Today</div>
+        </div>
+        <div class="priority-card tomorrow">
+            <div class="priority-icon">📌</div>
+            <div class="priority-value">3</div>
+            <div class="priority-label">Due Tomorrow</div>
+        </div>
+        <div class="priority-card week">
+            <div class="priority-icon">📋</div>
+            <div class="priority-value">5</div>
+            <div class="priority-label">This Week</div>
+        </div>
+    </div>
+
+    <!-- Tier Legend -->
+    <div class="tier-legend">
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; margin-right: 8px;">Client Tiers:</span>
+        <div class="legend-item"><span class="legend-dot trial"></span> Trial</div>
+        <div class="legend-item"><span class="legend-dot basic"></span> Basic</div>
+        <div class="legend-item"><span class="legend-dot silver"></span> Silver</div>
+        <div class="legend-item"><span class="legend-dot gold"></span> Gold</div>
+        <div class="legend-item"><span class="legend-dot pro"></span> Pro</div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-section">
+            <span class="filter-label">Filter by Editor:</span>
+            <div class="editor-filter-dropdown" id="editorFilterDropdown">
+                <button class="editor-filter-btn" id="editorFilterBtn" onclick="toggleEditorDropdown()">
+                    <div class="editor-avatar-small" id="selectedEditorAvatar">All</div>
+                    <span id="selectedEditorName">All Editors</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </button>
+                <div class="editor-dropdown-menu" id="editorDropdownMenu">
+                    <div class="editor-dropdown-item selected" data-editor="all" onclick="selectEditor('all', 'All Editors', 'All')">
+                        <div class="editor-avatar-small">All</div>
+                        <div class="editor-info">
+                            <div class="editor-name">All Editors</div>
+                            <div class="editor-stats">11 projects total</div>
+                        </div>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="editor-dropdown-item" data-editor="me" onclick="selectEditor('me', 'My Projects', 'Me')">
+                        <div class="editor-avatar-small" style="background: linear-gradient(135deg, var(--green), #059669);">Me</div>
+                        <div class="editor-info">
+                            <div class="editor-name">My Projects</div>
+                            <div class="editor-stats">Assigned to you</div>
+                        </div>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="editor-dropdown-item" data-editor="editor1@contentbug.io" onclick="selectEditor('editor1@contentbug.io', 'Alex Thompson', 'AT')">
+                        <div class="editor-avatar-small" style="background: linear-gradient(135deg, #f59e0b, #d97706);">AT</div>
+                        <div class="editor-info">
+                            <div class="editor-name">Alex Thompson</div>
+                            <div class="editor-stats">4 projects</div>
+                        </div>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="editor-dropdown-item" data-editor="editor2@contentbug.io" onclick="selectEditor('editor2@contentbug.io', 'Jordan Lee', 'JL')">
+                        <div class="editor-avatar-small" style="background: linear-gradient(135deg, #a855f7, #7c3aed);">JL</div>
+                        <div class="editor-info">
+                            <div class="editor-name">Jordan Lee</div>
+                            <div class="editor-stats">3 projects</div>
+                        </div>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="editor-dropdown-item" data-editor="editor3@contentbug.io" onclick="selectEditor('editor3@contentbug.io', 'Casey Morgan', 'CM')">
+                        <div class="editor-avatar-small" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">CM</div>
+                        <div class="editor-info">
+                            <div class="editor-name">Casey Morgan</div>
+                            <div class="editor-stats">4 projects</div>
+                        </div>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-filters">
+            <button class="quick-filter-btn active" onclick="setStatusFilter('all')">All</button>
+            <button class="quick-filter-btn" onclick="setStatusFilter('revisions')">Revisions</button>
+            <button class="quick-filter-btn" onclick="setStatusFilter('overdue')">Overdue</button>
+            <button class="quick-filter-btn" onclick="setStatusFilter('shorts')">Shorts</button>
+            <button class="quick-filter-btn" onclick="setStatusFilter('longform')">Long-Form</button>
+        </div>
+    </div>
+
+    <!-- Pipeline -->
+    <div class="pipeline">
+        <!-- Queue -->
+        <div class="column queue">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Queue
+                </span>
+                <span class="column-count">2</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card tier-gold">
+                    <div class="card-top">
+                        <span class="tier-badge gold">Gold</span>
+                        <span class="type-badge short">Short</span>
+                    </div>
+                    <div class="project-client">@styleco • Style Co.</div>
+                    <div class="project-title">TikTok Ad - Holiday Sale</div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Due: Dec 30
+                        </div>
+                    </div>
+                    <span class="due-badge soon">Due in 3 days</span>
+                </div>
+
+                <div class="project-card tier-pro">
+                    <div class="card-top">
+                        <span class="tier-badge pro">Pro</span>
+                        <span class="type-badge long">Long</span>
+                    </div>
+                    <div class="project-client">@startupinc • Startup Inc.</div>
+                    <div class="project-title">Q4 Product Launch Video</div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Due: Jan 2
+                        </div>
+                    </div>
+                    <span class="due-badge soon">Due in 6 days</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="column progress">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    In Progress
+                </span>
+                <span class="column-count">2</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card tier-silver due-today">
+                    <div class="card-top">
+                        <span class="tier-badge silver">Silver</span>
+                        <span class="type-badge short">Short</span>
+                    </div>
+                    <div class="project-client">@sarahjohnson • Sarah Johnson</div>
+                    <div class="project-title">Instagram Reel - Tips Series</div>
+                    <div class="project-meta">
+                        <div class="meta-row today">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Due TODAY by 5 PM
+                        </div>
+                    </div>
+                    <span class="due-badge today">⚡ Due Today</span>
+                </div>
+
+                <div class="project-card tier-gold">
+                    <div class="card-top">
+                        <span class="tier-badge gold">Gold</span>
+                        <span class="type-badge long">Long</span>
+                    </div>
+                    <div class="project-client">@beautywellness • Beauty Wellness</div>
+                    <div class="project-title">Product Review - Skincare Line</div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Due: Dec 31
+                        </div>
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            50% complete
+                        </div>
+                    </div>
+                    <span class="due-badge tomorrow">Due Tomorrow</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Review -->
+        <div class="column review">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Client Review
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card tier-basic">
+                    <div class="card-top">
+                        <span class="tier-badge basic">Basic</span>
+                        <span class="type-badge long">Long</span>
+                    </div>
+                    <div class="project-client">@techacademy • Tech Academy</div>
+                    <div class="project-title">YouTube Tutorial - Setup Guide</div>
+                    <div class="project-meta">
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            Delivered Dec 26
+                        </div>
+                        <div class="meta-row" style="color: var(--orange);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            Awaiting feedback (2 days)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revisions -->
+        <div class="column revision">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Revisions
+                </span>
+                <span class="column-count">1</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card tier-pro overdue">
+                    <div class="card-top">
+                        <span class="tier-badge pro">Pro</span>
+                        <span class="type-badge short">Short</span>
+                    </div>
+                    <div class="project-client">@fitnesscoachpro • Fitness Coach Pro</div>
+                    <div class="project-title">
+                        Workout Series Intro
+                        <span class="revision-badge">2 revisions</span>
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-row overdue">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            OVERDUE - Was due Dec 26
+                        </div>
+                        <div class="meta-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Color grading, pacing
+                        </div>
+                    </div>
+                    <span class="due-badge overdue">🔥 2 days overdue</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="column completed">
+            <div class="column-header">
+                <span class="column-title">
+                    <span class="dot"></span>
+                    Completed
+                </span>
+                <span class="column-count">3</span>
+            </div>
+            <div class="column-cards">
+                <div class="project-card tier-gold">
+                    <div class="card-top">
+                        <span class="tier-badge gold">Gold</span>
+                        <span class="type-badge long">Long</span>
+                    </div>
+                    <div class="project-client">@mikeskitchen • Mike's Kitchen</div>
+                    <div class="project-title">Recipe Video - Holiday Cookies</div>
+                    <div class="project-meta">
+                        <div class="meta-row approved">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Approved Dec 27
+                        </div>
+                    </div>
+                    <span class="quality-badge">⭐ 9/10</span>
+                </div>
+
+                <div class="project-card tier-pro">
+                    <div class="card-top">
+                        <span class="tier-badge pro">Pro</span>
+                        <span class="type-badge long">Long</span>
+                    </div>
+                    <div class="project-client">@realestate • Real Estate Maven</div>
+                    <div class="project-title">Property Tour - Luxury Condo</div>
+                    <div class="project-meta">
+                        <div class="meta-row approved">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Approved Dec 25
+                        </div>
+                    </div>
+                    <span class="quality-badge">⭐ 10/10</span>
+                </div>
+
+                <div class="project-card tier-silver">
+                    <div class="card-top">
+                        <span class="tier-badge silver">Silver</span>
+                        <span class="type-badge short">Short</span>
+                    </div>
+                    <div class="project-client">@sarahjohnson • Sarah Johnson</div>
+                    <div class="project-title">Instagram Reel - Morning Routine</div>
+                    <div class="project-meta">
+                        <div class="meta-row approved">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Approved Dec 24
+                        </div>
+                    </div>
+                    <span class="quality-badge">⭐ 9/10</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Click handlers for priority cards
+        document.querySelectorAll('.priority-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const type = card.classList[1]; // overdue, today, tomorrow, week
+                console.log('Filter by:', type);
+                // Highlight matching project cards
+                document.querySelectorAll('.project-card').forEach(project => {
+                    if (type === 'overdue' && project.classList.contains('overdue')) {
+                        project.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.3)';
+                    } else if (type === 'today' && project.classList.contains('due-today')) {
+                        project.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.3)';
+                    } else {
+                        project.style.boxShadow = '';
+                    }
+                });
+            });
+        });
+
+        // Project card click
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.project-title').textContent.trim();
+                console.log('Open project:', title);
+                // Would open project details
+            });
+        });
+
+        // ============================================
+        // EDITOR FILTER SYSTEM
+        // ============================================
+        let currentEditorFilter = 'all';
+        let currentStatusFilter = 'all';
+        const currentUserEmail = localStorage.getItem('cb_email') || '';
+
+        function toggleEditorDropdown() {
+            const dropdown = document.getElementById('editorFilterDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('editorFilterDropdown');
+            if (!e.target.closest('.editor-filter-dropdown')) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        function selectEditor(editorEmail, editorName, initials) {
+            currentEditorFilter = editorEmail;
+
+            // Update button display
+            document.getElementById('selectedEditorName').textContent = editorName;
+            document.getElementById('selectedEditorAvatar').textContent = initials;
+
+            // Update selected state in dropdown
+            document.querySelectorAll('.editor-dropdown-item').forEach(item => {
+                item.classList.toggle('selected', item.dataset.editor === editorEmail);
+            });
+
+            // Close dropdown
+            document.getElementById('editorFilterDropdown').classList.remove('open');
+
+            // Update button active state
+            document.getElementById('editorFilterBtn').classList.toggle('active', editorEmail !== 'all');
+
+            // Apply filter
+            applyFilters();
+        }
+
+        function setStatusFilter(status) {
+            currentStatusFilter = status;
+
+            // Update button states
+            document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase().replace('-', '') === status || (status === 'all' && btn.textContent === 'All'));
+            });
+
+            // Apply filter
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const projectCards = document.querySelectorAll('.project-card');
+
+            projectCards.forEach(card => {
+                let showCard = true;
+
+                // Editor filter
+                if (currentEditorFilter !== 'all') {
+                    const cardEditor = card.dataset.editor || '';
+
+                    if (currentEditorFilter === 'me') {
+                        showCard = cardEditor === currentUserEmail || cardEditor === '';
+                    } else {
+                        showCard = cardEditor === currentEditorFilter;
+                    }
+                }
+
+                // Status filter
+                if (showCard && currentStatusFilter !== 'all') {
+                    switch (currentStatusFilter) {
+                        case 'revisions':
+                            showCard = card.closest('.column')?.classList.contains('revision');
+                            break;
+                        case 'overdue':
+                            showCard = card.classList.contains('overdue');
+                            break;
+                        case 'shorts':
+                            showCard = card.querySelector('.type-badge')?.textContent === 'Short';
+                            break;
+                        case 'longform':
+                            showCard = card.querySelector('.type-badge')?.textContent === 'Long';
+                            break;
+                    }
+                }
+
+                // Apply filter
+                if (showCard) {
+                    card.classList.remove('filtered-out');
+                    card.classList.add('highlight');
+                    setTimeout(() => card.classList.remove('highlight'), 1000);
+                } else {
+                    card.classList.add('filtered-out');
+                }
+            });
+
+            // Update column counts
+            updateColumnCounts();
+        }
+
+        function updateColumnCounts() {
+            document.querySelectorAll('.column').forEach(column => {
+                const visibleCards = column.querySelectorAll('.project-card:not(.filtered-out)').length;
+                const countEl = column.querySelector('.column-count');
+                if (countEl) {
+                    countEl.textContent = visibleCards;
+                }
+            });
+        }
+
+        // Check if we should auto-filter to current user's projects
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = localStorage.getItem('cb_role') || 'editor';
+
+            // Editors see their own projects by default
+            if (role === 'editor' && currentUserEmail) {
+                selectEditor('me', 'My Projects', 'Me');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Blue Spectrum */
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            /* Dark Theme */
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            /* Text */
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            /* Accent */
+            --accent: #3b82f6;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-white);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .stat-icon.green { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .stat-icon.purple { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-change.up { color: var(--green); }
+        .stat-change.down { color: var(--red); }
+
+        .stat-change svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .section-link {
+            font-size: 13px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .section-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Project List */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .project-item {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: border-color 0.15s;
+        }
+
+        .project-item:hover {
+            border-color: var(--accent);
+        }
+
+        .project-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .project-status.progress { background: var(--accent); }
+        .project-status.review { background: var(--orange); }
+        .project-status.queue { background: var(--text-muted); }
+        .project-status.revision { background: var(--red); }
+
+        .project-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .project-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .project-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 12px;
+        }
+
+        .project-type {
+            padding: 4px 8px;
+            background: var(--dark-surface);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .project-type.short { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+        .project-type.long { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+
+        /* Performance Grid */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .perf-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .perf-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .perf-value.good { color: var(--green); }
+        .perf-value.warning { color: var(--orange); }
+        .perf-value.bad { color: var(--red); }
+
+        .perf-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .quick-btn:hover {
+            background: var(--dark-surface);
+            border-color: var(--accent);
+            color: var(--text-white);
+        }
+
+        .quick-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+            .quick-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="quick-btn" onclick="window.parent.loadPage('pipeline')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 3v18"/>
+            </svg>
+            View Pipeline
+        </button>
+        <button class="quick-btn" onclick="window.parent.loadPage('clients')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+            </svg>
+            My Clients
+        </button>
+        <button class="quick-btn" onclick="window.parent.loadPage('payouts')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            View Payouts
+        </button>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Active Projects</span>
+                <div class="stat-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M9 3v18"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">5</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                2 new this week
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Assigned Clients</span>
+                <div class="stat-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">8</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                1 new this month
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Projected Payout</span>
+                <div class="stat-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">$2,450</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                +$320 from last month
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <span class="stat-label">Completed This Month</span>
+                <div class="stat-icon orange">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-value">24</div>
+            <div class="stat-change up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                12% above average
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="section">
+        <div class="section-header">
+            <h3 class="section-title">Your Performance</h3>
+            <a class="section-link" onclick="window.parent.loadPage('leaderboard')">View Leaderboard</a>
+        </div>
+        <div class="performance-grid">
+            <div class="perf-card">
+                <div class="perf-value good">1.8</div>
+                <div class="perf-label">Avg. Turnaround (days)</div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-value good">0.3</div>
+                <div class="perf-label">Avg. Revisions</div>
+            </div>
+            <div class="perf-card">
+                <div class="perf-value good">9.2</div>
+                <div class="perf-label">Quality Score</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Projects -->
+    <div class="section">
+        <div class="section-header">
+            <h3 class="section-title">Active Projects</h3>
+            <a class="section-link" onclick="window.parent.loadPage('pipeline')">View All</a>
+        </div>
+        <div class="project-list">
+            <div class="project-item">
+                <div class="project-status progress"></div>
+                <div class="project-info">
+                    <div class="project-title">Instagram Reel - Tips Series</div>
+                    <div class="project-meta">
+                        <span>Sarah Johnson</span>
+                        <span>Due: Dec 29</span>
+                    </div>
+                </div>
+                <span class="project-type short">Short</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-status revision"></div>
+                <div class="project-info">
+                    <div class="project-title">YouTube Tutorial - Setup Guide</div>
+                    <div class="project-meta">
+                        <span>Tech Academy</span>
+                        <span>Revision requested</span>
+                    </div>
+                </div>
+                <span class="project-type long">Long</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-status queue"></div>
+                <div class="project-info">
+                    <div class="project-title">TikTok Ad - Holiday Sale</div>
+                    <div class="project-meta">
+                        <span>Style Co.</span>
+                        <span>Due: Dec 30</span>
+                    </div>
+                </div>
+                <span class="project-type short">Short</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-status queue"></div>
+                <div class="project-info">
+                    <div class="project-title">Q4 Product Launch Video</div>
+                    <div class="project-meta">
+                        <span>Startup Inc.</span>
+                        <span>Due: Jan 2</span>
+                    </div>
+                </div>
+                <span class="project-type long">Long</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
