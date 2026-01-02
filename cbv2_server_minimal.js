@@ -25,8 +25,8 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN;
 const GOOGLE_SERVICE_ACCOUNT_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 
-// Airtable Configuration
-const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY || 'patW8QGZbjGkib5kY.ee72a270de99dbeb731ff11ddfab6505b6612f988555e1b1f0cf77bf938c04e3';
+// Airtable Configuration - Token from Railway env vars (AIRTABLE_API_KEY)
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || 'appIrlFuwtsxj8hly';
 const AIRTABLE_API = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}`;
 
