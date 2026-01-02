@@ -1,0 +1,198 @@
+<!-- =====================================================
+     GHL EMAIL TEMPLATE: EDITOR ASSIGNED NOTIFICATION
+     Sent to editor when they're assigned a new project
+     Copy everything below into GHL HTML Block
+     ===================================================== -->
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #050508;">
+  <tr>
+    <td align="center" style="padding: 40px 16px;">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 520px;">
+
+        <!-- Logo -->
+        <tr>
+          <td align="center" style="padding-bottom: 32px;">
+            <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f19a634f4b0f21c170.png" alt="Content Bug" width="48" height="48" style="display: block; width: 48px; height: 48px;">
+          </td>
+        </tr>
+
+        <!-- Card -->
+        <tr>
+          <td style="background-color: #0a0a0f; border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 24px; padding: 32px;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+
+              <!-- Assignment Badge -->
+              <tr>
+                <td align="center" style="padding-bottom: 20px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 16px; border-radius: 20px;">
+                        🎯 New Assignment
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Header -->
+              <tr>
+                <td align="center" style="padding-bottom: 8px;">
+                  <p style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">You've Been Assigned!</p>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding-bottom: 24px;">
+                  <p style="margin: 0; font-size: 15px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">New project from {{contact.first_name}} {{contact.last_name}}</p>
+                </td>
+              </tr>
+
+              <!-- Project Info Card -->
+              <tr>
+                <td style="padding-bottom: 20px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: 12px; padding: 20px;">
+
+                        <p style="margin: 0 0 16px 0; font-size: 12px; font-weight: 600; color: #3b82f6; text-transform: uppercase; letter-spacing: 1px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">📁 Project Info</p>
+
+                        <!-- Project Name -->
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 10px;">
+                          <tr>
+                            <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Project</p></td>
+                            <td><p style="margin: 0; font-size: 14px; color: #ffffff; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.project_name}}</p></td>
+                          </tr>
+                        </table>
+
+                        <!-- Client -->
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 10px;">
+                          <tr>
+                            <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Client</p></td>
+                            <td><p style="margin: 0; font-size: 14px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.first_name}} {{contact.last_name}}</p></td>
+                          </tr>
+                        </table>
+
+                        <!-- Plan -->
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 10px;">
+                          <tr>
+                            <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Plan</p></td>
+                            <td><p style="margin: 0; font-size: 14px; color: #22c55e; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.plan_name}}</p></td>
+                          </tr>
+                        </table>
+
+                        <!-- Assigned Date -->
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                          <tr>
+                            <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Assigned</p></td>
+                            <td><p style="margin: 0; font-size: 14px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.project_assigned_date}}</p></td>
+                          </tr>
+                        </table>
+
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Client Notes -->
+              <tr>
+                <td style="padding-bottom: 20px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.15); border-radius: 12px; padding: 20px;">
+                        <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #eab308; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">📝 Client Notes & Instructions</p>
+                        <p style="margin: 0; font-size: 14px; color: #d1d5db; line-height: 1.6; font-style: italic; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          {{contact.project_notes}}
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Quick Actions -->
+              <tr>
+                <td style="padding-bottom: 20px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <!-- Download Footage -->
+                      <td style="width: 48%; padding-right: 8px;">
+                        <a href="{{contact.project_footage_url}}" target="_blank" style="display: block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 10px; padding: 14px 12px; font-size: 13px; font-weight: 600; color: #ffffff; text-decoration: none; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Download Footage
+                        </a>
+                      </td>
+                      <!-- View Style Blueprint -->
+                      <td style="width: 48%; padding-left: 8px;">
+                        <a href="{{contact.style_blueprint_url}}" target="_blank" style="display: block; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 10px; padding: 14px 12px; font-size: 13px; font-weight: 600; color: #ffffff; text-decoration: none; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Style Blueprint
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Open Portal Button -->
+              <tr>
+                <td style="padding-bottom: 20px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td align="center">
+                        <a href="{{custom_values.portal_login_v2}}" target="_blank" style="display: block; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 12px; padding: 16px 32px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                          Open Editor Portal →
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Turnaround & Priority -->
+              <tr>
+                <td style="padding-bottom: 20px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td style="background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 16px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                          <tr>
+                            <td style="width: 50%; padding-right: 10px; border-right: 1px solid rgba(255,255,255,0.08);">
+                              <p style="margin: 0 0 4px 0; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Target Delivery</p>
+                              <p style="margin: 0; font-size: 14px; color: #f87171; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.project_due_date}}</p>
+                            </td>
+                            <td style="width: 50%; padding-left: 10px;">
+                              <p style="margin: 0 0 4px 0; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Priority</p>
+                              <p style="margin: 0; font-size: 14px; color: #fbbf24; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.project_priority}}</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Reminder -->
+              <tr>
+                <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px;">
+                  <p style="margin: 0; font-size: 13px; color: #94a3b8; text-align: center; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    Review the style blueprint before starting. Message the client in portal if you need clarification.
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td align="center" style="padding-top: 24px;">
+            <p style="margin: 0; font-size: 11px; color: #374151; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              Editor notification • Content Bug CRM
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
