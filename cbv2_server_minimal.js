@@ -911,7 +911,7 @@ app.post('/project/update', async (req, res) => {
 
     const formattedMessage = updateMessages[update_type] || message || `Update for ${project_name || 'your project'}`;
 
-    // Create the system message
+    // Create the system message (same fields as regular chat messages)
     const messageId = `msg_${generateId()}`;
     const newMessage = await airtableCreate(AT_TABLES.messages, {
       message_id: messageId,
@@ -921,13 +921,7 @@ app.post('/project/update', async (req, res) => {
       sender_role: 'system',
       content: formattedMessage,
       is_system: true,
-      created_at: new Date().toISOString(),
-      metadata: JSON.stringify({
-        update_type,
-        project_id,
-        project_name,
-        ...metadata
-      })
+      created_at: new Date().toISOString()
     });
 
     // Increment unread count for client
@@ -983,8 +977,7 @@ app.get('/project/updates/:client_email', async (req, res) => {
       id: msg.id,
       message_id: msg.fields.message_id,
       content: msg.fields.content,
-      created_at: msg.fields.created_at,
-      metadata: msg.fields.metadata ? JSON.parse(msg.fields.metadata) : {}
+      created_at: msg.fields.created_at
     }));
 
     // Sort by created_at desc (newest first)
