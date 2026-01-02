@@ -519,8 +519,14 @@ app.get('/chat/channels/:user_email', async (req, res) => {
     const channels = await airtableGet(AT_TABLES.channels, filter);
 
     // Check if chat and updates channels exist
-    const hasChatChannel = channels.some(ch => ch.fields.type === 'client' || !ch.fields.type);
-    const hasUpdatesChannel = channels.some(ch => ch.fields.type === 'project_updates');
+    const hasChatChannel = channels.some(ch =>
+      (ch.fields.type === 'client' || !ch.fields.type) &&
+      (!ch.fields.channel_id || !ch.fields.channel_id.startsWith('pu_'))
+    );
+    const hasUpdatesChannel = channels.some(ch =>
+      ch.fields.type === 'project_updates' ||
+      (ch.fields.channel_id && ch.fields.channel_id.startsWith('pu_'))
+    );
 
     // Try to get client name from GHL if we need to create channels
     let clientName = userEmail.split('@')[0];
@@ -586,15 +592,22 @@ app.get('/chat/channels/:user_email', async (req, res) => {
     }
 
     // Combine existing and new channels
-    const existingFormatted = channels.map(ch => ({
-      id: ch.id,
-      channel_id: ch.fields.channel_id,
-      type: ch.fields.type || 'client',
-      name: ch.fields.name,
-      client_email: ch.fields.client_email,
-      client_tier: ch.fields.client_tier || 'trial',
-      unread_client: ch.fields.unread_client || 0
-    }));
+    const existingFormatted = channels.map(ch => {
+      // Determine type from field or channel_id prefix
+      let channelType = ch.fields.type || 'client';
+      if (ch.fields.channel_id && ch.fields.channel_id.startsWith('pu_')) {
+        channelType = 'project_updates';
+      }
+      return {
+        id: ch.id,
+        channel_id: ch.fields.channel_id,
+        type: channelType,
+        name: ch.fields.name,
+        client_email: ch.fields.client_email,
+        client_tier: ch.fields.client_tier || 'trial',
+        unread_client: ch.fields.unread_client || 0
+      };
+    });
 
     const allChannels = [...existingFormatted, ...createdChannels];
 
@@ -943,15 +956,21 @@ app.get('/project/updates/:client_email', async (req, res) => {
   try {
     const userEmail = req.params.client_email.toLowerCase().trim();
 
-    // Find the project_updates channel
-    const filter = `AND({client_email} = "${userEmail}", {type} = "project_updates")`;
-    const channels = await airtableGet(AT_TABLES.channels, filter);
+    // Find the project_updates channel - look for type="project_updates" OR channel_id starting with "pu_"
+    const filter = `{client_email} = "${userEmail}"`;
+    const allChannels = await airtableGet(AT_TABLES.channels, filter);
 
-    if (channels.length === 0) {
+    // Find the updates channel (type=project_updates or channel_id starts with pu_)
+    const updatesChannel = allChannels.find(ch =>
+      ch.fields.type === 'project_updates' ||
+      (ch.fields.channel_id && ch.fields.channel_id.startsWith('pu_'))
+    );
+
+    if (!updatesChannel) {
       return res.json({ success: true, updates: [], channel_id: null });
     }
 
-    const channelId = channels[0].fields.channel_id;
+    const channelId = updatesChannel.fields.channel_id;
 
     // Get messages from this channel
     const messages = await airtableGet(AT_TABLES.messages, `{channel_id} = "${channelId}"`, 100);
@@ -971,7 +990,7 @@ app.get('/project/updates/:client_email', async (req, res) => {
       success: true,
       channel_id: channelId,
       updates,
-      unread: channels[0].fields.unread_client || 0
+      unread: updatesChannel.fields.unread_client || 0
     });
 
   } catch (err) {
