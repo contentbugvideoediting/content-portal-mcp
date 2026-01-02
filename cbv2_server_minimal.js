@@ -911,18 +911,20 @@ app.post('/project/update', async (req, res) => {
 
     const formattedMessage = updateMessages[update_type] || message || `Update for ${project_name || 'your project'}`;
 
-    // Create the system message (same fields as regular chat messages)
+    // Create the system message (use minimal fields that work)
     const messageId = `msg_${generateId()}`;
     const newMessage = await airtableCreate(AT_TABLES.messages, {
       message_id: messageId,
       channel_id: updatesChannelId,
       sender_email: 'system@contentbug.io',
       sender_name: 'Content Bug',
-      sender_role: 'system',
       content: formattedMessage,
-      is_system: true,
       created_at: new Date().toISOString()
     });
+
+    if (!newMessage) {
+      console.error('[Project Update] Failed to create message in Airtable');
+    }
 
     // Increment unread count for client
     const channelRecords = await airtableGet(AT_TABLES.channels, `{channel_id} = "${updatesChannelId}"`);
