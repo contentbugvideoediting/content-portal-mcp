@@ -1,13 +1,15 @@
 <!-- =====================================================
      GHL EMAIL TEMPLATE: LOGIN ATTEMPT - FAILED PAYMENT (NO ACCESS)
+     Dark crimson/red gradient
      Copy everything below into GHL HTML Block
      ===================================================== -->
 
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #050508;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: linear-gradient(180deg, #0a0508 0%, #100810 50%, #080508 100%); background-color: #0a0508;">
   <tr>
     <td align="center" style="padding: 40px 16px;">
-      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 480px;">
-        
+      <!-- Grid overlay effect -->
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 480px; background-image: linear-gradient(rgba(127, 29, 29, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(127, 29, 29, 0.03) 1px, transparent 1px); background-size: 24px 24px;">
+
         <!-- Logo -->
         <tr>
           <td align="center" style="padding-bottom: 32px;">
@@ -15,17 +17,17 @@
           </td>
         </tr>
 
-        <!-- Card -->
+        <!-- Card with dark crimson gradient -->
         <tr>
-          <td style="background-color: #0a0a0f; border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 24px; padding: 40px 32px;">
+          <td style="background: linear-gradient(165deg, rgba(20, 10, 15, 0.98) 0%, rgba(15, 8, 12, 0.99) 100%); background-color: #100a0e; border: 1px solid rgba(127, 29, 29, 0.3); border-radius: 24px; padding: 40px 32px; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 60px -15px rgba(127, 29, 29, 0.15);">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-              
-              <!-- Alert Badge -->
+
+              <!-- Alert Badge - Dark crimson -->
               <tr>
                 <td align="center" style="padding-bottom: 24px;">
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td style="background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 16px; border-radius: 20px;">
+                      <td style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%); color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 16px; border-radius: 20px; box-shadow: 0 4px 15px rgba(127, 29, 29, 0.4);">
                         Action Required
                       </td>
                     </tr>
@@ -45,12 +47,12 @@
                 </td>
               </tr>
 
-              <!-- Payment Details Box -->
+              <!-- Payment Details Box - Dark crimson -->
               <tr>
                 <td style="padding-bottom: 24px;">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td style="background-color: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 20px;">
+                      <td style="background: linear-gradient(135deg, rgba(127, 29, 29, 0.15) 0%, rgba(153, 27, 27, 0.1) 100%); border: 1px solid rgba(185, 28, 28, 0.25); border-radius: 12px; padding: 20px;">
                         <p style="margin: 0 0 16px 0; font-size: 12px; font-weight: 600; color: #f87171; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Failed Payment Details</p>
                         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                           <tr>
@@ -68,7 +70,7 @@
                               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
                                   <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Amount</p></td>
-                                  <td><p style="margin: 0; font-size: 13px; color: #ef4444; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_amount}}</p></td>
+                                  <td><p style="margin: 0; font-size: 13px; color: #f87171; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_amount}}</p></td>
                                 </tr>
                               </table>
                             </td>
@@ -78,7 +80,7 @@
                               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
                                   <td style="width: 100px;"><p style="margin: 0; font-size: 12px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Card</p></td>
-                                  <td><p style="margin: 0; font-size: 13px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_method}} •••• {{contact.card_last_four}}</p></td>
+                                  <td><p style="margin: 0; font-size: 13px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">{{contact.payment_method}} **** {{contact.card_last_four}}</p></td>
                                 </tr>
                               </table>
                             </td>
@@ -95,9 +97,9 @@
                 <td style="padding-bottom: 24px;">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td style="background-color: rgba(148, 163, 184, 0.08); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 12px; padding: 16px; text-align: center;">
+                      <td style="background-color: rgba(100, 100, 100, 0.08); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 12px; padding: 16px; text-align: center;">
                         <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                          🔒 Your portal access is <strong style="color: #f87171;">paused</strong> until payment is resolved. Update your payment method to restore access immediately.
+                          Your portal access is <strong style="color: #f87171;">paused</strong> until payment is resolved. Update your payment method to restore access immediately.
                         </p>
                       </td>
                     </tr>
@@ -105,14 +107,14 @@
                 </td>
               </tr>
 
-              <!-- CTA Button -->
+              <!-- CTA Button - Dark crimson -->
               <tr>
                 <td align="center" style="padding-bottom: 24px;">
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 12px;">
+                      <td style="background: linear-gradient(135deg, #991b1b 0%, #b91c1c 50%, #dc2626 100%); border-radius: 12px; box-shadow: 0 4px 15px rgba(153, 27, 27, 0.3);">
                         <a href="{{contact.stripe_billing_portal_url}}" target="_blank" style="display: inline-block; padding: 16px 32px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                          Update Payment Method →
+                          Update Payment Method
                         </a>
                       </td>
                     </tr>
@@ -122,7 +124,7 @@
 
               <!-- Divider -->
               <tr>
-                <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 24px;">
+                <td style="border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 24px;">
                   <p style="margin: 0; font-size: 12px; color: #475569; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                     Once updated, your portal access will be restored instantly.<br>Questions? Reply to this email.
                   </p>

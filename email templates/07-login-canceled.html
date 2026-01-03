@@ -1,13 +1,15 @@
 <!-- =====================================================
      GHL EMAIL TEMPLATE: LOGIN ATTEMPT - CANCELED (NO ACCESS)
+     Dark grey, dull with subtle white gradient
      Copy everything below into GHL HTML Block
      ===================================================== -->
 
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #050508;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: linear-gradient(180deg, #0a0a0c 0%, #121216 50%, #0a0a0c 100%); background-color: #0a0a0c;">
   <tr>
     <td align="center" style="padding: 40px 16px;">
-      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 480px;">
-        
+      <!-- Grid overlay effect - very subtle -->
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 480px; background-image: linear-gradient(rgba(100, 116, 139, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(100, 116, 139, 0.02) 1px, transparent 1px); background-size: 24px 24px;">
+
         <!-- Logo -->
         <tr>
           <td align="center" style="padding-bottom: 32px;">
@@ -15,15 +17,15 @@
           </td>
         </tr>
 
-        <!-- Card -->
+        <!-- Card with dark grey gradient -->
         <tr>
-          <td style="background-color: #0a0a0f; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 24px; padding: 40px 32px;">
+          <td style="background: linear-gradient(165deg, rgba(20, 20, 25, 0.98) 0%, rgba(15, 15, 18, 0.99) 100%); background-color: #14141a; border: 1px solid rgba(100, 116, 139, 0.15); border-radius: 24px; padding: 40px 32px; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
 
               <!-- Header -->
               <tr>
                 <td align="center" style="padding-bottom: 8px;">
-                  <p style="margin: 0; font-size: 28px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Hey {{contact.first_name}}!</p>
+                  <p style="margin: 0; font-size: 28px; font-weight: 800; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Hey {{contact.first_name}}!</p>
                 </td>
               </tr>
               <tr>
@@ -32,17 +34,17 @@
                 </td>
               </tr>
 
-              <!-- No Access Notice -->
+              <!-- No Access Notice - Dull grey -->
               <tr>
                 <td style="padding-bottom: 24px;">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td style="background-color: rgba(148, 163, 184, 0.08); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                      <td style="background: linear-gradient(135deg, rgba(71, 85, 105, 0.1) 0%, rgba(100, 116, 139, 0.05) 100%); border: 1px solid rgba(100, 116, 139, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
                         <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                          🔒 Subscription Ended
+                          Subscription Ended
                         </p>
                         <p style="margin: 0; font-size: 13px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                          Your subscription ended on <strong style="color: #ffffff;">{{contact.subscription_end_date}}</strong>
+                          Your subscription ended on <strong style="color: #cbd5e1;">{{contact.subscription_end_date}}</strong>
                         </p>
                       </td>
                     </tr>
@@ -50,17 +52,17 @@
                 </td>
               </tr>
 
-              <!-- Download Files -->
+              <!-- Download Files - Amber accent for urgency -->
               <tr>
                 <td style="padding-bottom: 24px;">
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
                       <td style="background-color: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 12px; padding: 16px; text-align: center;">
                         <p style="margin: 0 0 12px 0; font-size: 13px; color: #fbbf24; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                          <strong>📁 Your files are still available</strong><br>
+                          <strong>Your files are still available</strong><br>
                           <span style="color: #94a3b8; font-size: 12px;">Download your approved projects before they're removed (30 days from cancellation)</span>
                         </p>
-                        <a href="{{contact.projects_download_url}}" target="_blank" style="display: inline-block; background-color: rgba(234, 179, 8, 0.2); border: 1px solid #eab308; padding: 10px 20px; font-size: 12px; font-weight: 600; color: #fbbf24; text-decoration: none; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                        <a href="{{contact.projects_download_url}}" target="_blank" style="display: inline-block; background-color: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); padding: 10px 20px; font-size: 12px; font-weight: 600; color: #fbbf24; text-decoration: none; border-radius: 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                           Download My Projects
                         </a>
                       </td>
@@ -69,17 +71,17 @@
                 </td>
               </tr>
 
-              <!-- Resubscribe CTA -->
+              <!-- Resubscribe CTA - Blue to show path forward -->
               <tr>
                 <td align="center" style="padding-bottom: 24px;">
-                  <p style="margin: 0 0 16px 0; font-size: 14px; color: #d1d5db; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                  <p style="margin: 0 0 16px 0; font-size: 14px; color: #cbd5e1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                     Ready to jump back in?
                   </p>
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                     <tr>
-                      <td style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); border-radius: 12px;">
+                      <td style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%); border-radius: 12px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
                         <a href="{{custom_values.pricing}}" target="_blank" style="display: inline-block; padding: 16px 32px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                          View Plans & Resubscribe →
+                          View Plans & Resubscribe
                         </a>
                       </td>
                     </tr>
@@ -87,24 +89,24 @@
                 </td>
               </tr>
 
-              <!-- What You Get Back -->
+              <!-- What You Get Back - Subtle grey list -->
               <tr>
                 <td style="padding-bottom: 24px;">
                   <p style="margin: 0 0 12px 0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">When you resubscribe:</p>
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                     <tr>
                       <td style="padding: 6px 0;">
-                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">✓ Instant portal access restored</p>
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Instant portal access restored</p>
                       </td>
                     </tr>
                     <tr>
                       <td style="padding: 6px 0;">
-                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">✓ Your style blueprint is still saved</p>
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Your style blueprint is still saved</p>
                       </td>
                     </tr>
                     <tr>
                       <td style="padding: 6px 0;">
-                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">✓ Pick up right where you left off</p>
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Pick up right where you left off</p>
                       </td>
                     </tr>
                   </table>
@@ -113,7 +115,7 @@
 
               <!-- Divider -->
               <tr>
-                <td style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 24px;">
+                <td style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 24px;">
                   <p style="margin: 0; font-size: 12px; color: #475569; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
                     We'd love to have you back. Reply if you have any questions!
                   </p>
