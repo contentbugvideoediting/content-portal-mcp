@@ -1,8 +1,19 @@
 # GHL Custom Values Reference
+> All values are in the `contentbug` folder in GHL Custom Values
+
+## Business Info
+| Name | Merge Field | Value |
+|------|-------------|-------|
+| business name | `{{custom_values.business_name}}` | ContentBug |
+| business email | `{{custom_values.business_email}}` | contentbug@contentbug.io |
+| business phone | `{{custom_values.business_phone}}` | +1 385-200-7582 |
+| co-founders | `{{custom_values.cofounders}}` | Sean Conley & Stockton Walbeck |
+| mg email | `{{custom_values.mg_email}}` | team@mg.contentbug.io |
 
 ## Website Pages
 | Name | Merge Field | URL |
 |------|-------------|-----|
+| website | `{{custom_values.website}}` | https://contentbug.io |
 | home | `{{custom_values.home}}` | https://contentbug.io/home |
 | pricing | `{{custom_values.pricing}}` | https://contentbug.io/pricing |
 | edits | `{{custom_values.edits}}` | https://contentbug.io/edits |
@@ -19,8 +30,9 @@
 ## Portal
 | Name | Merge Field | URL |
 |------|-------------|-----|
+| portal login | `{{custom_values.portal_login}}` | https://portalv2.contentbug.io/login |
 | portal login v2 | `{{custom_values.portal_login_v2}}` | https://portalv2.contentbug.io/login |
-| v2 portal - contact pre-filled | `{{custom_values.v2_portal__contact_prefilled}}` | https://portalv2.contentbug.io?email={{contact.email}}&contact_id={{contact.id}}&first_name={{contact.first_name}} |
+| v2 portal - contact pre-filled | `{{custom_values.v2_portal__contact_prefilled}}` | https://cbv2.contentbug.io?email={{contact.email}}&contact_id={{contact.id}}&first_name={{contact.first_name}} |
 
 ## Calendars
 | Name | Merge Field | URL |
@@ -36,7 +48,6 @@
 |------|-------------|-----|
 | privacy policy | `{{custom_values.privacy_policy}}` | https://contentbug.io/privacy-policy |
 | terms of service | `{{custom_values.terms_of_service}}` | https://contentbug.io/terms-of-service |
-| website | `{{custom_values.website}}` | https://contentbug.io |
 
 ## Other
 | Name | Merge Field | Value |
@@ -44,7 +55,6 @@
 | loom message | `{{custom_values.loom_message}}` | https://shorturl.at/NRHZU |
 | emailrx_account_id | `{{custom_values.emailrx_account_id}}` | 10 |
 | emailrx_token | `{{custom_values.emailrx_token}}` | 3dc5df763237235594e2131dd091351f |
-| mgdomain | `{{custom_values.mgdomain}}` | *(empty)* |
 
 ## Contact Fields (for emails)
 | Field | Merge Field |

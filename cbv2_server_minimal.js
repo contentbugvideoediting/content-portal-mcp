@@ -1421,6 +1421,146 @@ app.post('/api/sync/now', async (req, res) => {
 });
 
 // ============================================
+// GHL EMAIL TEMPLATES API
+// ============================================
+
+/**
+ * GET /api/ghl/emails - List all email templates
+ */
+app.get('/api/ghl/emails', async (req, res) => {
+  try {
+    const r = await axios.get(
+      `https://services.leadconnectorhq.com/emails/templates?locationId=${GHL_LOCATION_ID}`,
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+    );
+    res.json({ success: true, templates: r.data.templates || r.data });
+  } catch (err) {
+    console.error('[GHL Emails]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/ghl/emails/:tid - Get single email template
+ */
+app.get('/api/ghl/emails/:tid', async (req, res) => {
+  try {
+    const r = await axios.get(
+      `https://services.leadconnectorhq.com/emails/templates/${req.params.tid}`,
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+    );
+    res.json({ success: true, template: r.data });
+  } catch (err) {
+    console.error('[GHL Email Get]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PUT /api/ghl/emails/:tid - Update email template HTML
+ */
+app.put('/api/ghl/emails/:tid', async (req, res) => {
+  try {
+    const { html, name, subject, preheader } = req.body;
+    const payload = {};
+    if (html) payload.html = html;
+    if (name) payload.name = name;
+    if (subject) payload.subject = subject;
+    if (preheader) payload.preheader = preheader;
+
+    const r = await axios.put(
+      `https://services.leadconnectorhq.com/emails/templates/${req.params.tid}`,
+      payload,
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+    );
+    res.json({ success: true, template: r.data });
+  } catch (err) {
+    console.error('[GHL Email Update]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/ghl/emails - Create new email template
+ */
+app.post('/api/ghl/emails', async (req, res) => {
+  try {
+    const { name, html, subject, preheader } = req.body;
+    if (!name || !html) {
+      return res.status(400).json({ error: 'name and html required' });
+    }
+
+    const r = await axios.post(
+      `https://services.leadconnectorhq.com/emails/templates`,
+      { locationId: GHL_LOCATION_ID, name, html, subject, preheader },
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+    );
+    res.json({ success: true, template: r.data });
+  } catch (err) {
+    console.error('[GHL Email Create]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
+// GHL FUNNELS API
+// ============================================
+
+/**
+ * GET /api/ghl/funnels - List all funnels
+ */
+app.get('/api/ghl/funnels', async (req, res) => {
+  try {
+    const r = await axios.get(
+      `https://services.leadconnectorhq.com/funnels/?locationId=${GHL_LOCATION_ID}`,
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+    );
+    res.json({ success: true, funnels: r.data.funnels || r.data });
+  } catch (err) {
+    console.error('[GHL Funnels]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/ghl/funnels/:fid/pages - List pages in a funnel
+ */
+app.get('/api/ghl/funnels/:fid/pages', async (req, res) => {
+  try {
+    const r = await axios.get(
+      `https://services.leadconnectorhq.com/funnels/${req.params.fid}/pages?locationId=${GHL_LOCATION_ID}`,
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
+    );
+    res.json({ success: true, pages: r.data.pages || r.data });
+  } catch (err) {
+    console.error('[GHL Funnel Pages]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PUT /api/ghl/funnels/:fid/pages/:pid - Update page HTML
+ */
+app.put('/api/ghl/funnels/:fid/pages/:pid', async (req, res) => {
+  try {
+    const { html, name } = req.body;
+    const payload = {};
+    if (html) payload.html = html;
+    if (name) payload.name = name;
+
+    const r = await axios.put(
+      `https://services.leadconnectorhq.com/funnels/${req.params.fid}/pages/${req.params.pid}`,
+      payload,
+      { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+    );
+    res.json({ success: true, page: r.data });
+  } catch (err) {
+    console.error('[GHL Page Update]', err.response?.data || err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================
 // START SERVER
 // ============================================
 app.listen(PORT, () => {

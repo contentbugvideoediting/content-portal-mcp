@@ -129,8 +129,14 @@
         <!-- Footer -->
         <tr>
           <td align="center" style="padding-top: 32px;">
-            <p style="margin: 12px 0 0 0; font-size: 11px; color: #374151; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-              © {{current_year}} Content Bug Video Editing, LLC
+            <p style="margin: 0 0 8px 0; font-size: 11px; color: #374151; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              <a href="{{custom_values.privacy_policy}}" style="color: #475569; text-decoration: underline;">Privacy Policy</a> · <a href="{{custom_values.terms_of_service}}" style="color: #475569; text-decoration: underline;">Terms of Service</a>
+            </p>
+            <p style="margin: 0; font-size: 11px; color: #374151; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              © {{custom_values.current_year}} {{custom_values.business_legal_name}}. All rights reserved.
+            </p>
+            <p style="margin: 8px 0 0 0; font-size: 10px; color: #1f2937; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+              This is a transactional email related to your account status.
             </p>
           </td>
         </tr>
