@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gold Plan - Content Bug Unlimited Video Editing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg">
+    <link rel="apple-touch-icon" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f19a634f4b0f21c170.png">
+    <meta name="description" content="Gold Unlimited Plan - 2 parallel edit slots with priority handling. Starting at $1,300/mo annual.">
+    <meta name="theme-color" content="#050508">
+    <style>
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --plan-color: #f59e0b;
+            --plan-light: #fbbf24;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --mint: #10b981;
+            --danger: #ef4444;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--plan-color);
+            outline-offset: 2px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-gradient {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1400px;
+            height: 900px;
+            background: radial-gradient(ellipse at center, rgba(245,158,11,.12) 0%, rgba(217,119,6,.06) 30%, transparent 60%);
+            filter: blur(80px);
+        }
+
+        .back-link {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100;
+            background: rgba(5,5,8,.9);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--dark-border);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            color: var(--text-white);
+            border-color: rgba(245,158,11,.3);
+        }
+        .back-link svg { width: 16px; height: 16px; }
+
+        .checkout-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 100px 32px 60px;
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 460px;
+            gap: 48px;
+            align-items: start;
+        }
+
+        .plan-details {
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            padding: 48px;
+            position: relative;
+        }
+        .plan-details::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--plan-color), var(--plan-light), var(--plan-color));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            right: 32px;
+            background: linear-gradient(135deg, var(--plan-color), var(--plan-light));
+            color: #000;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(245,158,11,.3);
+        }
+
+        .plan-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--plan-color);
+            margin-bottom: 16px;
+        }
+        .plan-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-white);
+            line-height: 1.2;
+        }
+        .plan-tagline {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .plan-price-display {
+            margin-bottom: 32px;
+        }
+        .plan-price-starts {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .plan-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .plan-price-amount {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--text-white);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .plan-price-period {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+        .plan-price-crossed {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        .features-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .feature-item.highlight {
+            background: rgba(245,158,11,.08);
+            margin: 0 -16px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(245,158,11,.15);
+        }
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--mint);
+            fill: none;
+        }
+        .feature-item.highlight .feature-icon svg {
+            stroke: var(--plan-color);
+        }
+        .feature-text {
+            font-size: 15px;
+            color: var(--text-light);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .feature-text.bold {
+            color: var(--text-white);
+            font-weight: 700;
+        }
+
+        .best-for {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(245,158,11,.05);
+            border: 1px solid rgba(245,158,11,.15);
+            border-radius: 14px;
+        }
+        .best-for-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--plan-color);
+            margin-bottom: 8px;
+        }
+        .best-for-text {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* ========================================
+           CHECKOUT CARD - Clean Pricing Selection
+           ======================================== */
+        .checkout-card {
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid rgba(245,158,11,.2);
+            border-radius: 24px;
+            padding: 36px;
+            position: sticky;
+            top: 24px;
+        }
+        .checkout-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(245,158,11,.5), transparent);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .checkout-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Plan Selection Options */
+        .plan-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .plan-option {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--dark-input);
+            border: 2px solid var(--dark-border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .plan-option:hover {
+            border-color: rgba(245,158,11,.3);
+            background: rgba(245,158,11,.02);
+        }
+
+        .plan-option.active {
+            border-color: var(--plan-color);
+            background: rgba(245,158,11,.06);
+            box-shadow: 0 0 30px rgba(245,158,11,.12);
+        }
+
+        .plan-option-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--dark-border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .plan-option.active .plan-option-radio {
+            border-color: var(--plan-color);
+        }
+
+        .plan-option.active .plan-option-radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--plan-color);
+            border-radius: 50%;
+        }
+
+        .plan-option-content {
+            flex: 1;
+        }
+
+        .plan-option-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .plan-option-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        .plan-option-badge {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--plan-color), var(--plan-light));
+            color: #000;
+            border-radius: 20px;
+        }
+
+        .plan-option-price {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .price-main {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--text-white);
+        }
+
+        .price-period {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .plan-option-compare {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .compare-original {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        .compare-save {
+            color: var(--mint);
+            font-weight: 600;
+        }
+
+        /* Payment Frequency Options (for Annual) */
+        .frequency-section {
+            display: none;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: rgba(245,158,11,.04);
+            border: 1px solid rgba(245,158,11,.15);
+            border-radius: 14px;
+            animation: fadeSlideUp 0.4s ease;
+        }
+
+        .frequency-section.visible {
+            display: block;
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .frequency-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .frequency-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .frequency-option {
+            padding: 16px 12px;
+            background: var(--dark-input);
+            border: 2px solid var(--dark-border);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .frequency-option:hover {
+            border-color: rgba(245,158,11,.3);
+            background: rgba(245,158,11,.03);
+        }
+
+        .frequency-option.active {
+            border-color: var(--plan-color);
+            background: rgba(245,158,11,.08);
+        }
+
+        .frequency-amount {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 4px;
+        }
+
+        .frequency-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .frequency-option.active .frequency-label {
+            color: var(--plan-color);
+        }
+
+        /* Annual Perk - Creator Studio */
+        .annual-perk {
+            margin-bottom: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(139,92,246,.08) 0%, rgba(168,85,247,.04) 100%);
+            border: 1px solid rgba(139,92,246,.2);
+            border-radius: 14px;
+            transition: all 0.4s ease;
+        }
+
+        .annual-perk.hidden {
+            display: none;
+        }
+
+        .annual-perk-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .annual-perk-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .annual-perk-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+        }
+
+        .annual-perk-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #a855f7;
+        }
+
+        .annual-perk-badge {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            background: rgba(168,85,247,.2);
+            color: #c4b5fd;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .annual-perk-content {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* Monthly Warning */
+        .monthly-warning {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: rgba(245,158,11,.06);
+            border: 1px dashed rgba(245,158,11,.3);
+            border-radius: 12px;
+            text-align: center;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .monthly-warning.visible {
+            opacity: 1;
+            max-height: 120px;
+            padding: 16px;
+        }
+
+        .monthly-warning-text {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .monthly-warning-text strong {
+            color: var(--plan-color);
+        }
+
+        /* ========================================
+           TRUST ROW
+           ======================================== */
+        .trust-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+            padding: 14px;
+            background: rgba(255,255,255,.02);
+            border-radius: 10px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .trust-item svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .trust-item.ssl svg {
+            fill: #22c55e;
+        }
+
+        .trust-item.stripe svg {
+            fill: #635bff;
+        }
+
+        /* ========================================
+           CHECKOUT BUTTON
+           ======================================== */
+        .checkout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 18px 28px;
+            background: linear-gradient(135deg, #d97706 0%, var(--plan-color) 50%, var(--plan-light) 100%);
+            background-size: 200% 200%;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(245,158,11,.3);
+            font-family: inherit;
+            animation: buttonBreath 3s ease-in-out infinite;
+        }
+
+        @keyframes buttonBreath {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(245,158,11,.4);
+        }
+        .checkout-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+        .checkout-btn:hover svg {
+            transform: translateX(4px);
+        }
+
+        .guarantee {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(34,197,94,.06);
+            border: 1px solid rgba(34,197,94,.15);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .guarantee svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--success);
+            flex-shrink: 0;
+        }
+        .guarantee span {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .trust-badges {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--dark-border);
+        }
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .trust-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+        .trust-badge.ssl svg { fill: #22c55e; }
+        .trust-badge.stripe svg { fill: #635bff; }
+
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .payment-methods svg {
+            height: 20px;
+            width: auto;
+            opacity: 0.6;
+        }
+
+        /* ========================================
+           CHECKOUT MODAL
+           ======================================== */
+        .checkout-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0,0,0,.92);
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .checkout-modal.active { display: flex; }
+        .checkout-modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            max-height: 800px;
+            background: linear-gradient(165deg, rgba(15,15,25,.99) 0%, rgba(8,8,15,1) 100%);
+            border: 1px solid rgba(245,158,11,.15);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .checkout-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+        .checkout-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        .checkout-modal-close {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+        .checkout-modal-close:hover {
+            background: rgba(255,255,255,.1);
+            color: var(--text-white);
+        }
+        .checkout-modal-body {
+            flex: 1;
+            overflow: hidden;
+        }
+        .checkout-modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
+        @media (max-width: 1000px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 90px 20px 40px;
+            }
+            .checkout-card {
+                position: static;
+            }
+        }
+        @media (max-width: 480px) {
+            .plan-details, .checkout-card { padding: 28px 20px; }
+            .plan-title { font-size: 26px; }
+            .plan-price-amount { font-size: 40px; }
+            .back-link { display: none; }
+            .popular-badge { right: 20px; font-size: 10px; padding: 5px 12px; }
+            .payment-options-grid { grid-template-columns: repeat(2, 1fr); }
+            .impact-stats { grid-template-columns: 1fr; gap: 8px; }
+            .otp-input { width: 42px; height: 50px; font-size: 20px; }
+        }
+
+        /* Site Header */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 24px;
+        }
+        .header-backdrop {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(5, 5, 8, 0.95) 0%, rgba(5, 5, 8, 0.8) 70%, transparent 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            pointer-events: none;
+        }
+        .header-content {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo-icon {
+            height: 36px;
+            width: auto;
+        }
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            color: var(--text-white);
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .header-cta {
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+            color: #fff !important;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+        .header-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .mobile-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-white);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .site-header { padding: 12px 16px; }
+            .mobile-toggle { display: flex; }
+            .nav-menu {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(5, 5, 8, 0.98);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                flex-direction: column;
+                padding: 24px;
+                gap: 8px;
+                transform: translateY(-100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s ease;
+                border-bottom: 1px solid var(--dark-border);
+            }
+            .nav-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .nav-link { width: 100%; text-align: center; padding: 14px; }
+            .header-cta { width: 100%; text-align: center; padding: 14px 20px; }
+        }
+
+        /* Site Footer */
+        .site-footer {
+            background: linear-gradient(180deg, transparent 0%, rgba(5, 5, 8, 0.95) 20%);
+            padding: 60px 24px 32px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-brand { max-width: 280px; }
+        .footer-logo { height: 32px; width: auto; margin-bottom: 16px; }
+        .footer-tagline { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+        .footer-links { display: flex; gap: 48px; }
+        .footer-column h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .footer-column ul { list-style: none; padding: 0; margin: 0; }
+        .footer-column li { margin-bottom: 10px; }
+        .footer-column a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .footer-column a:hover { color: var(--blue-bright); }
+        .footer-bottom {
+            padding-top: 24px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .footer-copyright { font-size: 13px; color: var(--text-muted); }
+        .footer-legal { display: flex; gap: 24px; }
+        .footer-legal a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-legal a:hover { color: var(--text-light); }
+        @media (max-width: 768px) {
+            .site-footer { padding: 48px 16px 24px; }
+            .footer-main { flex-direction: column; gap: 32px; }
+            .footer-links { flex-direction: column; gap: 32px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .footer-legal { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer"><div class="bg-gradient"></div></div>
+
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="header-backdrop"></div>
+        <div class="header-content">
+            <a href="{{custom_values.home}}" class="logo-container">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="ContentBug" class="logo-icon">
+            </a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="{{custom_values.home}}" class="nav-link">Home</a></li>
+                    <li><a href="{{custom_values.edits}}" class="nav-link">Edits</a></li>
+                    <li><a href="{{custom_values.pricing}}" class="nav-link">Pricing</a></li>
+                    <li><a href="{{custom_values.free_trial}}" class="header-cta">Start Free Trial</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <a href="{{custom_values.pricing}}" class="back-link" aria-label="Back to all pricing plans">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to plans
+    </a>
+
+    <main class="checkout-container" role="main">
+        <article class="plan-details" aria-labelledby="plan-title">
+            <span class="popular-badge">Most Popular</span>
+            <span class="plan-badge">Gold Unlimited</span>
+            <h1 class="plan-title" id="plan-title">Momentum without bottlenecks.</h1>
+            <p class="plan-tagline">Built for creators who are serious about consistency and tired of content slowing down because only one project can move at a time.</p>
+
+            <div class="plan-price-display">
+                <div class="plan-price-starts">Starts at</div>
+                <div class="plan-price-row">
+                    <span class="plan-price-amount">$1,300</span>
+                    <span class="plan-price-period">/mo</span>
+                </div>
+                <div class="plan-price-crossed">$1,950/mo</div>
+            </div>
+
+            <h2 class="features-title" id="features-heading">What's included</h2>
+            <ul class="feature-list" role="list" aria-labelledby="features-heading">
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text bold">2 Active Edits in Progress</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Unlimited Requests</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Unlimited Revisions</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Content Support</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Direct Communication</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Fast Turnarounds</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Project Manager</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Creative Director</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Custom Portal</div>
+                </li>
+            </ul>
+
+            <aside class="best-for" aria-label="Ideal customer profile">
+                <p class="best-for-title">Best for</p>
+                <p class="best-for-text">Creators who want consistent output without delays, produce both long-form and short-form, and don't want one project blocking everything else. The default plan for most creators and brands.</p>
+            </aside>
+        </article>
+
+        <aside class="checkout-card" aria-labelledby="checkout-title">
+            <h2 class="checkout-title" id="checkout-title">Choose Your Plan</h2>
+
+            <!-- Plan Options: Annual vs Monthly -->
+            <div class="plan-options" role="group" aria-label="Billing options">
+                <!-- Annual Option (Default Selected) -->
+                <div class="plan-option active" id="annualOption" onclick="selectPlan('annual')" role="button" tabindex="0">
+                    <div class="plan-option-radio"></div>
+                    <div class="plan-option-content">
+                        <div class="plan-option-header">
+                            <span class="plan-option-name">Annual</span>
+                            <span class="plan-option-badge">4 MONTHS FREE</span>
+                        </div>
+                        <div class="plan-option-price">
+                            <span class="price-main">$1,300</span>
+                            <span class="price-period">/mo</span>
+                        </div>
+                        <div class="plan-option-compare">
+                            <span class="compare-original">$1,950/mo</span>
+                            <span class="compare-save">Save $7,800/yr</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Option -->
+                <div class="plan-option" id="monthlyOption" onclick="selectPlan('monthly')" role="button" tabindex="0">
+                    <div class="plan-option-radio"></div>
+                    <div class="plan-option-content">
+                        <div class="plan-option-header">
+                            <span class="plan-option-name">Monthly</span>
+                        </div>
+                        <div class="plan-option-price">
+                            <span class="price-main">$1,950</span>
+                            <span class="price-period">/mo</span>
+                        </div>
+                        <div class="plan-option-compare">
+                            <span class="compare-original">No commitment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Frequency (shown when Annual is selected) -->
+            <div class="frequency-section visible" id="frequencySection">
+                <div class="frequency-title">How would you like to pay?</div>
+                <div class="frequency-options">
+                    <div class="frequency-option active" data-freq="1" onclick="selectFrequency(1)">
+                        <div class="frequency-amount">$15,600</div>
+                        <div class="frequency-label">Pay in Full</div>
+                    </div>
+                    <div class="frequency-option" data-freq="2" onclick="selectFrequency(2)">
+                        <div class="frequency-amount">$7,800</div>
+                        <div class="frequency-label">× 2 payments</div>
+                    </div>
+                    <div class="frequency-option" data-freq="4" onclick="selectFrequency(4)">
+                        <div class="frequency-amount">$3,900</div>
+                        <div class="frequency-label">× 4 payments</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Annual Perk - Creator Studio -->
+            <div class="annual-perk" id="annualPerk">
+                <div class="annual-perk-header">
+                    <div class="annual-perk-icon">
+                        <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+                    </div>
+                    <span class="annual-perk-title">Virtual Film Studio</span>
+                    <span class="annual-perk-badge">INCLUDED</span>
+                </div>
+                <div class="annual-perk-content">
+                    Full access to our AI-powered Creator Studio for clips, thumbnails, and content repurposing. Exclusive to annual members.
+                </div>
+            </div>
+
+            <!-- Monthly Warning (shown when Monthly is selected) -->
+            <div class="monthly-warning" id="monthlyWarning">
+                <div class="monthly-warning-text">
+                    Switch to <strong>Annual</strong> to unlock 4 free months and get access to the Virtual Film Studio.
+                </div>
+            </div>
+
+            <!-- Trust Row -->
+            <div class="trust-row">
+                <div class="trust-item ssl">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    SSL Secured
+                </div>
+                <div class="trust-item stripe">
+                    <svg viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg>
+                    Powered by Stripe
+                </div>
+            </div>
+
+            <button class="checkout-btn" onclick="openCheckoutModal()" type="button" aria-label="Continue to checkout for Gold plan">
+                <span id="btnText">Get Annual Access</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </aside>
+    </main>
+
+    <div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="checkout-modal-content">
+            <div class="checkout-modal-header">
+                <span class="checkout-modal-title" id="modal-title">Complete Your Purchase</span>
+                <button class="checkout-modal-close" onclick="closeCheckoutModal()" type="button" aria-label="Close checkout modal">&times;</button>
+            </div>
+            <div class="checkout-modal-body">
+                <iframe id="checkoutFrame" src="" title="Payment form"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // PAYMENT LINKS
+        // ========================================
+        const paymentLinks = {
+            monthly: 'https://links.contentbug.io/payment-link/69371c96bbe21971af51e46c',
+            annual_1: 'https://links.contentbug.io/payment-link/694015bfd2901d093eedc6b7',
+            annual_2: 'https://links.contentbug.io/payment-link/694015bfd2901d093eedc6b7',
+            annual_4: 'https://links.contentbug.io/payment-link/694015bfd2901d093eedc6b7'
+        };
+
+        // ========================================
+        // STATE
+        // ========================================
+        let selectedPlan = 'annual';
+        let selectedFrequency = 1;
+
+        // ========================================
+        // PLAN SELECTION
+        // ========================================
+        function selectPlan(plan) {
+            selectedPlan = plan;
+
+            // Update UI
+            document.getElementById('annualOption').classList.toggle('active', plan === 'annual');
+            document.getElementById('monthlyOption').classList.toggle('active', plan === 'monthly');
+
+            // Show/hide frequency section and perk
+            const frequencySection = document.getElementById('frequencySection');
+            const perkEl = document.getElementById('annualPerk');
+            const warningEl = document.getElementById('monthlyWarning');
+            const btnText = document.getElementById('btnText');
+
+            if (plan === 'annual') {
+                frequencySection.classList.add('visible');
+                perkEl.classList.remove('hidden');
+                warningEl.classList.remove('visible');
+                updateButtonText();
+            } else {
+                frequencySection.classList.remove('visible');
+                perkEl.classList.add('hidden');
+                warningEl.classList.add('visible');
+                btnText.textContent = 'Start Monthly Plan';
+            }
+        }
+
+        // ========================================
+        // FREQUENCY SELECTION
+        // ========================================
+        function selectFrequency(freq) {
+            selectedFrequency = freq;
+
+            // Update UI
+            document.querySelectorAll('.frequency-option').forEach(opt => {
+                opt.classList.toggle('active', parseInt(opt.dataset.freq) === freq);
+            });
+
+            updateButtonText();
+        }
+
+        function updateButtonText() {
+            const btnText = document.getElementById('btnText');
+            if (selectedFrequency === 1) {
+                btnText.textContent = 'Get Annual Access';
+            } else {
+                btnText.textContent = 'Get Annual Access';
+            }
+        }
+
+        // ========================================
+        // CHECKOUT
+        // ========================================
+        function openCheckoutModal() {
+            let paymentLink;
+
+            if (selectedPlan === 'monthly') {
+                paymentLink = paymentLinks.monthly;
+            } else {
+                paymentLink = paymentLinks['annual_' + selectedFrequency];
+            }
+
+            const modal = document.getElementById('checkoutModal');
+            document.getElementById('checkoutFrame').src = paymentLink;
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Keyboard navigation for plan options
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        option.click();
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeCheckoutModal();
+        });
+
+        document.getElementById('checkoutModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCheckoutModal();
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobileToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+    </script>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="ContentBug" class="footer-logo">
+                    <p class="footer-tagline">Unlimited video editing for creators who want to scale their content without scaling their workload.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="{{custom_values.pricing}}">Pricing</a></li>
+                            <li><a href="{{custom_values.edits}}">Our Edits</a></li>
+                            <li><a href="{{custom_values.free_trial}}">Free Trial</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="{{custom_values.portal_login}}">Client Portal</a></li>
+                            <li><a href="/cdn-cgi/l/email-protection#e58d8089898aa5868a8b91808b91879082cb8c8a">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">&copy; {{custom_values.current_year}} ContentBug. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="{{custom_values.privacy_policy}}">Privacy Policy</a>
+                    <a href="{{custom_values.terms_of_service}}">Terms of Service</a>
+                </div>
+            </div>
+   
