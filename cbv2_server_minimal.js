@@ -233,7 +233,7 @@ async function airtableUpdate(table, recordId, fields) {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.5.0-admin-editor-client-portals',
+  version: '3.6.0-review-system',
   ts: Date.now(),
   services: {
     ghl: !!GHL_API_KEY,
@@ -1561,10 +1561,178 @@ app.put('/api/ghl/funnels/:fid/pages/:pid', async (req, res) => {
 });
 
 // ============================================
+
+// ============================================
+// PROJECT & REVIEW ENDPOINTS
+// ============================================
+
+/**
+ * GET /projects/:id - Get project by ID for review page
+ */
+app.get('/projects/:id', async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const userEmail = req.headers['x-user-email'];
+    const userRole = req.headers['x-user-role'] || 'client';
+
+    // Demo/test mode
+    if (projectId === 'demo' || projectId === 'test-project') {
+      return res.json({
+        success: true,
+        project: {
+          id: 'test-project',
+          title: 'Content Bug Review Demo',
+          client_name: 'Demo Client',
+          client_email: userEmail || 'demo@contentbug.io',
+          editor_email: 'editor@contentbug.io',
+          status: 'review',
+          video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          versions: [
+            { version: 1, date: '2025-12-28', status: 'previous', notes: 'Initial rough cut' },
+            { version: 2, date: '2025-12-30', status: 'current', notes: 'Color graded + audio fixed' }
+          ],
+          feedback: []
+        }
+      });
+    }
+
+    // Find in Airtable Projects
+    const projects = await airtableGet('tblBRsSS40wP3B3l5', `{project_id}="${projectId}"`);
+    
+    if (projects.length === 0) {
+      // Fallback to demo if not found
+      return res.json({
+        success: true,
+        project: {
+          id: projectId,
+          title: 'Content Bug Review Demo',
+          status: 'review',
+          video_url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          versions: [{ version: 1, date: new Date().toISOString().split('T')[0], status: 'current' }],
+          feedback: []
+        }
+      });
+    }
+
+    const p = projects[0];
+    res.json({
+      success: true,
+      project: {
+        id: p.fields.project_id || p.id,
+        title: p.fields.Name || p.fields.title || 'Untitled Project',
+        client_name: p.fields.client_name,
+        client_email: p.fields.client_email,
+        editor_email: p.fields.editor_email,
+        status: p.fields.Status || 'review',
+        video_url: p.fields.video_url || p.fields.VideoURL,
+        versions: JSON.parse(p.fields.versions || '[]'),
+        feedback: JSON.parse(p.fields.feedback || '[]')
+      }
+    });
+
+  } catch (err) {
+    console.error('[Project Get]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/project/revisions - Submit revisions from review page
+ */
+app.post('/api/project/revisions', async (req, res) => {
+  try {
+    const { project_id, project_title, client_email, client_name, editor_email, revisions, additional_notes, version } = req.body;
+
+    console.log('[Revisions] Submitting', revisions?.length, 'for project:', project_id);
+
+    // Post to project updates
+    await axios.post('http://localhost:' + PORT + '/project/update', {
+      client_email,
+      project_name: project_title,
+      update_type: 'revision_request',
+      message: `${revisions?.length || 0} revision(s) requested${additional_notes ? ': ' + additional_notes : ''}`,
+      project_id,
+      metadata: { revision_count: revisions?.length, revisions, version }
+    }).catch(() => {});
+
+    // Notify editor via GHL
+    if (editor_email && GHL_EMAIL_WEBHOOK) {
+      await axios.post(GHL_EMAIL_WEBHOOK, {
+        email: editor_email,
+        template: 'revision_requested',
+        project_name: project_title,
+        client_name: client_name || 'Client',
+        revision_count: revisions?.length || 0
+      }).catch(() => {});
+    }
+
+    res.json({ success: true, message: 'Revisions submitted', revision_count: revisions?.length || 0 });
+
+  } catch (err) {
+    console.error('[Project Revisions]', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/project/approve - Approve project with rating
+ */
+app.post('/api/project/approve', async (req, res) => {
+  try {
+    const { project_id, rating, email, approved_at } = req.body;
+
+    console.log('[Approve] Project:', project_id, 'Rating:', rating);
+
+    await axios.post('http://localhost:' + PORT + '/project/update', {
+      client_email: email,
+      project_name: `Project ${project_id}`,
+      update_type: 'approved',
+      message: `Project approved with ${rating} stars!`,
+      project_id,
+      metadata: { rating, approved_at }
+    }).catch(() => {});
+
+    if (GHL_EMAIL_WEBHOOK) {
+      await axios.post(GHL_EMAIL_WEBHOOK, { email, template: 'project_approved', project_id, rating }).catch(() => {});
+    }
+
+    res.json({ success: true, message: 'Project approved!', rating });
+
+  } catch (err) {
+    console.error('[Project Approve]', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/trial/review-booked - Record trial booking
+ */
+app.post('/api/trial/review-booked', async (req, res) => {
+  try {
+    const { email, booked_at } = req.body;
+
+    console.log('[Trial] Review call booked for:', email);
+
+    if (GHL_API_KEY && email) {
+      const contact = await ghlFindByEmail(email);
+      if (contact) {
+        await ghlUpdateContact(contact.id, { customFields: [{ id: GHL_FIELDS.onboardingStatus, value: 'Review Call Booked' }] });
+        await ghlAddTags(contact.id, ['review-call-booked']);
+      }
+    }
+
+    res.json({ success: true, message: 'Booking recorded' });
+
+  } catch (err) {
+    console.error('[Trial Review Booked]', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
-  console.log(`ContentBug Portal v3.6.0 on port ${PORT}`);
+  console.log(`ContentBug Portal v3.6.1 on port ${PORT}`);
   console.log('Chat stored in Airtable, GHL for contacts');
   console.log('Zoom integration active');
   console.log('Hourly sync enabled');
