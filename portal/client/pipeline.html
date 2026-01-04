@@ -3,310 +3,496 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Pipeline</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Editor Pipeline - Content Bug</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --dark-bg: #050508;
-            --dark-card: #0a0a0f;
-            --dark-surface: #0f0f14;
-            --dark-border: #1a1a2e;
-            --text-white: #ffffff;
-            --text-light: #94a3b8;
-            --text-muted: #64748b;
+            --bg-primary: #030305;
+            --bg-secondary: #08080c;
+            --bg-card: #0c0c12;
+            --bg-elevated: #101018;
+            --bg-hover: #14141e;
+            --border: #1a1a2e;
+            --border-light: #252538;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1b5;
+            --text-muted: #6b6b80;
             --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
             --green: #22c55e;
+            --green-glow: rgba(34, 197, 94, 0.3);
             --orange: #f59e0b;
+            --orange-glow: rgba(245, 158, 11, 0.3);
             --purple: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.3);
             --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.3);
             --red: #ef4444;
+            --pink: #ec4899;
         }
 
         body {
-            background: var(--dark-bg);
+            background: var(--bg-primary);
             font-family: 'Inter', -apple-system, sans-serif;
-            color: var(--text-white);
-            padding: 24px;
+            color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* ============================================ */
+        /* HEADER */
+        /* ============================================ */
         .pipeline-header {
+            padding: 20px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
         }
 
-        .project-count {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .project-count span {
-            color: var(--text-white);
-            font-weight: 700;
-        }
-
-        .submit-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
-        }
-
-        .submit-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Drag instruction */
-        .drag-hint {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 13px;
-            color: var(--text-light);
         }
 
-        .drag-hint svg {
-            width: 20px;
-            height: 20px;
+        .header-title svg {
+            width: 24px;
+            height: 24px;
             color: var(--accent);
-            flex-shrink: 0;
         }
 
-        .drag-hint strong {
-            color: var(--text-white);
-        }
-
-        /* Pipeline */
-        .pipeline {
+        .project-stats {
             display: flex;
             gap: 16px;
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .stat-pill.active .dot { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+        .stat-pill.review .dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+        .stat-pill.revisions .dot { background: var(--orange); box-shadow: 0 0 8px var(--orange-glow); }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .filter-btn svg { width: 16px; height: 16px; }
+
+        /* ============================================ */
+        /* KANBAN PIPELINE */
+        /* ============================================ */
+        .pipeline-container {
+            padding: 24px;
             overflow-x: auto;
-            padding-bottom: 16px;
+        }
+
+        .pipeline {
+            display: flex;
+            gap: 20px;
+            min-width: max-content;
         }
 
         .column {
-            flex: 0 0 280px;
-            background: var(--dark-card);
-            border-radius: 16px;
+            width: 340px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 200px);
+            max-height: calc(100vh - 140px);
         }
 
         .column-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--dark-border);
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .column-title {
-            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .column-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
         }
 
-        .column-title .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
+        .column-icon svg { width: 18px; height: 18px; }
 
-        .column.queue .dot { background: var(--text-muted); }
-        .column.active .dot { background: var(--accent); }
-        .column.review .dot { background: var(--cyan); }
-        .column.revisions .dot { background: var(--orange); }
-        .column.approved .dot { background: var(--green); }
-
-        .column.queue .column-title { color: var(--text-light); }
-        .column.active .column-title { color: var(--accent); }
-        .column.review .column-title { color: var(--cyan); }
-        .column.revisions .column-title { color: var(--orange); }
-        .column.approved .column-title { color: var(--green); }
+        .column.queue .column-icon { background: rgba(107, 107, 128, 0.15); color: var(--text-muted); }
+        .column.active .column-icon { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .column.review .column-icon { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
+        .column.revisions .column-icon { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
+        .column.approved .column-icon { background: rgba(34, 197, 94, 0.15); color: var(--green); }
 
         .column-count {
-            background: var(--dark-surface);
-            padding: 4px 10px;
+            background: var(--bg-card);
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--text-muted);
         }
 
         .column-cards {
             flex: 1;
-            padding: 12px;
+            padding: 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            min-height: 100px;
+            gap: 14px;
         }
 
-        .column-cards.drag-over {
-            background: rgba(59, 130, 246, 0.05);
-            border: 2px dashed var(--accent);
-            border-radius: 12px;
-            margin: 8px;
-            padding: 8px;
-        }
+        .column-cards::-webkit-scrollbar { width: 6px; }
+        .column-cards::-webkit-scrollbar-track { background: transparent; }
+        .column-cards::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-        /* Project Card */
+        /* ============================================ */
+        /* PROJECT CARD - PREMIUM DESIGN */
+        /* ============================================ */
         .project-card {
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            border-radius: 12px;
-            padding: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent 0%, transparent 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
         .project-card:hover {
+            transform: translateY(-4px);
             border-color: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(59, 130, 246, 0.2),
+                0 0 30px rgba(59, 130, 246, 0.1);
         }
 
-        .project-card.dragging {
-            opacity: 0.5;
-            transform: rotate(3deg);
+        .project-card:hover::before {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+            opacity: 1;
         }
 
-        /* Only review cards are draggable */
-        .column.review .project-card {
-            cursor: grab;
+        /* Thumbnail Section */
+        .card-thumbnail {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-primary) 100%);
+            overflow: hidden;
         }
 
-        .column.review .project-card:active {
-            cursor: grabbing;
+        .card-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
         }
 
-        .card-badges {
+        .project-card:hover .card-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .card-thumbnail .placeholder {
+            position: absolute;
+            inset: 0;
             display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
+            background: linear-gradient(135deg, 
+                rgba(59, 130, 246, 0.05) 0%, 
+                rgba(168, 85, 247, 0.05) 100%);
+        }
+
+        .card-thumbnail .placeholder svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.4;
+        }
+
+        /* Type & Tier Badges on Thumbnail */
+        .card-badges {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .type-badge {
-            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 8px;
             font-size: 10px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
         }
 
-        .type-badge.short { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
-        .type-badge.long { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
+        .type-badge.sf {
+            background: rgba(168, 85, 247, 0.9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+        }
+
+        .type-badge.lf {
+            background: rgba(6, 182, 212, 0.9);
+            color: white;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+        }
 
         .tier-badge {
+            padding: 5px 10px;
+            border-radius: 8px;
             font-size: 10px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .tier-badge.tier-1 { background: rgba(34, 197, 94, 0.15); color: var(--green); }
-        .tier-badge.tier-2 { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
-        .tier-badge.tier-3 { background: rgba(245, 158, 11, 0.15); color: var(--orange); }
-        .tier-badge.tier-4 { background: rgba(239, 68, 68, 0.15); color: var(--red); }
-
-        .project-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-white);
-            line-height: 1.4;
-        }
-
-        .project-style {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
+            font-weight: 800;
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             gap: 4px;
         }
 
-        .project-meta {
-            font-size: 12px;
-            color: var(--text-muted);
+        .tier-badge.tier-1 { background: rgba(34, 197, 94, 0.9); color: white; }
+        .tier-badge.tier-2 { background: rgba(59, 130, 246, 0.9); color: white; }
+        .tier-badge.tier-3 { background: rgba(245, 158, 11, 0.9); color: white; }
+        .tier-badge.tier-4 { background: rgba(239, 68, 68, 0.9); color: white; }
+
+        .tier-badge svg { width: 12px; height: 12px; }
+
+        /* Duration Badge */
+        .duration-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+        }
+
+        /* Card Content */
+        .card-content {
+            padding: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .project-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.4;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .style-tag {
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .style-tag svg { width: 12px; height: 12px; color: var(--purple); }
+
+        /* Client & Meta Info */
+        .card-meta {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
         }
 
         .meta-row {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         .meta-row svg {
             width: 14px;
             height: 14px;
+            color: var(--text-muted);
             flex-shrink: 0;
         }
 
-        .meta-row.due-soon {
-            color: var(--orange);
-            font-weight: 600;
-        }
-
-        /* Review card specific */
-        .review-action {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--dark-border);
-        }
-
-        .review-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--cyan);
-            border: none;
-            border-radius: 8px;
+        .client-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
             color: white;
-            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .client-name {
             font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .meta-divider {
+            width: 3px;
+            height: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+        }
+
+        .date-requested {
+            color: var(--text-muted);
+        }
+
+        /* Priority/Deadline Indicator */
+        .deadline-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--orange);
+            margin-top: 10px;
+        }
+
+        .deadline-indicator.urgent {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+
+        .deadline-indicator svg { width: 14px; height: 14px; }
+
+        /* Card Actions (for review/approved columns) */
+        .card-actions {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -315,17 +501,38 @@
             transition: all 0.2s;
         }
 
-        .review-btn:hover {
-            filter: brightness(1.1);
+        .action-btn svg { width: 16px; height: 16px; }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
-        .review-btn svg {
-            width: 16px;
-            height: 16px;
+        .action-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--accent-glow);
         }
 
-        /* Revisions indicator */
-        .revision-count {
+        .action-btn.success {
+            background: linear-gradient(135deg, var(--green) 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 12px var(--green-glow);
+        }
+
+        .action-btn.secondary {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .action-btn.secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        /* Revision Count Badge */
+        .revision-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -335,571 +542,520 @@
             font-size: 11px;
             font-weight: 700;
             color: var(--orange);
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
-        /* Approved card */
-        .download-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--green);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-            margin-top: 12px;
-        }
-
-        .download-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        .download-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .quality-score {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 8px;
-            font-size: 12px;
-            color: var(--green);
-            font-weight: 600;
-        }
-
-        /* Empty state */
-        .empty-column {
+        /* Empty State */
+        .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
             font-size: 13px;
-        }
-
-        .empty-column svg {
-            width: 32px;
-            height: 32px;
-            margin-bottom: 8px;
-            opacity: 0.5;
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--dark-card);
-            border: 1px solid var(--dark-border);
-            padding: 16px 24px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--green);
-        }
-
-        .toast-text {
-            font-size: 14px;
             font-weight: 500;
         }
 
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
+        /* Drag & Drop States */
+        .project-card.dragging {
+            opacity: 0.6;
+            transform: rotate(2deg) scale(1.02);
         }
 
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
+        .column-cards.drag-over {
+            background: rgba(59, 130, 246, 0.05);
+            border: 2px dashed var(--accent);
+            border-radius: 12px;
+            margin: 4px;
         }
 
-        .modal {
-            background: var(--dark-card);
-            border: 1px solid var(--dark-border);
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 480px;
-            width: 90%;
-            transform: scale(0.9);
-            transition: transform 0.3s;
+        /* ============================================ */
+        /* ANIMATIONS */
+        /* ============================================ */
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .modal-overlay.show .modal {
-            transform: scale(1);
+        .project-card {
+            animation: cardEnter 0.4s ease-out;
         }
 
-        .modal h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        .modal p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .modal-btn {
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .modal-btn.cancel {
-            background: var(--dark-surface);
-            border: 1px solid var(--dark-border);
-            color: var(--text-light);
-        }
-
-        .modal-btn.cancel:hover {
-            background: var(--dark-border);
-        }
-
-        .modal-btn.confirm {
-            background: var(--orange);
-            border: none;
-            color: white;
-        }
-
-        .modal-btn.confirm:hover {
-            filter: brightness(1.1);
-        }
-
-        /* Responsive */
+        /* ============================================ */
+        /* RESPONSIVE */
+        /* ============================================ */
         @media (max-width: 768px) {
-            body { padding: 16px; }
-            .column { flex: 0 0 260px; }
-            .drag-hint { display: none; }
+            .pipeline-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .column {
+                width: 300px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="pipeline-header">
+    <header class="pipeline-header">
         <div class="header-left">
-            <div class="project-count">
-                <span>5</span> active projects
+            <h1 class="header-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M3 9h18M9 21V9"/>
+                </svg>
+                Editor Pipeline
+            </h1>
+            <div class="project-stats">
+                <div class="stat-pill active">
+                    <span class="dot"></span>
+                    <span id="activeCount">0</span> Active
+                </div>
+                <div class="stat-pill review">
+                    <span class="dot"></span>
+                    <span id="reviewCount">0</span> In Review
+                </div>
+                <div class="stat-pill revisions">
+                    <span class="dot"></span>
+                    <span id="revisionCount">0</span> Revisions
+                </div>
             </div>
         </div>
-        <button class="submit-btn" onclick="window.parent.loadPage('submit')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            Submit New Project
-        </button>
-    </div>
+        <div class="header-actions">
+            <button class="filter-btn" onclick="toggleFilters()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                Filter
+            </button>
+            <button class="filter-btn" onclick="refreshProjects()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Refresh
+            </button>
+        </div>
+    </header>
 
-    <div class="drag-hint">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <span><strong>Review your edits:</strong> Click any card in "Review" to watch and leave feedback. When done, drag it to "Revisions" to send back for changes, or approve it directly.</span>
-    </div>
-
-    <div class="pipeline">
-        <!-- Queue -->
-        <div class="column queue">
-            <div class="column-header">
-                <span class="column-title">
-                    <span class="dot"></span>
-                    Queue
-                </span>
-                <span class="column-count">1</span>
-            </div>
-            <div class="column-cards">
-                <div class="project-card" data-id="proj-001">
-                    <div class="card-badges">
-                        <span class="type-badge long">Long-form</span>
-                        <span class="tier-badge tier-2">Tier 2</span>
-                    </div>
-                    <div class="project-title">Q4 Product Launch Video</div>
-                    <div class="project-style">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                        </svg>
-                        CourseCreatorPro Style
-                    </div>
-                    <div class="project-meta">
-                        <div class="meta-row">
+    <div class="pipeline-container">
+        <div class="pipeline">
+            <!-- Queue Column -->
+            <div class="column queue" data-status="Submitted">
+                <div class="column-header">
+                    <div class="column-title">
+                        <div class="column-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                <line x1="16" y1="2" x2="16" y2="6"/>
-                                <line x1="8" y1="2" x2="8" y2="6"/>
-                                <line x1="3" y1="10" x2="21" y2="10"/>
+                                <rect x="3" y="3" width="7" height="7"/>
+                                <rect x="14" y="3" width="7" height="7"/>
+                                <rect x="14" y="14" width="7" height="7"/>
+                                <rect x="3" y="14" width="7" height="7"/>
                             </svg>
-                            Submitted Dec 28
                         </div>
-                        <div class="meta-row">
+                        Queue
+                    </div>
+                    <span class="column-count" id="queueCount">0</span>
+                </div>
+                <div class="column-cards" id="queueCards"></div>
+            </div>
+
+            <!-- Active Column -->
+            <div class="column active" data-status="In Progress">
+                <div class="column-header">
+                    <div class="column-title">
+                        <div class="column-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
                                 <polyline points="12 6 12 12 16 14"/>
                             </svg>
-                            Est. delivery: Dec 30
                         </div>
+                        Active
                     </div>
+                    <span class="column-count" id="activeCards">0</span>
                 </div>
+                <div class="column-cards" id="activeCardsContainer"></div>
             </div>
-        </div>
 
-        <!-- Active -->
-        <div class="column active">
-            <div class="column-header">
-                <span class="column-title">
-                    <span class="dot"></span>
-                    Active
-                </span>
-                <span class="column-count">1</span>
-            </div>
-            <div class="column-cards">
-                <div class="project-card" data-id="proj-002">
-                    <div class="card-badges">
-                        <span class="type-badge short">Short-form</span>
-                        <span class="tier-badge tier-1">Tier 1</span>
-                    </div>
-                    <div class="project-title">Instagram Reel - Tips Series #4</div>
-                    <div class="project-style">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                        </svg>
-                        Alex Hormozi Style
-                    </div>
-                    <div class="project-meta">
-                        <div class="meta-row">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            Editor: Mike E.
-                        </div>
-                        <div class="meta-row due-soon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            Due today by 5 PM
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Review -->
-        <div class="column review" id="reviewColumn">
-            <div class="column-header">
-                <span class="column-title">
-                    <span class="dot"></span>
-                    Review
-                </span>
-                <span class="column-count">1</span>
-            </div>
-            <div class="column-cards" id="reviewCards">
-                <div class="project-card" draggable="true" data-id="proj-003" onclick="openReview(this)">
-                    <div class="card-badges">
-                        <span class="type-badge long">Long-form</span>
-                        <span class="tier-badge tier-3">Tier 3</span>
-                    </div>
-                    <div class="project-title">YouTube Tutorial - Setup Guide</div>
-                    <div class="project-style">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                        </svg>
-                        Ali Abdaal Style
-                    </div>
-                    <div class="project-meta">
-                        <div class="meta-row">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            Delivered Dec 26
-                        </div>
-                    </div>
-                    <div class="review-action">
-                        <button class="review-btn" onclick="event.stopPropagation(); openReview(this.closest('.project-card'))">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
-                            Watch & Review
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Revisions -->
-        <div class="column revisions" id="revisionsColumn">
-            <div class="column-header">
-                <span class="column-title">
-                    <span class="dot"></span>
-                    Revisions
-                </span>
-                <span class="column-count">1</span>
-            </div>
-            <div class="column-cards" id="revisionsCards">
-                <div class="project-card" data-id="proj-004">
-                    <div class="card-badges">
-                        <span class="type-badge short">Short-form</span>
-                        <span class="tier-badge tier-2">Tier 2</span>
-                    </div>
-                    <div class="project-title">TikTok Series - Behind the Scenes</div>
-                    <div class="project-style">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                        </svg>
-                        Ben Kaluza Style
-                    </div>
-                    <div class="project-meta">
-                        <div class="meta-row">
+            <!-- Review Column -->
+            <div class="column review" data-status="Review">
+                <div class="column-header">
+                    <div class="column-title">
+                        <div class="column-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
-                            3 revision notes sent
                         </div>
+                        Client Review
                     </div>
-                    <span class="revision-count">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                        Revision #1
-                    </span>
+                    <span class="column-count" id="reviewCards">0</span>
                 </div>
+                <div class="column-cards" id="reviewCardsContainer"></div>
             </div>
-        </div>
 
-        <!-- Approved -->
-        <div class="column approved">
-            <div class="column-header">
-                <span class="column-title">
-                    <span class="dot"></span>
-                    Approved
-                </span>
-                <span class="column-count">1</span>
+            <!-- Revisions Column -->
+            <div class="column revisions" data-status="Revisions">
+                <div class="column-header">
+                    <div class="column-title">
+                        <div class="column-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </div>
+                        Revisions
+                    </div>
+                    <span class="column-count" id="revisionCards">0</span>
+                </div>
+                <div class="column-cards" id="revisionCardsContainer"></div>
             </div>
-            <div class="column-cards">
-                <div class="project-card" data-id="proj-005">
-                    <div class="card-badges">
-                        <span class="type-badge long">Long-form</span>
-                        <span class="tier-badge tier-4">Tier 4</span>
-                    </div>
-                    <div class="project-title">Recipe Video - Holiday Cookies</div>
-                    <div class="project-style">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                            <polyline points="2 17 12 22 22 17"/>
-                        </svg>
-                        My Golden Standard
-                    </div>
-                    <div class="project-meta">
-                        <div class="meta-row" style="color: var(--green);">
+
+            <!-- Approved Column -->
+            <div class="column approved" data-status="Approved">
+                <div class="column-header">
+                    <div class="column-title">
+                        <div class="column-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                                 <polyline points="22 4 12 14.01 9 11.01"/>
                             </svg>
-                            Approved Dec 27
                         </div>
+                        Approved
                     </div>
-                    <div class="quality-score">
-                        ⭐ 9/10 Quality Score
-                    </div>
-                    <button class="download-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        Download
-                    </button>
+                    <span class="column-count" id="approvedCards">0</span>
                 </div>
+                <div class="column-cards" id="approvedCardsContainer"></div>
             </div>
         </div>
-    </div>
-
-    <!-- Confirm Revisions Modal -->
-    <div class="modal-overlay" id="revisionsModal">
-        <div class="modal">
-            <h3>Send for Revisions?</h3>
-            <p>This will move the project back to your editor for changes. Make sure you've saved all your feedback in the review player first.</p>
-            <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
-                <button class="modal-btn confirm" onclick="confirmRevisions()">Send for Revisions</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <span class="toast-text" id="toastText">Project sent for revisions</span>
     </div>
 
     <script>
-        let draggedCard = null;
-        let pendingCard = null;
+        const MCP_SERVER = 'https://portalv2.contentbug.io';
+        let projects = [];
+        const userEmail = localStorage.getItem('cb_email') || '';
+        const userRole = localStorage.getItem('cb_role') || 'editor';
 
-        // Drag and drop for Review column cards only
-        document.querySelectorAll('.column.review .project-card').forEach(card => {
-            card.addEventListener('dragstart', handleDragStart);
-            card.addEventListener('dragend', handleDragEnd);
-        });
+        // ============================================
+        // LOAD PROJECTS
+        // ============================================
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${MCP_SERVER}/api/projects`, {
+                    headers: {
+                        'X-User-Email': userEmail,
+                        'X-User-Role': userRole
+                    }
+                });
 
-        // Only Revisions column accepts drops
-        const revisionsCards = document.getElementById('revisionsCards');
-        revisionsCards.addEventListener('dragover', handleDragOver);
-        revisionsCards.addEventListener('dragleave', handleDragLeave);
-        revisionsCards.addEventListener('drop', handleDrop);
-
-        function handleDragStart(e) {
-            draggedCard = this;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-
-        function handleDragEnd(e) {
-            this.classList.remove('dragging');
-            draggedCard = null;
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            this.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            this.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-
-            if (draggedCard) {
-                pendingCard = draggedCard;
-                document.getElementById('revisionsModal').classList.add('show');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('revisionsModal').classList.remove('show');
-            pendingCard = null;
-        }
-
-        function confirmRevisions() {
-            if (pendingCard) {
-                // Move card to revisions
-                const revisionsCards = document.getElementById('revisionsCards');
-
-                // Remove drag functionality
-                pendingCard.removeAttribute('draggable');
-                pendingCard.classList.remove('dragging');
-
-                // Update card appearance for revisions
-                const reviewAction = pendingCard.querySelector('.review-action');
-                if (reviewAction) {
-                    reviewAction.innerHTML = '';
+                if (response.ok) {
+                    const data = await response.json();
+                    projects = data.projects || [];
+                } else {
+                    loadDemoProjects();
                 }
+            } catch (err) {
+                console.error('Failed to load projects:', err);
+                loadDemoProjects();
+            }
 
-                // Add revision indicator
-                const revisionCount = document.createElement('span');
-                revisionCount.className = 'revision-count';
-                revisionCount.innerHTML = `
+            renderPipeline();
+            updateStats();
+        }
+
+        function loadDemoProjects() {
+            projects = [
+                {
+                    project_id: 'proj_001',
+                    title: 'YouTube Tutorial - Complete Setup Guide',
+                    client_name: 'Alex Rivera',
+                    client_email: 'alex@example.com',
+                    format: 'Long-Form',
+                    style: 'Documentary',
+                    tier: 'Tier 3 - Pro Edit',
+                    status: 'Submitted',
+                    created_at: '2025-01-03T10:30:00Z',
+                    thumbnail: null
+                },
+                {
+                    project_id: 'proj_002',
+                    title: 'Instagram Reel - Product Launch',
+                    client_name: 'Sarah Chen',
+                    client_email: 'sarah@example.com',
+                    format: 'Short-Form',
+                    style: 'Energetic',
+                    tier: 'Tier 2 - Standard',
+                    status: 'In Progress',
+                    created_at: '2025-01-02T14:00:00Z',
+                    thumbnail: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=225&fit=crop'
+                },
+                {
+                    project_id: 'proj_003',
+                    title: 'TikTok Ad - Summer Sale',
+                    client_name: 'Mike Johnson',
+                    client_email: 'mike@example.com',
+                    format: 'Short-Form',
+                    style: 'Trendy',
+                    tier: 'Tier 1 - Basic',
+                    status: 'Review',
+                    created_at: '2025-01-01T09:00:00Z',
+                    thumbnail: 'https://images.unsplash.com/photo-1536240478700-b869070f9279?w=400&h=225&fit=crop'
+                },
+                {
+                    project_id: 'proj_004',
+                    title: 'Podcast Highlight Clips',
+                    client_name: 'Emma Davis',
+                    client_email: 'emma@example.com',
+                    format: 'Short-Form',
+                    style: 'Talking Head',
+                    tier: 'Tier 2 - Standard',
+                    status: 'Revisions',
+                    revision_count: 2,
+                    created_at: '2024-12-30T16:00:00Z',
+                    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&h=225&fit=crop'
+                },
+                {
+                    project_id: 'proj_005',
+                    title: 'Brand Story Video',
+                    client_name: 'David Kim',
+                    client_email: 'david@example.com',
+                    format: 'Long-Form',
+                    style: 'Cinematic',
+                    tier: 'Tier 4 - Premium',
+                    status: 'Approved',
+                    rating: 5,
+                    created_at: '2024-12-28T11:00:00Z',
+                    thumbnail: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&h=225&fit=crop'
+                }
+            ];
+        }
+
+        // ============================================
+        // RENDER PIPELINE
+        // ============================================
+        function renderPipeline() {
+            const columns = {
+                'Submitted': 'queueCards',
+                'In Progress': 'activeCardsContainer',
+                'Review': 'reviewCardsContainer',
+                'Revisions': 'revisionCardsContainer',
+                'Approved': 'approvedCardsContainer'
+            };
+
+            // Clear all columns
+            Object.values(columns).forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+
+            // Sort and render
+            projects.forEach(project => {
+                const columnId = columns[project.status] || 'queueCards';
+                const container = document.getElementById(columnId);
+                container.innerHTML += createProjectCard(project);
+            });
+
+            // Update counts
+            document.getElementById('queueCount').textContent = projects.filter(p => p.status === 'Submitted').length;
+            document.getElementById('activeCards').textContent = projects.filter(p => p.status === 'In Progress').length;
+            document.getElementById('reviewCards').textContent = projects.filter(p => p.status === 'Review').length;
+            document.getElementById('revisionCards').textContent = projects.filter(p => p.status === 'Revisions').length;
+            document.getElementById('approvedCards').textContent = projects.filter(p => p.status === 'Approved').length;
+
+            // Add empty states
+            Object.entries(columns).forEach(([status, id]) => {
+                const container = document.getElementById(id);
+                if (container.children.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M12 8v8M8 12h8"/>
+                            </svg>
+                            <p>No projects</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function createProjectCard(project) {
+            const isShortForm = project.format?.toLowerCase().includes('short');
+            const tierNum = project.tier?.match(/Tier (\d)/)?.[1] || '1';
+            const initials = (project.client_name || 'C').split(' ').map(n => n[0]).join('').toUpperCase();
+            const dateStr = formatDate(project.created_at);
+
+            let actionsHtml = '';
+            if (project.status === 'Review') {
+                actionsHtml = `
+                    <div class="card-actions">
+                        <button class="action-btn primary" onclick="openReview('${project.project_id}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            Review
+                        </button>
+                        <button class="action-btn secondary" onclick="openFolder('${project.project_id}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            } else if (project.status === 'Approved') {
+                actionsHtml = `
+                    <div class="card-actions">
+                        <button class="action-btn success" onclick="downloadFinal('${project.project_id}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download
+                        </button>
+                    </div>
+                `;
+            }
+
+            let extraInfo = '';
+            if (project.revision_count) {
+                extraInfo = `<div class="revision-badge">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
-                    Revision #1
-                `;
-                pendingCard.appendChild(revisionCount);
-
-                revisionsCards.appendChild(pendingCard);
-
-                // Update counts
-                updateColumnCounts();
-
-                // Show toast
-                showToast('Project sent for revisions');
+                    ${project.revision_count} revision${project.revision_count > 1 ? 's' : ''} requested
+                </div>`;
             }
 
-            closeModal();
+            return `
+                <div class="project-card" data-id="${project.project_id}" onclick="openProject('${project.project_id}')">
+                    <div class="card-thumbnail">
+                        ${project.thumbnail ? 
+                            `<img src="${project.thumbnail}" alt="${project.title}" loading="lazy">` :
+                            `<div class="placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="2" y="2" width="20" height="20" rx="2.18"/>
+                                    <line x1="7" y1="2" x2="7" y2="22"/>
+                                    <line x1="17" y1="2" x2="17" y2="22"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <line x1="2" y1="7" x2="7" y2="7"/>
+                                    <line x1="2" y1="17" x2="7" y2="17"/>
+                                    <line x1="17" y1="17" x2="22" y2="17"/>
+                                    <line x1="17" y1="7" x2="22" y2="7"/>
+                                </svg>
+                                Awaiting footage
+                            </div>`
+                        }
+                        <div class="card-badges">
+                            <span class="type-badge ${isShortForm ? 'sf' : 'lf'}">${isShortForm ? 'Short' : 'Long'}</span>
+                            <span class="tier-badge tier-${tierNum}">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                T${tierNum}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div>
+                                <div class="project-title">${project.title}</div>
+                                <div class="style-tag">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                        <path d="M2 17l10 5 10-5"/>
+                                        <path d="M2 12l10 5 10-5"/>
+                                    </svg>
+                                    ${project.style || 'Default'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <div class="meta-row">
+                                <div class="client-avatar">${initials}</div>
+                                <span class="client-name">${project.client_name || 'Client'}</span>
+                                <span class="meta-divider"></span>
+                                <span class="date-requested">${dateStr}</span>
+                            </div>
+                        </div>
+                        ${extraInfo}
+                        ${actionsHtml}
+                    </div>
+                </div>
+            `;
         }
 
-        function updateColumnCounts() {
-            document.querySelectorAll('.column').forEach(column => {
-                const count = column.querySelectorAll('.project-card').length;
-                column.querySelector('.column-count').textContent = count;
-            });
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
 
-        function openReview(card) {
-            const projectId = card.dataset.id;
-            // Open review page
-            if (window.parent && window.parent.loadPage) {
-                window.parent.loadPage('review');
+        function updateStats() {
+            document.getElementById('activeCount').textContent = projects.filter(p => p.status === 'In Progress').length;
+            document.getElementById('reviewCount').textContent = projects.filter(p => p.status === 'Review').length;
+            document.getElementById('revisionCount').textContent = projects.filter(p => p.status === 'Revisions').length;
+        }
+
+        // ============================================
+        // ACTIONS
+        // ============================================
+        function openProject(projectId) {
+            console.log('Open project:', projectId);
+            // Could open a modal or navigate to detail page
+        }
+
+        function openReview(projectId) {
+            window.location.href = `/review?project=${projectId}`;
+        }
+
+        function openFolder(projectId) {
+            const project = projects.find(p => p.project_id === projectId);
+            if (project?.project_folder) {
+                window.open(project.project_folder, '_blank');
             }
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastText = document.getElementById('toastText');
-            toastText.textContent = message;
-            toast.classList.add('show');
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        function downloadFinal(projectId) {
+            const project = projects.find(p => p.project_id === projectId);
+            if (project?.video_url) {
+                window.open(project.video_url, '_blank');
+            }
         }
+
+        function toggleFilters() {
+            // TODO: Show filter modal
+        }
+
+        function refreshProjects() {
+            loadProjects();
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', loadProjects);
     </script>
 </body>
 </html>
