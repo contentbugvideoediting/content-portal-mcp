@@ -233,7 +233,7 @@ async function airtableUpdate(table, recordId, fields) {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.8.0-storage',
+  version: '3.9.0-projects',
   ts: Date.now(),
   services: {
     ghl: !!GHL_API_KEY,
@@ -2378,6 +2378,580 @@ function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+
+// ============================================
+// PROJECT SYSTEM - Complete Pipeline
+// ============================================
+
+/**
+ * POST /api/project/create - Client submits a new project request
+ * Creates project in Airtable, links sessions, generates editor package
+ */
+app.post('/api/project/create', async (req, res) => {
+  try {
+    const {
+      email,
+      title,
+      format,         // 'Short-Form' or 'Long-Form'
+      style,          // Style template name
+      tier,           // Edit tier selected
+      instructions,
+      driveLink,
+      hookPreference,
+      blueprint_id,   // Optional: specific blueprint record
+      session_ids,    // Optional: array of Drive file IDs to include
+      created_at
+    } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    console.log('[Project Create]', title, 'from', normalizedEmail);
+
+    // Get client info from GHL
+    const contact = await ghlFindByEmail(normalizedEmail);
+    if (!contact) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    // Get client's Drive folder
+    let driveFolderId = null;
+    let driveFolderUrl = null;
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        driveFolderUrl = folderField.value;
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+      }
+    }
+
+    // Generate project ID
+    const projectId = `proj_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+
+    // Get session files if IDs provided
+    let sessionFiles = [];
+    if (session_ids?.length && driveFolderId && driveReady && googleDrive) {
+      for (const fileId of session_ids) {
+        try {
+          const file = await googleDrive.files.get({
+            fileId,
+            fields: 'id, name, mimeType, size, webViewLink, webContentLink',
+            supportsAllDrives: true
+          });
+          sessionFiles.push({
+            id: file.data.id,
+            name: file.data.name,
+            type: file.data.mimeType,
+            size: file.data.size,
+            url: file.data.webViewLink,
+            download: file.data.webContentLink
+          });
+        } catch (e) {
+          console.error('[Project] Failed to get session file:', fileId);
+        }
+      }
+    }
+
+    // Create project folder in Drive (subfolder of client folder)
+    let projectFolderId = null;
+    let projectFolderUrl = null;
+    if (driveFolderId && driveReady && googleDrive) {
+      try {
+        // Create project folder structure
+        const projectFolder = await googleDrive.files.create({
+          requestBody: {
+            name: `📁 ${title || 'Untitled'} - ${new Date().toISOString().split('T')[0]}`,
+            mimeType: 'application/vnd.google-apps.folder',
+            parents: [driveFolderId]
+          },
+          fields: 'id, webViewLink',
+          supportsAllDrives: true
+        });
+        projectFolderId = projectFolder.data.id;
+        projectFolderUrl = projectFolder.data.webViewLink;
+
+        // Create subfolders
+        const subfolders = ['📹 Raw Footage', '✨ Cleaned', '📝 Transcripts', '🎬 Final Edits', '📋 Assets'];
+        for (const name of subfolders) {
+          await googleDrive.files.create({
+            requestBody: {
+              name,
+              mimeType: 'application/vnd.google-apps.folder',
+              parents: [projectFolderId]
+            },
+            supportsAllDrives: true
+          });
+        }
+
+        console.log('[Project] Created folder structure:', projectFolderId);
+      } catch (e) {
+        console.error('[Project] Folder creation failed:', e.message);
+      }
+    }
+
+    // Build editor package data
+    const editorPackage = {
+      project_id: projectId,
+      client: {
+        name: `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),
+        email: normalizedEmail,
+        phone: contact.phone || ''
+      },
+      project: {
+        title: title || 'Untitled Project',
+        format,
+        style,
+        tier,
+        instructions,
+        hook_preference: hookPreference,
+        drive_link: driveLink || driveFolderUrl,
+        project_folder: projectFolderUrl
+      },
+      assets: {
+        sessions: sessionFiles,
+        raw_folder: projectFolderUrl ? `${projectFolderUrl}` : null
+      },
+      blueprint: {
+        id: blueprint_id,
+        style_name: style,
+        format_type: format
+      },
+      status: 'submitted',
+      created_at: created_at || new Date().toISOString()
+    };
+
+    // Create project in Airtable
+    let airtableRecord = null;
+    try {
+      const atResponse = await fetch(`https://api.airtable.com/v0/${AT_BASE_ID}/${AT_TABLES.projects}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${AT_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            'Project ID': projectId,
+            'Title': title || 'Untitled',
+            'Client Email': normalizedEmail,
+            'Client Name': editorPackage.client.name,
+            'Format': format,
+            'Style': style,
+            'Tier': tier,
+            'Instructions': instructions,
+            'Hook Preference': hookPreference,
+            'Drive Link': driveLink || driveFolderUrl,
+            'Project Folder': projectFolderUrl,
+            'Sessions': JSON.stringify(sessionFiles),
+            'Status': 'Submitted',
+            'Created At': new Date().toISOString()
+          }
+        })
+      });
+      if (atResponse.ok) {
+        airtableRecord = await atResponse.json();
+      }
+    } catch (e) {
+      console.error('[Project] Airtable save failed:', e.message);
+    }
+
+    // Create editor summary doc in project folder
+    if (projectFolderId && driveReady && googleDrive) {
+      try {
+        const summaryContent = generateEditorSummary(editorPackage);
+        const docResponse = await googleDrive.files.create({
+          requestBody: {
+            name: `📋 Editor Brief - ${title || 'Project'}`,
+            mimeType: 'application/vnd.google-apps.document',
+            parents: [projectFolderId]
+          },
+          media: {
+            mimeType: 'text/plain',
+            body: summaryContent
+          },
+          fields: 'id, webViewLink',
+          supportsAllDrives: true
+        });
+        editorPackage.summary_doc = docResponse.data.webViewLink;
+      } catch (e) {
+        console.error('[Project] Summary doc creation failed:', e.message);
+      }
+    }
+
+    // Notify via GHL webhook (for assignment/notification)
+    if (GHL_API_KEY) {
+      try {
+        await fetch(`https://services.leadconnectorhq.com/hooks/${GHL_LOCATION_ID}/contacts/${contact.id}/notes`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${GHL_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Version': '2021-07-28'
+          },
+          body: JSON.stringify({
+            body: `🎬 NEW PROJECT SUBMITTED\n\nTitle: ${title}\nFormat: ${format}\nStyle: ${style}\nTier: ${tier}\n\nInstructions: ${instructions || 'None'}\nHook: ${hookPreference || 'Editor choice'}\n\nProject Folder: ${projectFolderUrl || 'N/A'}`
+          })
+        });
+      } catch (e) {
+        console.error('[Project] GHL notification failed');
+      }
+    }
+
+    // Create channel for project updates
+    const channelId = `project_${projectId}`;
+    try {
+      await airtableCreate(AT_TABLES.channels, {
+        channel_id: channelId,
+        type: 'project_updates',
+        name: `Project: ${title}`,
+        participant_emails: normalizedEmail
+      });
+    } catch (e) {
+      // Channel creation optional
+    }
+
+    res.json({
+      success: true,
+      id: projectId,
+      airtable_id: airtableRecord?.id,
+      project_folder: projectFolderUrl,
+      editor_package: editorPackage
+    });
+
+  } catch (err) {
+    console.error('[Project Create]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Generate editor summary document content
+ */
+function generateEditorSummary(pkg) {
+  return `
+═══════════════════════════════════════════════════════════
+                    EDITOR BRIEF
+═══════════════════════════════════════════════════════════
+
+PROJECT: ${pkg.project.title}
+ID: ${pkg.project_id}
+SUBMITTED: ${new Date(pkg.created_at).toLocaleDateString()}
+
+───────────────────────────────────────────────────────────
+CLIENT INFORMATION
+───────────────────────────────────────────────────────────
+Name: ${pkg.client.name}
+Email: ${pkg.client.email}
+Phone: ${pkg.client.phone || 'Not provided'}
+
+───────────────────────────────────────────────────────────
+PROJECT SPECIFICATIONS
+───────────────────────────────────────────────────────────
+Format: ${pkg.project.format}
+Style: ${pkg.project.style}
+Tier: ${pkg.project.tier}
+
+Hook Preference: ${pkg.project.hook_preference || 'Editor choice'}
+
+Special Instructions:
+${pkg.project.instructions || 'None provided'}
+
+───────────────────────────────────────────────────────────
+ASSETS & FILES
+───────────────────────────────────────────────────────────
+Project Folder: ${pkg.project.project_folder || 'N/A'}
+Client Drive: ${pkg.project.drive_link || 'N/A'}
+
+Raw Sessions (${pkg.assets.sessions?.length || 0} files):
+${pkg.assets.sessions?.map(s => `  • ${s.name} (${formatBytesStorage(parseInt(s.size || 0))})`).join('\n') || '  None linked'}
+
+───────────────────────────────────────────────────────────
+BLUEPRINT STYLE
+───────────────────────────────────────────────────────────
+Style: ${pkg.blueprint.style_name || 'Default'}
+Format: ${pkg.blueprint.format_type}
+
+───────────────────────────────────────────────────────────
+WORKFLOW CHECKLIST
+───────────────────────────────────────────────────────────
+[ ] Download raw footage
+[ ] Review client instructions
+[ ] Apply blueprint style
+[ ] Create rough cut
+[ ] Color grade & audio mix
+[ ] Export for client review
+[ ] Submit for approval
+
+═══════════════════════════════════════════════════════════
+`;
+}
+
+/**
+ * GET /api/projects - List projects (for editor pipeline)
+ */
+app.get('/api/projects', async (req, res) => {
+  try {
+    const userEmail = req.headers['x-user-email'];
+    const userRole = req.headers['x-user-role'] || 'client';
+    const status = req.query.status;
+    const clientEmail = req.query.client;
+
+    let filter = '';
+    
+    // Clients only see their own projects
+    if (userRole === 'client' || userRole === 'trial') {
+      filter = `{Client Email} = '${userEmail}'`;
+    } else if (clientEmail) {
+      // Editor/admin filtering by client
+      filter = `{Client Email} = '${clientEmail}'`;
+    }
+
+    if (status) {
+      const statusFilter = `{Status} = '${status}'`;
+      filter = filter ? `AND(${filter}, ${statusFilter})` : statusFilter;
+    }
+
+    const projects = await airtableGet(AT_TABLES.projects, filter, 50);
+
+    const formatted = projects.map(p => ({
+      id: p.id,
+      project_id: p.fields['Project ID'],
+      title: p.fields['Title'],
+      client_email: p.fields['Client Email'],
+      client_name: p.fields['Client Name'],
+      format: p.fields['Format'],
+      style: p.fields['Style'],
+      tier: p.fields['Tier'],
+      status: p.fields['Status'],
+      instructions: p.fields['Instructions'],
+      hook_preference: p.fields['Hook Preference'],
+      drive_link: p.fields['Drive Link'],
+      project_folder: p.fields['Project Folder'],
+      sessions: safeJSONParse(p.fields['Sessions'], []),
+      video_url: p.fields['Video URL'],       // Final edit URL
+      thumbnail: p.fields['Thumbnail'],
+      created_at: p.fields['Created At'],
+      updated_at: p.createdTime,
+      // Editor-only fields
+      editor_assigned: p.fields['Editor Assigned'],
+      editor_notes: userRole !== 'client' ? p.fields['Editor Notes'] : undefined,
+      internal_deadline: userRole !== 'client' ? p.fields['Internal Deadline'] : undefined
+    }));
+
+    res.json({
+      success: true,
+      projects: formatted,
+      count: formatted.length
+    });
+
+  } catch (err) {
+    console.error('[Projects List]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/projects/:id - Update project (status, assignment, etc.)
+ */
+app.patch('/api/projects/:id', async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const userRole = req.headers['x-user-role'] || 'client';
+    const updates = req.body;
+
+    // Clients can only update limited fields
+    const allowedClientFields = ['Status'];
+    const allowedEditorFields = ['Status', 'Editor Assigned', 'Editor Notes', 'Video URL', 'Thumbnail', 'Internal Deadline'];
+
+    const fieldsToUpdate = {};
+    const allowedFields = userRole === 'client' ? allowedClientFields : allowedEditorFields;
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        fieldsToUpdate[key] = value;
+      }
+    }
+
+    if (Object.keys(fieldsToUpdate).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    // Find project by project_id or airtable record id
+    let recordId = projectId;
+    if (projectId.startsWith('proj_')) {
+      const projects = await airtableGet(AT_TABLES.projects, `{Project ID} = '${projectId}'`, 1);
+      if (projects.length === 0) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      recordId = projects[0].id;
+    }
+
+    await airtableUpdate(AT_TABLES.projects, recordId, fieldsToUpdate);
+
+    res.json({ success: true, updated: fieldsToUpdate });
+
+  } catch (err) {
+    console.error('[Project Update]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/trial/start - Called when lead books demo (creates Drive folder)
+ * Triggered by GHL webhook or booking confirmation
+ */
+app.post('/api/trial/start', async (req, res) => {
+  try {
+    const { email, firstName, lastName, phone } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    console.log('[Trial Start]', normalizedEmail);
+
+    // Find or create contact in GHL
+    let contact = await ghlFindByEmail(normalizedEmail);
+    
+    if (!contact && GHL_API_KEY) {
+      // Create new contact
+      const createResponse = await fetch(`https://services.leadconnectorhq.com/contacts/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GHL_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Version': '2021-07-28'
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          firstName: firstName || '',
+          lastName: lastName || '',
+          phone: phone || '',
+          locationId: GHL_LOCATION_ID,
+          tags: ['free-trial', 'demo-booked']
+        })
+      });
+      
+      if (createResponse.ok) {
+        const data = await createResponse.json();
+        contact = data.contact;
+      }
+    }
+
+    if (!contact) {
+      return res.status(500).json({ error: 'Failed to create contact' });
+    }
+
+    // Check if Drive folder already exists
+    let driveFolderId = null;
+    let driveFolderUrl = null;
+    
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+        driveFolderUrl = folderField.value;
+      }
+    }
+
+    // Create Drive folder if doesn't exist
+    if (!driveFolderId && driveReady && googleDrive) {
+      const folderName = `${firstName || 'Client'} ${lastName || ''} - Content Bug`.trim();
+      
+      const folderResponse = await googleDrive.files.create({
+        requestBody: {
+          name: folderName,
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: ['0ADnOJaRBvSNCUk9PVA']
+        },
+        fields: 'id, webViewLink',
+        supportsAllDrives: true
+      });
+
+      driveFolderId = folderResponse.data.id;
+      driveFolderUrl = folderResponse.data.webViewLink;
+
+      // Create default subfolders
+      const subfolders = ['📹 Raw Sessions', '🎬 Completed Edits', '📋 Brand Assets'];
+      for (const name of subfolders) {
+        await googleDrive.files.create({
+          requestBody: {
+            name,
+            mimeType: 'application/vnd.google-apps.folder',
+            parents: [driveFolderId]
+          },
+          supportsAllDrives: true
+        });
+      }
+
+      // Update GHL with folder link and trial status
+      await ghlUpdateContact(contact.id, {
+        customFields: [
+          { id: GHL_FIELDS.googleDriveFolderLink, value: driveFolderUrl },
+          { id: GHL_FIELDS.subscriptionStatus, value: 'Trial' },
+          { id: GHL_FIELDS.onboardingStatus, value: 'Demo Booked' },
+          { id: GHL_FIELDS.userRole, value: 'Trial' }
+        ]
+      });
+
+      await ghlAddTags(contact.id, ['free-trial', 'demo-booked', 'drive-folder-created']);
+
+      console.log('[Trial Start] Created folder for:', normalizedEmail, driveFolderId);
+    }
+
+    // Create/update client record in Airtable
+    try {
+      const existing = await airtableGet(AT_TABLES.clients, `{Email} = '${normalizedEmail}'`, 1);
+      
+      if (existing.length > 0) {
+        await airtableUpdate(AT_TABLES.clients, existing[0].id, {
+          'Contact Status': 'Trial',
+          'Portal Access': 'Full',
+          'Drive Folder': driveFolderUrl
+        });
+      } else {
+        await airtableCreate(AT_TABLES.clients, {
+          'Email': normalizedEmail,
+          'Name': `${firstName || ''} ${lastName || ''}`.trim(),
+          'Contact Status': 'Trial',
+          'Portal Access': 'Full',
+          'Drive Folder': driveFolderUrl
+        });
+      }
+    } catch (e) {
+      console.error('[Trial] Airtable update failed:', e.message);
+    }
+
+    res.json({
+      success: true,
+      contact_id: contact.id,
+      drive_folder_id: driveFolderId,
+      drive_folder_url: driveFolderUrl,
+      status: 'trial_started'
+    });
+
+  } catch (err) {
+    console.error('[Trial Start]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Helper: Safe JSON parse
+ */
+function safeJSONParse(str, fallback = null) {
+  try {
+    return str ? JSON.parse(str) : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 // START SERVER
