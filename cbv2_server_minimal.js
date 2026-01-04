@@ -233,7 +233,7 @@ async function airtableUpdate(table, recordId, fields) {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.6.0-review-system',
+  version: '3.7.0-sessions',
   ts: Date.now(),
   services: {
     ghl: !!GHL_API_KEY,
@@ -1729,10 +1729,251 @@ app.post('/api/trial/review-booked', async (req, res) => {
   }
 });
 
+
+// ============================================
+// GOOGLE DRIVE SESSION MANAGEMENT
+// Clients store raw sessions in their own Drive folder
+// ============================================
+
+/**
+ * GET /api/sessions/:email - List client's raw sessions from their Drive folder
+ */
+app.get('/api/sessions/:email', async (req, res) => {
+  try {
+    const email = req.params.email.toLowerCase().trim();
+    
+    // Get client's Drive folder from GHL
+    const contact = await ghlFindByEmail(email);
+    if (!contact) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    // Get their Google Drive folder link
+    let driveFolderId = null;
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        // Extract folder ID from URL or use directly
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : folderField.value;
+      }
+    }
+
+    if (!driveFolderId) {
+      return res.json({ 
+        success: true, 
+        sessions: [], 
+        message: 'No Drive folder configured. Sessions will be set up after first project.' 
+      });
+    }
+
+    if (!driveReady || !googleDrive) {
+      return res.status(503).json({ error: 'Google Drive not configured' });
+    }
+
+    // List video files from their folder
+    const response = await googleDrive.files.list({
+      q: `'${driveFolderId}' in parents and (mimeType contains 'video/' or mimeType contains 'audio/') and trashed=false`,
+      fields: 'files(id, name, mimeType, size, createdTime, modifiedTime, thumbnailLink, webViewLink, webContentLink)',
+      orderBy: 'modifiedTime desc',
+      pageSize: 50
+    });
+
+    const sessions = (response.data.files || []).map(f => ({
+      id: f.id,
+      name: f.name,
+      type: f.mimeType.includes('video') ? 'video' : 'audio',
+      size: parseInt(f.size || 0),
+      size_formatted: formatBytes(parseInt(f.size || 0)),
+      created_at: f.createdTime,
+      modified_at: f.modifiedTime,
+      thumbnail: f.thumbnailLink,
+      view_url: f.webViewLink,
+      download_url: f.webContentLink
+    }));
+
+    res.json({
+      success: true,
+      folder_id: driveFolderId,
+      sessions,
+      count: sessions.length
+    });
+
+  } catch (err) {
+    console.error('[Sessions List]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/sessions/upload - Get upload URL for client's Drive folder
+ * Returns a resumable upload URL for large files
+ */
+app.post('/api/sessions/upload', async (req, res) => {
+  try {
+    const { email, filename, mimeType } = req.body;
+    
+    if (!email || !filename) {
+      return res.status(400).json({ error: 'email and filename required' });
+    }
+
+    // Get client's Drive folder
+    const contact = await ghlFindByEmail(email.toLowerCase().trim());
+    if (!contact) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    let driveFolderId = null;
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : folderField.value;
+      }
+    }
+
+    // If no folder exists, create one for this client
+    if (!driveFolderId && driveReady && googleDrive) {
+      const folderResponse = await googleDrive.files.create({
+        requestBody: {
+          name: `${contact.firstName || 'Client'} ${contact.lastName || ''} - Sessions`.trim(),
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: ['0ADnOJaRBvSNCUk9PVA'] // ContentBug shared drive
+        },
+        fields: 'id, webViewLink'
+      });
+      
+      driveFolderId = folderResponse.data.id;
+      
+      // Update GHL with the new folder link
+      await ghlUpdateContact(contact.id, {
+        customFields: [
+          { id: GHL_FIELDS.googleDriveFolderLink, value: folderResponse.data.webViewLink }
+        ]
+      });
+    }
+
+    if (!driveFolderId || !driveReady) {
+      return res.status(503).json({ error: 'Unable to access Drive storage' });
+    }
+
+    // Create placeholder file and return upload info
+    // For direct browser uploads, we'll create the file metadata first
+    const fileMetadata = {
+      name: filename,
+      parents: [driveFolderId]
+    };
+
+    const file = await googleDrive.files.create({
+      requestBody: fileMetadata,
+      fields: 'id, webViewLink'
+    });
+
+    res.json({
+      success: true,
+      file_id: file.data.id,
+      folder_id: driveFolderId,
+      message: 'File placeholder created. Upload content via Drive API.',
+      // For browser uploads, client should use Google Picker or resumable upload
+      upload_method: 'google_picker_or_resumable'
+    });
+
+  } catch (err) {
+    console.error('[Sessions Upload]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/sessions/link - Link existing Drive files to a project request
+ */
+app.post('/api/sessions/link', async (req, res) => {
+  try {
+    const { email, project_id, session_ids } = req.body;
+    
+    if (!email || !project_id || !session_ids?.length) {
+      return res.status(400).json({ error: 'email, project_id, and session_ids required' });
+    }
+
+    console.log('[Sessions Link]', session_ids.length, 'sessions to project:', project_id);
+
+    // Get file details for linked sessions
+    const sessionDetails = [];
+    if (driveReady && googleDrive) {
+      for (const fileId of session_ids) {
+        try {
+          const file = await googleDrive.files.get({
+            fileId,
+            fields: 'id, name, mimeType, size, webViewLink'
+          });
+          sessionDetails.push({
+            id: file.data.id,
+            name: file.data.name,
+            type: file.data.mimeType,
+            size: file.data.size,
+            url: file.data.webViewLink
+          });
+        } catch (e) {
+          console.error('[Session Get]', fileId, e.message);
+        }
+      }
+    }
+
+    // Store the link in Airtable (or update project record)
+    // This could go in a Sessions field on the Projects table
+    
+    res.json({
+      success: true,
+      project_id,
+      linked_sessions: sessionDetails,
+      count: sessionDetails.length
+    });
+
+  } catch (err) {
+    console.error('[Sessions Link]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * DELETE /api/sessions/:fileId - Remove a session file
+ */
+app.delete('/api/sessions/:fileId', async (req, res) => {
+  try {
+    const fileId = req.params.fileId;
+    const userEmail = req.headers['x-user-email'];
+
+    if (!driveReady || !googleDrive) {
+      return res.status(503).json({ error: 'Google Drive not available' });
+    }
+
+    // Move to trash (can be recovered)
+    await googleDrive.files.update({
+      fileId,
+      requestBody: { trashed: true }
+    });
+
+    res.json({ success: true, message: 'Session moved to trash' });
+
+  } catch (err) {
+    console.error('[Session Delete]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Helper function
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 // START SERVER
 // ============================================
 app.listen(PORT, () => {
-  console.log(`ContentBug Portal v3.6.1 on port ${PORT}`);
+  console.log(`ContentBug Portal v3.7.0 on port ${PORT}`);
   console.log('Chat stored in Airtable, GHL for contacts');
   console.log('Zoom integration active');
   console.log('Hourly sync enabled');
