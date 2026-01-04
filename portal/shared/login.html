@@ -1905,7 +1905,9 @@
                     role: (result.userRole || 'client').toLowerCase(),
                     status: (result.subscriptionStatus || 'trial').toLowerCase().replace(' ', '_'),
                     tier: result.subscriptionName || 'trial',
-                    record_id: result.ghlContactId || ''
+                    record_id: result.ghlContactId || '',
+                    drive_folder_id: result.googleDriveFolderId || '',
+                    drive_folder_url: result.googleDriveFolderLink || ''
                 };
 
                 // Store user info in localStorage for portal use
@@ -1921,6 +1923,14 @@
                 }
                 if (user.status) {
                     localStorage.setItem('cb_status', user.status);
+
+                // Store Google Drive folder info
+                if (user.drive_folder_id) {
+                    localStorage.setItem('cb_drive_folder_id', user.drive_folder_id);
+                }
+                if (user.drive_folder_url) {
+                    localStorage.setItem('cb_drive_folder_url', user.drive_folder_url);
+                }
                 }
 
                 // Success animation
