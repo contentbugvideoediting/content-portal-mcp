@@ -233,7 +233,7 @@ async function airtableUpdate(table, recordId, fields) {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.7.0-sessions',
+  version: '3.8.0-storage',
   ts: Date.now(),
   services: {
     ghl: !!GHL_API_KEY,
@@ -425,7 +425,9 @@ app.post('/api/auth/verify-code', async (req, res) => {
       portalAccess: 'Limited',
       userRole: 'Lead',
       onboardingStatus: '',
-      subscriptionName: ''
+      subscriptionName: '',
+      googleDriveFolderLink: '',
+      googleDriveFolderId: ''
     };
 
     if (contact) {
@@ -441,6 +443,46 @@ app.post('/api/auth/verify-code', async (req, res) => {
           if (cf.id === GHL_FIELDS.userRole) contactData.userRole = cf.value || 'Lead';
           if (cf.id === GHL_FIELDS.onboardingStatus) contactData.onboardingStatus = cf.value || '';
           if (cf.id === GHL_FIELDS.subscriptionName) contactData.subscriptionName = cf.value || '';
+          if (cf.id === GHL_FIELDS.googleDriveFolderLink) {
+            contactData.googleDriveFolderLink = cf.value || '';
+            // Extract folder ID from URL
+            const match = (cf.value || '').match(/folders\/([a-zA-Z0-9_-]+)/);
+            if (match) contactData.googleDriveFolderId = match[1];
+          }
+        }
+      }
+
+      // AUTO-CREATE DRIVE FOLDER for trial/paid users without one
+      const isPaidOrTrial = ['Active', 'Trial', 'Trialing'].some(s => 
+        contactData.subscriptionStatus.toLowerCase().includes(s.toLowerCase())
+      ) || contactData.userRole.toLowerCase() === 'client';
+
+      if (isPaidOrTrial && !contactData.googleDriveFolderId && driveReady && googleDrive) {
+        try {
+          const folderName = `${contact.firstName || 'Client'} ${contact.lastName || ''} - Content Bug`.trim();
+          const folderResponse = await googleDrive.files.create({
+            requestBody: {
+              name: folderName,
+              mimeType: 'application/vnd.google-apps.folder',
+              parents: ['0ADnOJaRBvSNCUk9PVA'] // ContentBug shared drive
+            },
+            fields: 'id, webViewLink',
+            supportsAllDrives: true
+          });
+
+          contactData.googleDriveFolderId = folderResponse.data.id;
+          contactData.googleDriveFolderLink = folderResponse.data.webViewLink;
+
+          // Update GHL with folder
+          await ghlUpdateContact(contact.id, {
+            customFields: [
+              { id: GHL_FIELDS.googleDriveFolderLink, value: folderResponse.data.webViewLink }
+            ]
+          });
+
+          console.log('[Auth] Auto-created Drive folder for:', normalizedEmail);
+        } catch (driveErr) {
+          console.error('[Auth] Drive folder creation failed:', driveErr.message);
         }
       }
 
@@ -456,7 +498,7 @@ app.post('/api/auth/verify-code', async (req, res) => {
 
     const token = Buffer.from(`${normalizedEmail}:${Date.now()}`).toString('base64');
 
-    console.log(`[Auth] Verified: ${normalizedEmail}`);
+    console.log(`[Auth] Verified: ${normalizedEmail} | Drive: ${contactData.googleDriveFolderId ? 'Yes' : 'No'}`);
 
     res.json({
       success: true,
@@ -468,6 +510,8 @@ app.post('/api/auth/verify-code', async (req, res) => {
   } catch (err) {
     console.error('[Auth Verify]', err.message);
     res.status(500).json({ error: 'Verification failed' });
+  }
+});
   }
 });
 
@@ -1728,6 +1772,374 @@ app.post('/api/trial/review-booked', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+
+// ============================================
+// STORAGE & DRIVE INTEGRATION
+// Client's Google Drive folder as their storage
+// ============================================
+
+/**
+ * POST /api/drive/connect - Create or get client's Drive folder
+ * Auto-creates folder if doesn't exist, updates GHL contact
+ */
+app.post('/api/drive/connect', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    const contact = await ghlFindByEmail(email.toLowerCase().trim());
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    // Check if folder already exists
+    let driveFolderId = null;
+    let driveFolderUrl = null;
+    
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+        driveFolderUrl = folderField.value;
+      }
+    }
+
+    // If no folder, create one
+    if (!driveFolderId && driveReady && googleDrive) {
+      const folderName = `${contact.firstName || 'Client'} ${contact.lastName || ''} - Content Bug`.trim();
+      
+      const folderResponse = await googleDrive.files.create({
+        requestBody: {
+          name: folderName,
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: ['0ADnOJaRBvSNCUk9PVA'] // ContentBug shared drive
+        },
+        fields: 'id, webViewLink',
+        supportsAllDrives: true
+      });
+
+      driveFolderId = folderResponse.data.id;
+      driveFolderUrl = folderResponse.data.webViewLink;
+
+      // Update GHL with folder link
+      await ghlUpdateContact(contact.id, {
+        customFields: [
+          { id: GHL_FIELDS.googleDriveFolderLink, value: driveFolderUrl }
+        ]
+      });
+
+      console.log('[Drive] Created folder for:', email, driveFolderId);
+    }
+
+    if (!driveFolderId) {
+      return res.status(503).json({ error: 'Unable to create Drive folder. Service unavailable.' });
+    }
+
+    res.json({
+      success: true,
+      folder_id: driveFolderId,
+      folder_url: driveFolderUrl
+    });
+
+  } catch (err) {
+    console.error('[Drive Connect]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/storage/files - List all files from client's Drive folder
+ * Returns videos, assets, organized by type
+ */
+app.get('/api/storage/files', async (req, res) => {
+  try {
+    const email = req.headers['x-user-email'];
+    if (!email) {
+      return res.status(400).json({ error: 'Email header required' });
+    }
+
+    const contact = await ghlFindByEmail(email.toLowerCase().trim());
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    // Get Drive folder
+    let driveFolderId = null;
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+      }
+    }
+
+    if (!driveFolderId) {
+      return res.json({
+        success: true,
+        folder_id: null,
+        videos: [],
+        assets: [],
+        storage_used: 0,
+        storage_used_formatted: '0 B',
+        message: 'No Drive folder configured'
+      });
+    }
+
+    if (!driveReady || !googleDrive) {
+      return res.status(503).json({ error: 'Drive service unavailable' });
+    }
+
+    // List all files in folder
+    const response = await googleDrive.files.list({
+      q: `'${driveFolderId}' in parents and trashed=false`,
+      fields: 'files(id, name, mimeType, size, createdTime, modifiedTime, thumbnailLink, webViewLink, webContentLink, videoMediaMetadata)',
+      orderBy: 'modifiedTime desc',
+      pageSize: 100,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true
+    });
+
+    const files = response.data.files || [];
+    
+    // Separate into videos and assets
+    const videos = [];
+    const assets = [];
+    let totalSize = 0;
+
+    for (const f of files) {
+      const size = parseInt(f.size || 0);
+      totalSize += size;
+
+      const fileData = {
+        id: f.id,
+        name: f.name,
+        type: f.mimeType,
+        size: formatBytesStorage(size),
+        size_bytes: size,
+        date: f.modifiedTime?.split('T')[0] || '',
+        created: f.createdTime,
+        modified: f.modifiedTime,
+        thumbnail: f.thumbnailLink,
+        url: f.webViewLink,
+        download_url: f.webContentLink
+      };
+
+      // Add video duration if available
+      if (f.videoMediaMetadata?.durationMillis) {
+        const secs = Math.floor(f.videoMediaMetadata.durationMillis / 1000);
+        const mins = Math.floor(secs / 60);
+        const remainSecs = secs % 60;
+        fileData.duration = `${mins}:${remainSecs.toString().padStart(2, '0')}`;
+      }
+
+      if (f.mimeType?.startsWith('video/') || f.mimeType?.startsWith('audio/')) {
+        videos.push(fileData);
+      } else {
+        assets.push(fileData);
+      }
+    }
+
+    res.json({
+      success: true,
+      folder_id: driveFolderId,
+      videos,
+      assets,
+      storage_used: totalSize,
+      storage_used_formatted: formatBytesStorage(totalSize),
+      total_files: files.length
+    });
+
+  } catch (err) {
+    console.error('[Storage Files]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/storage/upload - Upload file to client's Drive folder
+ * For direct uploads (small files) or returns resumable upload URL
+ */
+app.post('/api/storage/upload', async (req, res) => {
+  try {
+    const email = req.headers['x-user-email'];
+    const { filename, mimeType } = req.body;
+    
+    if (!email || !filename) {
+      return res.status(400).json({ error: 'Email and filename required' });
+    }
+
+    const contact = await ghlFindByEmail(email.toLowerCase().trim());
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    // Get or create Drive folder
+    let driveFolderId = null;
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+      }
+    }
+
+    // Create folder if needed
+    if (!driveFolderId && driveReady && googleDrive) {
+      const folderName = `${contact.firstName || 'Client'} ${contact.lastName || ''} - Content Bug`.trim();
+      const folderResponse = await googleDrive.files.create({
+        requestBody: {
+          name: folderName,
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: ['0ADnOJaRBvSNCUk9PVA']
+        },
+        fields: 'id, webViewLink',
+        supportsAllDrives: true
+      });
+      
+      driveFolderId = folderResponse.data.id;
+      
+      await ghlUpdateContact(contact.id, {
+        customFields: [
+          { id: GHL_FIELDS.googleDriveFolderLink, value: folderResponse.data.webViewLink }
+        ]
+      });
+    }
+
+    if (!driveFolderId || !driveReady) {
+      return res.status(503).json({ error: 'Drive unavailable' });
+    }
+
+    res.json({
+      success: true,
+      folder_id: driveFolderId,
+      message: 'Ready for upload. Use Google Picker or resumable upload API.',
+      // For browser-side uploads, recommend using Google Picker
+      picker_hint: true
+    });
+
+  } catch (err) {
+    console.error('[Storage Upload]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * DELETE /api/storage/file/:fileId - Delete a file from storage
+ */
+app.delete('/api/storage/file/:fileId', async (req, res) => {
+  try {
+    const fileId = req.params.fileId;
+    const email = req.headers['x-user-email'];
+
+    if (!driveReady || !googleDrive) {
+      return res.status(503).json({ error: 'Drive unavailable' });
+    }
+
+    // Move to trash
+    await googleDrive.files.update({
+      fileId,
+      requestBody: { trashed: true },
+      supportsAllDrives: true
+    });
+
+    console.log('[Storage] Trashed file:', fileId, 'by', email);
+
+    res.json({ success: true, message: 'File moved to trash' });
+
+  } catch (err) {
+    console.error('[Storage Delete]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/storage/stats - Get storage stats for user
+ */
+app.get('/api/storage/stats', async (req, res) => {
+  try {
+    const email = req.headers['x-user-email'];
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+
+    const contact = await ghlFindByEmail(email.toLowerCase().trim());
+    if (!contact) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    // Determine storage limit based on subscription
+    let storageLimit = 5 * 1024 * 1024 * 1024; // 5GB default (trial)
+    let tier = 'trial';
+    
+    if (contact.customFields) {
+      const subField = contact.customFields.find(f => f.id === GHL_FIELDS.subscriptionName);
+      const subName = (subField?.value || '').toLowerCase();
+      
+      if (subName.includes('pro') || subName.includes('gold')) {
+        storageLimit = 100 * 1024 * 1024 * 1024; // 100GB
+        tier = 'pro';
+      } else if (subName.includes('silver')) {
+        storageLimit = 50 * 1024 * 1024 * 1024; // 50GB
+        tier = 'silver';
+      } else if (subName.includes('basic')) {
+        storageLimit = 20 * 1024 * 1024 * 1024; // 20GB
+        tier = 'basic';
+      }
+    }
+
+    // Get current usage (could cache this)
+    let used = 0;
+    let driveFolderId = null;
+    
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+      }
+    }
+
+    if (driveFolderId && driveReady && googleDrive) {
+      const response = await googleDrive.files.list({
+        q: `'${driveFolderId}' in parents and trashed=false`,
+        fields: 'files(size)',
+        pageSize: 500,
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true
+      });
+      
+      used = (response.data.files || []).reduce((sum, f) => sum + parseInt(f.size || 0), 0);
+    }
+
+    res.json({
+      success: true,
+      tier,
+      used,
+      used_formatted: formatBytesStorage(used),
+      limit: storageLimit,
+      limit_formatted: formatBytesStorage(storageLimit),
+      percent_used: Math.round((used / storageLimit) * 100),
+      has_folder: !!driveFolderId
+    });
+
+  } catch (err) {
+    console.error('[Storage Stats]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Helper
+function formatBytesStorage(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
 
 // ============================================
