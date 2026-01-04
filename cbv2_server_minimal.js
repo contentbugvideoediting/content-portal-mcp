@@ -254,7 +254,7 @@ async function ghlFindByEmail(email) {
   if (!GHL_API_KEY) return null;
   try {
     const res = await axios.get(
-      `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&email=${encodeURIComponent(email)}`,
+      `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&query=${encodeURIComponent(email)}`,
       { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28' } }
     );
     return res.data?.contacts?.[0] || null;
