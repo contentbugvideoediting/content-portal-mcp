@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Content Bug unlimited video editing plans. Submit unlimited requests, get unlimited revisions, with dedicated editors who learn your style.">
+    <title>Pricing - Content Bug Unlimited Video Editing</title>
+    <link rel="icon" type="image/svg+xml" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --basic-color: #3b82f6;
+            --silver-color: #94a3b8;
+            --gold-color: #f59e0b;
+            --pro-color: #a855f7;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #22c55e;
+            --mint: #10b981;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Background */
+        .bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bg-gradient {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1400px;
+            height: 900px;
+            background: radial-gradient(ellipse at center, rgba(30,58,138,.12) 0%, rgba(37,99,235,.06) 30%, transparent 60%);
+            filter: blur(80px);
+        }
+
+        /* Header */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 8px 48px;
+        }
+        .header-backdrop {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(8, 8, 12, 0.95) 100%);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+            box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+        }
+        .header-content {
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 48px;
+        }
+        .logo-container { display: flex; align-items: center; text-decoration: none; }
+        .logo-icon { height: 40px; width: auto; filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.3)); transition: transform 0.3s ease; }
+        .logo-container:hover .logo-icon { transform: scale(1.02); }
+        .nav-menu { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
+        .nav-link {
+            display: block;
+            padding: 12px 24px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover { color: var(--text-white); background: rgba(255,255,255,0.03); }
+        .header-cta {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 50%, var(--blue-bright) 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .header-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5); }
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            padding: 12px;
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .mobile-toggle span { width: 24px; height: 2px; background: var(--text-white); border-radius: 2px; transition: all 0.3s ease; }
+
+        /* Hero */
+        .hero { text-align: center; padding: 140px 24px 48px; position: relative; z-index: 1; }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 0%, #fff 60%, var(--blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p { font-size: 18px; color: var(--text-light); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+        /* Unlock Card */
+        .unlock-card {
+            max-width: 520px;
+            margin: 0 auto 32px;
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid rgba(16,185,129,.25);
+            border-radius: 18px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 40px rgba(16,185,129,.08);
+        }
+        .unlock-card:hover { border-color: rgba(16,185,129,.4); }
+        .unlock-card.expanded { border-color: rgba(16,185,129,.35); }
+        .unlock-card.unlocked {
+            border-color: var(--success);
+            box-shadow: 0 0 60px rgba(34,197,94,.2);
+        }
+
+        .unlock-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .unlock-card:not(.expanded):not(.unlocked) .unlock-header:hover { background: rgba(16,185,129,.05); }
+        .unlock-card.expanded .unlock-header,
+        .unlock-card.unlocked .unlock-header { cursor: default; }
+
+        .unlock-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .unlock-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+        }
+        .unlock-icon svg { width: 22px; height: 22px; fill: #fff; }
+        .unlock-card.unlocked .unlock-icon { background: linear-gradient(135deg, var(--success), var(--mint)); }
+
+        .unlock-title { font-size: 15px; font-weight: 700; color: var(--text-white); margin-bottom: 2px; }
+        .unlock-subtitle { font-size: 13px; color: var(--text-light); }
+        .unlock-card.unlocked .unlock-subtitle { color: var(--success); }
+
+        .unlock-badge {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        .unlock-badge .arrow { transition: transform 0.3s ease; font-size: 10px; }
+        .unlock-card.expanded .unlock-badge .arrow { transform: rotate(180deg); }
+        .unlock-card.unlocked .unlock-badge { background: linear-gradient(135deg, var(--success), var(--mint)); }
+
+        /* Unlock Content */
+        .unlock-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            padding: 0 24px;
+        }
+        .unlock-card.expanded .unlock-content { max-height: 200px; padding: 0 24px 24px; }
+
+        .email-input-row {
+            display: flex;
+            gap: 12px;
+        }
+        .email-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text-white);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .email-input:focus {
+            outline: none;
+            border-color: var(--mint);
+            box-shadow: 0 0 0 3px rgba(16,185,129,.15);
+        }
+        .email-input::placeholder { color: var(--text-muted); }
+
+        .send-code-btn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .send-code-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(16,185,129,.35); }
+        .send-code-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .send-code-btn .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* OTP Flow */
+        .otp-flow { display: none; }
+        .otp-flow.active { display: block; animation: fadeSlideUp 0.4s ease; }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .otp-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .otp-email { color: var(--mint); font-weight: 600; }
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: color 0.2s ease;
+        }
+        .resend-btn:hover:not(:disabled) { color: var(--mint); }
+        .resend-btn:disabled { cursor: not-allowed; }
+
+        .otp-input-row { display: flex; gap: 12px; }
+        .otp-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--dark-input);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            text-align: center;
+            color: var(--text-white);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--mint);
+            box-shadow: 0 0 0 3px rgba(16,185,129,.15);
+        }
+        .otp-input::placeholder { letter-spacing: 4px; color: var(--text-muted); }
+
+        .verify-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .verify-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(16,185,129,.35); }
+        .verify-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Success State */
+        .unlock-success {
+            display: none;
+            text-align: center;
+            padding: 16px 24px 24px;
+        }
+        .unlock-success.active { display: block; animation: fadeSlideUp 0.4s ease; }
+
+        .success-check {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, var(--success), var(--mint));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-check svg { width: 28px; height: 28px; }
+        .success-check svg path { stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .success-check svg .circle { stroke-dasharray: 166; stroke-dashoffset: 166; animation: drawCircle 0.6s ease forwards; }
+        .success-check svg .check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: drawCheck 0.4s ease 0.4s forwards; }
+        @keyframes drawCircle { to { stroke-dashoffset: 0; } }
+        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+        .success-text { font-size: 15px; font-weight: 600; color: var(--success); }
+
+        /* Error Message */
+        .unlock-error {
+            display: none;
+            padding: 10px 14px;
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.25);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #ef4444;
+            margin-top: 12px;
+            text-align: center;
+        }
+        .unlock-error.active { display: block; animation: shake 0.4s ease; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+        /* Info Buttons */
+        .info-sections { max-width: 1200px; margin: 0 auto 32px; padding: 0 24px; position: relative; z-index: 1; }
+        .info-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .info-btn {
+            padding: 10px 18px;
+            background: rgba(59,130,246,.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-btn:hover { border-color: rgba(59,130,246,.3); color: var(--text-light); background: rgba(59,130,246,.08); }
+        .info-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,.3); }
+        .info-btn.active { border-color: var(--blue-bright); color: var(--text-white); background: rgba(59,130,246,.12); }
+        .info-btn .icon { font-size: 10px; transition: transform 0.2s ease; }
+        .info-btn.active .icon { transform: rotate(180deg); }
+        .info-panel {
+            max-width: 700px;
+            margin: 16px auto 0;
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            overflow: hidden;
+            display: none;
+        }
+        .info-panel.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        .info-content { padding: 24px; font-size: 14px; color: var(--text-light); line-height: 1.7; }
+        .info-content p { margin-bottom: 12px; }
+        .info-content p:last-child { margin-bottom: 0; }
+        .info-content ul { list-style: none; margin: 0; padding: 0; }
+        .info-content li { padding: 10px 0; padding-left: 28px; position: relative; border-bottom: 1px solid rgba(59,130,246,.06); }
+        .info-content li:last-child { border-bottom: none; }
+        .info-content li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 16px;
+            height: 16px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2322c55e'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E") center/contain no-repeat;
+        }
+        .info-content li strong { color: var(--text-white); font-weight: 600; display: block; margin-bottom: 2px; }
+        .info-content li span { font-size: 13px; color: var(--text-muted); }
+        .info-highlight { background: rgba(59,130,246,.06); border-radius: 10px; padding: 14px 16px; margin-top: 16px; font-size: 13px; color: var(--text-light); font-style: italic; }
+
+        /* Pricing Grid */
+        .pricing-section { max-width: 1200px; margin: 0 auto; padding: 24px 24px 64px; position: relative; z-index: 1; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: stretch; }
+
+        /* Plan Cards */
+        .plan-card {
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: visible;
+        }
+        .plan-card:hover { transform: translateY(-6px); }
+        .plan-card:nth-child(1):hover { border-color: rgba(59,130,246,.4); box-shadow: 0 20px 40px rgba(59,130,246,.1); }
+        .plan-card:nth-child(2):hover { border-color: rgba(148,163,184,.4); box-shadow: 0 20px 40px rgba(148,163,184,.1); }
+        .plan-card:nth-child(3):hover { border-color: rgba(245,158,11,.4); box-shadow: 0 20px 40px rgba(245,158,11,.1); }
+        .plan-card:nth-child(4):hover { border-color: rgba(168,85,247,.4); box-shadow: 0 20px 40px rgba(168,85,247,.1); }
+        .plan-card.featured { border-color: var(--gold-color); box-shadow: 0 0 50px rgba(245,158,11,.12); }
+        .plan-card.featured::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold-color), #fb923c, var(--gold-color));
+            border-radius: 20px 20px 0 0;
+            z-index: 1;
+        }
+        .popular-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #b45309 0%, var(--gold-color) 100%);
+            color: #000;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 7px 18px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(245,158,11,.35);
+        }
+
+        /* Plan Header */
+        .plan-header { text-align: center; margin-bottom: 24px; position: relative; z-index: 1; }
+        .plan-name { font-size: 32px; font-weight: 800; margin-bottom: 4px; line-height: 1; }
+        .plan-name.basic { color: var(--basic-color); }
+        .plan-name.silver { color: var(--silver-color); }
+        .plan-name.gold { color: var(--gold-color); }
+        .plan-name.pro { color: var(--pro-color); }
+        .plan-unlimited { font-size: 13px; font-weight: 600; color: var(--text-light); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .plan-subtitle { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 16px; }
+        .plan-price { margin-bottom: 8px; }
+        .price-starts { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .price-current { font-size: 42px; font-weight: 800; line-height: 1; color: var(--text-white); }
+        .price-current span { font-size: 16px; font-weight: 500; color: var(--text-muted); }
+        .price-crossed { font-size: 14px; color: var(--text-muted); margin-top: 8px; text-decoration: line-through; opacity: 0.7; }
+
+        /* Locked/Unlocked Price States */
+        .price-locked { display: block; }
+        .price-unlocked { display: none; }
+        body.annual-unlocked .price-locked { display: none; }
+        body.annual-unlocked .price-unlocked { display: block; }
+        .price-unlock-hint { font-size: 12px; color: var(--mint); margin-top: 8px; font-weight: 600; cursor: pointer; }
+        .price-unlock-hint:hover { text-decoration: underline; }
+        .price-savings { font-size: 12px; color: var(--success); margin-top: 6px; font-weight: 700; background: rgba(34,197,94,.1); padding: 4px 10px; border-radius: 6px; display: inline-block; }
+
+        /* Key Features */
+        .key-features {
+            margin: 16px 0;
+            padding: 14px;
+            background: rgba(59,130,246,.04);
+            border: 1px solid rgba(59,130,246,.08);
+            border-radius: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .key-feature { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 5px 0; }
+        .key-feature:first-child { padding-top: 0; }
+        .key-feature:last-child { padding-bottom: 0; }
+        .key-feature-icon {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .key-feature-icon svg { width: 10px; height: 10px; fill: #fff; }
+        .key-feature-text { color: var(--text-light); font-weight: 400; font-size: 13px; }
+        .key-feature-text.bold { font-weight: 700; color: var(--text-white); }
+
+        /* Expandable Section */
+        .expand-section { margin: 20px 0; position: relative; z-index: 1; }
+        .expand-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(59,130,246,.06);
+            border: 1px solid rgba(59,130,246,.12);
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .expand-btn:hover { background: rgba(59,130,246,.1); border-color: rgba(59,130,246,.2); color: var(--text-white); }
+        .expand-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,.2); }
+        .expand-btn .arrow { transition: transform 0.3s ease; }
+        .plan-card.expanded .expand-btn .arrow { transform: rotate(180deg); }
+        .expand-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .plan-card.expanded .expand-content { max-height: 200px; }
+        .expand-inner { padding: 18px 0 0; font-size: 13px; color: var(--text-light); line-height: 1.7; }
+
+        /* CTA Button */
+        .cta-btn {
+            display: block;
+            width: 100%;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-btn:hover:not(.cta-locked) { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(59,130,246,.35); }
+        .cta-btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.3); }
+        .cta-btn.cta-locked {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .cta-btn.cta-locked:hover { transform: none; box-shadow: none; }
+        body.annual-unlocked .cta-btn.cta-locked {
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            cursor: pointer;
+            opacity: 1;
+        }
+        body.annual-unlocked .cta-btn.cta-locked:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(59,130,246,.35); }
+        .plan-card:nth-child(2) .cta-btn:not(.cta-locked) { background: linear-gradient(135deg, #475569 0%, var(--silver-color) 100%); }
+        .plan-card:nth-child(2) .cta-btn:hover:not(.cta-locked) { box-shadow: 0 12px 28px rgba(148,163,184,.3); }
+        body.annual-unlocked .plan-card:nth-child(2) .cta-btn.cta-locked { background: linear-gradient(135deg, #475569 0%, var(--silver-color) 100%); }
+        body.annual-unlocked .plan-card:nth-child(2) .cta-btn.cta-locked:hover { box-shadow: 0 12px 28px rgba(148,163,184,.3); }
+        .plan-card.featured .cta-btn:not(.cta-locked) { background: linear-gradient(135deg, #b45309 0%, var(--gold-color) 100%); }
+        .plan-card.featured .cta-btn:hover:not(.cta-locked) { box-shadow: 0 12px 28px rgba(245,158,11,.35); }
+        body.annual-unlocked .plan-card.featured .cta-btn.cta-locked { background: linear-gradient(135deg, #b45309 0%, var(--gold-color) 100%); }
+        body.annual-unlocked .plan-card.featured .cta-btn.cta-locked:hover { box-shadow: 0 12px 28px rgba(245,158,11,.35); }
+        .plan-card:nth-child(4) .cta-btn:not(.cta-locked) { background: linear-gradient(135deg, #7c3aed 0%, var(--pro-color) 100%); }
+        .plan-card:nth-child(4) .cta-btn:hover:not(.cta-locked) { box-shadow: 0 12px 28px rgba(168,85,247,.35); }
+        body.annual-unlocked .plan-card:nth-child(4) .cta-btn.cta-locked { background: linear-gradient(135deg, #7c3aed 0%, var(--pro-color) 100%); }
+        body.annual-unlocked .plan-card:nth-child(4) .cta-btn.cta-locked:hover { box-shadow: 0 12px 28px rgba(168,85,247,.35); }
+
+        /* Compare Table */
+        .table-section { max-width: 1000px; margin: 48px auto; padding: 0 24px; position: relative; z-index: 1; }
+        .table-header { text-align: center; margin-bottom: 28px; }
+        .table-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, var(--blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .table-header p { font-size: 14px; color: var(--text-muted); }
+        .compare-table {
+            width: 100%;
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .compare-table table { width: 100%; border-collapse: collapse; }
+        .compare-table th, .compare-table td { padding: 16px 18px; text-align: center; border-bottom: 1px solid var(--dark-border); font-size: 14px; }
+        .compare-table th:first-child, .compare-table td:first-child { text-align: left; padding-left: 28px; }
+        .compare-table thead th { background: var(--dark-input); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; }
+        .compare-table thead th.basic { color: var(--basic-color); }
+        .compare-table thead th.silver { color: var(--silver-color); }
+        .compare-table thead th.gold { color: var(--gold-color); }
+        .compare-table thead th.pro { color: var(--pro-color); }
+        .compare-table tbody tr { transition: background 0.2s ease; }
+        .compare-table tbody tr:hover { background: rgba(59,130,246,.03); }
+        .compare-table tbody tr:last-child td { border-bottom: none; }
+        .compare-table td { color: var(--text-light); }
+        .compare-table td:first-child { font-weight: 500; color: var(--text-white); }
+        .compare-table .check { color: var(--success); font-size: 18px; font-weight: 700; }
+        .compare-table .dash { color: var(--text-muted); font-size: 18px; }
+        .compare-table .highlight-row td { background: rgba(59,130,246,.06); font-weight: 700; }
+        .compare-table .highlight-row td:first-child { color: var(--text-white); }
+        .compare-table .capacity-num { font-size: 24px; font-weight: 800; }
+        .compare-table .capacity-num.basic { color: var(--basic-color); }
+        .compare-table .capacity-num.silver { color: var(--silver-color); }
+        .compare-table .capacity-num.gold { color: var(--gold-color); }
+        .compare-table .capacity-num.pro { color: var(--pro-color); }
+        .compare-table .annual-row td { color: var(--success); font-weight: 600; }
+        .compare-table .annual-row td:first-child { color: var(--text-white); }
+        .compare-table .save-tag {
+            display: inline-block;
+            background: rgba(34,197,94,.15);
+            color: var(--success);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* All Plans Section */
+        .all-plans-section {
+            margin-top: 32px;
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            padding: 28px;
+        }
+        .all-plans-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .all-plans-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .all-plan-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-light);
+            padding: 10px 14px;
+            background: rgba(59,130,246,.04);
+            border-radius: 10px;
+        }
+        .all-plan-item .check-icon { color: var(--success); font-weight: 700; }
+        @media (max-width: 900px) { .all-plans-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 500px) { .all-plans-grid { grid-template-columns: 1fr; } }
+
+        /* Annual Perks Section */
+        .annual-perks-section {
+            margin-top: 32px;
+            background: linear-gradient(165deg, rgba(16,185,129,.08) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid rgba(16,185,129,.2);
+            border-radius: 18px;
+            padding: 32px;
+            text-align: center;
+        }
+        .annual-perks-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 12px;
+        }
+        .perks-icon { font-size: 24px; }
+        .annual-perks-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto 28px;
+            line-height: 1.7;
+        }
+        .perks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .perk-card {
+            background: rgba(0,0,0,.3);
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: left;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .perk-card:hover { transform: translateY(-4px); }
+        .perk-card.basic-silver { border-color: rgba(59,130,246,.25); }
+        .perk-card.basic-silver:hover { border-color: rgba(59,130,246,.5); box-shadow: 0 12px 30px rgba(59,130,246,.12); }
+        .perk-card.gold-pro { border-color: rgba(245,158,11,.25); }
+        .perk-card.gold-pro:hover { border-color: rgba(245,158,11,.5); box-shadow: 0 12px 30px rgba(245,158,11,.12); }
+        .perk-plans {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .perk-card.basic-silver .perk-plans { color: var(--basic-color); }
+        .perk-card.gold-pro .perk-plans { color: var(--gold-color); }
+        .perk-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+        .perk-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+        .perk-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(34,197,94,.15);
+            color: var(--success);
+        }
+        .perks-note {
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--mint);
+            font-weight: 600;
+        }
+        @media (max-width: 600px) { .perks-grid { grid-template-columns: 1fr; } }
+
+        /* CTA Section */
+        .cta-section { text-align: center; padding: 40px 24px 100px; position: relative; z-index: 1; }
+        .cta-card {
+            max-width: 520px;
+            margin: 0 auto;
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid rgba(59,130,246,.15);
+            border-radius: 24px;
+            padding: 48px 36px;
+        }
+        .cta-card h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, var(--blue-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .cta-card > p { font-size: 15px; color: var(--text-light); margin-bottom: 28px; line-height: 1.6; }
+        .cta-buttons { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+        .cta-primary {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-bright) 100%);
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(59,130,246,.4); }
+        .cta-primary:focus { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.3); }
+        .cta-secondary {
+            padding: 16px 32px;
+            background: transparent;
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .cta-secondary:hover { border-color: rgba(59,130,246,.3); color: var(--text-white); background: rgba(59,130,246,.05); }
+        .cta-secondary:focus { outline: none; box-shadow: 0 0 0 2px rgba(59,130,246,.2); }
+        .cta-note { font-size: 13px; color: var(--text-muted); margin-top: 24px; line-height: 1.6; }
+
+        /* Responsive */
+        @media (max-width: 1100px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+        @media (max-width: 768px) {
+            .site-header { padding: 6px 20px; }
+            .logo-icon { height: 36px; }
+            .mobile-toggle { display: flex; }
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 20px;
+                right: 20px;
+                margin-top: 12px;
+                flex-direction: column;
+                background: rgba(10, 10, 15, 0.98);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 1px solid rgba(59, 130, 246, 0.15);
+                border-radius: 16px;
+                padding: 16px;
+                display: none;
+                gap: 4px;
+            }
+            .nav-menu.active { display: flex; animation: fadeIn 0.2s ease; }
+            .nav-link, .header-cta { width: 100%; padding: 16px 20px; text-align: center; border-radius: 12px; }
+            .header-cta { justify-content: center; margin-top: 8px; }
+        }
+        @media (max-width: 600px) {
+            .pricing-grid { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto; }
+            .hero { padding: 120px 20px 36px; }
+            .hero h1 { font-size: 1.9rem; }
+            .hero p { font-size: 16px; }
+            .unlock-card { margin: 0 20px 32px; max-width: none; }
+            .unlock-header { padding: 16px 18px; flex-wrap: wrap; gap: 12px; }
+            .unlock-header-left { gap: 12px; }
+            .unlock-icon { width: 40px; height: 40px; }
+            .unlock-icon svg { width: 20px; height: 20px; }
+            .unlock-title { font-size: 14px; }
+            .unlock-subtitle { font-size: 12px; }
+            .unlock-badge { padding: 6px 12px; font-size: 10px; }
+            .unlock-card.expanded .unlock-content { padding: 0 18px 20px; }
+            .email-input-row { flex-direction: column; gap: 10px; }
+            .email-input { padding: 14px 16px; font-size: 16px; }
+            .send-code-btn { padding: 14px 20px; width: 100%; justify-content: center; }
+            .otp-input-row { flex-direction: column; gap: 10px; }
+            .otp-input { padding: 16px; font-size: 24px; }
+            .verify-btn { width: 100%; justify-content: center; padding: 16px; }
+            .info-row { gap: 8px; }
+            .info-btn { font-size: 11px; padding: 8px 14px; }
+            .cta-buttons { flex-direction: column; width: 100%; }
+            .cta-primary, .cta-secondary { width: 100%; text-align: center; }
+            .compare-table th, .compare-table td { padding: 12px 10px; font-size: 12px; }
+            .compare-table th:first-child, .compare-table td:first-child { padding-left: 16px; }
+            .cta-card { padding: 36px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer"><div class="bg-gradient"></div></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-backdrop"></div>
+        <div class="header-content">
+            <a href="{{custom_values.home}}" class="logo-container" aria-label="Content Bug Home">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="Content Bug" class="logo-icon">
+            </a>
+            <nav aria-label="Main navigation">
+                <ul class="nav-menu" id="navMenu" role="menubar">
+                    <li role="none"><a href="{{custom_values.home}}" class="nav-link" role="menuitem">Home</a></li>
+                    <li role="none"><a href="{{custom_values.edits}}" class="nav-link" role="menuitem">Edits</a></li>
+                    <li role="none"><a href="{{custom_values.pricing}}" class="nav-link" role="menuitem">Pricing</a></li>
+                    <li role="none"><a href="{{custom_values.free_trial}}" class="header-cta" role="menuitem">Start Free Trial</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <h1>Unlimited Video Editing.<br>One Flat Rate.</h1>
+            <p>Submit unlimited requests. Get unlimited revisions. Work with dedicated editors who learn your style.</p>
+        </section>
+
+        <!-- Annual Rate Unlock -->
+        <div class="unlock-card" id="unlockCard">
+            <div class="unlock-header" onclick="expandUnlock()">
+                <div class="unlock-header-left">
+                    <div class="unlock-icon">
+                        <svg viewBox="0 0 24 24" id="lockIcon"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="unlock-title" id="unlockTitle">Unlock Annual Member Rate</div>
+                        <div class="unlock-subtitle" id="unlockSubtitle">Get 4 months free on any plan</div>
+                    </div>
+                </div>
+                <div class="unlock-badge" id="unlockBadge">
+                    <span>4 FREE</span>
+                    <span class="arrow">▼</span>
+                </div>
+            </div>
+
+            <div class="unlock-content">
+                <!-- Email Input Flow -->
+                <div class="email-flow" id="emailFlow">
+                    <div class="email-input-row">
+                        <input type="email" class="email-input" id="unlockEmail" placeholder="Enter your email" autocomplete="email">
+                        <button class="send-code-btn" id="sendCodeBtn" onclick="sendVerificationCode()">
+                            <span id="sendCodeText">Send Code</span>
+                        </button>
+                    </div>
+                    <div class="unlock-error" id="emailError"></div>
+                </div>
+
+                <!-- OTP Verification Flow -->
+                <div class="otp-flow" id="otpFlow">
+                    <div class="otp-label">
+                        <span>Code sent to <span class="otp-email" id="otpEmailDisplay"></span></span>
+                        <button class="resend-btn" id="resendBtn" onclick="resendCode()">Resend</button>
+                    </div>
+                    <div class="otp-input-row">
+                        <input type="text" class="otp-input" id="otpInput" placeholder="000000" maxlength="6" inputmode="numeric">
+                        <button class="verify-btn" id="verifyBtn" onclick="verifyCode()">
+                            <span id="verifyText">Verify</span>
+                        </button>
+                    </div>
+                    <div class="unlock-error" id="otpError"></div>
+                </div>
+            </div>
+
+            <!-- Success State -->
+            <div class="unlock-success" id="unlockSuccess">
+                <div class="success-check">
+                    <svg viewBox="0 0 52 52">
+                        <circle class="circle" cx="26" cy="26" r="25"/>
+                        <path class="check" d="M14 27l7 7 16-16"/>
+                    </svg>
+                </div>
+                <div class="success-text">Annual rates unlocked!</div>
+            </div>
+        </div>
+
+        <!-- Info Buttons -->
+        <div class="info-sections">
+            <div class="info-row" role="tablist">
+                <button class="info-btn" onclick="toggleInfoPanel('how')" data-panel="how" role="tab" aria-selected="false" aria-controls="panel-how">How it works <span class="icon" aria-hidden="true">&#9660;</span></button>
+                <button class="info-btn" onclick="toggleInfoPanel('included')" data-panel="included" role="tab" aria-selected="false" aria-controls="panel-included">What's included <span class="icon" aria-hidden="true">&#9660;</span></button>
+                <button class="info-btn" onclick="toggleInfoPanel('turnaround')" data-panel="turnaround" role="tab" aria-selected="false" aria-controls="panel-turnaround">Turnaround <span class="icon" aria-hidden="true">&#9660;</span></button>
+            </div>
+
+            <div class="info-panel" id="panel-how" role="tabpanel" aria-hidden="true">
+                <div class="info-content">
+                    <p>Submit unlimited edit requests at any time. Your plan determines how many projects we actively work on at once.</p>
+                    <p>When one finishes, the next in your queue automatically moves forward. Quality stays high, timelines stay realistic, and work moves daily.</p>
+                </div>
+            </div>
+
+            <div class="info-panel" id="panel-included" role="tabpanel" aria-hidden="true">
+                <div class="info-content">
+                    <ul>
+                        <li><strong>Unlimited edit requests</strong><span>No counting. No pressure.</span></li>
+                        <li><strong>Unlimited revisions</strong><span>We refine until it's right.</span></li>
+                        <li><strong>Daily progress updates</strong><span>Work moves every business day.</span></li>
+                        <li><strong>Direct team access</strong><span>Editor, PM, and creative director.</span></li>
+                    </ul>
+                    <div class="info-highlight">The difference between plans is capacity — how many projects move at once.</div>
+                </div>
+            </div>
+
+            <div class="info-panel" id="panel-turnaround" role="tabpanel" aria-hidden="true">
+                <div class="info-content">
+                    <p>Turnaround depends on video length, file size, and edit complexity. We don't force work into rigid timelines.</p>
+                    <p>Projects move forward daily. Quality is protected. You see real-time status in your portal.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Grid -->
+        <section class="pricing-section" aria-labelledby="pricing-heading">
+            <h2 id="pricing-heading" class="visually-hidden">Pricing Plans</h2>
+            <div class="pricing-grid">
+
+                <!-- BASIC -->
+                <article class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-name basic">Basic</div>
+                        <div class="plan-unlimited">Unlimited</div>
+                        <div class="plan-subtitle">Consistency without complexity</div>
+                        <div class="plan-price">
+                            <!-- Locked State (show monthly) -->
+                            <div class="price-locked">
+                                <div class="price-current">$750<span>/mo</span></div>
+                                <div class="price-unlock-hint" onclick="document.getElementById('unlockCard').scrollIntoView({behavior:'smooth'}); expandUnlock();">🔒 Unlock annual rate</div>
+                            </div>
+                            <!-- Unlocked State (show annual) -->
+                            <div class="price-unlocked">
+                                <div class="price-starts">Annual Rate</div>
+                                <div class="price-current">$500<span>/mo</span></div>
+                                <div class="price-crossed">$750/mo</div>
+                                <div class="price-savings">Save $3,000/year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="key-features">
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text bold">1 Active Edit in Progress</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Requests</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Revisions</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Content Support</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Direct Communication</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Fast Turnarounds</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Project Manager</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Creative Director</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Custom Portal</div>
+                        </div>
+                    </div>
+                    <a href="{{custom_values.basic}}" class="cta-btn cta-locked" onclick="return handlePlanClick(event)">🔒 Unlock to View</a>
+                </article>
+
+                <!-- SILVER -->
+                <article class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-name silver">Silver</div>
+                        <div class="plan-unlimited">Unlimited</div>
+                        <div class="plan-subtitle">Priority handling</div>
+                        <div class="plan-price">
+                            <!-- Locked State (show monthly) -->
+                            <div class="price-locked">
+                                <div class="price-current">$1,300<span>/mo</span></div>
+                                <div class="price-unlock-hint" onclick="document.getElementById('unlockCard').scrollIntoView({behavior:'smooth'}); expandUnlock();">🔒 Unlock annual rate</div>
+                            </div>
+                            <!-- Unlocked State (show annual) -->
+                            <div class="price-unlocked">
+                                <div class="price-starts">Annual Rate</div>
+                                <div class="price-current">$867<span>/mo</span></div>
+                                <div class="price-crossed">$1,300/mo</div>
+                                <div class="price-savings">Save $5,196/year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="key-features">
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text bold">1 Active Edit in Progress</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Requests</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Revisions</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Content Support</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Direct Communication</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Fast Turnarounds</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Project Manager</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Creative Director</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Custom Portal</div>
+                        </div>
+                    </div>
+                    <a href="{{custom_values.silver}}" class="cta-btn cta-locked" onclick="return handlePlanClick(event)">🔒 Unlock to View</a>
+                </article>
+
+                <!-- GOLD (Featured) -->
+                <article class="plan-card featured">
+                    <span class="popular-badge">Most Popular</span>
+                    <div class="plan-header">
+                        <div class="plan-name gold">Gold</div>
+                        <div class="plan-unlimited">Unlimited</div>
+                        <div class="plan-subtitle">Momentum without bottlenecks</div>
+                        <div class="plan-price">
+                            <!-- Locked State (show monthly) -->
+                            <div class="price-locked">
+                                <div class="price-current">$1,950<span>/mo</span></div>
+                                <div class="price-unlock-hint" onclick="document.getElementById('unlockCard').scrollIntoView({behavior:'smooth'}); expandUnlock();">🔒 Unlock annual rate</div>
+                            </div>
+                            <!-- Unlocked State (show annual) -->
+                            <div class="price-unlocked">
+                                <div class="price-starts">Annual Rate</div>
+                                <div class="price-current">$1,300<span>/mo</span></div>
+                                <div class="price-crossed">$1,950/mo</div>
+                                <div class="price-savings">Save $7,800/year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="key-features">
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text bold">2 Active Edits in Progress</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Requests</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Revisions</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Content Support</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Direct Communication</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Fast Turnarounds</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Project Manager</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Creative Director</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Custom Portal</div>
+                        </div>
+                    </div>
+                    <a href="{{custom_values.gold}}" class="cta-btn cta-locked" onclick="return handlePlanClick(event)">🔒 Unlock to View</a>
+                </article>
+
+                <!-- PRO -->
+                <article class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-name pro">Pro</div>
+                        <div class="plan-unlimited">Unlimited</div>
+                        <div class="plan-subtitle">Maximum throughput</div>
+                        <div class="plan-price">
+                            <!-- Locked State (show monthly) -->
+                            <div class="price-locked">
+                                <div class="price-current">$2,950<span>/mo</span></div>
+                                <div class="price-unlock-hint" onclick="document.getElementById('unlockCard').scrollIntoView({behavior:'smooth'}); expandUnlock();">🔒 Unlock annual rate</div>
+                            </div>
+                            <!-- Unlocked State (show annual) -->
+                            <div class="price-unlocked">
+                                <div class="price-starts">Annual Rate</div>
+                                <div class="price-current">$1,967<span>/mo</span></div>
+                                <div class="price-crossed">$2,950/mo</div>
+                                <div class="price-savings">Save $11,796/year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="key-features">
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text bold">3 Active Edits in Progress</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Requests</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Unlimited Revisions</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Content Support</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Direct Communication</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Fast Turnarounds</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Project Manager</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Creative Director</div>
+                        </div>
+                        <div class="key-feature">
+                            <div class="key-feature-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                            <div class="key-feature-text">Custom Portal</div>
+                        </div>
+                    </div>
+                    <a href="{{custom_values.pro}}" class="cta-btn cta-locked" onclick="return handlePlanClick(event)">🔒 Unlock to View</a>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- Compare Table -->
+        <section class="table-section" aria-labelledby="compare-heading">
+            <div class="table-header">
+                <h2 id="compare-heading">Compare Plans</h2>
+                <p>The only difference is capacity — how many projects move at once</p>
+            </div>
+            <div class="compare-table">
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th scope="col">Plan Capacity</th>
+                            <th scope="col" class="basic">Basic</th>
+                            <th scope="col" class="silver">Silver</th>
+                            <th scope="col" class="gold">Gold</th>
+                            <th scope="col" class="pro">Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row"><td>Active Edits in Progress</td><td class="capacity-num basic">1</td><td class="capacity-num silver">1</td><td class="capacity-num gold">2</td><td class="capacity-num pro">3</td></tr>
+                        <tr><td>Monthly Price</td><td>$750</td><td>$1,300</td><td>$1,950</td><td>$2,950</td></tr>
+                        <tr class="annual-row"><td>Annual Price <span class="save-tag">4 months free</span></td><td>$500/mo</td><td>$867/mo</td><td>$1,300/mo</td><td>$1,967/mo</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- All Plans Include -->
+            <div class="all-plans-section">
+                <div class="all-plans-header">All Plans Include</div>
+                <div class="all-plans-grid">
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Unlimited Requests</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Unlimited Revisions</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Content Support</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Direct Communication</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Fast Turnarounds</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Project Manager</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Creative Director</div>
+                    <div class="all-plan-item"><span class="check-icon">&#10003;</span> Custom Portal</div>
+                </div>
+            </div>
+
+            <!-- Annual Perks -->
+            <div class="annual-perks-section">
+                <div class="annual-perks-header">
+                    <span class="perks-icon">&#127775;</span>
+                    Annual Member Perks
+                </div>
+                <p class="annual-perks-subtitle">Go annual and unlock access to Creator Studio — our add-ons store where you can customize your content engine with everything you need to grow your brand and community.</p>
+                <div class="perks-grid">
+                    <div class="perk-card basic-silver">
+                        <div class="perk-plans">Basic & Silver Annual</div>
+                        <div class="perk-title">Thumbnail Design</div>
+                        <div class="perk-desc">Professional thumbnails included with your plan when paid in full upfront.</div>
+                        <div class="perk-badge">Paid in Full</div>
+                    </div>
+                    <div class="perk-card gold-pro">
+                        <div class="perk-plans">Gold & Pro Annual</div>
+                        <div class="perk-title">Virtual Film Studio</div>
+                        <div class="perk-desc">Access to our premium virtual production tools and studio resources.</div>
+                        <div class="perk-badge">Included</div>
+                    </div>
+                </div>
+                <div class="perks-note">Plus full access to Creator Studio add-ons to build your unique content system.</div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-card">
+                <h2>Ready to stop managing content?</h2>
+                <p>Choose the plan that matches how much momentum you want.</p>
+                <div class="cta-buttons">
+                    <a href="#pricing-heading" class="cta-primary">View Plan Details</a>
+                    <a href="{{custom_values.free_trial}}" class="cta-secondary">Start Free Trial</a>
+                </div>
+                <p class="cta-note">Annual plans include 4 months free and lock in your rate.<br>Monthly available for flexibility.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ========== ANNUAL UNLOCK FLOW ==========
+        const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/mCNHhjy593eUueqfuqyU/webhook-trigger/7a6987de-1839-45f5-97e2-0f0af01048c9';
+        let resendTimer = null;
+        let currentEmail = '';
+
+        // Check if already unlocked on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('cb_annual_unlocked') === 'true') {
+                showUnlockedState();
+                unlockButtons();
+            }
+        });
+
+        // Handle locked plan button clicks
+        function handlePlanClick(event) {
+            if (!document.body.classList.contains('annual-unlocked')) {
+                event.preventDefault();
+                document.getElementById('unlockCard').scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => expandUnlock(), 300);
+                return false;
+            }
+            return true;
+        }
+
+        // Unlock all plan buttons when email verified
+        function unlockButtons() {
+            document.body.classList.add('annual-unlocked');
+            document.querySelectorAll('.cta-btn.cta-locked').forEach(btn => {
+                btn.textContent = 'View Details';
+            });
+        }
+
+        function expandUnlock() {
+            const card = document.getElementById('unlockCard');
+            if (card.classList.contains('unlocked')) return;
+            card.classList.toggle('expanded');
+            if (card.classList.contains('expanded')) {
+                setTimeout(() => document.getElementById('unlockEmail').focus(), 300);
+            }
+        }
+
+        async function sendVerificationCode() {
+            const emailInput = document.getElementById('unlockEmail');
+            const email = emailInput.value.trim();
+            const sendBtn = document.getElementById('sendCodeBtn');
+            const sendText = document.getElementById('sendCodeText');
+            const emailError = document.getElementById('emailError');
+
+            emailError.classList.remove('active');
+
+            if (!email || !isValidEmail(email)) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.classList.add('active');
+                emailInput.focus();
+                return;
+            }
+
+            currentEmail = email;
+            sendBtn.disabled = true;
+            sendText.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                // Call Portal API to generate and send the code
+                const response = await fetch('https://portalv2.contentbug.io/api/auth/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, source: 'pricing_unlock' })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Also notify GHL for lead capture
+                    fetch(GHL_WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        mode: 'no-cors',
+                        body: JSON.stringify({
+                            event: 'unlock_code_request',
+                            email: email,
+                            source: 'pricing_page',
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    localStorage.setItem('cb_email', email);
+                    showOtpFlow();
+                } else {
+                    emailError.textContent = data.message || 'Failed to send code. Please try again.';
+                    emailError.classList.add('active');
+                    sendBtn.disabled = false;
+                    sendText.textContent = 'Send Code';
+                }
+            } catch (error) {
+                emailError.textContent = 'Failed to send code. Please try again.';
+                emailError.classList.add('active');
+                sendBtn.disabled = false;
+                sendText.textContent = 'Send Code';
+            }
+        }
+
+        function showOtpFlow() {
+            document.getElementById('emailFlow').style.display = 'none';
+            document.getElementById('otpFlow').classList.add('active');
+            document.getElementById('otpEmailDisplay').textContent = currentEmail;
+            document.getElementById('otpInput').focus();
+            startResendTimer();
+        }
+
+        function startResendTimer() {
+            let seconds = 30;
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            resendBtn.textContent = `Resend (${seconds}s)`;
+
+            resendTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(resendTimer);
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = 'Resend';
+                } else {
+                    resendBtn.textContent = `Resend (${seconds}s)`;
+                }
+            }, 1000);
+        }
+
+        async function resendCode() {
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+
+            try {
+                // Call Portal API to resend the code
+                const response = await fetch('https://portalv2.contentbug.io/api/auth/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, source: 'pricing_unlock_resend' })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Also notify GHL
+                    fetch(GHL_WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        mode: 'no-cors',
+                        body: JSON.stringify({
+                            event: 'unlock_code_resend',
+                            email: currentEmail,
+                            source: 'pricing_page',
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                }
+                startResendTimer();
+            } catch (error) {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend';
+            }
+        }
+
+        async function verifyCode() {
+            const otpInput = document.getElementById('otpInput');
+            const code = otpInput.value.trim();
+            const verifyBtn = document.getElementById('verifyBtn');
+            const verifyText = document.getElementById('verifyText');
+            const otpError = document.getElementById('otpError');
+
+            otpError.classList.remove('active');
+
+            if (code.length !== 6 || !/^\d+$/.test(code)) {
+                otpError.textContent = 'Please enter the 6-digit code';
+                otpError.classList.add('active');
+                otpInput.focus();
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyText.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const response = await fetch('https://portalv2.contentbug.io/api/auth/verify-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, code: code })
+                });
+
+                const data = await response.json();
+
+                if (data.success || data.verified) {
+                    // Notify GHL of verified email
+                    fetch(GHL_WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        mode: 'no-cors',
+                        body: JSON.stringify({
+                            event: 'email_verified',
+                            email: currentEmail,
+                            source: 'pricing_page',
+                            unlock_type: 'annual_rate',
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    unlockSuccess();
+                } else {
+                    otpError.textContent = data.message || 'Invalid code. Please try again.';
+                    otpError.classList.add('active');
+                    verifyBtn.disabled = false;
+                    verifyText.textContent = 'Verify';
+                    otpInput.value = '';
+                    otpInput.focus();
+                }
+            } catch (error) {
+                otpError.textContent = 'Verification failed. Please try again.';
+                otpError.classList.add('active');
+                verifyBtn.disabled = false;
+                verifyText.textContent = 'Verify';
+            }
+        }
+
+        function unlockSuccess() {
+            localStorage.setItem('cb_annual_unlocked', 'true');
+            localStorage.setItem('cb_unlock_email', currentEmail);
+            localStorage.setItem('cb_unlock_date', new Date().toISOString());
+
+            const card = document.getElementById('unlockCard');
+            card.classList.remove('expanded');
+            card.classList.add('unlocked');
+
+            document.querySelector('.unlock-content').style.display = 'none';
+            document.getElementById('unlockSuccess').classList.add('active');
+
+            document.getElementById('unlockTitle').textContent = 'Annual Rate Unlocked';
+            document.getElementById('unlockSubtitle').textContent = 'You\'re getting 4 months free!';
+            document.getElementById('unlockBadge').innerHTML = '<span>✓ UNLOCKED</span>';
+            document.getElementById('lockIcon').innerHTML = '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>';
+
+            // Unlock all plan buttons
+            unlockButtons();
+
+            if (resendTimer) clearInterval(resendTimer);
+        }
+
+        function showUnlockedState() {
+            const card = document.getElementById('unlockCard');
+            card.classList.add('unlocked');
+            document.querySelector('.unlock-content').style.display = 'none';
+
+            document.getElementById('unlockTitle').textContent = 'Annual Rate Unlocked';
+            document.getElementById('unlockSubtitle').textContent = 'You\'re getting 4 months free!';
+            document.getElementById('unlockBadge').innerHTML = '<span>✓ UNLOCKED</span>';
+            document.getElementById('lockIcon').innerHTML = '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>';
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // OTP input formatting
+        document.addEventListener('DOMContentLoaded', function() {
+            const otpInput = document.getElementById('otpInput');
+            if (otpInput) {
+                otpInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+                    if (this.value.length === 6) {
+                        verifyCode();
+                    }
+                });
+                otpInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') verifyCode();
+                });
+            }
+
+            const emailInput = document.getElementById('unlockEmail');
+            if (emailInput) {
+                emailInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') sendVerificationCode();
+                });
+            }
+        });
+
+        // ========== INFO PANELS ==========
+        function toggleInfoPanel(panelId) {
+            const panel = document.getElementById('panel-' + panelId);
+            const btn = document.querySelector('.info-btn[data-panel="' + panelId + '"]');
+            const wasActive = panel.classList.contains('active');
+
+            document.querySelectorAll('.info-panel').forEach(p => {
+                p.classList.remove('active');
+                p.setAttribute('aria-hidden', 'true');
+            });
+            document.querySelectorAll('.info-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+
+            if (!wasActive) {
+                panel.classList.add('active');
+                panel.setAttribute('aria-hidden', 'false');
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+            }
+        }
+
+        function toggleExpand(btn) {
+            const card = btn.closest('.plan-card');
+            const isExpanded = card.classList.contains('expanded');
+            card.classList.toggle('expanded');
+            btn.setAttribute('aria-expanded', !isExpanded);
+        }
+
+        // Mobile menu
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        mobileToggle.addEventListener('click', function() {
+            const isOpen = navMenu.classList.contains('active');
+            navMenu.classList.toggle('active');
+            this.setAttribute('aria-expanded', !isOpen);
+
+            const spans = this.querySelectorAll('span');
+            if (!isOpen) {
+                spans[0].style.transform = 'rotate(45deg) translateY(7px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translateY(-7px)';
+            } else {
+                spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.site-header') && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                mobileToggle.setAttribute('aria-expanded', 'false');
+                mobileToggle.querySelectorAll('span').forEach(s => {
+                    s.style.transform = '';
+                    s.style.opacity = '';
+                });
+            }
+        });
+
+        // Keyboard navigation for info panels
+        document.querySelectorAll('.info-btn').forEach(btn => {
+            btn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+    </script>
+
+    <style>.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }</style>
+</body>
+</html>
