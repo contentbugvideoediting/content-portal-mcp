@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pro Plan - Content Bug Unlimited Video Editing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f159a0a63165eca2d8.svg">
+    <link rel="apple-touch-icon" href="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6945a3f19a634f4b0f21c170.png">
+    <meta name="description" content="Pro Unlimited Plan - Full production system with scripts, virtual studio, and 3 parallel edit slots. Starting at $1,967/mo annual.">
+    <meta name="theme-color" content="#050508">
+    <style>
+        :root {
+            --blue-deep: #0f172a;
+            --blue-dark: #1e3a8a;
+            --blue-mid: #2563eb;
+            --blue-bright: #3b82f6;
+            --blue-glow: #60a5fa;
+            --blue-light: #93c5fd;
+            --plan-color: #a855f7;
+            --plan-light: #c084fc;
+            --dark-bg: #050508;
+            --dark-card: #0a0a0f;
+            --dark-surface: #0f0f14;
+            --dark-input: #08080c;
+            --dark-border: #1a1a2e;
+            --text-white: #ffffff;
+            --text-light: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --mint: #10b981;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--plan-color);
+            outline-offset: 2px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-gradient {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1400px;
+            height: 900px;
+            background: radial-gradient(ellipse at center, rgba(168,85,247,.12) 0%, rgba(139,92,246,.06) 30%, transparent 60%);
+            filter: blur(80px);
+        }
+
+        .back-link {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100;
+            background: rgba(5,5,8,.9);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--dark-border);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            color: var(--text-white);
+            border-color: rgba(168,85,247,.3);
+        }
+        .back-link svg { width: 16px; height: 16px; }
+
+        .checkout-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 100px 32px 60px;
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 48px;
+            align-items: start;
+        }
+
+        .plan-details {
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            padding: 48px;
+            position: relative;
+        }
+        .plan-details::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--plan-color), var(--plan-light), var(--plan-color));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .plan-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--plan-color);
+            margin-bottom: 16px;
+        }
+        .plan-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-white);
+            line-height: 1.2;
+        }
+        .plan-tagline {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .plan-emphasis {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--plan-light);
+            margin-bottom: 32px;
+        }
+
+        .plan-price-display {
+            margin-bottom: 32px;
+        }
+        .plan-price-starts {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .plan-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .plan-price-amount {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--text-white);
+        }
+        .plan-price-period {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+        .plan-price-crossed {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        .features-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .feature-item.highlight {
+            background: rgba(168,85,247,.08);
+            margin: 0 -16px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(168,85,247,.15);
+        }
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--mint);
+            fill: none;
+        }
+        .feature-item.highlight .feature-icon svg {
+            stroke: var(--plan-color);
+        }
+        .feature-text {
+            font-size: 15px;
+            color: var(--text-light);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .feature-text.bold {
+            color: var(--text-white);
+            font-weight: 700;
+        }
+
+        .time-block {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(168,85,247,.05);
+            border: 1px solid rgba(168,85,247,.15);
+            border-radius: 14px;
+        }
+        .time-block-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--plan-color);
+            margin-bottom: 12px;
+        }
+        .time-block-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .time-block-list li {
+            font-size: 14px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .time-block-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--plan-color);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .best-for {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(168,85,247,.05);
+            border: 1px solid rgba(168,85,247,.15);
+            border-radius: 14px;
+        }
+        .best-for-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--plan-color);
+            margin-bottom: 8px;
+        }
+        .best-for-text {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .checkout-card {
+            background: linear-gradient(165deg, rgba(12,12,20,.95) 0%, rgba(6,6,12,.98) 100%);
+            border: 1px solid rgba(168,85,247,.2);
+            border-radius: 24px;
+            padding: 36px;
+            position: sticky;
+            top: 24px;
+        }
+        .checkout-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(168,85,247,.5), transparent);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .checkout-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .annual-only-note {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: rgba(168,85,247,.08);
+            border: 1px solid rgba(168,85,247,.15);
+            border-radius: 10px;
+        }
+
+        .billing-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .billing-option {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,.02);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .billing-option:hover {
+            border-color: rgba(168,85,247,.3);
+            background: rgba(168,85,247,.04);
+        }
+        .billing-option.selected {
+            border-color: var(--plan-color);
+            background: rgba(168,85,247,.08);
+            box-shadow: 0 0 0 1px var(--plan-color), 0 4px 16px rgba(168,85,247,.15);
+        }
+        .billing-option-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .billing-radio {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--dark-border);
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .billing-option.selected .billing-radio {
+            border-color: var(--plan-color);
+        }
+        .billing-option.selected .billing-radio::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 8px;
+            height: 8px;
+            background: var(--plan-color);
+            border-radius: 50%;
+        }
+        .billing-option-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .billing-option-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+        .billing-option-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(16,185,129,.15);
+            color: var(--mint);
+        }
+        .billing-option-badge.best {
+            background: linear-gradient(135deg, rgba(168,85,247,.2), rgba(192,132,252,.2));
+            color: var(--plan-light);
+        }
+        .billing-option-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-left: 30px;
+        }
+        .billing-option-price small {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .billing-option-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 30px;
+        }
+
+        .checkout-price-section {
+            text-align: center;
+            padding: 24px 0;
+            border-top: 1px solid var(--dark-border);
+            border-bottom: 1px solid var(--dark-border);
+            margin-bottom: 24px;
+        }
+        .checkout-price-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .checkout-price {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--text-white);
+        }
+        .checkout-price small {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .checkout-original-price {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            margin-top: 4px;
+        }
+        .checkout-savings {
+            font-size: 14px;
+            color: var(--mint);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .checkout-total {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Price Breakdown Math */
+        .price-breakdown {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(168,85,247,.04);
+            border: 1px solid rgba(168,85,247,.12);
+            border-radius: 12px;
+            text-align: left;
+            animation: fadeIn 0.3s ease;
+        }
+        .breakdown-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--plan-color);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+        .breakdown-row.discount {
+            color: var(--mint);
+        }
+        .breakdown-row.discount .breakdown-value {
+            color: var(--mint);
+        }
+        .breakdown-row.final {
+            border-top: 1px solid rgba(168,85,247,.2);
+            margin-top: 8px;
+            padding-top: 12px;
+            font-weight: 700;
+        }
+        .breakdown-row.final .breakdown-label {
+            color: var(--text-white);
+        }
+        .breakdown-row.final .breakdown-value {
+            color: var(--plan-color);
+            font-size: 16px;
+        }
+        .breakdown-label {
+            color: var(--text-light);
+        }
+        .breakdown-value {
+            color: var(--text-white);
+            font-weight: 600;
+        }
+        .breakdown-calc {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Monthly Comparison Box */
+        .monthly-comparison {
+            margin-top: 12px;
+            padding: 14px;
+            background: rgba(16,185,129,.06);
+            border: 1px solid rgba(16,185,129,.15);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .monthly-comparison-text {
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        .monthly-comparison-text strong {
+            color: #f87171;
+            font-size: 13px;
+        }
+        .monthly-comparison-text .saved {
+            color: var(--mint);
+            font-weight: 700;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .checkout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 18px 28px;
+            background: linear-gradient(135deg, #7c3aed 0%, var(--plan-color) 50%, var(--plan-light) 100%);
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(168,85,247,.3);
+            font-family: inherit;
+        }
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(168,85,247,.4);
+        }
+        .checkout-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+        .checkout-btn:hover svg {
+            transform: translateX(4px);
+        }
+
+        .guarantee {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(34,197,94,.06);
+            border: 1px solid rgba(34,197,94,.15);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .guarantee svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--success);
+            flex-shrink: 0;
+        }
+        .guarantee span {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .trust-badges {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--dark-border);
+        }
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .trust-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+        .trust-badge.ssl svg { fill: #22c55e; }
+        .trust-badge.stripe svg { fill: #635bff; }
+
+        .payment-methods {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .payment-methods svg {
+            height: 20px;
+            width: auto;
+            opacity: 0.6;
+        }
+
+        .checkout-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0,0,0,.92);
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .checkout-modal.active { display: flex; }
+        .checkout-modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            max-height: 800px;
+            background: linear-gradient(165deg, rgba(15,15,25,.99) 0%, rgba(8,8,15,1) 100%);
+            border: 1px solid rgba(168,85,247,.15);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .checkout-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+        .checkout-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+        .checkout-modal-close {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+        .checkout-modal-close:hover {
+            background: rgba(255,255,255,.1);
+            color: var(--text-white);
+        }
+        .checkout-modal-body {
+            flex: 1;
+            overflow: hidden;
+        }
+        .checkout-modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media (max-width: 900px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 90px 20px 40px;
+            }
+            .checkout-card {
+                position: static;
+            }
+        }
+        @media (max-width: 480px) {
+            .plan-details, .checkout-card { padding: 28px 20px; }
+            .plan-title { font-size: 26px; }
+            .plan-price-amount { font-size: 40px; }
+            .checkout-price { font-size: 36px; }
+            .back-link { display: none; }
+        }
+
+        /* Site Header */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 24px;
+        }
+        .header-backdrop {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(5, 5, 8, 0.95) 0%, rgba(5, 5, 8, 0.8) 70%, transparent 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            pointer-events: none;
+        }
+        .header-content {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo-icon {
+            height: 36px;
+            width: auto;
+        }
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            color: var(--text-white);
+            background: rgba(59, 130, 246, 0.08);
+        }
+        .header-cta {
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+            color: #fff !important;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+        .header-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .mobile-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-white);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .site-header { padding: 12px 16px; }
+            .mobile-toggle { display: flex; }
+            .nav-menu {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(5, 5, 8, 0.98);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                flex-direction: column;
+                padding: 24px;
+                gap: 8px;
+                transform: translateY(-100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s ease;
+                border-bottom: 1px solid var(--dark-border);
+            }
+            .nav-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .nav-link { width: 100%; text-align: center; padding: 14px; }
+            .header-cta { width: 100%; text-align: center; padding: 14px 20px; }
+        }
+
+        /* Site Footer */
+        .site-footer {
+            background: linear-gradient(180deg, transparent 0%, rgba(5, 5, 8, 0.95) 20%);
+            padding: 60px 24px 32px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-brand { max-width: 280px; }
+        .footer-logo { height: 32px; width: auto; margin-bottom: 16px; }
+        .footer-tagline { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+        .footer-links { display: flex; gap: 48px; }
+        .footer-column h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .footer-column ul { list-style: none; padding: 0; margin: 0; }
+        .footer-column li { margin-bottom: 10px; }
+        .footer-column a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .footer-column a:hover { color: var(--blue-bright); }
+        .footer-bottom {
+            padding-top: 24px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .footer-copyright { font-size: 13px; color: var(--text-muted); }
+        .footer-legal { display: flex; gap: 24px; }
+        .footer-legal a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-legal a:hover { color: var(--text-light); }
+        @media (max-width: 768px) {
+            .site-footer { padding: 48px 16px 24px; }
+            .footer-main { flex-direction: column; gap: 32px; }
+            .footer-links { flex-direction: column; gap: 32px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .footer-legal { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer"><div class="bg-gradient"></div></div>
+
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="header-backdrop"></div>
+        <div class="header-content">
+            <a href="{{custom_values.home}}" class="logo-container">
+                <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="ContentBug" class="logo-icon">
+            </a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="{{custom_values.home}}" class="nav-link">Home</a></li>
+                    <li><a href="{{custom_values.edits}}" class="nav-link">Edits</a></li>
+                    <li><a href="{{custom_values.pricing}}" class="nav-link">Pricing</a></li>
+                    <li><a href="{{custom_values.free_trial}}" class="header-cta">Start Free Trial</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <a href="{{custom_values.pricing}}" class="back-link" aria-label="Back to all pricing plans">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Back to plans
+    </a>
+
+    <main class="checkout-container" role="main">
+        <article class="plan-details" aria-labelledby="plan-title">
+            <span class="plan-badge">Pro Unlimited</span>
+            <h1 class="plan-title" id="plan-title">High-quality content. Minimal time required.</h1>
+            <p class="plan-tagline">Built for creators with no time who want content done at the highest level, without planning, scripting, or filming taking over their schedule.</p>
+            <span class="plan-emphasis">This is not just editing. This is a complete production system.</span>
+
+            <div class="plan-price-display">
+                <div class="plan-price-starts">Starts at</div>
+                <div class="plan-price-row">
+                    <span class="plan-price-amount">$1,967</span>
+                    <span class="plan-price-period">/mo</span>
+                </div>
+                <div class="plan-price-crossed">$2,950/mo</div>
+            </div>
+
+            <h2 class="features-title" id="features-heading">What's included</h2>
+            <ul class="feature-list" role="list" aria-labelledby="features-heading">
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text bold">3 Active Edits in Progress</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Unlimited Requests</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Unlimited Revisions</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Done-For-You Scripts</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Virtual Film Studio</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Content Support</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Direct Communication</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Fast Turnarounds</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Project Manager</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Creative Director</div>
+                </li>
+                <li class="feature-item">
+                    <div class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="feature-text">Custom Portal</div>
+                </li>
+            </ul>
+
+            <div class="time-block">
+                <div class="time-block-title">Time-Optimized Production</div>
+                <ul class="time-block-list">
+                    <li>Show up 1-2 times per month</li>
+                    <li>Record 1-2 hours per session</li>
+                    <li>2-4 total hours per month filming</li>
+                    <li>Walk away with weeks of content handled</li>
+                </ul>
+            </div>
+
+            <aside class="best-for" aria-label="Ideal customer profile">
+                <p class="best-for-title">Best for</p>
+                <p class="best-for-text">Founders, executives, or brand leaders whose time is their most valuable asset. Want elite content without living on camera.</p>
+            </aside>
+        </article>
+
+        <aside class="checkout-card" aria-labelledby="checkout-title">
+            <h2 class="checkout-title" id="checkout-title">Complete Your Order</h2>
+
+            <div class="annual-only-note">
+                Annual commitment required. Choose how you'd like to pay.
+            </div>
+
+            <div class="billing-options">
+                <div class="billing-option selected" data-option="paid-full">
+                    <div class="billing-option-header">
+                        <div class="billing-radio"></div>
+                        <div class="billing-option-info">
+                            <span class="billing-option-name">Pay in Full</span>
+                            <span class="billing-option-badge best">Best Value</span>
+                        </div>
+                    </div>
+                    <div class="billing-option-price">$1,967<small>/mo</small></div>
+                    <div class="billing-option-detail">$23,600 billed once • 4 months free</div>
+                </div>
+
+                <div class="billing-option" data-option="semi-annual">
+                    <div class="billing-option-header">
+                        <div class="billing-radio"></div>
+                        <div class="billing-option-info">
+                            <span class="billing-option-name">Semi-Annual</span>
+                            <span class="billing-option-badge">4 months free</span>
+                        </div>
+                    </div>
+                    <div class="billing-option-price">$1,967<small>/mo</small></div>
+                    <div class="billing-option-detail">$11,800 every 6 months</div>
+                </div>
+
+                <div class="billing-option" data-option="quarterly">
+                    <div class="billing-option-header">
+                        <div class="billing-radio"></div>
+                        <div class="billing-option-info">
+                            <span class="billing-option-name">Quarterly</span>
+                            <span class="billing-option-badge">3 months free</span>
+                        </div>
+                    </div>
+                    <div class="billing-option-price">$2,213<small>/mo</small></div>
+                    <div class="billing-option-detail">$6,638 every 3 months</div>
+                </div>
+            </div>
+
+            <div class="checkout-price-section">
+                <div class="checkout-price-label">Your Price</div>
+                <div class="checkout-price" id="checkoutPrice">$1,967<small>/mo</small></div>
+                <div class="checkout-original-price" id="originalPrice">$2,950/mo retail</div>
+                <div class="checkout-savings" id="checkoutSavings">You save $11,800/year (4 months free)</div>
+                <div class="checkout-total" id="checkoutTotal">Billed as $23,600 today</div>
+            </div>
+
+            <!-- Price Breakdown Math -->
+            <div class="price-breakdown" id="priceBreakdown">
+                <div class="breakdown-title">Here's The Math</div>
+                <div id="breakdownContent"></div>
+            </div>
+
+            <!-- Monthly Comparison -->
+            <div class="monthly-comparison" id="monthlyComparison">
+                <div class="monthly-comparison-text" id="comparisonText"></div>
+            </div>
+
+            <button class="checkout-btn" onclick="openCheckoutModal()" type="button" aria-label="Continue to checkout for Pro plan">
+                Continue to Checkout
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+
+            <div class="guarantee" role="note" aria-label="Satisfaction guarantee">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <span>Unlimited revisions guaranteed. We refine until you love it.</span>
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-badge ssl">
+                    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    SSL Secured
+                </div>
+                <div class="trust-badge stripe">
+                    <svg viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg>
+                    Powered by Stripe
+                </div>
+            </div>
+
+            <div class="payment-methods" role="img" aria-label="We accept Visa, Mastercard, and American Express">
+                <svg viewBox="0 0 750 471" fill="#1A1F71" aria-hidden="true"><path d="M278.198 334.228l33.36-195.763h53.358l-33.384 195.763H278.198zm246.11-191.54c-10.57-3.966-27.135-8.222-47.822-8.222-52.725 0-89.863 26.551-90.18 64.604-.297 28.129 26.514 43.821 46.754 53.185 20.771 9.598 27.752 15.716 27.652 24.283-.133 13.123-16.586 19.116-31.924 19.116-21.355 0-32.701-2.967-50.225-10.274l-6.877-3.112-7.488 43.823c12.463 5.467 35.508 10.199 59.438 10.445 56.09 0 92.502-26.248 92.916-66.884.199-22.27-14.016-39.216-44.801-53.188-18.65-9.056-30.072-15.099-29.951-24.269 0-8.137 9.668-16.838 30.559-16.838 17.447-.271 30.088 3.534 39.936 7.5l4.781 2.259 7.232-42.428"/></svg>
+                <svg viewBox="0 0 750 471" aria-hidden="true"><circle cx="250" cy="235" r="150" fill="#EB001B"/><circle cx="500" cy="235" r="150" fill="#F79E1B"/><path fill="#FF5F00" d="M325 123.5a150 150 0 000 223 150 150 0 000-223z"/></svg>
+                <svg viewBox="0 0 750 471" fill="#016FD0" aria-hidden="true"><path d="M0 41.002C0 18.328 18.461 0 41.249 0h667.502C731.539 0 750 18.328 750 41.002v388.996C750 452.672 731.539 471 708.751 471H41.249C18.461 471 0 452.672 0 429.998V41.002z"/><path fill="#FFF" d="M70.938 249.227l-9.082 21.288H37.012l52.194-114.22h35.125l52.184 114.22h-26.741l-9.072-21.288H70.938z"/></svg>
+            </div>
+        </aside>
+    </main>
+
+    <div class="checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="checkout-modal-content">
+            <div class="checkout-modal-header">
+                <span class="checkout-modal-title" id="modal-title">Complete Your Purchase</span>
+                <button class="checkout-modal-close" onclick="closeCheckoutModal()" type="button" aria-label="Close checkout modal">&times;</button>
+            </div>
+            <div class="checkout-modal-body">
+                <iframe id="checkoutFrame" src="" title="Payment form"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MONTHLY_RATE = 2950; // Pro monthly retail price
+
+        const paymentLinks = {
+            'paid-full': 'https://links.contentbug.io/payment-link/69371fead8c1a872bf09f7f2',
+            'semi-annual': 'https://links.contentbug.io/payment-link/6937201ffefb4ef712b98611',
+            'quarterly': 'https://links.contentbug.io/payment-link/6952f6f68742ca42d3b5a2ea'
+        };
+
+        const priceData = {
+            'paid-full': {
+                price: '$1,967',
+                savings: 'You save $11,800/year (4 months free)',
+                total: 'Billed as $23,600 today'
+            },
+            'semi-annual': {
+                price: '$1,967',
+                savings: 'You save $11,800/year (4 months free)',
+                total: 'Billed as $11,800 every 6 months'
+            },
+            'quarterly': {
+                price: '$2,213',
+                savings: 'You save $8,850/year (3 months free)',
+                total: 'Billed as $6,638 every 3 months'
+            }
+        };
+
+        let selectedOption = 'paid-full';
+
+        document.querySelectorAll('.billing-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.billing-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedOption = this.dataset.option;
+                updatePriceDisplay();
+                renderBreakdown(selectedOption);
+            });
+        });
+
+        function updatePriceDisplay() {
+            const data = priceData[selectedOption];
+            document.getElementById('checkoutPrice').innerHTML = data.price + '<small>/mo</small>';
+            document.getElementById('checkoutSavings').textContent = data.savings;
+            document.getElementById('checkoutTotal').textContent = data.total;
+        }
+
+        function renderBreakdown(option) {
+            const breakdownEl = document.getElementById('priceBreakdown');
+            const contentEl = document.getElementById('breakdownContent');
+            const comparisonEl = document.getElementById('monthlyComparison');
+            const comparisonTextEl = document.getElementById('comparisonText');
+
+            breakdownEl.style.display = 'block';
+            comparisonEl.style.display = 'block';
+
+            if (option === 'paid-full') {
+                contentEl.innerHTML = `
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">12 months of Pro Unlimited</span>
+                        <span class="breakdown-value">$35,400 <span class="breakdown-calc">(12 × $2,950)</span></span>
+                    </div>
+                    <div class="breakdown-row discount">
+                        <span class="breakdown-label">− 4 FREE months</span>
+                        <span class="breakdown-value">−$11,800</span>
+                    </div>
+                    <div class="breakdown-row final">
+                        <span class="breakdown-label">Your Total Today</span>
+                        <span class="breakdown-value">$23,600</span>
+                    </div>
+                `;
+                comparisonTextEl.innerHTML = `
+                    <span class="saved">Best Value!</span> You save <span class="saved">$11,800/year</span> vs retail pricing
+                `;
+            } else if (option === 'semi-annual') {
+                contentEl.innerHTML = `
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">6 months of Pro Unlimited</span>
+                        <span class="breakdown-value">$17,700 <span class="breakdown-calc">(6 × $2,950)</span></span>
+                    </div>
+                    <div class="breakdown-row discount">
+                        <span class="breakdown-label">− 2 FREE months</span>
+                        <span class="breakdown-value">−$5,900</span>
+                    </div>
+                    <div class="breakdown-row final">
+                        <span class="breakdown-label">Your Total Today</span>
+                        <span class="breakdown-value">$11,800</span>
+                    </div>
+                `;
+                comparisonTextEl.innerHTML = `
+                    <span class="saved">Great Choice!</span> You save <span class="saved">$11,800/year</span> vs retail pricing
+                `;
+            } else if (option === 'quarterly') {
+                contentEl.innerHTML = `
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">3 months of Pro Unlimited</span>
+                        <span class="breakdown-value">$8,850 <span class="breakdown-calc">(3 × $2,950)</span></span>
+                    </div>
+                    <div class="breakdown-row discount">
+                        <span class="breakdown-label">− ~3 weeks FREE</span>
+                        <span class="breakdown-value">−$2,212</span>
+                    </div>
+                    <div class="breakdown-row final">
+                        <span class="breakdown-label">Your Total Today</span>
+                        <span class="breakdown-value">$6,638</span>
+                    </div>
+                `;
+                comparisonTextEl.innerHTML = `
+                    You save <span class="saved">$8,848/year</span> — <span style="color:#a855f7;">switch to Pay in Full to save $11,800!</span>
+                `;
+            }
+        }
+
+        // Initialize breakdown on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBreakdown('paid-full');
+        });
+
+        function openCheckoutModal() {
+            const modal = document.getElementById('checkoutModal');
+            document.getElementById('checkoutFrame').src = paymentLinks[selectedOption];
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            document.querySelector('.checkout-modal-close').focus();
+        }
+
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            document.querySelector('.checkout-btn').focus();
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeCheckoutModal();
+        });
+
+        document.getElementById('checkoutModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCheckoutModal();
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobileToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+    </script>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <img src="https://storage.googleapis.com/msgsndr/mCNHhjy593eUueqfuqyU/media/6930abb0e0f092608f6ec5e6.png" alt="ContentBug" class="footer-logo">
+                    <p class="footer-tagline">Unlimited video editing for creators who want to scale their content without scaling their workload.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="{{custom_values.pricing}}">Pricing</a></li>
+                            <li><a href="{{custom_values.edits}}">Our Edits</a></li>
+                            <li><a href="{{custom_values.free_trial}}">Free Trial</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="{{custom_values.portal_login}}">Client Portal</a></li>
+                            <li><a href="/cdn-cgi/l/email-protection#5e363b3232311e3d31302a3b302a3c2b39703731">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">&copy; {{custom_values.current_year}} ContentBug. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="{{custom_values.privacy_policy}}">Privacy Policy</a>
+                    <a href="{{custom_values.terms_of_service}}">Terms of Service</a>
+                </div>
+            </div>
+   
