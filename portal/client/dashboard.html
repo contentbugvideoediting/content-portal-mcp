@@ -33,128 +33,165 @@
             font-family: 'Inter', -apple-system, sans-serif;
             color: var(--text-primary);
             min-height: 100vh;
+        }
+
+        /* ============================================ */
+        /* SIDEBAR STYLES (Embedded) */
+        /* ============================================ */
+        .cb-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: #08080c;
+            border-right: 1px solid #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .cb-main-content {
+            margin-left: 260px;
             padding: 24px;
+            min-height: 100vh;
         }
 
-        /* ============================================ */
-        /* WELCOME HEADER */
-        /* ============================================ */
-        .welcome-header {
-            margin-bottom: 32px;
-        }
-
-        .welcome-greeting {
-            font-size: 14px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .welcome-name {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff 0%, #a1a1b5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .welcome-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            background: rgba(245, 158, 11, 0.15);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--orange);
-        }
-
-        .welcome-status.active {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: var(--green);
-        }
-
-        .welcome-status svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* ============================================ */
-        /* ONBOARDING CHECKLIST */
-        /* ============================================ */
-        .onboarding-section {
-            margin-bottom: 40px;
-        }
-
-        .section-header {
+        .sidebar-logo {
+            padding: 20px;
+            border-bottom: 1px solid #1a1a2e;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
+            gap: 12px;
         }
 
-        .section-title {
-            font-size: 18px;
+        .sidebar-logo img { height: 32px; }
+        .sidebar-logo span { font-size: 18px; font-weight: 800; color: #fff; }
+
+        .sidebar-user {
+            padding: 16px 20px;
+            border-bottom: 1px solid #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: white;
         }
 
-        .section-title svg {
-            width: 22px;
-            height: 22px;
-            color: var(--accent);
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-status { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #f59e0b; }
+        .user-status.active { color: #22c55e; }
+
+        .sidebar-progress {
+            padding: 16px 20px;
+            background: rgba(59, 130, 246, 0.05);
+            border-bottom: 1px solid #1a1a2e;
         }
 
-        .progress-indicator {
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .progress-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6b6b80; }
+        .progress-count { font-size: 12px; font-weight: 700; color: #3b82f6; }
+        .progress-bar { width: 100%; height: 6px; background: #14141e; border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #22c55e 0%, #3b82f6 100%); border-radius: 3px; transition: width 0.5s; }
+
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .nav-section { margin-bottom: 24px; }
+        .nav-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #4a4a5e; padding: 0 8px; margin-bottom: 8px; }
+
+        .nav-item {
             display: flex;
             align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: #a1a1b5;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover:not(.locked) { background: #14141e; color: #fff; }
+        .nav-item.active { background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%); color: #3b82f6; }
+        .nav-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 24px; background: #3b82f6; border-radius: 0 2px 2px 0; }
+        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .nav-item .nav-text { flex: 1; }
+        .nav-item.locked { opacity: 0.4; cursor: not-allowed; }
+        .nav-item .lock-icon { width: 14px; height: 14px; color: #6b6b80; }
+        .nav-item .step-badge { padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+        .nav-item .step-badge.current { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .nav-item .step-badge.done { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+
+        .sidebar-cta {
+            padding: 16px;
+            border-top: 1px solid #1a1a2e;
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 8px;
-            font-size: 13px;
-            color: var(--text-secondary);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s;
         }
 
-        .progress-bar {
-            width: 120px;
-            height: 6px;
-            background: var(--bg-elevated);
-            border-radius: 3px;
-            overflow: hidden;
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
+        .cta-button svg { width: 18px; height: 18px; }
+        .cta-button.locked { opacity: 0.5; cursor: not-allowed; }
+        .cta-button.locked:hover { transform: none; }
+
+        /* ============================================ */
+        /* MAIN CONTENT */
+        /* ============================================ */
+        .welcome-header { margin-bottom: 32px; }
+        .welcome-greeting { font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .welcome-name { font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #fff 0%, #a1a1b5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--orange); }
+        .welcome-badge.active { background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.3); color: var(--green); }
+        .welcome-badge svg { width: 16px; height: 16px; }
+
+        /* Onboarding Section */
+        .onboarding-section { margin-bottom: 40px; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .section-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .section-title svg { width: 22px; height: 22px; color: var(--accent); }
+
+        .onboarding-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        @media (max-width: 1200px) { .onboarding-steps { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { 
+            .onboarding-steps { grid-template-columns: 1fr; }
+            .cb-sidebar { transform: translateX(-260px); transition: transform 0.3s; }
+            .cb-sidebar.open { transform: translateX(0); }
+            .cb-main-content { margin-left: 0; }
+            .mobile-toggle { display: flex !important; }
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--green) 0%, var(--cyan) 100%);
-            border-radius: 3px;
-            transition: width 0.5s ease;
-        }
-
-        /* Steps Container */
-        .onboarding-steps {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        @media (max-width: 1024px) {
-            .onboarding-steps {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .onboarding-steps {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Step Card */
         .step-card {
             position: relative;
             background: var(--bg-card);
@@ -166,612 +203,525 @@
             overflow: hidden;
         }
 
-        .step-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--border);
-            transition: background 0.3s;
-        }
+        .step-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--border); transition: background 0.3s; }
+        .step-card:hover:not(.locked) { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .step-card.completed { border-color: var(--green); }
+        .step-card.completed::before { background: linear-gradient(90deg, var(--green) 0%, var(--cyan) 100%); }
+        .step-card.current { border-color: var(--accent); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(59, 130, 246, 0.05) 100%); }
+        .step-card.current::before { background: linear-gradient(90deg, var(--accent) 0%, var(--purple) 100%); animation: shimmer 2s infinite; }
+        .step-card.locked { opacity: 0.5; cursor: not-allowed; }
+        .step-card.locked:hover { transform: none; border-color: var(--border); }
 
-        .step-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
+        @keyframes shimmer { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        .step-card.completed {
-            border-color: var(--green);
-        }
+        .step-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+        .step-number { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; background: var(--bg-elevated); border: 2px solid var(--border); color: var(--text-muted); }
+        .step-card.completed .step-number { background: var(--green); border-color: var(--green); color: white; }
+        .step-card.current .step-number { background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%); border-color: var(--accent); color: white; box-shadow: 0 4px 16px var(--accent-glow); }
+        .step-status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; }
+        .step-status.done { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+        .step-status.active { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .step-status.pending { background: var(--bg-elevated); color: var(--text-muted); }
 
-        .step-card.completed::before {
-            background: linear-gradient(90deg, var(--green) 0%, var(--cyan) 100%);
-        }
-
-        .step-card.current {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(59, 130, 246, 0.05) 100%);
-        }
-
-        .step-card.current::before {
-            background: linear-gradient(90deg, var(--accent) 0%, var(--purple) 100%);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .step-card.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .step-card.locked:hover {
-            transform: none;
-            border-color: var(--border);
-            box-shadow: none;
-        }
-
-        /* Step Header */
-        .step-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 800;
-            background: var(--bg-elevated);
-            border: 2px solid var(--border);
-            color: var(--text-muted);
-            transition: all 0.3s;
-        }
-
-        .step-card.completed .step-number {
-            background: var(--green);
-            border-color: var(--green);
-            color: white;
-        }
-
-        .step-card.current .step-number {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
-            border-color: var(--accent);
-            color: white;
-            box-shadow: 0 4px 16px var(--accent-glow);
-        }
-
-        .step-status {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        .step-status.done {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--green);
-        }
-
-        .step-status.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: var(--accent);
-        }
-
-        .step-status.pending {
-            background: var(--bg-elevated);
-            color: var(--text-muted);
-        }
-
-        /* Step Content */
-        .step-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-            transition: all 0.3s;
-        }
-
-        .step-icon svg {
-            width: 26px;
-            height: 26px;
-        }
-
+        .step-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .step-icon svg { width: 26px; height: 26px; }
         .step-card:nth-child(1) .step-icon { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
         .step-card:nth-child(2) .step-icon { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
         .step-card:nth-child(3) .step-icon { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
         .step-card:nth-child(4) .step-icon { background: rgba(34, 197, 94, 0.15); color: var(--green); }
 
-        .step-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
+        .step-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .step-description { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
+        .step-action { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-secondary); transition: all 0.2s; }
+        .step-action svg { width: 16px; height: 16px; }
+        .step-card.current .step-action { background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%); border-color: var(--accent); color: white; box-shadow: 0 4px 12px var(--accent-glow); }
+        .step-card.completed .step-action { background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.3); color: var(--green); }
 
-        .step-description {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin-bottom: 16px;
-        }
-
-        .step-action {
-            display: inline-flex;
+        /* Review Call Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
             align-items: center;
-            gap: 6px;
-            padding: 10px 16px;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            padding: 32px;
+            position: relative;
+            animation: modalEnter 0.3s ease;
+        }
+
+        @keyframes modalEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
             color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-
-        .step-action svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .step-card.current .step-action {
-            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
-            border-color: var(--accent);
-            color: white;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        .step-card.completed .step-action {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: var(--green);
-        }
-
-        /* Connector Lines */
-        .step-connector {
-            position: absolute;
-            top: 50%;
-            right: -18px;
-            width: 20px;
-            height: 2px;
-            background: var(--border);
-            z-index: 1;
-        }
-
-        .step-card.completed .step-connector {
-            background: var(--green);
-        }
-
-        @media (max-width: 1024px) {
-            .step-connector { display: none; }
-        }
-
-        /* ============================================ */
-        /* PROJECTS SECTION */
-        /* ============================================ */
-        .projects-section {
-            margin-top: 40px;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        /* Project Card (Client View) */
-        .project-card-client {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .project-card-client:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .project-thumb {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: var(--bg-elevated);
-        }
-
-        .project-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .project-thumb .status-pill {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            backdrop-filter: blur(10px);
-        }
-
-        .status-pill.editing {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
-        }
-
-        .status-pill.review {
-            background: rgba(6, 182, 212, 0.9);
-            color: white;
-        }
-
-        .status-pill.approved {
-            background: rgba(34, 197, 94, 0.9);
-            color: white;
-        }
-
-        .project-info {
-            padding: 20px;
-        }
-
-        .project-name {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .project-meta {
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
+            justify-content: center;
         }
 
-        .project-actions {
+        .modal-close:hover { color: white; border-color: var(--accent); }
+        .modal-close svg { width: 20px; height: 20px; }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        .project-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
+        .modal-icon svg { width: 32px; height: 32px; color: white; }
+
+        .modal-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+        .modal-description { font-size: 15px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
+
+        .modal-features {
+            background: var(--bg-elevated);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .feature-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 14px; color: var(--text-secondary); }
+        .feature-item svg { width: 18px; height: 18px; color: var(--green); }
+
+        .modal-cta {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            border: none;
-        }
-
-        .project-btn svg { width: 18px; height: 18px; }
-
-        .project-btn.primary {
-            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
-            color: white;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        .project-btn.secondary {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
-
-        /* Empty State */
-        .empty-projects {
-            text-align: center;
-            padding: 60px 40px;
-            background: var(--bg-card);
-            border: 2px dashed var(--border);
-            border-radius: 20px;
-        }
-
-        .empty-projects svg {
-            width: 64px;
-            height: 64px;
-            color: var(--text-muted);
-            opacity: 0.4;
-            margin-bottom: 16px;
-        }
-
-        .empty-projects h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .empty-projects p {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .empty-projects .cta-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 14px 28px;
-            background: linear-gradient(135deg, var(--accent) 0%, #2563eb 100%);
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
+            gap: 10px;
             box-shadow: 0 4px 16px var(--accent-glow);
             transition: all 0.3s;
         }
 
-        .empty-projects .cta-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--accent-glow);
+        .modal-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+        .modal-cta svg { width: 20px; height: 20px; }
+
+        .modal-skip { text-align: center; margin-top: 16px; }
+        .modal-skip a { color: var(--text-muted); font-size: 13px; text-decoration: none; }
+        .modal-skip a:hover { color: var(--text-secondary); }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
         }
 
-        .empty-projects .cta-btn svg { width: 20px; height: 20px; }
+        .mobile-toggle svg { width: 24px; height: 24px; }
     </style>
 </head>
 <body>
-    <!-- Welcome Header -->
-    <header class="welcome-header">
-        <div class="welcome-greeting">Welcome back</div>
-        <h1 class="welcome-name" id="userName">Loading...</h1>
-        <div class="welcome-status" id="userStatus">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="cb-sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
             </svg>
-            <span>Free Trial</span>
+            <span>Content Bug</span>
         </div>
-    </header>
 
-    <!-- Onboarding Section -->
-    <section class="onboarding-section" id="onboardingSection">
-        <div class="section-header">
-            <h2 class="section-title">
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info">
+                <div class="user-name" id="sidebarUserName">Loading...</div>
+                <div class="user-status" id="sidebarUserStatus">Free Trial</div>
+            </div>
+        </div>
+
+        <div class="sidebar-progress" id="sidebarProgress">
+            <div class="progress-header">
+                <span class="progress-title">Getting Started</span>
+                <span class="progress-count" id="progressCount">1/4</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+        <div class="sidebar-cta">
+            <button class="cta-button" id="submitBtn" onclick="goToSubmit()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    <path d="M9 12l2 2 4-4"/>
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
-                Getting Started
-            </h2>
-            <div class="progress-indicator">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 25%"></div>
-                </div>
-                <span id="progressText">1 of 4 complete</span>
-            </div>
+                Submit New Edit
+            </button>
         </div>
+    </aside>
 
-        <div class="onboarding-steps">
-            <!-- Step 1: Create Profile -->
-            <div class="step-card completed" data-step="1" onclick="handleStep(1)">
-                <div class="step-connector"></div>
-                <div class="step-header">
-                    <div class="step-number">✓</div>
-                    <span class="step-status done">Complete</span>
-                </div>
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </div>
-                <h3 class="step-title">Create Profile</h3>
-                <p class="step-description">Set up your account and complete the qualification form</p>
-                <div class="step-action">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    Profile Created
-                </div>
-            </div>
-
-            <!-- Step 2: Create Blueprint -->
-            <div class="step-card current" data-step="2" onclick="handleStep(2)">
-                <div class="step-connector"></div>
-                <div class="step-header">
-                    <div class="step-number">2</div>
-                    <span class="step-status active">Current</span>
-                </div>
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                        <path d="M2 17l10 5 10-5"/>
-                        <path d="M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
-                <h3 class="step-title">Create Blueprint</h3>
-                <p class="step-description">Tell us your editing preferences, brand colors, and style</p>
-                <div class="step-action">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Create Blueprint
-                </div>
-            </div>
-
-            <!-- Step 3: Submit First Edit -->
-            <div class="step-card" data-step="3" onclick="handleStep(3)">
-                <div class="step-connector"></div>
-                <div class="step-header">
-                    <div class="step-number">3</div>
-                    <span class="step-status pending">Pending</span>
-                </div>
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                </div>
-                <h3 class="step-title">Submit First Edit</h3>
-                <p class="step-description">Upload your raw footage and submit your first project</p>
-                <div class="step-action">
-                    Submit Project
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Step 4: Review & Done -->
-            <div class="step-card locked" data-step="4" onclick="handleStep(4)">
-                <div class="step-header">
-                    <div class="step-number">4</div>
-                    <span class="step-status pending">Pending</span>
-                </div>
-                <div class="step-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                </div>
-                <h3 class="step-title">Review & Approve</h3>
-                <p class="step-description">Review your edit, request revisions or approve for delivery</p>
-                <div class="step-action">
-                    Coming Soon
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="projects-section">
-        <div class="section-header">
-            <h2 class="section-title">
+    <!-- Main Content -->
+    <main class="cb-main-content">
+        <header class="welcome-header">
+            <div class="welcome-greeting">Welcome back</div>
+            <h1 class="welcome-name" id="userName">Loading...</h1>
+            <div class="welcome-badge" id="userBadge">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Your Projects
-            </h2>
-        </div>
+                <span>Free Trial</span>
+            </div>
+        </header>
 
-        <div class="projects-grid" id="projectsGrid">
-            <!-- Projects will be loaded here -->
+        <section class="onboarding-section" id="onboardingSection">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    Getting Started
+                </h2>
+            </div>
+
+            <div class="onboarding-steps" id="onboardingSteps"></div>
+        </section>
+    </main>
+
+    <!-- Review Call Modal (for trial users at step 4) -->
+    <div class="modal-overlay" id="reviewCallModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+            </div>
+
+            <h2 class="modal-title">🎉 Your First Edit is Ready!</h2>
+            <p class="modal-description">
+                Before you review your edit, let's hop on a quick call with Chastin to walk you through our review system and help you get the most out of your Content Bug experience.
+            </p>
+
+            <div class="modal-features">
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Learn our Frame.io-killer review system
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Optimize your style blueprint
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Get personalized feedback tips
+                </div>
+                <div class="feature-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    15-minute walkthrough call
+                </div>
+            </div>
+
+            <button class="modal-cta" onclick="bookReviewCall()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Book Review Call with Chastin
+            </button>
+
+            <div class="modal-skip">
+                <a href="#" onclick="skipReviewCall()">I'll figure it out myself →</a>
+            </div>
         </div>
-    </section>
+    </div>
 
     <script>
         const MCP_SERVER = 'https://portalv2.contentbug.io';
-        const userEmail = localStorage.getItem('cb_email') || '';
+
+        // User data
         const userName = localStorage.getItem('cb_name') || localStorage.getItem('cb_first_name') || 'there';
+        const userEmail = localStorage.getItem('cb_email') || '';
         const userStatus = localStorage.getItem('cb_status') || 'trial';
         const userTier = localStorage.getItem('cb_tier') || 'Free Trial';
 
-        // Track onboarding progress
-        let currentStep = parseInt(localStorage.getItem('cb_trial_step') || '1');
+        // Onboarding state
         let completedSteps = JSON.parse(localStorage.getItem('cb_completed_steps') || '[1]');
+        let currentStep = parseInt(localStorage.getItem('cb_trial_step') || '1');
+        const onboardingComplete = completedSteps.length >= 4;
+
+        // Nav items
+        const navItems = [
+            { name: 'Dashboard', page: '/dashboard', icon: 'home', step: null, minStep: 0 },
+            { name: 'Blueprint', page: '/blueprint', icon: 'layers', step: 2, minStep: 1 },
+            { name: 'Submit Edit', page: '/submit', icon: 'upload', step: 3, minStep: 2 },
+            { name: 'Review', page: '/review', icon: 'play', step: 4, minStep: 3 },
+            { name: 'Projects', page: '/projects', icon: 'folder', step: null, minStep: 4 },
+            { name: 'Storage', page: '/storage', icon: 'drive', step: null, minStep: 4 },
+            { name: 'Messages', page: '/messages', icon: 'message', step: null, minStep: 4 },
+            { name: 'Settings', page: '/settings', icon: 'settings', step: null, minStep: 4 }
+        ];
+
+        const icons = {
+            home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+            layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+            upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+            play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>',
+            folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+            drive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+            message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+            settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+            lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+            user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+            check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+        };
+
+        // Steps config
+        const steps = [
+            { id: 1, title: 'Create Profile', desc: 'Set up your account and complete qualification', icon: 'user', action: 'Profile Created', page: null },
+            { id: 2, title: 'Create Blueprint', desc: 'Tell us your editing preferences, brand colors, and style', icon: 'layers', action: 'Create Blueprint', page: '/blueprint' },
+            { id: 3, title: 'Submit First Edit', desc: 'Upload your raw footage and submit your first project', icon: 'upload', action: 'Submit Project', page: '/submit' },
+            { id: 4, title: 'Review & Approve', desc: 'Review your edit, request revisions or approve for delivery', icon: 'check', action: 'Review Edit', page: '/review' }
+        ];
 
         // ============================================
-        // INITIALIZE
+        // INIT
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Set user name
-            document.getElementById('userName').textContent = userName;
-
-            // Set status badge
-            const statusEl = document.getElementById('userStatus');
-            if (userStatus === 'active') {
-                statusEl.classList.add('active');
-                statusEl.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span>${userTier}</span>
-                `;
-                // Hide onboarding for active users
-                document.getElementById('onboardingSection').style.display = 'none';
-            }
-
-            updateOnboardingUI();
-            loadProjects();
+            initDashboard();
         });
 
-        // ============================================
-        // ONBOARDING
-        // ============================================
-        function updateOnboardingUI() {
-            const steps = document.querySelectorAll('.step-card');
+        function initDashboard() {
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+
+            // Update header
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('sidebarUserName').textContent = userName;
             
-            steps.forEach((card, index) => {
-                const stepNum = index + 1;
-                card.classList.remove('completed', 'current', 'locked');
-                
-                if (completedSteps.includes(stepNum)) {
-                    card.classList.add('completed');
-                    card.querySelector('.step-number').innerHTML = '✓';
-                    card.querySelector('.step-status').textContent = 'Complete';
-                    card.querySelector('.step-status').className = 'step-status done';
-                } else if (stepNum === currentStep) {
-                    card.classList.add('current');
-                    card.querySelector('.step-status').textContent = 'Current';
-                    card.querySelector('.step-status').className = 'step-status active';
-                } else if (stepNum > currentStep) {
-                    card.classList.add('locked');
-                    card.querySelector('.step-status').textContent = 'Pending';
-                    card.querySelector('.step-status').className = 'step-status pending';
+            // Update status
+            const statusBadge = document.getElementById('userBadge');
+            const sidebarStatus = document.getElementById('sidebarUserStatus');
+            
+            if (userStatus === 'active') {
+                statusBadge.classList.add('active');
+                statusBadge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>${userTier}</span>`;
+                sidebarStatus.classList.add('active');
+                sidebarStatus.textContent = userTier;
+                document.getElementById('sidebarProgress').style.display = 'none';
+            } else {
+                sidebarStatus.textContent = userTier;
+            }
+
+            // Hide onboarding for active users
+            if (onboardingComplete || userStatus === 'active') {
+                document.getElementById('onboardingSection').style.display = 'none';
+                document.getElementById('sidebarProgress').style.display = 'none';
+            }
+
+            updateProgress();
+            renderNav();
+            renderOnboarding();
+
+            // Check if trial user at step 4 needs to book review call
+            if (userStatus !== 'active' && currentStep === 4 && !localStorage.getItem('cb_review_call_booked')) {
+                setTimeout(() => showReviewCallModal(), 1000);
+            }
+        }
+
+        function updateProgress() {
+            const percent = (completedSteps.length / 4) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            document.getElementById('progressCount').textContent = `${completedSteps.length}/4`;
+
+            // Update CTA button
+            const submitBtn = document.getElementById('submitBtn');
+            if (currentStep < 3) {
+                submitBtn.classList.add('locked');
+                submitBtn.onclick = null;
+            }
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('sidebarNav');
+            const currentPage = window.location.pathname;
+
+            let html = '<div class="nav-section"><div class="nav-section-title">Menu</div>';
+
+            navItems.forEach(item => {
+                const isLocked = currentStep < item.minStep && !onboardingComplete && userStatus !== 'active';
+                const isCurrent = item.step === currentStep;
+                const isCompleted = item.step && completedSteps.includes(item.step);
+                const isActive = currentPage === item.page;
+
+                let classes = 'nav-item';
+                if (isActive) classes += ' active';
+                if (isLocked) classes += ' locked';
+
+                let badge = '';
+                if (item.step) {
+                    if (isCompleted) {
+                        badge = '<span class="step-badge done">✓</span>';
+                    } else if (isCurrent) {
+                        badge = '<span class="step-badge current">Current</span>';
+                    }
                 }
+
+                html += `
+                    <a href="${isLocked ? '#' : item.page}" class="${classes}" ${isLocked ? 'onclick="return false;"' : ''}>
+                        ${icons[item.icon]}
+                        <span class="nav-text">${item.name}</span>
+                        ${badge}
+                        ${isLocked ? '<span class="lock-icon">' + icons.lock + '</span>' : ''}
+                    </a>
+                `;
             });
 
-            // Update progress
-            const progress = (completedSteps.length / 4) * 100;
-            document.getElementById('progressFill').style.width = `${progress}%`;
-            document.getElementById('progressText').textContent = `${completedSteps.length} of 4 complete`;
+            html += '</div>';
+            nav.innerHTML = html;
         }
 
-        function handleStep(step) {
-            if (step > currentStep && !completedSteps.includes(step - 1)) {
-                return; // Can't skip steps
+        function renderOnboarding() {
+            const container = document.getElementById('onboardingSteps');
+            
+            container.innerHTML = steps.map(step => {
+                const isCompleted = completedSteps.includes(step.id);
+                const isCurrent = step.id === currentStep;
+                const isLocked = step.id > currentStep;
+
+                let classes = 'step-card';
+                if (isCompleted) classes += ' completed';
+                else if (isCurrent) classes += ' current';
+                else if (isLocked) classes += ' locked';
+
+                let statusClass = isCompleted ? 'done' : (isCurrent ? 'active' : 'pending');
+                let statusText = isCompleted ? 'Complete' : (isCurrent ? 'Current' : 'Pending');
+
+                return `
+                    <div class="${classes}" onclick="handleStep(${step.id})">
+                        <div class="step-header">
+                            <div class="step-number">${isCompleted ? '✓' : step.id}</div>
+                            <span class="step-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="step-icon">${icons[step.icon]}</div>
+                        <h3 class="step-title">${step.title}</h3>
+                        <p class="step-description">${step.desc}</p>
+                        <div class="step-action">
+                            ${isCompleted ? icons.check : ''} 
+                            ${isCompleted ? step.action : (step.page ? step.action + ' →' : step.action)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleStep(stepId) {
+            const step = steps.find(s => s.id === stepId);
+            if (!step) return;
+
+            // Can't click locked steps
+            if (stepId > currentStep && !completedSteps.includes(stepId - 1)) {
+                return;
             }
 
-            switch(step) {
-                case 1:
-                    // Already complete
-                    break;
-                case 2:
-                    window.location.href = '/blueprint';
-                    break;
-                case 3:
-                    window.location.href = '/submit';
-                    break;
-                case 4:
-                    // Will be enabled when project is ready for review
-                    break;
+            // Step 4 for trial users - show review call modal
+            if (stepId === 4 && userStatus !== 'active' && !localStorage.getItem('cb_review_call_booked')) {
+                showReviewCallModal();
+                return;
+            }
+
+            if (step.page) {
+                window.location.href = step.page;
             }
         }
+
+        function goToSubmit() {
+            if (currentStep >= 3 || onboardingComplete) {
+                window.location.href = '/submit';
+            }
+        }
+
+        // ============================================
+        // REVIEW CALL MODAL
+        // ============================================
+        function showReviewCallModal() {
+            document.getElementById('reviewCallModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('reviewCallModal').classList.remove('active');
+        }
+
+        function bookReviewCall() {
+            // Open Chastin's calendar
+            window.open('https://api.leadconnectorhq.com/widget/booking/TDEkxQTxVF3j9bFQMeY6', '_blank');
+            localStorage.setItem('cb_review_call_booked', 'true');
+            closeModal();
+        }
+
+        function skipReviewCall() {
+            localStorage.setItem('cb_review_call_booked', 'skipped');
+            closeModal();
+            // Navigate to review page
+            window.location.href = '/review';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Listen for step completion from other pages
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'step_complete') {
+                completeStep(event.data.step);
+            }
+        });
 
         function completeStep(step) {
             if (!completedSteps.includes(step)) {
@@ -782,120 +732,10 @@
                 currentStep = step + 1;
                 localStorage.setItem('cb_trial_step', currentStep.toString());
             }
-            updateOnboardingUI();
+            updateProgress();
+            renderNav();
+            renderOnboarding();
         }
-
-        // ============================================
-        // PROJECTS
-        // ============================================
-        async function loadProjects() {
-            const grid = document.getElementById('projectsGrid');
-            
-            try {
-                const response = await fetch(`${MCP_SERVER}/api/projects`, {
-                    headers: {
-                        'X-User-Email': userEmail,
-                        'X-User-Role': 'client'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.projects?.length > 0) {
-                        grid.innerHTML = data.projects.map(p => createProjectCard(p)).join('');
-                        return;
-                    }
-                }
-            } catch (err) {
-                console.error('Failed to load projects:', err);
-            }
-
-            // Show empty state
-            grid.innerHTML = `
-                <div class="empty-projects">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M15 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7z"/>
-                        <polyline points="15 2 15 8 21 8"/>
-                        <line x1="12" y1="18" x2="12" y2="12"/>
-                        <line x1="9" y1="15" x2="15" y2="15"/>
-                    </svg>
-                    <h3>No projects yet</h3>
-                    <p>Submit your first edit request to get started</p>
-                    <button class="cta-btn" onclick="window.location.href='/submit'">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Submit First Project
-                    </button>
-                </div>
-            `;
-        }
-
-        function createProjectCard(project) {
-            const statusClass = project.status?.toLowerCase().replace(' ', '-') || 'editing';
-            const statusLabel = {
-                'submitted': 'Submitted',
-                'in-progress': 'Editing',
-                'review': 'Ready for Review',
-                'revisions': 'Revisions',
-                'approved': 'Approved'
-            }[statusClass] || project.status;
-
-            const showReviewBtn = statusClass === 'review' || statusClass === 'revisions';
-
-            return `
-                <div class="project-card-client">
-                    <div class="project-thumb">
-                        ${project.thumbnail ? 
-                            `<img src="${project.thumbnail}" alt="${project.title}">` :
-                            `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-                                    <line x1="7" y1="2" x2="7" y2="22"/>
-                                    <line x1="17" y1="2" x2="17" y2="22"/>
-                                    <line x1="2" y1="12" x2="22" y2="12"/>
-                                </svg>
-                            </div>`
-                        }
-                        <span class="status-pill ${statusClass}">${statusLabel}</span>
-                    </div>
-                    <div class="project-info">
-                        <h3 class="project-name">${project.title}</h3>
-                        <div class="project-meta">
-                            <span>${project.format || 'Short-Form'}</span>
-                            <span>•</span>
-                            <span>${project.style || 'Default'}</span>
-                        </div>
-                        <div class="project-actions">
-                            ${showReviewBtn ? `
-                                <button class="project-btn primary" onclick="window.location.href='/review?project=${project.project_id}'">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon points="5 3 19 12 5 21 5 3"/>
-                                    </svg>
-                                    Review Edit
-                                </button>
-                            ` : `
-                                <button class="project-btn secondary">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <polyline points="12 6 12 12 16 14"/>
-                                    </svg>
-                                    ${statusClass === 'approved' ? 'Download' : 'In Progress'}
-                                </button>
-                            `}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Listen for messages from embedded pages (submit, blueprint)
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'step_complete') {
-                completeStep(event.data.step);
-            }
-        });
     </script>
 </body>
 </html>
