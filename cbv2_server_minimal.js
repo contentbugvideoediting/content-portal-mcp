@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 // ============================================
 // ENVIRONMENT VARIABLES
 // ============================================
-const GHL_API_KEY = process.env.GHL_API_KEY || process.env.GHL_PRIVATE_INTEGRATION;
+const GHL_API_KEY = process.env.GHL_API_KEY || process.env.GHL_PRIVATE_INTEGRATION || 'pit-b6c91769-a146-42c6-a589-4d091c9e9ca9';
 const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID || 'mCNHhjy593eUueqfuqyU';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
