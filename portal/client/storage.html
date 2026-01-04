@@ -838,10 +838,14 @@
         }
 
         // ============================================
-        // LOAD FILES
         // ============================================
+        // LOAD FILES FROM DRIVE
+        // ============================================
+        let storageData = { used: 0, limit: 5368709120, used_formatted: '0 B', limit_formatted: '5 GB' };
+
         async function loadFiles() {
             try {
+                // Load files
                 const response = await fetch(`${MCP_SERVER}/api/storage/files`, {
                     headers: { 'X-User-Email': currentUser.email }
                 });
@@ -850,130 +854,73 @@
                     const data = await response.json();
                     files.videos = data.videos || [];
                     files.assets = data.assets || [];
-                } else {
-                    loadDemoFiles();
+                    
+                    // Update Drive folder ID if returned
+                    if (data.folder_id && !currentUser.driveFolderId) {
+                        currentUser.driveFolderId = data.folder_id;
+                        localStorage.setItem('cb_drive_folder_id', data.folder_id);
+                        checkDriveConnection();
+                    }
+                    
+                    // Store raw storage data
+                    storageData.used = data.storage_used || 0;
+                    storageData.used_formatted = data.storage_used_formatted || '0 B';
+                }
+                
+                // Load storage stats (limit based on plan)
+                const statsResponse = await fetch(`${MCP_SERVER}/api/storage/stats`, {
+                    headers: { 'X-User-Email': currentUser.email }
+                });
+                
+                if (statsResponse.ok) {
+                    const stats = await statsResponse.json();
+                    storageData.used = stats.used || storageData.used;
+                    storageData.limit = stats.limit || storageData.limit;
+                    storageData.used_formatted = stats.used_formatted || storageData.used_formatted;
+                    storageData.limit_formatted = stats.limit_formatted || storageData.limit_formatted;
                 }
             } catch (err) {
                 console.error('Failed to load files:', err);
-                loadDemoFiles();
             }
 
             updateStats();
             renderFiles();
         }
 
-        function loadDemoFiles() {
-            files.videos = [
-                {
-                    id: 'v1',
-                    name: 'YouTube Tutorial - Complete Setup Guide (Final)',
-                    type: 'video',
-                    size: '524 MB',
-                    duration: '12:34',
-                    date: '2024-12-27',
-                    status: 'approved',
-                    thumbnail: null,
-                    url: '#'
-                },
-                {
-                    id: 'v2',
-                    name: 'Instagram Reel - Top 5 Tips Series',
-                    type: 'video',
-                    size: '48 MB',
-                    duration: '0:59',
-                    date: '2024-12-26',
-                    status: 'approved',
-                    thumbnail: null,
-                    url: '#'
-                },
-                {
-                    id: 'v3',
-                    name: 'TikTok Ad - Holiday Sale Promo',
-                    type: 'video',
-                    size: '32 MB',
-                    duration: '0:30',
-                    date: '2024-12-25',
-                    status: 'approved',
-                    thumbnail: null,
-                    url: '#'
-                },
-                {
-                    id: 'v4',
-                    name: 'YouTube Shorts - Behind the Scenes',
-                    type: 'video',
-                    size: '68 MB',
-                    duration: '0:58',
-                    date: '2024-12-24',
-                    status: 'new',
-                    thumbnail: null,
-                    url: '#'
-                }
-            ];
-
-            files.assets = [
-                {
-                    id: 'a1',
-                    name: 'logo-primary.svg',
-                    type: 'image',
-                    size: '24 KB',
-                    date: '2024-12-20',
-                    thumbnail: null,
-                    url: '#'
-                },
-                {
-                    id: 'a2',
-                    name: 'intro-music.mp3',
-                    type: 'audio',
-                    size: '2.4 MB',
-                    date: '2024-12-18',
-                    thumbnail: null,
-                    url: '#'
-                },
-                {
-                    id: 'a3',
-                    name: 'brand-fonts.zip',
-                    type: 'doc',
-                    size: '1.2 MB',
-                    date: '2024-12-15',
-                    thumbnail: null,
-                    url: '#'
-                },
-                {
-                    id: 'a4',
-                    name: 'lower-thirds.png',
-                    type: 'image',
-                    size: '156 KB',
-                    date: '2024-12-12',
-                    thumbnail: null,
-                    url: '#'
-                }
-            ];
-        }
-
         function updateStats() {
             const totalVideos = files.videos.length;
-            const totalImages = files.assets.filter(f => f.type === 'image').length;
-            const totalOther = files.assets.filter(f => f.type !== 'image').length;
-            const totalFiles = totalVideos + files.assets.length;
+            const totalAssets = files.assets.length;
+            const totalImages = files.assets.filter(f => f.type?.includes('image')).length;
+            const totalOther = totalAssets - totalImages;
+            const totalFiles = totalVideos + totalAssets;
 
             document.getElementById('totalFiles').textContent = totalFiles;
             document.getElementById('totalVideos').textContent = totalVideos;
             document.getElementById('totalImages').textContent = totalImages;
             document.getElementById('totalOther').textContent = totalOther;
 
-            // Calculate storage (demo values)
-            const usedGB = 3.5;
-            const totalGB = 50;
-            const percentage = (usedGB / totalGB) * 100;
+            // Real storage values from API
+            const percentage = storageData.limit > 0 ? 
+                Math.min(100, Math.round((storageData.used / storageData.limit) * 100)) : 0;
 
-            document.getElementById('storageValue').textContent = `${usedGB} GB of ${totalGB} GB`;
+            document.getElementById('storageValue').textContent = 
+                `${storageData.used_formatted} of ${storageData.limit_formatted}`;
             document.getElementById('storageFill').style.width = `${percentage}%`;
 
+            // Update color based on usage
+            const fill = document.getElementById('storageFill');
+            if (percentage > 90) {
+                fill.style.background = 'var(--red)';
+            } else if (percentage > 75) {
+                fill.style.background = 'var(--orange)';
+            } else {
+                fill.style.background = 'var(--green)';
+            }
+
             document.getElementById('videosCount').textContent = `${totalVideos} files`;
-            document.getElementById('assetsCount').textContent = `${files.assets.length} files`;
+            document.getElementById('assetsCount').textContent = `${totalAssets} files`;
         }
 
-        // ============================================
         // RENDER FILES
         // ============================================
         function renderFiles() {
