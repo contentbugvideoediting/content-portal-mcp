@@ -512,8 +512,6 @@ app.post('/api/auth/verify-code', async (req, res) => {
     res.status(500).json({ error: 'Verification failed' });
   }
 });
-  }
-});
 
 // ============================================
 // CHAT ENDPOINTS (Airtable Storage)
