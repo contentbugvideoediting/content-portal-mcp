@@ -1,0 +1,495 @@
+<!-- 
+  ContentBug Sidebar Component
+  Include via: <div id="cb-sidebar"></div> + loadSidebar()
+-->
+<style>
+/* ============================================ */
+/* SIDEBAR STYLES */
+/* ============================================ */
+.cb-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: #08080c;
+    border-right: 1px solid #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: transform 0.3s;
+}
+
+.cb-sidebar.collapsed {
+    transform: translateX(-260px);
+}
+
+.cb-main-content {
+    margin-left: 260px;
+    transition: margin-left 0.3s;
+}
+
+.cb-main-content.expanded {
+    margin-left: 0;
+}
+
+/* Logo Section */
+.sidebar-logo {
+    padding: 20px;
+    border-bottom: 1px solid #1a1a2e;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-logo img {
+    height: 32px;
+}
+
+.sidebar-logo span {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* User Section */
+.sidebar-user {
+    padding: 16px 20px;
+    border-bottom: 1px solid #1a1a2e;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-status {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #f59e0b;
+}
+
+.user-status.active {
+    color: #22c55e;
+}
+
+/* Onboarding Progress */
+.sidebar-onboarding {
+    padding: 16px 20px;
+    background: rgba(59, 130, 246, 0.05);
+    border-bottom: 1px solid #1a1a2e;
+}
+
+.onboarding-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.onboarding-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b6b80;
+}
+
+.onboarding-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.onboarding-bar {
+    width: 100%;
+    height: 6px;
+    background: #14141e;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.onboarding-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e 0%, #3b82f6 100%);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* Navigation */
+.sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+}
+
+.nav-section {
+    margin-bottom: 24px;
+}
+
+.nav-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #4a4a5e;
+    padding: 0 8px;
+    margin-bottom: 8px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: #a1a1b5;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.nav-item:hover:not(.locked) {
+    background: #14141e;
+    color: #fff;
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+    color: #3b82f6;
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 24px;
+    background: #3b82f6;
+    border-radius: 0 2px 2px 0;
+}
+
+.nav-item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.nav-item .nav-text {
+    flex: 1;
+}
+
+/* Locked State */
+.nav-item.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.nav-item.locked .lock-icon {
+    display: flex;
+}
+
+.lock-icon {
+    display: none;
+    width: 16px;
+    height: 16px;
+    color: #6b6b80;
+}
+
+/* Step Badge */
+.step-badge {
+    display: none;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.nav-item.current-step .step-badge {
+    display: inline-flex;
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.nav-item.completed .step-badge {
+    display: inline-flex;
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+/* Quick Action */
+.sidebar-cta {
+    padding: 16px;
+    border-top: 1px solid #1a1a2e;
+}
+
+.cta-button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.cta-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Mobile Toggle */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1001;
+    width: 44px;
+    height: 44px;
+    background: #0c0c12;
+    border: 1px solid #1a1a2e;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: flex;
+    }
+    
+    .cb-sidebar {
+        transform: translateX(-260px);
+    }
+    
+    .cb-sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .cb-main-content {
+        margin-left: 0;
+    }
+}
+</style>
+
+<script>
+// Sidebar Component Logic
+const SidebarConfig = {
+    onboardingSteps: [
+        { id: 1, name: 'Profile', page: '/dashboard', icon: 'user' },
+        { id: 2, name: 'Blueprint', page: '/blueprint', icon: 'layers' },
+        { id: 3, name: 'Submit', page: '/submit', icon: 'upload' },
+        { id: 4, name: 'Review', page: '/review', icon: 'check-circle' }
+    ],
+    navItems: [
+        { name: 'Dashboard', page: '/dashboard', icon: 'home', requiresOnboarding: false },
+        { name: 'Blueprint', page: '/blueprint', icon: 'layers', requiresOnboarding: false, step: 2 },
+        { name: 'Submit Edit', page: '/submit', icon: 'upload', requiresOnboarding: true, step: 3, minStep: 2 },
+        { name: 'Review', page: '/review', icon: 'play-circle', requiresOnboarding: true, step: 4, minStep: 3 },
+        { name: 'Projects', page: '/projects', icon: 'folder', requiresOnboarding: true, minStep: 4 },
+        { name: 'Storage', page: '/storage', icon: 'hard-drive', requiresOnboarding: true, minStep: 4 },
+        { name: 'Messages', page: '/messages', icon: 'message-circle', requiresOnboarding: true, minStep: 4 },
+        { name: 'Settings', page: '/settings', icon: 'settings', requiresOnboarding: true, minStep: 4 }
+    ]
+};
+
+function getOnboardingProgress() {
+    const completedSteps = JSON.parse(localStorage.getItem('cb_completed_steps') || '[1]');
+    const currentStep = parseInt(localStorage.getItem('cb_trial_step') || '1');
+    return { completedSteps, currentStep };
+}
+
+function isStepLocked(navItem, progress) {
+    if (!navItem.requiresOnboarding) return false;
+    if (navItem.minStep && progress.currentStep < navItem.minStep) return true;
+    return false;
+}
+
+function isCurrentStep(navItem, progress) {
+    return navItem.step === progress.currentStep;
+}
+
+function isStepCompleted(navItem, progress) {
+    return navItem.step && progress.completedSteps.includes(navItem.step);
+}
+
+function getIcon(name) {
+    const icons = {
+        'home': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+        'layers': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+        'upload': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+        'play-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>',
+        'check-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        'folder': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+        'hard-drive': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>',
+        'message-circle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+        'settings': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+        'user': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+        'lock': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        'plus': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+        'menu': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>'
+    };
+    return icons[name] || icons['home'];
+}
+
+function renderSidebar(containerId = 'cb-sidebar') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const userName = localStorage.getItem('cb_name') || localStorage.getItem('cb_first_name') || 'User';
+    const userStatus = localStorage.getItem('cb_status') || 'trial';
+    const userTier = localStorage.getItem('cb_tier') || 'Free Trial';
+    const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const progress = getOnboardingProgress();
+    const currentPage = window.location.pathname;
+    const onboardingComplete = progress.completedSteps.length >= 4;
+
+    let navItemsHtml = SidebarConfig.navItems.map(item => {
+        const isLocked = isStepLocked(item, progress);
+        const isCurrent = isCurrentStep(item, progress);
+        const isCompleted = isStepCompleted(item, progress);
+        const isActive = currentPage === item.page || currentPage.startsWith(item.page + '/');
+
+        let classes = 'nav-item';
+        if (isActive) classes += ' active';
+        if (isLocked) classes += ' locked';
+        if (isCurrent) classes += ' current-step';
+        if (isCompleted) classes += ' completed';
+
+        let badge = '';
+        if (item.step) {
+            if (isCompleted) {
+                badge = '<span class="step-badge">✓ Done</span>';
+            } else if (isCurrent) {
+                badge = '<span class="step-badge">Current</span>';
+            }
+        }
+
+        return `
+            <a href="${isLocked ? '#' : item.page}" class="${classes}" ${isLocked ? 'onclick="return false;"' : ''}>
+                ${getIcon(item.icon)}
+                <span class="nav-text">${item.name}</span>
+                ${badge}
+                ${isLocked ? '<span class="lock-icon">' + getIcon('lock') + '</span>' : ''}
+            </a>
+        `;
+    }).join('');
+
+    const progressPercent = (progress.completedSteps.length / 4) * 100;
+    const showOnboarding = !onboardingComplete && userStatus !== 'active';
+
+    container.innerHTML = `
+        <aside class="cb-sidebar" id="sidebarNav">
+            <div class="sidebar-logo">
+                <img src="https://contentbug.io/logo-icon.png" alt="Content Bug" onerror="this.style.display='none'">
+                <span>Content Bug</span>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">${initials}</div>
+                <div class="user-info">
+                    <div class="user-name">${userName}</div>
+                    <div class="user-status ${userStatus === 'active' ? 'active' : ''}">${userTier}</div>
+                </div>
+            </div>
+
+            ${showOnboarding ? `
+            <div class="sidebar-onboarding">
+                <div class="onboarding-header">
+                    <span class="onboarding-title">Getting Started</span>
+                    <span class="onboarding-count">${progress.completedSteps.length}/4</span>
+                </div>
+                <div class="onboarding-bar">
+                    <div class="onboarding-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            </div>
+            ` : ''}
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Menu</div>
+                    ${navItemsHtml}
+                </div>
+            </nav>
+
+            <div class="sidebar-cta">
+                <button class="cta-button" onclick="window.location.href='/submit'">
+                    ${getIcon('plus')}
+                    Submit New Edit
+                </button>
+            </div>
+        </aside>
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            ${getIcon('menu')}
+        </button>
+    `;
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebarNav');
+    sidebar.classList.toggle('open');
+}
+
+// Auto-init when DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('cb-sidebar')) {
+        renderSidebar();
+    }
+});
+</script>
