@@ -233,7 +233,7 @@ async function airtableUpdate(table, recordId, fields) {
 // ============================================
 app.get('/healthz', (req, res) => res.json({
   ok: true,
-  version: '3.9.0-projects',
+  version: '3.10.0-onboarding',
   ts: Date.now(),
   services: {
     ghl: !!GHL_API_KEY,
@@ -2953,6 +2953,186 @@ function safeJSONParse(str, fallback = null) {
     return fallback;
   }
 }
+
+
+// ============================================
+// GHL WEBHOOK - Demo Call Booked (Starts Trial)
+// ============================================
+/**
+ * POST /api/webhook/ghl/demo-booked
+ * Called when a lead books a demo call via GHL calendar
+ * Triggers trial start: creates Drive folder, updates status
+ */
+app.post('/api/webhook/ghl/demo-booked', async (req, res) => {
+  try {
+    console.log('[GHL Webhook] Demo booked:', JSON.stringify(req.body).slice(0, 500));
+    
+    // GHL sends different payload formats
+    const contact = req.body.contact || req.body;
+    const email = contact.email || req.body.email;
+    const firstName = contact.firstName || contact.first_name || req.body.firstName || '';
+    const lastName = contact.lastName || contact.last_name || req.body.lastName || '';
+    const phone = contact.phone || req.body.phone || '';
+
+    if (!email) {
+      console.log('[GHL Webhook] No email in payload');
+      return res.status(200).json({ received: true, error: 'No email' });
+    }
+
+    console.log('[GHL Webhook] Starting trial for:', email);
+
+    // Call trial/start endpoint internally
+    const trialResult = await startTrial({ email, firstName, lastName, phone });
+    
+    console.log('[GHL Webhook] Trial started:', trialResult.success);
+
+    res.json({ 
+      received: true, 
+      email,
+      trial_started: trialResult.success,
+      drive_folder: !!trialResult.drive_folder_id
+    });
+
+  } catch (err) {
+    console.error('[GHL Webhook Error]', err.message);
+    // Always return 200 to GHL to prevent retries
+    res.status(200).json({ received: true, error: err.message });
+  }
+});
+
+/**
+ * Internal helper: Start trial for a contact
+ */
+async function startTrial({ email, firstName, lastName, phone }) {
+  try {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Find or create contact in GHL
+    let contact = await ghlFindByEmail(normalizedEmail);
+    
+    if (!contact && GHL_API_KEY) {
+      // Create new contact
+      const createResponse = await axios.post(
+        'https://services.leadconnectorhq.com/contacts/',
+        {
+          email: normalizedEmail,
+          firstName: firstName || '',
+          lastName: lastName || '',
+          phone: phone || '',
+          locationId: GHL_LOCATION_ID,
+          tags: ['free-trial', 'demo-booked']
+        },
+        { headers: { Authorization: `Bearer ${GHL_API_KEY}`, Version: '2021-07-28', 'Content-Type': 'application/json' } }
+      );
+      contact = createResponse.data?.contact;
+    }
+
+    if (!contact) {
+      return { success: false, error: 'Contact creation failed' };
+    }
+
+    // Check if Drive folder already exists
+    let driveFolderId = null;
+    let driveFolderUrl = null;
+    
+    if (contact.customFields) {
+      const folderField = contact.customFields.find(f => f.id === GHL_FIELDS.googleDriveFolderLink);
+      if (folderField?.value) {
+        const match = folderField.value.match(/folders\/([a-zA-Z0-9_-]+)/);
+        driveFolderId = match ? match[1] : null;
+        driveFolderUrl = folderField.value;
+      }
+    }
+
+    // Create Drive folder if doesn't exist
+    if (!driveFolderId && driveReady && googleDrive) {
+      const folderName = `${firstName || 'Client'} ${lastName || ''} - Content Bug`.trim();
+      
+      const folderResponse = await googleDrive.files.create({
+        requestBody: {
+          name: folderName,
+          mimeType: 'application/vnd.google-apps.folder',
+          parents: ['0ADnOJaRBvSNCUk9PVA']
+        },
+        fields: 'id, webViewLink',
+        supportsAllDrives: true
+      });
+
+      driveFolderId = folderResponse.data.id;
+      driveFolderUrl = folderResponse.data.webViewLink;
+
+      // Create default subfolders
+      const subfolders = ['📹 Raw Sessions', '🎬 Completed Edits', '📋 Brand Assets'];
+      for (const name of subfolders) {
+        await googleDrive.files.create({
+          requestBody: {
+            name,
+            mimeType: 'application/vnd.google-apps.folder',
+            parents: [driveFolderId]
+          },
+          supportsAllDrives: true
+        });
+      }
+
+      // Update GHL with folder link and trial status
+      await ghlUpdateContact(contact.id, {
+        customFields: [
+          { id: GHL_FIELDS.googleDriveFolderLink, value: driveFolderUrl },
+          { id: GHL_FIELDS.subscriptionStatus, value: 'Trial' },
+          { id: GHL_FIELDS.onboardingStatus, value: 'Demo Booked' },
+          { id: GHL_FIELDS.userRole, value: 'Trial' }
+        ]
+      });
+
+      await ghlAddTags(contact.id, ['free-trial', 'demo-booked', 'drive-folder-created']);
+
+      console.log('[Trial] Created folder for:', normalizedEmail, driveFolderId);
+    }
+
+    return {
+      success: true,
+      contact_id: contact.id,
+      drive_folder_id: driveFolderId,
+      drive_folder_url: driveFolderUrl
+    };
+
+  } catch (err) {
+    console.error('[Trial Start Error]', err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * POST /api/webhook/ghl/status-change
+ * Called when contact status changes (e.g., trial → active)
+ */
+app.post('/api/webhook/ghl/status-change', async (req, res) => {
+  try {
+    console.log('[GHL Status Change]', JSON.stringify(req.body).slice(0, 300));
+    
+    const email = req.body.email || req.body.contact?.email;
+    const newStatus = req.body.status || req.body.subscriptionStatus;
+
+    if (email && newStatus) {
+      // Update Airtable client record
+      try {
+        const clients = await airtableGet(AT_TABLES.clients, `{Email} = '${email.toLowerCase()}'`, 1);
+        if (clients.length > 0) {
+          await airtableUpdate(AT_TABLES.clients, clients[0].id, {
+            'Contact Status': newStatus,
+            'Portal Access': newStatus === 'Active' ? 'Full' : 'Limited'
+          });
+        }
+      } catch (e) {
+        console.error('[Status Change] Airtable update failed:', e.message);
+      }
+    }
+
+    res.json({ received: true });
+  } catch (err) {
+    res.status(200).json({ received: true, error: err.message });
+  }
+});
 
 // START SERVER
 // ============================================
