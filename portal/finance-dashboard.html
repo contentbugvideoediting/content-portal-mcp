@@ -1699,9 +1699,23 @@
             if (!wiseAccount || !wiseAccount.balances) return;
             
             const container = document.getElementById('currencyBalances');
-            container.innerHTML = wiseAccount.balances.map(bal => {
+            
+            // Filter out zero balances and sort by amount
+            const nonZeroBalances = wiseAccount.balances.filter(b => b.amount > 0);
+            
+            if (nonZeroBalances.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        No currency balances yet
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = nonZeroBalances.map(bal => {
                 const flag = getCurrencyFlag(bal.currency);
                 const symbol = getCurrencySymbol(bal.currency);
+                const amount = typeof bal.amount === 'object' ? bal.amount.value : bal.amount;
                 
                 return `
                     <div class="connection-item">
@@ -1709,7 +1723,7 @@
                             <span style="font-size: 20px;">${flag}</span>
                             <span>${bal.currency}</span>
                         </div>
-                        <span class="mono" style="font-weight: 600;">${symbol}${bal.amount.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                        <span class="mono" style="font-weight: 600;">${symbol}${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                     </div>
                 `;
             }).join('');
@@ -1718,7 +1732,8 @@
         function getCurrencyFlag(currency) {
             const flags = {
                 'USD': '🇺🇸', 'EUR': '🇪🇺', 'GBP': '🇬🇧', 'CAD': '🇨🇦',
-                'AUD': '🇦🇺', 'JPY': '🇯🇵', 'CHF': '🇨🇭', 'CNY': '🇨🇳'
+                'AUD': '🇦🇺', 'JPY': '🇯🇵', 'CHF': '🇨🇭', 'CNY': '🇨🇳',
+                'PHP': '🇵🇭', 'MXN': '🇲🇽', 'INR': '🇮🇳', 'BRL': '🇧🇷'
             };
             return flags[currency] || '💵';
         }
@@ -1726,7 +1741,8 @@
         function getCurrencySymbol(currency) {
             const symbols = {
                 'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥',
-                'CAD': 'C$', 'AUD': 'A$', 'CHF': 'Fr', 'CNY': '¥'
+                'CAD': 'C$', 'AUD': 'A$', 'CHF': 'Fr', 'CNY': '¥',
+                'PHP': '₱', 'MXN': '$', 'INR': '₹', 'BRL': 'R$'
             };
             return symbols[currency] || '$';
         }
