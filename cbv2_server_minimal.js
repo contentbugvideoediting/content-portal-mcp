@@ -1957,6 +1957,92 @@ app.get('/api/storage/files', async (req, res) => {
   }
 });
 
+// ============================================
+// CLAUDE BRAIN SYNC ENDPOINT
+// ============================================
+const CLAUDE_BRAIN_FOLDER_ID = process.env.GOOGLE_CONTENT_PORTAL_FOLDER || '1guQZ_JOyGL6MHZLdhIK22jK_EyM_5Rfx';
+
+/**
+ * POST /api/sync/claude-brain - Sync local CLAUDE BRAIN files to Google Drive
+ * Receives files from local sync script and uploads/updates them in Drive
+ */
+app.post('/api/sync/claude-brain', async (req, res) => {
+  try {
+    const { action, files, timestamp, folder_id } = req.body;
+
+    if (action !== 'sync_claude_brain') {
+      return res.status(400).json({ error: 'Invalid action' });
+    }
+
+    if (!driveReady || !googleDrive) {
+      return res.status(503).json({ error: 'Google Drive not initialized' });
+    }
+
+    const targetFolder = folder_id || CLAUDE_BRAIN_FOLDER_ID;
+    const results = [];
+
+    for (const file of files || []) {
+      try {
+        // Check if file already exists
+        const existingFiles = await googleDrive.files.list({
+          q: `name='${file.filename}' and '${targetFolder}' in parents and trashed=false`,
+          fields: 'files(id, name)',
+          supportsAllDrives: true,
+          includeItemsFromAllDrives: true
+        });
+
+        const content = Buffer.from(file.content, 'utf-8');
+        const media = {
+          mimeType: 'text/plain',
+          body: require('stream').Readable.from(content)
+        };
+
+        let result;
+        if (existingFiles.data.files && existingFiles.data.files.length > 0) {
+          // Update existing file
+          const fileId = existingFiles.data.files[0].id;
+          result = await googleDrive.files.update({
+            fileId,
+            media,
+            fields: 'id, name, webViewLink, modifiedTime',
+            supportsAllDrives: true
+          });
+          results.push({ filename: file.filename, action: 'updated', id: result.data.id });
+        } else {
+          // Create new file
+          result = await googleDrive.files.create({
+            requestBody: {
+              name: file.filename,
+              parents: [targetFolder]
+            },
+            media,
+            fields: 'id, name, webViewLink, modifiedTime',
+            supportsAllDrives: true
+          });
+          results.push({ filename: file.filename, action: 'created', id: result.data.id });
+        }
+
+        console.log(`[Claude Brain Sync] ${file.filename} - ${results[results.length - 1].action}`);
+      } catch (fileErr) {
+        console.error(`[Claude Brain Sync] Error with ${file.filename}:`, fileErr.message);
+        results.push({ filename: file.filename, action: 'error', error: fileErr.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      timestamp,
+      synced: results.filter(r => r.action !== 'error').length,
+      errors: results.filter(r => r.action === 'error').length,
+      results
+    });
+
+  } catch (err) {
+    console.error('[Claude Brain Sync]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /**
  * POST /api/storage/upload - Upload file to client's Drive folder
  * For direct uploads (small files) or returns resumable upload URL
