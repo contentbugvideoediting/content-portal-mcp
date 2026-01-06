@@ -26,11 +26,17 @@ const getPlaidSecret = () => PLAID_ENV === 'production' ? PLAID_SECRET : PLAID_S
 // ============================================
 // WISE CONFIGURATION  
 // ============================================
-const WISE_API_TOKEN = process.env.WISE_API_TOKEN || '';
-const WISE_ENV = process.env.WISE_ENV || 'sandbox';
+const WISE_API_TOKEN = process.env.WISE_API_TOKEN || '23edfb11-a74f-4f5e-b524-a4cb37757a3d';
+const WISE_ENV = process.env.WISE_ENV || 'production';
 const WISE_BASE_URL = WISE_ENV === 'production'
   ? 'https://api.transferwise.com'
   : 'https://api.sandbox.transferwise.tech';
+
+// ContentBug Wise Profile IDs (from API)
+const WISE_PROFILES = {
+  personal: 42607363,
+  business: 42607341 // Content Bug Video Editing
+};
 
 // ============================================
 // STRIPE (already configured in main server)
@@ -380,13 +386,6 @@ router.post('/plaid/webhook', async (req, res) => {
  */
 router.get('/wise/profiles', async (req, res) => {
   try {
-    if (!WISE_API_TOKEN) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Wise API token not configured' 
-      });
-    }
-
     const response = await axios.get(`${WISE_BASE_URL}/v1/profiles`, {
       headers: { Authorization: `Bearer ${WISE_API_TOKEN}` }
     });
@@ -412,13 +411,6 @@ router.get('/wise/balances/:profileId', async (req, res) => {
   try {
     const { profileId } = req.params;
 
-    if (!WISE_API_TOKEN) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Wise API token not configured' 
-      });
-    }
-
     const response = await axios.get(
       `${WISE_BASE_URL}/v4/profiles/${profileId}/balances?types=STANDARD`,
       { headers: { Authorization: `Bearer ${WISE_API_TOKEN}` } }
@@ -430,11 +422,12 @@ router.get('/wise/balances/:profileId', async (req, res) => {
       currency: b.currency,
       amount: b.amount.value,
       type: b.type,
-      bankDetails: b.bankDetails
+      primary: b.primary
     }));
 
-    // Calculate total in USD (simplified - would need exchange rates)
-    const totalUSD = balances.find(b => b.currency === 'USD')?.amount || 0;
+    // Calculate total in USD
+    const usdBalance = balances.find(b => b.currency === 'USD');
+    const totalUSD = usdBalance ? usdBalance.amount : 0;
 
     res.json({ 
       success: true, 
