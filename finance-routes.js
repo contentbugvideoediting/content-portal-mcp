@@ -32,11 +32,8 @@ const WISE_BASE_URL = WISE_ENV === 'production'
   ? 'https://api.transferwise.com'
   : 'https://api.sandbox.transferwise.tech';
 
-// ContentBug Wise Profile IDs (from API)
-const WISE_PROFILES = {
-  personal: 42607363,
-  business: 42607341 // Content Bug Video Editing
-};
+// ContentBug Wise Profile ID (Business only)
+const WISE_BUSINESS_PROFILE = 42607341; // Content Bug Video Editing
 
 // ============================================
 // STRIPE (already configured in main server)
