@@ -8,9 +8,7 @@
     <!-- Plaid Link SDK -->
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -28,6 +26,7 @@
             --accent-red: #ff453a;
             --accent-orange: #ff9f0a;
             --accent-purple: #bf5af2;
+            --accent-teal: #64d2ff;
             --border-color: rgba(255,255,255,0.06);
             --glass-border: rgba(255,255,255,0.1);
             --radius-sm: 8px;
@@ -35,11 +34,7 @@
             --radius-lg: 16px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -49,48 +44,102 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* Navigation */
+        .nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .nav-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #0a84ff, #bf5af2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-tab.active {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Container */
         .container {
             max-width: 1800px;
             margin: 0 auto;
             padding: 24px;
         }
 
-        /* Header */
-        .header {
+        /* Page Header */
+        .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .logo {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #0a84ff, #bf5af2);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .header-title h1 {
-            font-size: 20px;
+        .page-title {
+            font-size: 24px;
             font-weight: 600;
-        }
-
-        .header-title p {
-            font-size: 13px;
-            color: var(--text-secondary);
         }
 
         .header-actions {
@@ -99,13 +148,12 @@
             align-items: center;
         }
 
-        /* Filter Buttons */
+        /* Filter */
         .filter-group {
             display: flex;
             background: var(--bg-tertiary);
             border-radius: var(--radius-md);
             padding: 4px;
-            gap: 4px;
         }
 
         .filter-btn {
@@ -125,10 +173,6 @@
             color: white;
         }
 
-        .filter-btn:hover:not(.active) {
-            color: var(--text-primary);
-        }
-
         .btn {
             padding: 10px 18px;
             border-radius: var(--radius-md);
@@ -142,27 +186,18 @@
             gap: 6px;
         }
 
-        .btn-primary {
-            background: var(--accent-blue);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #0070e0;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
+        .btn-primary { background: var(--accent-blue); color: white; }
+        .btn-primary:hover { background: #0070e0; }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-success { background: var(--accent-green); color: white; }
+        .btn-success:hover { background: #28b94d; }
 
         /* Stats Grid - 6 Columns */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 16px;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
@@ -179,7 +214,7 @@
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -189,92 +224,74 @@
             gap: 6px;
         }
 
-        .stat-icon {
-            font-size: 14px;
+        .stat-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .stat-current {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 600;
             font-variant-numeric: tabular-nums;
-            margin-bottom: 8px;
         }
 
         .stat-current.positive { color: var(--accent-green); }
         .stat-current.negative { color: var(--accent-red); }
 
-        .stat-previous {
-            font-size: 13px;
-            color: var(--text-tertiary);
-            font-variant-numeric: tabular-nums;
+        .stat-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 12px 0;
         }
 
-        .stat-previous span {
+        .stat-previous-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-previous {
+            font-size: 18px;
             color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+            font-weight: 500;
         }
 
         .stat-change {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 4px 8px;
+            top: 16px;
+            right: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
             border-radius: 6px;
         }
 
-        .stat-change.up {
-            background: rgba(48, 209, 88, 0.15);
-            color: var(--accent-green);
+        .stat-change.up { background: rgba(48, 209, 88, 0.15); color: var(--accent-green); }
+        .stat-change.down { background: rgba(255, 69, 58, 0.15); color: var(--accent-red); }
+
+        /* Page Content */
+        .page-content {
+            display: none;
         }
 
-        .stat-change.down {
-            background: rgba(255, 69, 58, 0.15);
-            color: var(--accent-red);
+        .page-content.active {
+            display: block;
         }
 
-        /* Main Content Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 24px;
-        }
-
-        /* Card */
-        .card {
+        /* Bank Balance */
+        .bank-section {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        /* Bank Balance Section */
-        .bank-balance-section {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-tertiary));
-            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             padding: 24px;
             margin-bottom: 24px;
         }
 
-        .bank-balance-header {
+        .bank-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -282,31 +299,31 @@
         }
 
         .bank-balance-label {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .bank-balance-amount {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: 600;
-            font-variant-numeric: tabular-nums;
             color: var(--accent-green);
+            font-variant-numeric: tabular-nums;
         }
 
         .bank-balance-note {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-tertiary);
             margin-top: 4px;
         }
 
-        .bank-accounts-list {
-            display: flex;
-            flex-direction: column;
+        .bank-accounts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 12px;
         }
 
-        .bank-account-item {
+        .bank-account {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -325,11 +342,11 @@
             width: 40px;
             height: 40px;
             background: linear-gradient(135deg, #c41230, #e31837);
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             color: white;
         }
@@ -350,44 +367,62 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Transactions */
-        .transactions-table {
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 16px 20px;
+        }
+
+        /* Transactions Table */
+        .table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .transactions-table th {
+        .table th {
             text-align: left;
             padding: 12px 16px;
-            font-size: 11px;
-            font-weight: 500;
+            font-size: 10px;
+            font-weight: 600;
             color: var(--text-tertiary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .transactions-table td {
+        .table td {
             padding: 14px 16px;
             font-size: 13px;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .transactions-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .transaction-name {
-            font-weight: 500;
-        }
-
-        .transaction-category {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .amount-positive { color: var(--accent-green); }
-        .amount-negative { color: var(--text-primary); }
+        .table tr:last-child td { border-bottom: none; }
 
         .badge {
             padding: 4px 8px;
@@ -399,35 +434,31 @@
 
         .badge-sale { background: rgba(48, 209, 88, 0.15); color: var(--accent-green); }
         .badge-refund { background: rgba(255, 69, 58, 0.15); color: var(--accent-red); }
-        .badge-expense { background: rgba(255, 159, 10, 0.15); color: var(--accent-orange); }
-        .badge-payout { background: rgba(191, 90, 242, 0.15); color: var(--accent-purple); }
+        .badge-tools { background: rgba(255, 159, 10, 0.15); color: var(--accent-orange); }
+        .badge-staff { background: rgba(191, 90, 242, 0.15); color: var(--accent-purple); }
+        .badge-fees { background: rgba(100, 210, 255, 0.15); color: var(--accent-teal); }
 
-        /* Sidebar */
-        .sidebar-widget {
-            margin-bottom: 20px;
-        }
+        .amount-positive { color: var(--accent-green); }
+        .amount-negative { color: var(--text-primary); }
 
-        .sidebar-widget:last-child {
-            margin-bottom: 0;
-        }
+        /* Sidebar Widgets */
+        .sidebar-widget { margin-bottom: 16px; }
+        .sidebar-widget:last-child { margin-bottom: 0; }
 
-        /* Connection Status */
         .connection-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .connection-item:last-child {
-            border-bottom: none;
-        }
+        .connection-item:last-child { border-bottom: none; }
 
         .connection-name {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-size: 13px;
         }
 
@@ -441,83 +472,238 @@
         .connection-indicator.pending { background: var(--accent-orange); }
         .connection-indicator.disconnected { background: var(--accent-red); }
 
-        /* Quick Actions */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .quick-action-btn {
-            padding: 16px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            color: var(--text-primary);
-        }
-
-        .quick-action-btn:hover {
-            background: var(--bg-elevated);
-            border-color: var(--glass-border);
-        }
-
-        .quick-action-btn .icon {
-            font-size: 20px;
-            margin-bottom: 6px;
-        }
-
-        .quick-action-btn .label {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        /* Wise Balances */
-        .wise-balance-item {
+        /* ==================== PAYOUTS PAGE ==================== */
+        
+        .payouts-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            margin-bottom: 24px;
         }
 
-        .wise-currency {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
+        .payouts-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .wise-amount {
-            font-size: 14px;
+        .payout-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        .payout-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .payout-stat-value {
+            font-size: 24px;
             font-weight: 600;
             font-variant-numeric: tabular-nums;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 24px;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent-blue);
+            background: rgba(10, 132, 255, 0.05);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--accent-blue);
+            background: rgba(10, 132, 255, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* Editors Table */
+        .editors-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .editor-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 1fr 1fr 120px;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .editor-row:last-child { border-bottom: none; }
+
+        .editor-row.header {
+            background: var(--bg-tertiary);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 20px;
+        }
+
+        .editor-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .editor-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .editor-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .editor-info p {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .wise-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(159, 232, 112, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #9fe870;
+        }
+
+        .wise-tag.none {
+            background: var(--bg-tertiary);
+            color: var(--text-tertiary);
+        }
+
+        .payment-amount {
+            font-size: 15px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .connection-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .connection-status.connected .dot { background: var(--accent-green); }
+        .connection-status.connected { color: var(--accent-green); }
+        .connection-status.pending .dot { background: var(--accent-orange); }
+        .connection-status.pending { color: var(--accent-orange); }
+        .connection-status.disconnected .dot { background: var(--accent-red); }
+        .connection-status.disconnected { color: var(--text-tertiary); }
+
+        .payout-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .payout-status.success {
+            background: rgba(48, 209, 88, 0.15);
+            color: var(--accent-green);
+        }
+
+        .payout-status.pending {
+            background: rgba(255, 159, 10, 0.15);
+            color: var(--accent-orange);
+        }
+
+        .payout-status.ready {
+            background: rgba(10, 132, 255, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .payout-status.failed {
+            background: rgba(255, 69, 58, 0.15);
+            color: var(--accent-red);
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: var(--text-secondary);
         }
 
         .empty-state-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            opacity: 0.5;
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
         .empty-state p {
             font-size: 13px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         /* Toast */
         .toast-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 80px;
+            right: 24px;
             z-index: 1000;
         }
 
@@ -529,6 +715,9 @@
             margin-bottom: 10px;
             font-size: 13px;
             animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .toast.success { border-left: 3px solid var(--accent-green); }
@@ -541,15 +730,6 @@
         }
 
         /* Loading */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-
         .spinner {
             width: 16px;
             height: 16px;
@@ -557,12 +737,9 @@
             border-top-color: var(--accent-blue);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin-right: 10px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Modal */
         .modal-overlay {
@@ -578,10 +755,7 @@
             transition: all 0.2s;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
 
         .modal {
             background: var(--bg-card);
@@ -593,9 +767,7 @@
             transition: transform 0.2s;
         }
 
-        .modal-overlay.active .modal {
-            transform: scale(1);
-        }
+        .modal-overlay.active .modal { transform: scale(1); }
 
         .modal-header {
             padding: 20px;
@@ -605,10 +777,7 @@
             align-items: center;
         }
 
-        .modal-title {
-            font-size: 17px;
-            font-weight: 600;
-        }
+        .modal-title { font-size: 17px; font-weight: 600; }
 
         .modal-close {
             width: 28px;
@@ -618,14 +787,9 @@
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .modal-body {
-            padding: 20px;
-        }
+        .modal-body { padding: 20px; }
 
         .connect-option {
             display: flex;
@@ -648,7 +812,7 @@
         .connect-option-icon {
             width: 42px;
             height: 42px;
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -656,222 +820,279 @@
         }
 
         .connect-option-icon.plaid { background: linear-gradient(135deg, #00d0a6, #00a88a); }
-        .connect-option-icon.wise { background: linear-gradient(135deg, #9fe870, #7dd356); color: #1a1a1a; }
         .connect-option-icon.stripe { background: linear-gradient(135deg, #635bff, #5046e5); }
 
-        .connect-option h4 {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
+        .connect-option h4 { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+        .connect-option p { font-size: 12px; color: var(--text-secondary); }
 
-        .connect-option p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        /* Hidden file input */
+        .file-input { display: none; }
 
         /* Responsive */
         @media (max-width: 1400px) {
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .editor-row { grid-template-columns: 2fr 2fr 1fr 1fr 100px; }
+            .editor-row .wise-tag-col { display: none; }
         }
 
         @media (max-width: 1000px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .main-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .payouts-stats { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 600px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .header {
-                flex-direction: column;
-                gap: 16px;
-                align-items: flex-start;
-            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .nav-tabs { display: none; }
         }
     </style>
 </head>
 <body>
     <div class="toast-container" id="toastContainer"></div>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">CB</div>
-                <div class="header-title">
-                    <h1>Financial Command Center</h1>
-                    <p>Real-time business intelligence</p>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <div class="nav-logo">
+                    <div class="nav-logo-icon">CB</div>
+                    <span>Financial Command Center</span>
+                </div>
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
+                    <button class="nav-tab" onclick="showPage('payouts')">Payouts</button>
                 </div>
             </div>
-            <div class="header-actions">
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="week" onclick="setFilter('week')">Week</button>
-                    <button class="filter-btn" data-filter="month" onclick="setFilter('month')">Month</button>
-                    <button class="filter-btn" data-filter="year" onclick="setFilter('year')">Year</button>
-                </div>
+            <div class="nav-right">
                 <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button>
-                <button class="btn btn-primary" onclick="openConnectModal()">+ Connect Account</button>
+                <button class="btn btn-primary" onclick="openConnectModal()">+ Connect</button>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <!-- 6-Column Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label"><span class="stat-icon">💰</span> Total Sales</div>
-                <div class="stat-current positive" id="totalSales">$0.00</div>
-                <div class="stat-previous">Previous <span id="filterLabel">week</span>: <span id="prevSales">$0.00</span></div>
-                <div class="stat-change up" id="salesChange">+0%</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label"><span class="stat-icon">↩️</span> Total Refunds</div>
-                <div class="stat-current negative" id="totalRefunds">$0.00</div>
-                <div class="stat-previous">Previous <span class="filter-label">week</span>: <span id="prevRefunds">$0.00</span></div>
-                <div class="stat-change down" id="refundsChange">0%</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label"><span class="stat-icon">🛠️</span> Tools/Software</div>
-                <div class="stat-current" id="totalTools">$0.00</div>
-                <div class="stat-previous">Previous <span class="filter-label">week</span>: <span id="prevTools">$0.00</span></div>
-                <div class="stat-change" id="toolsChange">0%</div>
+    <div class="container">
+        <!-- ==================== DASHBOARD PAGE ==================== -->
+        <div class="page-content active" id="dashboardPage">
+            <div class="page-header">
+                <h1 class="page-title">Overview</h1>
+                <div class="header-actions">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="week" onclick="setFilter('week')">Week</button>
+                        <button class="filter-btn" data-filter="month" onclick="setFilter('month')">Month</button>
+                        <button class="filter-btn" data-filter="year" onclick="setFilter('year')">Year</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-label"><span class="stat-icon">👥</span> Staff Payout</div>
-                <div class="stat-current" id="totalStaff">$0.00</div>
-                <div class="stat-previous">Previous <span class="filter-label">week</span>: <span id="prevStaff">$0.00</span></div>
-                <div class="stat-change" id="staffChange">0%</div>
+            <!-- 6-Column Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">💰 Total Sales</div>
+                    <div class="stat-row">
+                        <div class="stat-current positive" id="currentSales">$0.00</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-previous-label">Previous <span class="filter-label">Week</span></div>
+                    <div class="stat-previous" id="prevSales">$0.00</div>
+                    <div class="stat-change up" id="salesChange">+0%</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">↩️ Refunds</div>
+                    <div class="stat-row">
+                        <div class="stat-current negative" id="currentRefunds">$0.00</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-previous-label">Previous <span class="filter-label">Week</span></div>
+                    <div class="stat-previous" id="prevRefunds">$0.00</div>
+                    <div class="stat-change" id="refundsChange">0%</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">🛠️ Tools/Software</div>
+                    <div class="stat-row">
+                        <div class="stat-current" id="currentTools">$0.00</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-previous-label">Previous <span class="filter-label">Week</span></div>
+                    <div class="stat-previous" id="prevTools">$0.00</div>
+                    <div class="stat-change" id="toolsChange">0%</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">👥 Staff Payout</div>
+                    <div class="stat-row">
+                        <div class="stat-current" id="currentStaff">$0.00</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-previous-label">Previous <span class="filter-label">Week</span></div>
+                    <div class="stat-previous" id="prevStaff">$0.00</div>
+                    <div class="stat-change" id="staffChange">0%</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">💳 Processing Fees</div>
+                    <div class="stat-row">
+                        <div class="stat-current" id="currentFees">$0.00</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-previous-label">Previous <span class="filter-label">Week</span></div>
+                    <div class="stat-previous" id="prevFees">$0.00</div>
+                    <div class="stat-change" id="feesChange">0%</div>
+                </div>
+
+                <div class="stat-card highlight">
+                    <div class="stat-label">📈 Net Profit</div>
+                    <div class="stat-row">
+                        <div class="stat-current positive" id="currentProfit">$0.00</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-previous-label">Previous <span class="filter-label">Week</span></div>
+                    <div class="stat-previous" id="prevProfit">$0.00</div>
+                    <div class="stat-change up" id="profitChange">+0%</div>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-label"><span class="stat-icon">💳</span> Processing Fees</div>
-                <div class="stat-current" id="totalFees">$0.00</div>
-                <div class="stat-previous">Previous <span class="filter-label">week</span>: <span id="prevFees">$0.00</span></div>
-                <div class="stat-change" id="feesChange">0%</div>
+            <!-- Bank Balance Section -->
+            <div class="bank-section">
+                <div class="bank-header">
+                    <div>
+                        <div class="bank-balance-label">Bank Balance (Net Profit Payout)</div>
+                        <div class="bank-balance-amount" id="bankBalance">$0.00</div>
+                        <div class="bank-balance-note">This is your available payout balance</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openPlaidLink()">+ Add Bank Account</button>
+                </div>
+                <div class="bank-accounts" id="bankAccountsList">
+                    <div class="empty-state" style="padding: 30px;">
+                        <p style="margin: 0;">Connect Bank of America + credit cards to see balances</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="stat-card highlight">
-                <div class="stat-label"><span class="stat-icon">📈</span> Net Profit</div>
-                <div class="stat-current positive" id="netProfit">$0.00</div>
-                <div class="stat-previous">Previous <span class="filter-label">week</span>: <span id="prevProfit">$0.00</span></div>
-                <div class="stat-change up" id="profitChange">+0%</div>
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Transactions</h3>
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" onclick="exportCSV()">Export</button>
+                    </div>
+                    <div id="transactionsContainer">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <h3>No transactions yet</h3>
+                            <p>Connect your accounts to see transactions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="card sidebar-widget">
+                        <div class="card-header">
+                            <h3 class="card-title">Connections</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="connection-item">
+                                <div class="connection-name">
+                                    <div class="connection-indicator" id="plaidStatus"></div>
+                                    <span>Plaid</span>
+                                </div>
+                                <span style="font-size: 11px; color: var(--text-tertiary);" id="plaidCount">0 accounts</span>
+                            </div>
+                            <div class="connection-item">
+                                <div class="connection-name">
+                                    <div class="connection-indicator connected"></div>
+                                    <span>Wise</span>
+                                </div>
+                                <span style="font-size: 11px; color: var(--accent-green);" id="wiseBalanceDisplay">$396.54</span>
+                            </div>
+                            <div class="connection-item">
+                                <div class="connection-name">
+                                    <div class="connection-indicator" id="stripeStatus"></div>
+                                    <span>Stripe</span>
+                                </div>
+                                <span style="font-size: 11px; color: var(--text-tertiary);">Payments</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card sidebar-widget">
+                        <div class="card-header">
+                            <h3 class="card-title">Wise Business</h3>
+                        </div>
+                        <div class="card-body" id="wiseBalances">
+                            <div class="connection-item">
+                                <div class="connection-name">
+                                    <span>🇺🇸</span>
+                                    <span>USD</span>
+                                </div>
+                                <span style="font-size: 14px; font-weight: 600;">$396.54</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Bank Balance Section -->
-        <div class="bank-balance-section">
-            <div class="bank-balance-header">
-                <div>
-                    <div class="bank-balance-label">Current Bank Balance</div>
-                    <div class="bank-balance-amount" id="bankBalance">$0.00</div>
-                    <div class="bank-balance-note">This is your net profit payout balance</div>
-                </div>
-                <button class="btn btn-secondary" onclick="openPlaidLink()">+ Add Bank Account</button>
-            </div>
-            <div class="bank-accounts-list" id="bankAccountsList">
-                <div class="empty-state">
-                    <div class="empty-state-icon">🏦</div>
-                    <p>Connect your Bank of America accounts and credit cards to see balances</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Grid -->
-        <div class="main-grid">
-            <!-- Transactions -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Recent Transactions</h3>
-                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="exportCSV()">Export CSV</button>
-                </div>
-                <div id="transactionsContainer">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        Connect accounts to see transactions
-                    </div>
+        <!-- ==================== PAYOUTS PAGE ==================== -->
+        <div class="page-content" id="payoutsPage">
+            <div class="page-header">
+                <h1 class="page-title">Editor Payouts</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="downloadTemplate()">📥 Download Template</button>
+                    <button class="btn btn-success" onclick="processAllPayouts()" id="processPayoutsBtn" style="display: none;">
+                        💸 Process All Payouts
+                    </button>
                 </div>
             </div>
 
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Quick Actions -->
-                <div class="card sidebar-widget">
-                    <div class="card-header">
-                        <h3 class="card-title">Quick Actions</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="quick-actions">
-                            <div class="quick-action-btn" onclick="openPlaidLink()">
-                                <div class="icon">🏦</div>
-                                <div class="label">Link Bank</div>
-                            </div>
-                            <div class="quick-action-btn" onclick="syncStripe()">
-                                <div class="icon">💳</div>
-                                <div class="label">Sync Stripe</div>
-                            </div>
-                            <div class="quick-action-btn" onclick="categorizeTransactions()">
-                                <div class="icon">🏷️</div>
-                                <div class="label">Categorize</div>
-                            </div>
-                            <div class="quick-action-btn" onclick="exportCSV()">
-                                <div class="icon">📊</div>
-                                <div class="label">Export</div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Payout Stats -->
+            <div class="payouts-stats">
+                <div class="payout-stat">
+                    <div class="payout-stat-label">Total Editors</div>
+                    <div class="payout-stat-value" id="totalEditors">0</div>
                 </div>
+                <div class="payout-stat">
+                    <div class="payout-stat-label">Total Payout</div>
+                    <div class="payout-stat-value" id="totalPayoutAmount">$0.00</div>
+                </div>
+                <div class="payout-stat">
+                    <div class="payout-stat-label">Ready to Pay</div>
+                    <div class="payout-stat-value" style="color: var(--accent-blue);" id="readyCount">0</div>
+                </div>
+                <div class="payout-stat">
+                    <div class="payout-stat-label">Completed</div>
+                    <div class="payout-stat-value" style="color: var(--accent-green);" id="completedCount">0</div>
+                </div>
+            </div>
 
-                <!-- Connection Status -->
-                <div class="card sidebar-widget">
-                    <div class="card-header">
-                        <h3 class="card-title">Connections</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="connection-item">
-                            <div class="connection-name">
-                                <div class="connection-indicator" id="plaidStatus"></div>
-                                <span>Plaid (Banks)</span>
-                            </div>
-                            <span style="font-size: 12px; color: var(--text-tertiary);" id="plaidCount">0 accounts</span>
-                        </div>
-                        <div class="connection-item">
-                            <div class="connection-name">
-                                <div class="connection-indicator connected" id="wiseStatus"></div>
-                                <span>Wise</span>
-                            </div>
-                            <span style="font-size: 12px; color: var(--text-tertiary);" id="wiseBalance">$0.00</span>
-                        </div>
-                        <div class="connection-item">
-                            <div class="connection-name">
-                                <div class="connection-indicator" id="stripeStatus"></div>
-                                <span>Stripe</span>
-                            </div>
-                            <span style="font-size: 12px; color: var(--text-tertiary);">Payments</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- CSV Upload Zone -->
+            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvInput').click()">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Drop CSV file here or click to upload</div>
+                <div class="upload-hint">Columns: Name, Email, Wise Tag, Amount, Status</div>
+            </div>
+            <input type="file" id="csvInput" class="file-input" accept=".csv" onchange="handleCSVUpload(event)">
 
-                <!-- Wise Balance -->
-                <div class="card sidebar-widget">
-                    <div class="card-header">
-                        <h3 class="card-title">Wise Business</h3>
-                    </div>
-                    <div class="card-body" id="wiseBalances">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            Loading...
-                        </div>
-                    </div>
+            <!-- Editors Table -->
+            <div class="editors-table" id="editorsTable" style="display: none;">
+                <div class="editor-row header">
+                    <div>Editor</div>
+                    <div>Wise Email</div>
+                    <div class="wise-tag-col">Wise Tag</div>
+                    <div>Amount</div>
+                    <div>Connection</div>
+                    <div>Payout Status</div>
                 </div>
+                <div id="editorsBody"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="payoutsEmpty">
+                <div class="empty-state-icon">💸</div>
+                <h3>No payroll data</h3>
+                <p>Upload a CSV file with editor payment information</p>
+                <button class="btn btn-primary" onclick="document.getElementById('csvInput').click()">Upload CSV</button>
             </div>
         </div>
     </div>
@@ -888,14 +1109,14 @@
                     <div class="connect-option-icon plaid">🔗</div>
                     <div>
                         <h4>Bank of America + Credit Cards</h4>
-                        <p>Connect checking and credit card accounts via Plaid</p>
+                        <p>Connect accounts via Plaid</p>
                     </div>
                 </div>
                 <div class="connect-option" onclick="syncStripe()">
                     <div class="connect-option-icon stripe">S</div>
                     <div>
-                        <h4>Stripe Payments</h4>
-                        <p>Sync sales, refunds, and processing fees</p>
+                        <h4>Stripe</h4>
+                        <p>Sync sales and fees</p>
                     </div>
                 </div>
             </div>
@@ -904,28 +1125,47 @@
 
     <script>
         // ============================================
-        // CONTENTBUG FINANCIAL DASHBOARD
-        // Clean version - Real data only
+        // CONTENTBUG FINANCIAL COMMAND CENTER
         // ============================================
 
         const CONFIG = {
             backend: 'https://portalv2.contentbug.io/api/finance',
-            wiseProfileId: 42607341, // Content Bug Video Editing business profile
+            wiseProfileId: 42607341,
             userId: 'contentbug-admin'
         };
 
         const state = {
+            currentPage: 'dashboard',
             filter: 'week',
             accounts: [],
             transactions: [],
+            editors: [],
             plaidLinkToken: null,
             totals: {
                 current: { sales: 0, refunds: 0, tools: 0, staff: 0, fees: 0, profit: 0 },
                 previous: { sales: 0, refunds: 0, tools: 0, staff: 0, fees: 0, profit: 0 }
             },
             bankBalance: 0,
-            wiseBalance: 0
+            wiseBalance: 396.54
         };
+
+        // ============================================
+        // PAGE NAVIGATION
+        // ============================================
+
+        function showPage(page) {
+            state.currentPage = page;
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.textContent.toLowerCase() === page);
+            });
+            
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.getElementById(page + 'Page').classList.add('active');
+        }
 
         // ============================================
         // INITIALIZATION
@@ -937,6 +1177,8 @@
             
             await loadWiseBalance();
             await initPlaid();
+            
+            setupDragDrop();
         });
 
         // ============================================
@@ -955,10 +1197,9 @@
                 if (data.success) {
                     state.plaidLinkToken = data.link_token;
                     updateConnectionStatus('plaidStatus', 'connected');
-                    showToast('Plaid ready', 'success');
                 }
             } catch (err) {
-                console.error('Plaid init error:', err);
+                console.error('Plaid init:', err);
                 updateConnectionStatus('plaidStatus', 'disconnected');
             }
         }
@@ -967,19 +1208,17 @@
             closeConnectModal();
             
             if (!state.plaidLinkToken) {
-                showToast('Plaid not initialized. Add PLAID_CLIENT_ID to Railway.', 'error');
+                showToast('Add PLAID_CLIENT_ID to Railway first', 'error');
                 return;
             }
 
             const handler = Plaid.create({
                 token: state.plaidLinkToken,
                 onSuccess: async (publicToken, metadata) => {
-                    showToast('Connecting account...', 'info');
+                    showToast('Connecting...', 'info');
                     await exchangePlaidToken(publicToken, metadata);
                 },
-                onExit: (err) => {
-                    if (err) console.error('Plaid exit:', err);
-                }
+                onExit: () => {}
             });
             handler.open();
         }
@@ -989,19 +1228,12 @@
                 const res = await fetch(`${CONFIG.backend}/plaid/exchange-token`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        public_token: publicToken, 
-                        metadata,
-                        userId: CONFIG.userId 
-                    })
+                    body: JSON.stringify({ public_token: publicToken, metadata, userId: CONFIG.userId })
                 });
                 
                 const data = await res.json();
                 
                 if (data.success) {
-                    showToast(`Connected ${data.accounts.length} account(s)!`, 'success');
-                    
-                    // Add accounts to state
                     data.accounts.forEach(acc => {
                         state.accounts.push({
                             id: acc.id,
@@ -1014,13 +1246,13 @@
                         });
                     });
                     
+                    showToast(`Connected ${data.accounts.length} account(s)!`, 'success');
                     renderBankAccounts();
                     await loadTransactions();
                     document.getElementById('plaidCount').textContent = `${state.accounts.length} accounts`;
                 }
             } catch (err) {
-                showToast('Error connecting account', 'error');
-                console.error(err);
+                showToast('Connection failed', 'error');
             }
         }
 
@@ -1034,40 +1266,13 @@
                 
                 const data = await res.json();
                 
-                if (data.success && data.transactions) {
-                    state.transactions = data.transactions;
-                    categorizeAndCalculate();
+                if (data.success) {
+                    state.transactions = data.transactions || [];
+                    calculateTotals();
                     renderTransactions();
                 }
             } catch (err) {
-                console.error('Load transactions error:', err);
-            }
-        }
-
-        async function loadBalances() {
-            try {
-                const res = await fetch(`${CONFIG.backend}/plaid/get-balance`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: CONFIG.userId })
-                });
-                
-                const data = await res.json();
-                
-                if (data.success) {
-                    state.bankBalance = data.totals?.totalCurrent || 0;
-                    document.getElementById('bankBalance').textContent = formatCurrency(state.bankBalance);
-                    
-                    // Update individual accounts
-                    data.balances.forEach(bal => {
-                        const acc = state.accounts.find(a => a.id === bal.accountId);
-                        if (acc) acc.balance = bal.current;
-                    });
-                    
-                    renderBankAccounts();
-                }
-            } catch (err) {
-                console.error('Load balances error:', err);
+                console.error('Transactions error:', err);
             }
         }
 
@@ -1082,39 +1287,23 @@
                 
                 if (data.success) {
                     state.wiseBalance = data.totalUSD || 0;
-                    document.getElementById('wiseBalance').textContent = formatCurrency(state.wiseBalance);
+                    document.getElementById('wiseBalanceDisplay').textContent = formatCurrency(state.wiseBalance);
                     
-                    // Render balances
                     const container = document.getElementById('wiseBalances');
-                    if (data.balances && data.balances.length > 0) {
-                        container.innerHTML = data.balances
-                            .filter(b => b.amount > 0)
-                            .map(b => `
-                                <div class="wise-balance-item">
-                                    <div class="wise-currency">
-                                        <span>${getCurrencyFlag(b.currency)}</span>
-                                        <span>${b.currency}</span>
-                                    </div>
-                                    <div class="wise-amount">${getCurrencySymbol(b.currency)}${b.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                    if (data.balances?.length > 0) {
+                        container.innerHTML = data.balances.filter(b => b.amount > 0).map(b => `
+                            <div class="connection-item">
+                                <div class="connection-name">
+                                    <span>${getCurrencyFlag(b.currency)}</span>
+                                    <span>${b.currency}</span>
                                 </div>
-                            `).join('') || '<div style="color: var(--text-tertiary); font-size: 13px;">No balances</div>';
-                    } else {
-                        container.innerHTML = `
-                            <div class="wise-balance-item">
-                                <div class="wise-currency">
-                                    <span>🇺🇸</span>
-                                    <span>USD</span>
-                                </div>
-                                <div class="wise-amount">$${(data.totalUSD || 0).toFixed(2)}</div>
+                                <span style="font-size: 14px; font-weight: 600;">${getCurrencySymbol(b.currency)}${b.amount.toFixed(2)}</span>
                             </div>
-                        `;
+                        `).join('');
                     }
-                    
-                    updateConnectionStatus('wiseStatus', 'connected');
                 }
             } catch (err) {
-                console.error('Wise load error:', err);
-                document.getElementById('wiseBalances').innerHTML = '<div style="color: var(--text-tertiary); font-size: 13px;">Could not load Wise data</div>';
+                console.error('Wise error:', err);
             }
         }
 
@@ -1122,7 +1311,7 @@
         // CALCULATIONS
         // ============================================
 
-        function categorizeAndCalculate() {
+        function calculateTotals() {
             const now = new Date();
             let currentStart, previousStart, previousEnd;
             
@@ -1140,77 +1329,44 @@
                 previousStart = new Date(currentStart - 365 * 24 * 60 * 60 * 1000);
             }
 
-            // Reset totals
             state.totals.current = { sales: 0, refunds: 0, tools: 0, staff: 0, fees: 0, profit: 0 };
             state.totals.previous = { sales: 0, refunds: 0, tools: 0, staff: 0, fees: 0, profit: 0 };
 
             state.transactions.forEach(tx => {
                 const txDate = new Date(tx.date);
                 const amount = Math.abs(tx.amount);
-                const category = categorizeTransaction(tx);
+                const cat = categorize(tx);
                 
                 const period = txDate >= currentStart ? 'current' : 
                               (txDate >= previousStart && txDate < previousEnd) ? 'previous' : null;
                 
                 if (!period) return;
                 
-                switch (category) {
-                    case 'sale':
-                        state.totals[period].sales += amount;
-                        break;
-                    case 'refund':
-                        state.totals[period].refunds += amount;
-                        break;
-                    case 'tools':
-                        state.totals[period].tools += amount;
-                        break;
-                    case 'staff':
-                        state.totals[period].staff += amount;
-                        break;
-                    case 'fees':
-                        state.totals[period].fees += amount;
-                        break;
-                }
+                if (cat === 'sale') state.totals[period].sales += amount;
+                else if (cat === 'refund') state.totals[period].refunds += amount;
+                else if (cat === 'tools') state.totals[period].tools += amount;
+                else if (cat === 'staff') state.totals[period].staff += amount;
+                else if (cat === 'fees') state.totals[period].fees += amount;
             });
 
-            // Calculate net profit
-            ['current', 'previous'].forEach(period => {
-                state.totals[period].profit = 
-                    state.totals[period].sales - 
-                    state.totals[period].refunds - 
-                    state.totals[period].tools - 
-                    state.totals[period].staff - 
-                    state.totals[period].fees;
+            ['current', 'previous'].forEach(p => {
+                state.totals[p].profit = state.totals[p].sales - state.totals[p].refunds - 
+                                         state.totals[p].tools - state.totals[p].staff - state.totals[p].fees;
             });
 
             updateStatsDisplay();
         }
 
-        function categorizeTransaction(tx) {
+        function categorize(tx) {
             const name = (tx.name || '').toLowerCase();
             const merchant = (tx.merchantName || '').toLowerCase();
-            const category = (tx.primaryCategory || '').toLowerCase();
             
-            // Sales (negative amounts in Plaid = money in)
             if (tx.amount < 0) return 'sale';
-            
-            // Refunds
-            if (name.includes('refund') || merchant.includes('refund')) return 'refund';
-            
-            // Staff payouts (Wise transfers, payroll)
-            if (name.includes('wise') || name.includes('payroll') || name.includes('gusto') || 
-                merchant.includes('wise') || category.includes('payroll')) return 'staff';
-            
-            // Processing fees (Stripe, payment processors)
-            if (name.includes('stripe') || name.includes('fee') || name.includes('square') ||
-                merchant.includes('stripe')) return 'fees';
-            
-            // Tools/Software
-            if (name.includes('adobe') || name.includes('figma') || name.includes('aws') ||
-                name.includes('zoom') || name.includes('dropbox') || name.includes('google') ||
-                name.includes('notion') || name.includes('slack') || name.includes('zapier') ||
-                category.includes('software') || category.includes('subscription')) return 'tools';
-            
+            if (name.includes('refund')) return 'refund';
+            if (name.includes('wise') || name.includes('payroll') || name.includes('gusto')) return 'staff';
+            if (name.includes('stripe') || name.includes('fee')) return 'fees';
+            if (name.includes('adobe') || name.includes('figma') || name.includes('aws') || 
+                name.includes('zoom') || name.includes('dropbox')) return 'tools';
             return 'expense';
         }
 
@@ -1218,15 +1374,13 @@
             const c = state.totals.current;
             const p = state.totals.previous;
             
-            // Update current values
-            document.getElementById('totalSales').textContent = formatCurrency(c.sales);
-            document.getElementById('totalRefunds').textContent = formatCurrency(c.refunds);
-            document.getElementById('totalTools').textContent = formatCurrency(c.tools);
-            document.getElementById('totalStaff').textContent = formatCurrency(c.staff);
-            document.getElementById('totalFees').textContent = formatCurrency(c.fees);
-            document.getElementById('netProfit').textContent = formatCurrency(c.profit);
+            document.getElementById('currentSales').textContent = formatCurrency(c.sales);
+            document.getElementById('currentRefunds').textContent = formatCurrency(c.refunds);
+            document.getElementById('currentTools').textContent = formatCurrency(c.tools);
+            document.getElementById('currentStaff').textContent = formatCurrency(c.staff);
+            document.getElementById('currentFees').textContent = formatCurrency(c.fees);
+            document.getElementById('currentProfit').textContent = formatCurrency(c.profit);
             
-            // Update previous values
             document.getElementById('prevSales').textContent = formatCurrency(p.sales);
             document.getElementById('prevRefunds').textContent = formatCurrency(p.refunds);
             document.getElementById('prevTools').textContent = formatCurrency(p.tools);
@@ -1234,7 +1388,6 @@
             document.getElementById('prevFees').textContent = formatCurrency(p.fees);
             document.getElementById('prevProfit').textContent = formatCurrency(p.profit);
             
-            // Update changes
             updateChange('salesChange', c.sales, p.sales);
             updateChange('refundsChange', c.refunds, p.refunds, true);
             updateChange('toolsChange', c.tools, p.tools, true);
@@ -1242,58 +1395,48 @@
             updateChange('feesChange', c.fees, p.fees, true);
             updateChange('profitChange', c.profit, p.profit);
             
-            // Update filter labels
             document.querySelectorAll('.filter-label').forEach(el => {
-                el.textContent = state.filter;
+                el.textContent = state.filter.charAt(0).toUpperCase() + state.filter.slice(1);
             });
-            document.getElementById('filterLabel').textContent = state.filter;
         }
 
-        function updateChange(elementId, current, previous, invertColors = false) {
-            const el = document.getElementById(elementId);
+        function updateChange(id, current, previous, invert = false) {
+            const el = document.getElementById(id);
             if (!el) return;
             
             if (previous === 0) {
                 el.textContent = current > 0 ? '+100%' : '0%';
-                el.className = 'stat-change ' + (current > 0 ? (invertColors ? 'down' : 'up') : '');
+                el.className = 'stat-change ' + (current > 0 ? (invert ? 'down' : 'up') : '');
                 return;
             }
             
             const change = ((current - previous) / previous) * 100;
-            const isUp = change >= 0;
-            
-            el.textContent = (isUp ? '+' : '') + change.toFixed(0) + '%';
-            el.className = 'stat-change ' + (isUp ? (invertColors ? 'down' : 'up') : (invertColors ? 'up' : 'down'));
+            el.textContent = (change >= 0 ? '+' : '') + change.toFixed(0) + '%';
+            el.className = 'stat-change ' + (change >= 0 ? (invert ? 'down' : 'up') : (invert ? 'up' : 'down'));
         }
 
         // ============================================
-        // UI RENDERING
+        // RENDERING
         // ============================================
 
         function renderBankAccounts() {
             const container = document.getElementById('bankAccountsList');
             
             if (state.accounts.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🏦</div>
-                        <p>Connect your Bank of America accounts and credit cards</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state" style="padding: 30px;"><p style="margin: 0;">Connect accounts to see balances</p></div>`;
                 return;
             }
             
-            // Calculate total balance
-            const totalBalance = state.accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
-            document.getElementById('bankBalance').textContent = formatCurrency(totalBalance);
+            const total = state.accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+            document.getElementById('bankBalance').textContent = formatCurrency(total);
             
             container.innerHTML = state.accounts.map(acc => `
-                <div class="bank-account-item">
+                <div class="bank-account">
                     <div class="bank-account-info">
-                        <div class="bank-account-icon">${getAccountIcon(acc)}</div>
+                        <div class="bank-account-icon">BofA</div>
                         <div>
                             <div class="bank-account-name">${acc.name}</div>
-                            <div class="bank-account-mask">••••${acc.mask || '0000'} · ${acc.subtype || acc.type}</div>
+                            <div class="bank-account-mask">••••${acc.mask || '0000'}</div>
                         </div>
                     </div>
                     <div class="bank-account-balance">${formatCurrency(acc.balance || 0)}</div>
@@ -1305,44 +1448,25 @@
             const container = document.getElementById('transactionsContainer');
             
             if (state.transactions.length === 0) {
-                container.innerHTML = `
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        Connect accounts to see transactions
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📊</div><h3>No transactions</h3><p>Connect accounts to see data</p></div>`;
                 return;
             }
             
             const sorted = [...state.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
             
             container.innerHTML = `
-                <table class="transactions-table">
-                    <thead>
-                        <tr>
-                            <th>Transaction</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
+                <table class="table">
+                    <thead><tr><th>Transaction</th><th>Category</th><th>Amount</th><th>Date</th></tr></thead>
                     <tbody>
-                        ${sorted.slice(0, 50).map(tx => {
-                            const cat = categorizeTransaction(tx);
-                            const isIncome = tx.amount < 0;
-                            return `
-                                <tr>
-                                    <td>
-                                        <div class="transaction-name">${tx.merchantName || tx.name}</div>
-                                        <div class="transaction-category">${tx.primaryCategory || ''}</div>
-                                    </td>
-                                    <td><span class="badge badge-${cat}">${cat}</span></td>
-                                    <td class="${isIncome ? 'amount-positive' : 'amount-negative'}">
-                                        ${isIncome ? '+' : '-'}${formatCurrency(Math.abs(tx.amount))}
-                                    </td>
-                                    <td style="color: var(--text-tertiary);">${formatDate(tx.date)}</td>
-                                </tr>
-                            `;
+                        ${sorted.slice(0, 30).map(tx => {
+                            const cat = categorize(tx);
+                            const isIn = tx.amount < 0;
+                            return `<tr>
+                                <td><strong>${tx.merchantName || tx.name}</strong></td>
+                                <td><span class="badge badge-${cat}">${cat}</span></td>
+                                <td class="${isIn ? 'amount-positive' : 'amount-negative'}">${isIn ? '+' : '-'}${formatCurrency(Math.abs(tx.amount))}</td>
+                                <td style="color: var(--text-tertiary);">${formatDate(tx.date)}</td>
+                            </tr>`;
                         }).join('')}
                     </tbody>
                 </table>
@@ -1350,101 +1474,274 @@
         }
 
         // ============================================
-        // ACTIONS
+        // PAYOUTS - CSV HANDLING
         // ============================================
 
-        function setFilter(filter) {
-            state.filter = filter;
+        function setupDragDrop() {
+            const zone = document.getElementById('uploadZone');
             
-            // Update UI
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filter);
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
             });
             
-            // Recalculate
-            categorizeAndCalculate();
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('dragover');
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.csv')) {
+                    processCSV(file);
+                } else {
+                    showToast('Please upload a CSV file', 'error');
+                }
+            });
         }
 
-        async function refreshData() {
-            showToast('Refreshing data...', 'info');
-            await loadWiseBalance();
-            if (state.accounts.length > 0) {
-                await loadBalances();
-                await loadTransactions();
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (file) processCSV(file);
+        }
+
+        function processCSV(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim());
+                
+                if (lines.length < 2) {
+                    showToast('CSV file is empty', 'error');
+                    return;
+                }
+                
+                // Parse header
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                
+                // Find column indices
+                const nameIdx = headers.findIndex(h => h.includes('name'));
+                const emailIdx = headers.findIndex(h => h.includes('email'));
+                const tagIdx = headers.findIndex(h => h.includes('tag') || h.includes('wise'));
+                const amountIdx = headers.findIndex(h => h.includes('amount') || h.includes('payment'));
+                const statusIdx = headers.findIndex(h => h.includes('status'));
+                
+                state.editors = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = parseCSVLine(lines[i]);
+                    if (cols.length < 2) continue;
+                    
+                    const editor = {
+                        id: 'editor_' + i,
+                        name: cols[nameIdx] || cols[0] || '',
+                        email: cols[emailIdx] || cols[1] || '',
+                        wiseTag: cols[tagIdx] || '',
+                        amount: parseFloat((cols[amountIdx] || cols[3] || '0').replace(/[^0-9.-]/g, '')) || 0,
+                        connectionStatus: 'pending', // Will check against Wise
+                        payoutStatus: (cols[statusIdx] || 'ready').toLowerCase().trim()
+                    };
+                    
+                    // Normalize payout status
+                    if (editor.payoutStatus.includes('success') || editor.payoutStatus.includes('complete') || editor.payoutStatus.includes('paid')) {
+                        editor.payoutStatus = 'success';
+                    } else if (editor.payoutStatus.includes('pending') || editor.payoutStatus.includes('processing')) {
+                        editor.payoutStatus = 'pending';
+                    } else {
+                        editor.payoutStatus = 'ready';
+                    }
+                    
+                    // Check connection (has Wise tag = connected)
+                    if (editor.wiseTag && editor.wiseTag.startsWith('@')) {
+                        editor.connectionStatus = 'connected';
+                    } else if (editor.email && editor.email.includes('@')) {
+                        editor.connectionStatus = 'pending';
+                    } else {
+                        editor.connectionStatus = 'disconnected';
+                    }
+                    
+                    if (editor.name) state.editors.push(editor);
+                }
+                
+                showToast(`Loaded ${state.editors.length} editors`, 'success');
+                renderEditors();
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let char of line) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
             }
-            showToast('Data refreshed', 'success');
+            result.push(current.trim());
+            return result;
         }
 
-        function syncStripe() {
-            showToast('Stripe sync coming soon - use Plaid for now', 'info');
-            updateConnectionStatus('stripeStatus', 'pending');
-        }
-
-        function categorizeTransactions() {
-            if (state.transactions.length === 0) {
-                showToast('No transactions to categorize', 'info');
-                return;
-            }
-            categorizeAndCalculate();
-            renderTransactions();
-            showToast('Transactions categorized', 'success');
-        }
-
-        function exportCSV() {
-            if (state.transactions.length === 0) {
-                showToast('No transactions to export', 'info');
+        function renderEditors() {
+            const table = document.getElementById('editorsTable');
+            const body = document.getElementById('editorsBody');
+            const empty = document.getElementById('payoutsEmpty');
+            const processBtn = document.getElementById('processPayoutsBtn');
+            
+            if (state.editors.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                processBtn.style.display = 'none';
                 return;
             }
             
-            const csv = [
-                ['Date', 'Name', 'Category', 'Amount'].join(','),
-                ...state.transactions.map(tx => [
-                    tx.date,
-                    `"${tx.merchantName || tx.name}"`,
-                    categorizeTransaction(tx),
-                    tx.amount
-                ].join(','))
-            ].join('\n');
+            table.style.display = 'block';
+            empty.style.display = 'none';
+            processBtn.style.display = 'flex';
             
+            // Update stats
+            const total = state.editors.reduce((sum, e) => sum + e.amount, 0);
+            const ready = state.editors.filter(e => e.payoutStatus === 'ready').length;
+            const completed = state.editors.filter(e => e.payoutStatus === 'success').length;
+            
+            document.getElementById('totalEditors').textContent = state.editors.length;
+            document.getElementById('totalPayoutAmount').textContent = formatCurrency(total);
+            document.getElementById('readyCount').textContent = ready;
+            document.getElementById('completedCount').textContent = completed;
+            
+            body.innerHTML = state.editors.map(editor => `
+                <div class="editor-row">
+                    <div class="editor-name">
+                        <div class="editor-avatar">${getInitials(editor.name)}</div>
+                        <div class="editor-info">
+                            <h4>${editor.name}</h4>
+                            <p>Editor</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 13px;">${editor.email || '—'}</div>
+                    <div class="wise-tag-col">
+                        ${editor.wiseTag ? `<span class="wise-tag">${editor.wiseTag}</span>` : `<span class="wise-tag none">No tag</span>`}
+                    </div>
+                    <div class="payment-amount">${formatCurrency(editor.amount)}</div>
+                    <div>
+                        <div class="connection-status ${editor.connectionStatus}">
+                            <div class="dot"></div>
+                            ${editor.connectionStatus.charAt(0).toUpperCase() + editor.connectionStatus.slice(1)}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="payout-status ${editor.payoutStatus}">${editor.payoutStatus}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function downloadTemplate() {
+            const csv = 'Name,Email,Wise Tag,Amount,Status\nJohn Editor,john@example.com,@johneditor,150.00,Ready\nJane Cutter,jane@example.com,@janecutter,200.00,Ready';
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `contentbug-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = 'contentbug-payroll-template.csv';
             a.click();
+            showToast('Template downloaded', 'success');
+        }
+
+        function processAllPayouts() {
+            const ready = state.editors.filter(e => e.payoutStatus === 'ready');
             
-            showToast('CSV exported', 'success');
+            if (ready.length === 0) {
+                showToast('No payouts ready to process', 'info');
+                return;
+            }
+            
+            showToast(`Processing ${ready.length} payouts via Wise...`, 'info');
+            
+            // Simulate processing - in production this would call Wise API
+            ready.forEach(editor => {
+                editor.payoutStatus = 'pending';
+            });
+            
+            renderEditors();
+            
+            setTimeout(() => {
+                ready.forEach(editor => {
+                    editor.payoutStatus = 'success';
+                });
+                renderEditors();
+                showToast(`${ready.length} payouts completed!`, 'success');
+            }, 2000);
         }
 
         // ============================================
         // UTILITIES
         // ============================================
 
-        function formatCurrency(amount) {
-            return '$' + Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function setFilter(filter) {
+            state.filter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            calculateTotals();
         }
 
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        async function refreshData() {
+            showToast('Refreshing...', 'info');
+            await loadWiseBalance();
+            if (state.accounts.length > 0) await loadTransactions();
+            showToast('Refreshed', 'success');
         }
 
-        function getAccountIcon(acc) {
-            const name = (acc.institution || acc.name || '').toLowerCase();
-            if (name.includes('america') || name.includes('bofa')) return 'BofA';
-            if (name.includes('chase')) return 'Chase';
-            if (name.includes('wells')) return 'WF';
-            return acc.type === 'credit' ? '💳' : '🏦';
+        function syncStripe() {
+            showToast('Stripe sync coming soon', 'info');
+            updateConnectionStatus('stripeStatus', 'pending');
         }
 
-        function getCurrencyFlag(currency) {
-            const flags = { USD: '🇺🇸', EUR: '🇪🇺', GBP: '🇬🇧', PHP: '🇵🇭', CAD: '🇨🇦', AUD: '🇦🇺' };
-            return flags[currency] || '💵';
+        function exportCSV() {
+            if (state.transactions.length === 0) {
+                showToast('No data to export', 'info');
+                return;
+            }
+            
+            const csv = ['Date,Name,Category,Amount', ...state.transactions.map(tx => 
+                `${tx.date},"${tx.merchantName || tx.name}",${categorize(tx)},${tx.amount}`
+            )].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `contentbug-transactions-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            showToast('Exported', 'success');
         }
 
-        function getCurrencySymbol(currency) {
-            const symbols = { USD: '$', EUR: '€', GBP: '£', PHP: '₱', CAD: 'C$', AUD: 'A$' };
-            return symbols[currency] || '$';
+        function formatCurrency(n) {
+            return '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatDate(d) {
+            return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        function getCurrencyFlag(c) {
+            return { USD: '🇺🇸', EUR: '🇪🇺', GBP: '🇬🇧', PHP: '🇵🇭' }[c] || '💵';
+        }
+
+        function getCurrencySymbol(c) {
+            return { USD: '$', EUR: '€', GBP: '£', PHP: '₱' }[c] || '$';
         }
 
         function updateConnectionStatus(id, status) {
@@ -1452,28 +1749,18 @@
             if (el) el.className = 'connection-indicator ' + status;
         }
 
-        function showToast(message, type = 'info') {
+        function showToast(msg, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.textContent = message;
+            toast.textContent = msg;
             container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        function openConnectModal() {
-            document.getElementById('connectModal').classList.add('active');
-        }
+        function openConnectModal() { document.getElementById('connectModal').classList.add('active'); }
+        function closeConnectModal() { document.getElementById('connectModal').classList.remove('active'); }
 
-        function closeConnectModal() {
-            document.getElementById('connectModal').classList.remove('active');
-        }
-
-        // Close modal on outside click
         document.getElementById('connectModal').addEventListener('click', (e) => {
             if (e.target.id === 'connectModal') closeConnectModal();
         });
