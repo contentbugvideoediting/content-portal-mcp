@@ -1,9 +1,10 @@
-// ContentBug Portal MCP Server v3.6.0
+// ContentBug Portal MCP Server v3.7.0
 // GHL is source of truth for contacts - GHL natively syncs to Airtable
 // Chat/Messages stored in Airtable directly
 // Zoom integration for instant meetings
+// Financial API: Plaid + Wise + Stripe integration
 // Hourly auto-sync to Airtable
-// Updated: 2026-01-02
+// Updated: 2026-01-06
 
 const express = require('express');
 const axios = require('axios');
@@ -3222,10 +3223,21 @@ app.post('/api/webhook/ghl/status-change', async (req, res) => {
 
 // START SERVER
 // ============================================
+
+// Mount Finance API routes (Plaid + Wise + Stripe)
+try {
+  const financeRoutes = require('./finance-routes');
+  app.use('/api/finance', financeRoutes);
+  console.log('[Finance API] Routes mounted at /api/finance');
+} catch (err) {
+  console.warn('[Finance API] Not loaded:', err.message);
+}
+
 app.listen(PORT, () => {
   console.log(`ContentBug Portal v3.7.0 on port ${PORT}`);
   console.log('Chat stored in Airtable, GHL for contacts');
   console.log('Zoom integration active');
+  console.log('Finance API: Plaid + Wise integration');
   console.log('Hourly sync enabled');
 
   // Run initial sync after 10 seconds
